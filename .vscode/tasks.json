@@ -1,0 +1,55 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build debug",
+            "type": "shell",
+            "command": "cp ${workspaceFolder}/Libs/SDL2/lib/x64/SDL2.dll ${workspaceFolder}/Bin/Debug/netcoreapp2.0/",
+            "windows": {
+                "command": "copy ${workspaceFolder}\\Libs\\SDL2\\lib\\x64\\SDL2.dll ${workspaceFolder}\\Bin\\Debug\\netcoreapp2.0\\"
+            },
+            "dependsOn": [
+                "build debug aux"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build release",
+            "type": "shell",
+            "command": "cp ${workspaceFolder}/Libs/SDL2/lib/x64/SDL2.dll ${workspaceFolder}/Bin/Release/netcoreapp2.0/",
+            "windows": {
+                "command": "copy ${workspaceFolder}\\Libs\\SDL2\\lib\\x64\\SDL2.dll ${workspaceFolder}\\Bin\\Release\\netcoreapp2.0\\"
+            },
+            "dependsOn": [
+                "build release aux"
+            ]
+        },
+        {
+            "label": "build debug aux",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Caravel.csproj",
+                "-c",
+                "Debug"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build release aux",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Caravel.csproj",
+                "-c",
+                "Release"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
