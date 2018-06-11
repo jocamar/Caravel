@@ -64,11 +64,30 @@ namespace Caravel
         protected Cv_Debug m_Debug;
 
         // Managers
-        protected Cv_EventManager           m_EventManager;
-        protected Cv_ResourceManager        m_ResourceManager;
-        protected Cv_NetworkManager         m_NetworkManager;
-        protected Cv_ProcessManager         m_ProcessManager;
-        protected Cv_ScriptManager          m_ScriptManager;
+        public Cv_EventManager EventManager
+        {
+            get; private set;
+        }
+
+        public Cv_ResourceManager ResourceManager
+        {
+            get; private set;
+        }
+
+        public Cv_NetworkManager NetworkManager
+        {
+            get; private set;
+        }
+
+        public Cv_ProcessManager ProcessManager
+        {
+            get; private set;
+        }
+
+        public Cv_ScriptManager ScriptManager
+        {
+            get; private set;
+        }
 
         private GraphicsDeviceManager       m_Graphics;
         private SpriteBatch                 m_SpriteBatch;
@@ -111,8 +130,8 @@ namespace Caravel
             VRegisterGameEvents();
 
             //TODO(JM): init the resource manager here
-            //m_ResourceManager = new Cv_ResourceManager("Assets.zip", 1024);
-            //if (!m_ResourceManager.Init())
+            //ResourceManager = new Cv_ResourceManager("Assets.zip", 1024);
+            //if (!ResourceManager.Init())
             //{
             //    Cv_Debug.Error("Unable to initialize resource manager.");
             //    Exit();
@@ -127,8 +146,8 @@ namespace Caravel
             }
 
             //TODO(JM): init the script manager here
-            //m_ScriptManager = new Cv_ScriptManager("Scripts/PreInit.lua");
-            //if (!m_ScriptManager.Init())
+            //ScriptManager = new Cv_ScriptManager("Scripts/PreInit.lua");
+            //if (!ScriptManager.Init())
             //{
             //    Cv_Debug.Error("Unable to initialize script manager.");
             //    Exit();
@@ -136,10 +155,19 @@ namespace Caravel
             //}
 
             //TODO(JM): init the event manager here
-            //m_EventManager = new Cv_EventManager("Caravel Event Mgr", true);
-            //if (!m_EventManager.Init())
+            //EventManager = new Cv_EventManager("Caravel Event Mgr", true);
+            //if (!EventManager.Init())
             //{
             //    Cv_Debug.Error("Unable to initialize event manager.");
+            //    Exit();
+            //    return;
+            //}
+
+            //TODO(JM): init the process manager here
+            //ProcessManager = new Cv_ProcessManager();
+            //if (!ProcessManager.Init())
+            //{
+            //    Cv_Debug.Error("Unable to initialize process manager.");
             //    Exit();
             //    return;
             //}
@@ -148,20 +176,21 @@ namespace Caravel
             m_sSaveGameDirectory = GetSaveGameDirectory(VGetGameAppDirectory());
 
             m_GameLogic = VCreateGameLogic();
-            //TODO(JM): Re add this once we actually have a working game logic
-            //if (m_GameLogic == null) {
-            //    Cv_Debug.Error("Unable to create game logic.");
-            //    Exit();
-            //    return;
-            //}
+            if (m_GameLogic == null) {
+                Cv_Debug.Error("Unable to create game logic.");
+                Exit();
+                return;
+            }
 
-            //TODO(JM): create and add game views
-            //if (m_GameLogic.AddGameViews(VCreateGameViews()))
-            //{
-            //    Cv_Debug.Error("Unable to create game views.");
-            //    Exit();
-            //    return;
-            //}
+            RegisterEngineScriptEvents();
+
+            var gvs = VCreateGameViews();
+            foreach (var gv in gvs)
+            {
+                m_GameLogic.AddView(gv);
+            }
+            m_GameLogic.AddGamePhysics(VCreateGamePhysics());
+            m_GameLogic.Init();
 
             m_bIsRunning = true;
         }
@@ -210,6 +239,7 @@ namespace Caravel
         protected abstract bool             VCheckGameSystemResources();
         protected abstract Cv_GameLogic     VCreateGameLogic();
         protected abstract Cv_GameView[]    VCreateGameViews();
+        protected abstract Cv_GamePhysics   VCreateGamePhysics();
         protected abstract void             VRegisterGameEvents();
         #endregion
 
@@ -242,6 +272,11 @@ namespace Caravel
         }
 
         private void RegisterEngineEvents()
+        {
+
+        }
+
+        private void RegisterEngineScriptEvents()
         {
 
         }

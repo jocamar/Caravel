@@ -15,7 +15,12 @@ namespace Caravel.TestSamples
 
         protected override Cv_GameLogic VCreateGameLogic()
         {
-            return null;
+            return new Cv_GameLogic(this);
+        }
+
+        protected override Cv_GamePhysics VCreateGamePhysics()
+        {
+            return new Cv_GamePhysics();
         }
 
         protected override Cv_GameView[] VCreateGameViews()

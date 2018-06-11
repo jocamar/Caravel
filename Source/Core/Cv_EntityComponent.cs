@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Caravel.Core
+﻿namespace Caravel.Core
 {
-    class Cv_EntityComponent
+    public class Cv_EntityComponent
     {
     }
 }
