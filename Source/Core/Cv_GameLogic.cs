@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Xml;
 using Caravel.Debugging;
+using static Caravel.Core.Cv_EventManager;
 
 namespace Caravel.Core
 {
     public class Cv_GameLogic
     {
-        #region Type definitions
         public enum Cv_GameState
         {
             Invalid,
@@ -19,11 +19,6 @@ namespace Caravel.Core
             SpawningPlayersActors,
             Running
         };
-
-        public delegate void TransformEntityDelegate(Cv_EventData eventData);
-        public delegate void RequestNewEntityDelegate(Cv_EventData eventData);
-        public delegate void RequestDestroyEntityDelegate(Cv_EventData eventData);
-        #endregion
 
         #region Public properties 
         public float Lifetime
@@ -131,17 +126,17 @@ namespace Caravel.Core
         }
         #endregion
 
-        protected TransformEntityDelegate OnTransformEntity
+        protected NewEventDelegate OnTransformEntity
         {
             get; private set;
         }
 
-        protected RequestNewEntityDelegate OnRequestNewEntity
+        protected NewEventDelegate OnRequestNewEntity
         {
             get; private set;
         }
 
-        protected RequestDestroyEntityDelegate OnDestroyEntity
+        protected NewEventDelegate OnDestroyEntity
         {
             get; private set;
         }
@@ -286,13 +281,13 @@ namespace Caravel.Core
             VGameOnUpdate(time, timeElapsed);
         }
 
-        private void TransformEntityCallback(Cv_EventData eventData)
+        private void TransformEntityCallback(Cv_Event eventData)
         {
             //Cv_EventData_TransformEntity data = (Cv_EventData_TransformEntity) eventData;
             //TransformEntity(data.EntityId, data.Transform);
         }
 
-        private void RequestNewEntityCallback(Cv_EventData eventData)
+        private void RequestNewEntityCallback(Cv_Event eventData)
         {
             Cv_Debug.Assert(IsProxy, "Should only enter RequestNewEntityCallback when game logic is a proxy.");
             if (!IsProxy)
@@ -309,7 +304,7 @@ namespace Caravel.Core
             //}
         }
 
-        private void RequestDestroyEntityCallback(Cv_EventData eventData)
+        private void RequestDestroyEntityCallback(Cv_Event eventData)
         {
             //Cv_EventData_DestroyEntity data = (Cv_EventData_DestroyEntity) eventData;
             //DestroyEntity(data.EntityId);
