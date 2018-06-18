@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Caravel.Debugging;
-using static Caravel.Core.Cv_Event;
+using static Caravel.Core.Events.Cv_Event;
 
-namespace Caravel.Core
+namespace Caravel.Core.Events
 {
     public class Cv_EventManager
     {
@@ -43,17 +43,23 @@ namespace Caravel.Core
 
             m_EventListeners = new Dictionary<Cv_EventType, List<NewEventDelegate>>();
             
+            m_EventQueues = new LinkedList<Cv_Event>[NUM_QUEUES];
             for (int i = 0; i < NUM_QUEUES; i++)
             {
                 m_EventQueues[i] = new LinkedList<Cv_Event>();
             }
         }
 
-        public bool AddListener<EventType>(NewEventDelegate callback)
+        public bool Init()
+        {
+            return true;
+        }
+
+        public bool AddListener<EventType>(NewEventDelegate callback) where EventType : Cv_Event
         {
             Cv_Debug.Log("Events", "Attempting to add listener for event type " + typeof(EventType).Name);
 
-            Cv_EventType eType = (Cv_EventType) typeof(EventType).Name.GetHashCode();
+            Cv_EventType eType = Cv_Event.GetType<EventType>();
 
             if (!m_EventListeners.ContainsKey(eType))
             {
@@ -78,11 +84,11 @@ namespace Caravel.Core
             return true;
         }
 
-        public bool RemoveListener<EventType>(NewEventDelegate callback)
+        public bool RemoveListener<EventType>(NewEventDelegate callback) where EventType : Cv_Event
         {
             Cv_Debug.Log("Events", "Attempting to remove listener from event type " + typeof(EventType).Name);
             var success = false;
-            Cv_EventType eType = (Cv_EventType) typeof(EventType).Name.GetHashCode();
+            Cv_EventType eType = Cv_Event.GetType<EventType>();
 
             if (m_EventListeners.ContainsKey(eType))
             {
@@ -151,10 +157,10 @@ namespace Caravel.Core
             }
         }
 
-        public bool AbortEvent<EventType>(bool allOfType = false)
+        public bool AbortEvent<EventType>(bool allOfType = false) where EventType : Cv_Event
         {
             Cv_Debug.Assert( (m_iActiveQueue >= 0 && m_iActiveQueue < NUM_QUEUES), "EventManager must have an active event queue.");
-            Cv_EventType eType = (Cv_EventType) typeof(EventType).Name.GetHashCode();
+            Cv_EventType eType = Cv_Event.GetType<EventType>();
             
             var success = false;
 
@@ -187,7 +193,7 @@ namespace Caravel.Core
             return success;
         }
 
-        bool OnUpdate(float time, float timeElapsed)
+        internal bool OnUpdate(float time, float timeElapsed)
         {
             long currentMs = 0;
 

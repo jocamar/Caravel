@@ -1,4 +1,5 @@
 ﻿using Caravel.Core;
+using Caravel.Core.Events;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -110,7 +111,7 @@ namespace Caravel
             base.Initialize();
 
             Cv_Debug debug = new Cv_Debug();
-            debug.Init("");
+            debug.Init("Logs/logTags.xml");
 
             if (!CheckEngineSystemResources())
             {
@@ -154,14 +155,13 @@ namespace Caravel
             //    return;
             //}
 
-            //TODO(JM): init the event manager here
-            //EventManager = new Cv_EventManager("Caravel Event Mgr", true);
-            //if (!EventManager.Init())
-            //{
-            //    Cv_Debug.Error("Unable to initialize event manager.");
-            //    Exit();
-            //    return;
-            //}
+            EventManager = new Cv_EventManager(true);
+            if (!EventManager.Init())
+            {
+                Cv_Debug.Error("Unable to initialize event manager.");
+                Exit();
+                return;
+            }
 
             //TODO(JM): init the process manager here
             //ProcessManager = new Cv_ProcessManager();
@@ -261,7 +261,7 @@ namespace Caravel
             return "";
         }
 
-        /*public Cv_HumanView GetHumanView(PlayerIndex player)
+        /*public Cv_PlayerView GetPlayerView(PlayerIndex player)
         {
             return null;
         }*/

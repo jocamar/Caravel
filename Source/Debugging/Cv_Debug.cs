@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Xml;
 using Microsoft.Xna.Framework;
 using static Caravel.Debugging.Cv_DebugDialog;
 
@@ -14,22 +15,22 @@ namespace Caravel.Debugging
         public const ushort CV_LOGFLAG_WRITETODEBUGGER = 1 << 0;
         public const ushort CV_LOGFLAG_WRITETOFILE = 1 << 1;
 
-#if DEBUG
-        private const ushort ERRORFLAG_DEFAULT = CV_LOGFLAG_WRITETODEBUGGER | CV_LOGFLAG_WRITETOFILE;
-        private const ushort WARNINGFLAG_DEFAULT = CV_LOGFLAG_WRITETODEBUGGER | CV_LOGFLAG_WRITETOFILE;
-        private const ushort LOGFLAG_DEFAULT = CV_LOGFLAG_WRITETODEBUGGER | CV_LOGFLAG_WRITETOFILE;
-#else
-        private const ushort ERRORFLAG_DEFAULT = 0;
-        private const ushort WARNINGFLAG_DEFAULT = 0;
-        private const ushort LOGFLAG_DEFAULT = 0;
-#endif
+        #if DEBUG
+            private const ushort ERRORFLAG_DEFAULT = CV_LOGFLAG_WRITETODEBUGGER | CV_LOGFLAG_WRITETOFILE;
+            private const ushort WARNINGFLAG_DEFAULT = CV_LOGFLAG_WRITETODEBUGGER | CV_LOGFLAG_WRITETOFILE;
+            private const ushort LOGFLAG_DEFAULT = CV_LOGFLAG_WRITETODEBUGGER | CV_LOGFLAG_WRITETOFILE;
+        #else
+            private const ushort ERRORFLAG_DEFAULT = 0;
+            private const ushort WARNINGFLAG_DEFAULT = 0;
+            private const ushort LOGFLAG_DEFAULT = 0;
+        #endif
 
         private static Cv_Debug instance = null;
         private readonly string DebugLogFile = "./Logs/error.log";
         private object m_TagLock = new object();
         private object m_ErrorMessengerLock = new object();
 
-        #region ErrorMessenger class definition
+#region ErrorMessenger class definition
         private class ErrorMessenger
         {
             public bool m_bIsEnabled;
@@ -50,12 +51,12 @@ namespace Caravel.Debugging
                 }
             }
         }
-        #endregion
+#endregion
 
         private Dictionary<string, ushort> m_Tags = new Dictionary<string, ushort>();
         private Dictionary<int, ErrorMessenger> m_ErrorMessengers = new Dictionary<int, ErrorMessenger>();
 
-        public void Init(string logFileName)
+        public void Init(string logTagsFile)
         {
             instance = this;
 
@@ -65,7 +66,38 @@ namespace Caravel.Debugging
             SetDisplayFlags("WARNING", WARNINGFLAG_DEFAULT);
             SetDisplayFlags("INFO", LOGFLAG_DEFAULT);
 
-            //TODO(JM): Read tags from file
+            // Read tags from file
+            if (!string.IsNullOrEmpty(logTagsFile)) {
+                var tagsDoc = new XmlDocument();
+                tagsDoc.Load(logTagsFile);
+
+                var xmlNodes = tagsDoc.SelectNodes("//Tag");
+                
+                foreach(XmlNode node in xmlNodes)
+                {
+                    string tag = node.Attributes["name"].Value;
+
+                    ushort flags = 0;
+
+                    bool writeToDebugger = false;
+                    writeToDebugger = Convert.ToBoolean(node.Attributes["writeToDebugger"].Value);
+
+                    if (writeToDebugger)
+                    {
+                        flags |= CV_LOGFLAG_WRITETODEBUGGER;
+                    }
+
+                    bool writeToFile = false;
+                    writeToFile = Convert.ToBoolean(node.Attributes["writeToFile"].Value);
+
+                    if (writeToFile)
+                    {
+                        flags |= CV_LOGFLAG_WRITETOFILE;
+                    }
+
+                    SetDisplayFlags(tag, flags);
+                }
+            }
         }
 
         public void SetDisplayFlags(string tag, ushort flags)
@@ -83,115 +115,46 @@ namespace Caravel.Debugging
             }
         }
 
-        #region Public Debug API
+#region Public Debug API
         public static void Fatal(string str)
         {
-#if DEBUG
-            if(instance == null)
-            {
-                return;
-            }
-
-            int hash;
-            string func = _Function();
-            string file = _File();
-            int line = _Line();
-            ErrorMessenger msg = null;
-
-            lock (instance.m_ErrorMessengerLock)
-            {
-                if (instance.HasErrorMessenger(func, file, line, out hash))
+            #if DEBUG
+                if(instance == null)
                 {
-                    msg = instance.GetErrorMessenger(hash);
+                    return;
                 }
-                else
-                {
-                    msg = new ErrorMessenger();
-                    instance.AddErrorMessenger(hash, msg);
-                }
-            }
 
-            msg.Show(str, true, func, file, line);
-#endif
+                int hash;
+                string func = _Function();
+                string file = _File();
+                int line = _Line();
+                ErrorMessenger msg = null;
+
+                lock (instance.m_ErrorMessengerLock)
+                {
+                    if (instance.HasErrorMessenger(func, file, line, out hash))
+                    {
+                        msg = instance.GetErrorMessenger(hash);
+                    }
+                    else
+                    {
+                        msg = new ErrorMessenger();
+                        instance.AddErrorMessenger(hash, msg);
+                    }
+                }
+
+                msg.Show(str, true, func, file, line);
+            #endif
         }
 
         public static void Error(string str)
         {
-#if DEBUG
-            if (instance == null)
-            {
-                return;
-            }
-
-            int hash;
-            string func = _Function();
-            string file = _File();
-            int line = _Line();
-            ErrorMessenger msg = null;
-
-            lock (instance.m_ErrorMessengerLock)
-            {
-                if (instance.HasErrorMessenger(func, file, line, out hash))
+            #if DEBUG
+                if (instance == null)
                 {
-                    msg = instance.GetErrorMessenger(hash);
+                    return;
                 }
-                else
-                {
-                    msg = new ErrorMessenger();
-                    instance.AddErrorMessenger(hash, msg);
-                }
-            }
 
-            msg.Show(str, false, func, file, line);
-#endif
-        }
-
-        public static void Warning(string str)
-        {
-#if DEBUG
-            if (instance == null)
-            {
-                return;
-            }
-
-            instance.Log("WARNING", str, _Function(), _File(), _Line());
-#endif
-        }
-
-        public static void Info(string str)
-        {
-#if DEBUG
-            if (instance == null)
-            {
-                return;
-            }
-
-            instance.Log("INFO", str, _Function(), _File(), _Line());
-#endif
-        }
-
-        public static void Log(string tag, string str)
-        {
-#if DEBUG
-            if (instance == null)
-            {
-                return;
-            }
-
-            instance.Log(tag, str, _Function(), _File(), _Line());
-#endif
-        }
-
-        public static void Assert(bool expression, string str)
-        {
-#if DEBUG
-            if (instance == null)
-            {
-                return;
-            }
-
-            if (!expression)
-            {
                 int hash;
                 string func = _Function();
                 string file = _File();
@@ -212,12 +175,81 @@ namespace Caravel.Debugging
                 }
 
                 msg.Show(str, false, func, file, line);
-            }
-#endif
+            #endif
         }
-        #endregion
 
-        #region Private helper methods
+        public static void Warning(string str)
+        {
+            #if DEBUG
+                if (instance == null)
+                {
+                    return;
+                }
+
+                instance.Log("WARNING", str, _Function(), _File(), _Line());
+            #endif
+        }
+
+        public static void Info(string str)
+        {
+            #if DEBUG
+                if (instance == null)
+                {
+                    return;
+                }
+
+                instance.Log("INFO", str, _Function(), _File(), _Line());
+            #endif
+        }
+
+        public static void Log(string tag, string str)
+        {
+            #if DEBUG
+                if (instance == null)
+                {
+                    return;
+                }
+
+                instance.Log(tag, str, _Function(), _File(), _Line());
+            #endif
+        }
+
+        public static void Assert(bool expression, string str)
+        {
+            #if DEBUG
+                if (instance == null)
+                {
+                    return;
+                }
+
+                if (!expression)
+                {
+                    int hash;
+                    string func = _Function();
+                    string file = _File();
+                    int line = _Line();
+                    ErrorMessenger msg = null;
+
+                    lock (instance.m_ErrorMessengerLock)
+                    {
+                        if (instance.HasErrorMessenger(func, file, line, out hash))
+                        {
+                            msg = instance.GetErrorMessenger(hash);
+                        }
+                        else
+                        {
+                            msg = new ErrorMessenger();
+                            instance.AddErrorMessenger(hash, msg);
+                        }
+                    }
+
+                    msg.Show(str, false, func, file, line);
+                }
+            #endif
+        }
+#endregion
+
+#region Private helper methods
         private ErrorMessenger GetErrorMessenger(int hash)
         {
             ErrorMessenger msg = null;
@@ -276,19 +308,32 @@ namespace Caravel.Debugging
                 sb.Append("[").Append(DateTime.Now).Append("] ").Append(message);
             }
 
+            bool addedNewLine = false;
             if (!string.IsNullOrEmpty(funcName))
             {
-                sb.Append(Environment.NewLine).Append("Function: ").Append(funcName);
+                addedNewLine = true;
+                sb.Append(Environment.NewLine).Append('\t').Append("Function: ").Append(funcName);
             }
 
             if (!string.IsNullOrEmpty(fileName))
             {
-                sb.Append(Environment.NewLine).Append(fileName);
+                if (!addedNewLine)
+                {
+                    sb.Append(Environment.NewLine).Append('\t');
+                    addedNewLine = true;
+                }
+
+                sb.Append(" (").Append(fileName).Append(") ");
             }
 
             if (lineNum != 0)
             {
-                sb.Append(Environment.NewLine).Append("Line: ").Append(lineNum);
+                if (!addedNewLine)
+                {
+                    sb.Append(Environment.NewLine).Append('\t');
+                }
+
+                sb.Append("(").Append("Line: ").Append(lineNum).Append(")");;
             }
 
             sb.Append(Environment.NewLine);
@@ -387,6 +432,6 @@ namespace Caravel.Debugging
             StackTrace stackTrace = new StackTrace(true);
             return stackTrace.GetFrame(2).GetFileLineNumber();
         }
-        #endregion
+#endregion
     }
 }

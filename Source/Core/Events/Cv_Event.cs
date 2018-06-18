@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Caravel.Core
+namespace Caravel.Core.Events
 {
     public abstract class Cv_Event : ISerializable
     {
@@ -28,9 +28,14 @@ namespace Caravel.Core
             get; private set;
         }
 
-        public Cv_Event(float timeStamp)
+        public Cv_Event(float timeStamp = 0.0f)
         {
             TimeStamp = timeStamp;
+        }
+
+        public static Cv_EventType GetType<Event>() where Event : Cv_Event
+        {
+            return (Cv_EventType) typeof(Event).Name.GetHashCode();
         }
 
         public abstract string VGetName();
