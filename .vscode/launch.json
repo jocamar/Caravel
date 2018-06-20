@@ -23,6 +23,20 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
-        }
-    ,]
+		},
+		{
+			"name": "Mono Launch",
+			"type": "mono",
+			"request": "launch",
+			"program": "${workspaceFolder}/Bin/Debug/mono/Caravel.exe",
+			"cwd": "${workspaceRoot}"
+		},
+		{
+			"name": "Mono Attach",
+			"type": "mono",
+			"request": "attach",
+			"address": "localhost",
+			"port": 55555
+		}
+    ]
 }

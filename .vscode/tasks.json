@@ -50,6 +50,18 @@
                 "Release"
             ],
             "problemMatcher": "$msCompile"
-        }
+		},
+		{
+            "label": "build debug mono",
+            "type": "process",
+			"command": "msbuild",
+			"args": [
+                "${workspaceFolder}/CaravelMono/CaravelMono.sln"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
     ]
 }
