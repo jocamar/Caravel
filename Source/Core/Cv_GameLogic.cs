@@ -295,7 +295,8 @@ namespace Caravel.Core
 
         public bool LoadScene(string sceneResource)
         {
-            var root = Cv_ResourceManager.Instance.LoadXMLResource(sceneResource);
+            var resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource);
+            var root = resource.RootNode;
 
             if (root == null)
             {
@@ -316,7 +317,7 @@ namespace Caravel.Core
 
             if (preLoadScript != null)
             {
-                //var preLoadRes = Cv_ResourceManager.Instance.GetResource(preLoadScript);
+                var preLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(preLoadScript);
             }
 
             var entitiesNodes = root.SelectNodes("//StaticEntities//Entity");
@@ -352,7 +353,7 @@ namespace Caravel.Core
 
             if (postLoadScript != null)
             {
-                //var postLoadRes = Cv_ResourceManager.Instance.GetResource(postLoadScript);
+                var postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript);
             }
 
             if (IsProxy)

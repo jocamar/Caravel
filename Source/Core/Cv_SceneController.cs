@@ -14,12 +14,12 @@ namespace Caravel.Core
             get { return m_iCurrentScene; }
         }
 
-        private List<string> m_Scenes = new List<string>();
+        private List<string> m_Scenes;
         private int m_iCurrentScene;
 
-        internal bool Init(List<string> scenes)
+        internal bool Init(string[] scenes)
         {
-            m_Scenes = scenes;
+            m_Scenes = new List<string>(scenes);
             return true;
         }
     }

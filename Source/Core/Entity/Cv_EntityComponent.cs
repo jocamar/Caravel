@@ -24,13 +24,12 @@ namespace Caravel.Core.Entity
             }
         }
 
-        private static Dictionary<Type, Cv_ComponentID> m_ComponentIds = new Dictionary<Type, Cv_ComponentID>();
-
         protected internal Cv_Entity Owner
         {
             get; internal set;
         }
 
+        private static Dictionary<Type, Cv_ComponentID> m_ComponentIds = new Dictionary<Type, Cv_ComponentID>();
         private Cv_ComponentID m_ID = Cv_ComponentID.INVALID_COMPONENT;
 
         public static Cv_ComponentID GetID<ComponentType>() where ComponentType : Cv_EntityComponent

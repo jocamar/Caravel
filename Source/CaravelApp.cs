@@ -17,7 +17,7 @@ namespace Caravel
     public abstract class CaravelApp : Game
     {
         #region Properties
-        public static CaravelApp instance;
+        public static CaravelApp Instance;
         
         public bool Quitting
         {
@@ -103,13 +103,12 @@ namespace Caravel
             m_Graphics.PreferredBackBufferHeight = screenHeight;
             Content.RootDirectory = "Assets";
             Window.Title = "Loading";
+            Instance = this;
         }
 
         #region MonoGame Functions
         protected sealed override void Initialize()
         {
-            base.Initialize();
-
             Cv_Debug debug = new Cv_Debug();
             debug.Init("Logs/logTags.xml");
 
@@ -130,14 +129,13 @@ namespace Caravel
             RegisterEngineEvents();
             VRegisterGameEvents();
 
-            //TODO(JM): init the resource manager here
-            //ResourceManager = new Cv_ResourceManager("Assets.zip", 1024);
-            //if (!ResourceManager.Init())
-            //{
-            //    Cv_Debug.Error("Unable to initialize resource manager.");
-            //    Exit();
-            //    return;
-            //}
+            ResourceManager = new Cv_ResourceManager();
+            if (!ResourceManager.Init())
+            {
+                Cv_Debug.Error("Unable to initialize resource manager.");
+                Exit();
+                return;
+            }
 
             if (!LoadStrings("English"))
             {
@@ -193,6 +191,8 @@ namespace Caravel
             m_GameLogic.Init();
 
             m_bIsRunning = true;
+
+            base.Initialize();
         }
         
         protected sealed override void LoadContent()
