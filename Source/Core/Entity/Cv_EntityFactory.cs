@@ -1,5 +1,6 @@
 using System;
 using System.Xml;
+using Caravel.Core.Resource;
 using Caravel.Debugging;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Entity.Cv_EntityComponent;

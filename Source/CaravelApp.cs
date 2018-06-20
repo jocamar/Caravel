@@ -1,5 +1,6 @@
 ﻿using Caravel.Core;
 using Caravel.Core.Events;
+using Caravel.Core.Resource;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +17,7 @@ namespace Caravel
     /// </summary>
     public abstract class CaravelApp : Game
     {
-        #region Properties
+#region Properties
         public static CaravelApp Instance;
         
         public bool Quitting
@@ -94,19 +95,18 @@ namespace Caravel
         private SpriteBatch                 m_SpriteBatch;
         private Dictionary<string, string>  m_TextResource;
         
-        #endregion
+#endregion
 
         public CaravelApp(int screenWidth, int screenHeight)
         {
             m_Graphics = new GraphicsDeviceManager(this);
             m_Graphics.PreferredBackBufferWidth = screenWidth;
             m_Graphics.PreferredBackBufferHeight = screenHeight;
-            Content.RootDirectory = "Assets";
             Window.Title = "Loading";
             Instance = this;
         }
 
-        #region MonoGame Functions
+#region MonoGame Functions
         protected sealed override void Initialize()
         {
             Cv_Debug debug = new Cv_Debug();
@@ -129,7 +129,7 @@ namespace Caravel
             RegisterEngineEvents();
             VRegisterGameEvents();
 
-            ResourceManager = new Cv_ResourceManager();
+            ResourceManager = new Cv_ResourceManager("Assets.zip");
             if (!ResourceManager.Init())
             {
                 Cv_Debug.Error("Unable to initialize resource manager.");
@@ -210,6 +210,7 @@ namespace Caravel
         
         protected sealed override void Update(GameTime gameTime)
         {
+			Cv_Debug.Error("ISTO É UM ERRO");
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Cv_Debug.Info("Exiting Game.");
@@ -229,9 +230,9 @@ namespace Caravel
 
             base.Draw(gameTime);
         }
-        #endregion
+#endregion
 
-        #region Functions to be defined by the game
+#region Functions to be defined by the game
         protected abstract string           VGetGameTitle();
         protected abstract string           VGetGameAppDirectory();
         protected abstract bool             VInitialize();
@@ -241,9 +242,9 @@ namespace Caravel
         protected abstract Cv_GameView[]    VCreateGameViews();
         protected abstract Cv_GamePhysics   VCreateGamePhysics();
         protected abstract void             VRegisterGameEvents();
-        #endregion
+#endregion
 
-        #region CaravelApp functions
+#region CaravelApp functions
         //TODO(JM): GetRendererImpl()
 
         public void AbortGame()
@@ -294,6 +295,6 @@ namespace Caravel
             finalPath += Path.DirectorySeparatorChar;
             return finalPath;
         }
-        #endregion
+#endregion
     }
 }

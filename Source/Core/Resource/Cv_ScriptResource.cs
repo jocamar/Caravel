@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace Caravel.Core
+namespace Caravel.Core.Resource
 {
     public class Cv_ScriptResource : Cv_Resource
     {

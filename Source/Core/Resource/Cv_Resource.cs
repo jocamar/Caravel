@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Caravel.Core
+namespace Caravel.Core.Resource
 {
     public abstract class Cv_Resource
     {

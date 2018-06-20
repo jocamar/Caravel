@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
+using Caravel.Core.Resource;
 using Caravel.Debugging;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;

@@ -46,15 +46,12 @@
     <Reference Include="NVorbis">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\NVorbis.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\Source\CaravelApp.cs">
-      <Link>Source\CaravelApp.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\Program.cs">
-      <Link>Source\Program.cs</Link>
-    </Compile>
     <Compile Include="..\Source\Core\Cv_GameLogic.cs">
       <Link>Source\Core\Cv_GameLogic.cs</Link>
     </Compile>
@@ -79,29 +76,14 @@
     <Compile Include="..\Source\Core\Cv_ProcessManager.cs">
       <Link>Source\Core\Cv_ProcessManager.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_Resource.cs">
-      <Link>Source\Core\Cv_Resource.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\Core\Cv_ResourceCache.cs">
-      <Link>Source\Core\Cv_ResourceCache.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\Core\Cv_ResourceManager.cs">
-      <Link>Source\Core\Cv_ResourceManager.cs</Link>
-    </Compile>
     <Compile Include="..\Source\Core\Cv_SceneController.cs">
       <Link>Source\Core\Cv_SceneController.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_ScriptManager.cs">
       <Link>Source\Core\Cv_ScriptManager.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_ScriptResource.cs">
-      <Link>Source\Core\Cv_ScriptResource.cs</Link>
-    </Compile>
     <Compile Include="..\Source\Core\Cv_Transform.cs">
       <Link>Source\Core\Cv_Transform.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\Core\Cv_XmlResource.cs">
-      <Link>Source\Core\Cv_XmlResource.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_Entity.cs">
       <Link>Source\Core\Entity\Cv_Entity.cs</Link>
@@ -136,6 +118,30 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_TransformEntity.cs">
       <Link>Source\Core\Events\Cv_Event_TransformEntity.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_Resource.cs">
+      <Link>Source\Core\Resource\Cv_Resource.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_ResourceBundle.cs">
+      <Link>Source\Core\Resource\Cv_ResourceBundle.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_ResourceManager.cs">
+      <Link>Source\Core\Resource\Cv_ResourceManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_ScriptResource.cs">
+      <Link>Source\Core\Resource\Cv_ScriptResource.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_XmlResource.cs">
+      <Link>Source\Core\Resource\Cv_XmlResource.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_ZipResourceBundle.cs">
+      <Link>Source\Core\Resource\Cv_ZipResourceBundle.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\CaravelApp.cs">
+      <Link>Source\CaravelApp.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Program.cs">
+      <Link>Source\Program.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Debugging\Cv_Debug.cs">
       <Link>Source\Debugging\Cv_Debug.cs</Link>
     </Compile>
@@ -151,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
