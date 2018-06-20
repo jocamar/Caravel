@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Caravel.Debugging;
 using static Caravel.Core.Cv_ResourceManager;
 
@@ -54,7 +55,16 @@ namespace Caravel.Core
 
         public string[] Match(string pattern)
         {
-            return null;
+            var matchedResources = new List<string>();
+            foreach(var r in m_ResourceList)
+            {
+                if (Regex.IsMatch(r.File, pattern))
+                {
+                    matchedResources.Add(r.File);
+                }
+            }
+
+            return matchedResources.ToArray();
         }
 
         private Cv_Resource Load(string resource)

@@ -181,7 +181,7 @@ namespace Caravel.Core
         internal void Init()
         {
             m_EntityFactory = VCreateEntityFactory();
-            //m_SceneController.Init(Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml"));
+            m_SceneController.Init(Cv_ResourceManager.Instance.GetResourceList<Cv_XmlResource>("scenes/*.xml"));
             Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntity);
         }
 
