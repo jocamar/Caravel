@@ -60,7 +60,9 @@ namespace Caravel.Core.Resource
 			{
 				if (Path.GetExtension(m_sBundleLocation) == ".zip")
 				{
-					Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+					#if !_MONO_
+						Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+					#endif
 					FileStream fs = File.OpenRead(m_sBundleLocation);
 					var zipFile = new ZipFile(fs);
 

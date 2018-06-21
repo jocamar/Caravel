@@ -16,7 +16,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\Bin\Debug\mono\</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;_MONO_</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -141,6 +141,12 @@
     </Compile>
     <Compile Include="..\Source\Program.cs">
       <Link>Source\Program.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_RawTextureResource.cs">
+      <Link>Source\Core\Resource\Cv_RawTextureResource.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_ResourceData.cs">
+      <Link>Source\Core\Resource\Cv_ResourceData.cs</Link>
     </Compile>
     <Compile Include="..\Source\Debugging\Cv_Debug.cs">
       <Link>Source\Debugging\Cv_Debug.cs</Link>

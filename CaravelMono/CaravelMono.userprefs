@@ -1,15 +1,21 @@
 ﻿<Properties StartupItem="CaravelMono.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="../Source/CaravelApp.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="../Source/Core/Resource/Cv_ZipResourceBundle.cs">
     <Files>
-      <File FileName="../Source/Program.cs" Line="17" Column="39" />
-      <File FileName="../Source/Debugging/Cv_SDL.cs" Line="58" Column="53" />
-      <File FileName="../Source/TestSamples/SimpleGame.cs" Line="7" Column="9" />
+      <File FileName="../Source/Program.cs" Line="1" Column="1" />
+      <File FileName="../Source/Debugging/Cv_SDL.cs" Line="1" Column="1" />
+      <File FileName="../Source/TestSamples/SimpleGame.cs" Line="1" Column="1" />
       <File FileName="../Source/CaravelApp.cs" Line="1" Column="1" />
+      <File FileName="../Source/Debugging/Cv_Debug.cs" Line="1" Column="1" />
+      <File FileName="../Source/Core/Resource/Cv_ZipResourceBundle.cs" Line="63" Column="17" />
+      <File FileName="packages.config" Line="4" Column="12" />
+      <File FileName="Properties/AssemblyInfo.cs" Line="11" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/home/joaomarinheiro/Caravel/Source/Core/Resource/Cv_ZipResourceBundle.cs" line="107" column="18" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

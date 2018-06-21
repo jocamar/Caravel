@@ -8,7 +8,7 @@ using Android.App;
 // Information about this assembly is defined by the following attributes.
 // Change them to the values specific to your project.
 
-#if __MonoCS__
+#if _MONO_
 [assembly: AssemblyTitle ("CaravelMono")]
 [assembly: AssemblyDescription ("")]
 [assembly: AssemblyConfiguration ("")]
