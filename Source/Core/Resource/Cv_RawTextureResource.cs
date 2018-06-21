@@ -1,18 +1,15 @@
 using System.IO;
-using System.Xml;
 using Caravel.Debugging;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Caravel.Core.Resource
 {
-    public struct Cv_XmlResource : Cv_Resource
+    public struct Cv_RawTextureResource : Cv_Resource
     {
-        public class Cv_XmlData : Cv_ResourceData
+        public class Cv_TextureData : Cv_ResourceData
         {
-            public XmlDocument Document {
-                get; internal set;
-            }
-
-            public XmlElement RootNode {
+            public Texture2D Texture
+            {
                 get; internal set;
             }
 
@@ -20,7 +17,7 @@ namespace Caravel.Core.Resource
             {
                 get
                 {
-                    return Document.OuterXml.Length;
+                    return 0;
                 }
             }
         }
@@ -31,30 +28,34 @@ namespace Caravel.Core.Resource
 
         public bool VLoad(Stream resourceStream, out int size, Cv_ResourceBundle bundle)
         {
-            if (resourceStream == null)
+            if ( resourceStream == null )
             {
                 Cv_Debug.Error("Invalid resource stream.");
                 size = 0;
                 return false;
             }
 
-            var doc = new XmlDocument();
-            doc.Load(resourceStream);
+            var texture = Texture2D.FromStream(CaravelApp.Instance.GraphicsDevice, resourceStream);
 
-            var newXmlData = new Cv_XmlData();
-            newXmlData.Document = doc;
-            newXmlData.RootNode = (XmlElement) doc.FirstChild;
+            var resData = new Cv_TextureData();
+            resData.Texture = texture;
+            ResourceData = resData;
 
-            ResourceData = newXmlData;
+            size = 0;
 
-            size = doc.OuterXml.Length;
             resourceStream.Dispose();
+            
             return true;
         }
 
         public bool VIsManuallyManaged()
         {
             return true;
+        }
+
+        public Cv_TextureData GetTexture()
+        {
+            return (Cv_TextureData) ResourceData;
         }
     }
 }

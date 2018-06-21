@@ -256,6 +256,36 @@
         "build": {
           "build/netstandard2.0/NETStandard.Library.targets": {}
         }
+      },
+      "SharpZipLib.NETStandard/1.0.7": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1"
+        },
+        "compile": {
+          "lib/netstandard1.3/ICSharpCode.SharpZipLib.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/ICSharpCode.SharpZipLib.dll": {}
+        }
+      },
+      "System.Text.Encoding.CodePages/4.4.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "2.0.0"
+        },
+        "compile": {
+          "ref/netstandard2.0/System.Text.Encoding.CodePages.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Text.Encoding.CodePages.dll": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/netcoreapp2.0/System.Text.Encoding.CodePages.dll": {
+            "assetType": "runtime",
+            "rid": "win"
+          }
+        }
       }
     }
   },
@@ -594,6 +624,40 @@
       "type": "package",
       "path": "monogame.content.builder/3.7.0.4",
       "files": [
+        "build/MGCB.zip",
+        "build/MGCB/MonoGame.Content.Builder.Windows.nuspec",
+        "build/MGCB/[Content_Types].xml",
+        "build/MGCB/_rels/.rels",
+        "build/MGCB/build/ATI.TextureConverter.dll",
+        "build/MGCB/build/Assimp64.dll",
+        "build/MGCB/build/AssimpNet.dll",
+        "build/MGCB/build/CppNet.dll",
+        "build/MGCB/build/FreeImage.dll",
+        "build/MGCB/build/FreeImageNET.dll",
+        "build/MGCB/build/MGCB.exe",
+        "build/MGCB/build/MGCB.exe.config",
+        "build/MGCB/build/MGCB.xml",
+        "build/MGCB/build/MonoGame.Framework.Content.Pipeline.dll",
+        "build/MGCB/build/MonoGame.Framework.Content.Pipeline.xml",
+        "build/MGCB/build/MonoGame.Framework.dll",
+        "build/MGCB/build/MonoGame.Framework.xml",
+        "build/MGCB/build/Nvidia.TextureTools.dll",
+        "build/MGCB/build/PVRTexLibNET.dll",
+        "build/MGCB/build/PVRTexLibWrapper.dll",
+        "build/MGCB/build/SharpDX.D3DCompiler.dll",
+        "build/MGCB/build/SharpDX.DXGI.dll",
+        "build/MGCB/build/SharpDX.Direct2D1.dll",
+        "build/MGCB/build/SharpDX.Direct3D11.dll",
+        "build/MGCB/build/SharpDX.MediaFoundation.dll",
+        "build/MGCB/build/SharpDX.XAudio2.dll",
+        "build/MGCB/build/SharpDX.XInput.dll",
+        "build/MGCB/build/SharpDX.dll",
+        "build/MGCB/build/SharpFont.dll",
+        "build/MGCB/build/ffmpeg.exe",
+        "build/MGCB/build/ffprobe.exe",
+        "build/MGCB/build/freetype6.dll",
+        "build/MGCB/build/libmojoshader_64.dll",
+        "build/MGCB/build/nvtt.dll",
         "build/MonoGame.Content.Builder.targets",
         "monogame.content.builder.3.7.0.4.nupkg.sha512",
         "monogame.content.builder.nuspec",
@@ -756,13 +820,77 @@
         "netstandard.library.2.0.0.nupkg.sha512",
         "netstandard.library.nuspec"
       ]
+    },
+    "SharpZipLib.NETStandard/1.0.7": {
+      "sha512": "mYKPizF2CY32RQB8FITYy0e30gVgItFA63SFquruaxq+votwL1T+yOfssK10v4enBcxklr8ks48hS1emw5TTXg==",
+      "type": "package",
+      "path": "sharpziplib.netstandard/1.0.7",
+      "files": [
+        "lib/net45/ICSharpCode.SharpZipLib.dll",
+        "lib/net45/ICSharpCode.SharpZipLib.pdb",
+        "lib/net45/ICSharpCode.SharpZipLib.xml",
+        "lib/netstandard1.3/ICSharpCode.SharpZipLib.deps.json",
+        "lib/netstandard1.3/ICSharpCode.SharpZipLib.dll",
+        "lib/netstandard1.3/ICSharpCode.SharpZipLib.pdb",
+        "lib/netstandard1.3/ICSharpCode.SharpZipLib.xml",
+        "sharpziplib.netstandard.1.0.7.nupkg.sha512",
+        "sharpziplib.netstandard.nuspec"
+      ]
+    },
+    "System.Text.Encoding.CodePages/4.4.0": {
+      "sha512": "6JX7ZdaceBiLKLkYt8zJcp4xTJd1uYyXXEkPw6mnlUIjh1gZPIVKPtRXPmY5kLf6DwZmf5YLwR3QUrRonl7l0A==",
+      "type": "package",
+      "path": "system.text.encoding.codepages/4.4.0",
+      "files": [
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net46/System.Text.Encoding.CodePages.dll",
+        "lib/net461/System.Text.Encoding.CodePages.dll",
+        "lib/netstandard1.3/System.Text.Encoding.CodePages.dll",
+        "lib/netstandard2.0/System.Text.Encoding.CodePages.dll",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/netstandard1.3/System.Text.Encoding.CodePages.dll",
+        "ref/netstandard1.3/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/de/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/es/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/fr/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/it/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/ja/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/ko/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/ru/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/zh-hans/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard1.3/zh-hant/System.Text.Encoding.CodePages.xml",
+        "ref/netstandard2.0/System.Text.Encoding.CodePages.dll",
+        "ref/netstandard2.0/System.Text.Encoding.CodePages.xml",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._",
+        "runtimes/win/lib/net461/System.Text.Encoding.CodePages.dll",
+        "runtimes/win/lib/netcoreapp2.0/System.Text.Encoding.CodePages.dll",
+        "runtimes/win/lib/netstandard1.3/System.Text.Encoding.CodePages.dll",
+        "runtimes/win/lib/netstandard2.0/System.Text.Encoding.CodePages.dll",
+        "system.text.encoding.codepages.4.4.0.nupkg.sha512",
+        "system.text.encoding.codepages.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
       "Microsoft.NETCore.App >= 2.0.0",
       "MonoGame.Content.Builder >= 3.7.0.4",
-      "MonoGame.Framework.DesktopGL.Core >= 3.7.0.7"
+      "MonoGame.Framework.DesktopGL.Core >= 3.7.0.7",
+      "SharpZipLib.NETStandard >= 1.0.7",
+      "System.Text.Encoding.CodePages >= 4.4.0"
     ]
   },
   "packageFolders": {
@@ -817,6 +945,14 @@
           "MonoGame.Framework.DesktopGL.Core": {
             "target": "Package",
             "version": "[3.7.0.7, )"
+          },
+          "SharpZipLib.NETStandard": {
+            "target": "Package",
+            "version": "[1.0.7, )"
+          },
+          "System.Text.Encoding.CodePages": {
+            "target": "Package",
+            "version": "[4.4.0, )"
           }
         },
         "imports": [

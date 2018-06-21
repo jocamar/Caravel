@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Caravel.Debugging;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Xna.Framework;
@@ -21,7 +23,17 @@ namespace Caravel.Core.Resource
 		{
 			get
 			{
-				return 0;
+				int numFiles = 0;
+
+				foreach (ZipEntry ze in m_ZipFile)
+				{
+					if (!ze.IsDirectory)
+					{
+						numFiles++;
+					}
+				}
+
+				return numFiles;
 			}
 		}
 
@@ -29,26 +41,39 @@ namespace Caravel.Core.Resource
 		{
 			get
 			{
-				return new string[0];
+				List<string> files = new List<string>();
+				foreach (ZipEntry ze in m_ZipFile)
+				{
+					if (!ze.IsDirectory)
+					{
+						files.Add(ze.Name);
+					}
+				}
+
+				return files.ToArray();
 			}
 		}
 
-		public Cv_ZipResourceBundle(GameServiceContainer gsc, string fileName) : base(gsc, fileName)
+		public Cv_ZipResourceBundle(string fileName) : base(CaravelApp.Instance.Services, fileName)
 		{
 			if (File.Exists(m_sBundleLocation))
 			{
 				if (Path.GetExtension(m_sBundleLocation) == ".zip")
 				{
-					var zipFile = ZipFile.Create(m_sBundleLocation);
+					Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+					FileStream fs = File.OpenRead(m_sBundleLocation);
+					var zipFile = new ZipFile(fs);
 
 					if (zipFile != null)
 					{
 						m_ZipFile = zipFile;
+						m_ZipFile.IsStreamOwner = true;
 					}
 					else
 					{
 						Cv_Debug.Error("Unable to open assets file.");
 					}
+					
 				}
 				else
 				{
@@ -61,19 +86,17 @@ namespace Caravel.Core.Resource
 			}
 		}
 
+		~Cv_ZipResourceBundle()
+		{
+			if (m_ZipFile != null)
+			{
+				m_ZipFile.Close();
+			}
+		}
+
 		public override long VGetResourceSize(string resourceFile)
 		{
 			return m_ZipFile.GetEntry(resourceFile).Size;
-		}
-
-		public override Resource VGetResource<Resource>(string resourceFile)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override int VPreload(string pattern, Cv_ResourceManager.LoadProgressDelegate progressCallback)
-		{
-			throw new System.NotImplementedException();
 		}
 
 		protected override Stream OpenStream(string assetName)

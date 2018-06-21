@@ -29,9 +29,12 @@ namespace Caravel.Core.Resource
 			m_sBundleLocation = bundleLocation;
 		}
 
-		public abstract Resource VGetResource<Resource>(string resourceFile) where Resource : Cv_Resource, new();
+		public Stream GetResourceStream(string resourceFile)
+		{
+			return OpenStream(resourceFile);
+		}
+
 		public abstract long VGetResourceSize(string resourceFile);
-		public abstract int VPreload(string pattern, LoadProgressDelegate progressCallback);
 		protected abstract override Stream OpenStream(string assetName);
     }
 }

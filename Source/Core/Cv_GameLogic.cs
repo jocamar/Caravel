@@ -182,7 +182,7 @@ namespace Caravel.Core
         internal void Init()
         {
             m_EntityFactory = VCreateEntityFactory();
-            m_SceneController.Init(Cv_ResourceManager.Instance.GetResourceList<Cv_XmlResource>("scenes/*.xml"));
+            m_SceneController.Init(Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml"));
             Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntity);
         }
 
@@ -297,7 +297,7 @@ namespace Caravel.Core
         public bool LoadScene(string sceneResource)
         {
             var resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource);
-            var root = resource.RootNode;
+            var root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
 
             if (root == null)
             {

@@ -23,7 +23,7 @@ namespace Caravel.Core.Entity
         protected internal Cv_Entity CreateEntity(string entityResource, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
         {
             var resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityResource);
-            XmlElement root = resource.RootNode;
+            XmlElement root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
 
             if (root == null)
             {

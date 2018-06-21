@@ -129,8 +129,8 @@ namespace Caravel
             RegisterEngineEvents();
             VRegisterGameEvents();
 
-            ResourceManager = new Cv_ResourceManager("Assets.zip");
-            if (!ResourceManager.Init())
+            ResourceManager = new Cv_ResourceManager();
+            if (!ResourceManager.Init("Assets.zip"))
             {
                 Cv_Debug.Error("Unable to initialize resource manager.");
                 Exit();
@@ -200,6 +200,8 @@ namespace Caravel
             // Create a new SpriteBatch, which can be used to draw textures.
             m_SpriteBatch = new SpriteBatch(GraphicsDevice);
 
+            var res = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>("scenes/testScene.xml");
+
             //TODO(JM): use this.Content to load game content here
         }
         
@@ -210,7 +212,7 @@ namespace Caravel
         
         protected sealed override void Update(GameTime gameTime)
         {
-			Cv_Debug.Error("ISTO É UM ERRO");
+            var res = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>("scenes/testScene.xml");
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 Cv_Debug.Info("Exiting Game.");
@@ -225,6 +227,13 @@ namespace Caravel
         protected sealed override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
+
+            var res = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>("profile.png");
+            var tex = res.GetTexture().Texture;
+
+            m_SpriteBatch.Begin();
+            m_SpriteBatch.Draw(tex, Vector2.Zero, Microsoft.Xna.Framework.Color.White);
+            m_SpriteBatch.End();
 
             //TODO(JM): Add drawing code here
 
