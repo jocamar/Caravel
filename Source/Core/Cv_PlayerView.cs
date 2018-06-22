@@ -65,7 +65,7 @@ namespace Caravel.Core
         private List<Cv_ScreenElement> m_ScreenElements;
         private bool m_bAreSoundsPaused;
         private Cv_SceneElement m_Scene;
-        //private Cv_CameraNode m_Camera;
+        private Cv_CameraNode m_Camera;
         //private Cv_Console m_Console;
 
         public Cv_PlayerView(PlayerIndex player)
@@ -79,10 +79,10 @@ namespace Caravel.Core
             m_ScreenElements = new List<Cv_ScreenElement>();
             m_bAreSoundsPaused = false;
             m_Scene = new Cv_SceneElement(m_SpriteBatch);
-            //m_Camera = new Cv_Camera()
+            m_Camera = new Cv_CameraNode();
 
-            //m_Scene.AddNode(Cv_EntityID.INVALID_ENTITY, m_Camera);
-            //m_Sece.Camera = m_Camera;
+            m_Scene.AddNode(Cv_EntityID.INVALID_ENTITY, m_Camera);
+            m_Scene.Camera = m_Camera;
         }
 
         ~Cv_PlayerView()

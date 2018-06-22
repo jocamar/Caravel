@@ -27,6 +27,11 @@ namespace Caravel.Core
             }
         }
 
+		public static Cv_Transform Multiply(Cv_Transform t1, Cv_Transform t2)
+		{
+			return null;
+		}
+
         public Cv_Transform()
         {
             Position = Vector3.Zero;

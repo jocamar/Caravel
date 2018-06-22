@@ -52,6 +52,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Source\CaravelApp.cs">
+      <Link>Source\CaravelApp.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Program.cs">
+      <Link>Source\Program.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Cv_CameraNode.cs">
+      <Link>Source\Core\Cv_CameraNode.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Cv_GameLogic.cs">
       <Link>Source\Core\Cv_GameLogic.cs</Link>
     </Compile>
@@ -70,6 +79,9 @@
     <Compile Include="..\Source\Core\Cv_NetworkManager.cs">
       <Link>Source\Core\Cv_NetworkManager.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Cv_PlayerView.cs">
+      <Link>Source\Core\Cv_PlayerView.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Cv_Process.cs">
       <Link>Source\Core\Cv_Process.cs</Link>
     </Compile>
@@ -78,6 +90,15 @@
     </Compile>
     <Compile Include="..\Source\Core\Cv_SceneController.cs">
       <Link>Source\Core\Cv_SceneController.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Cv_SceneElement.cs">
+      <Link>Source\Core\Cv_SceneElement.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Cv_SceneNode.cs">
+      <Link>Source\Core\Cv_SceneNode.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Cv_ScreenElement.cs">
+      <Link>Source\Core\Cv_ScreenElement.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_ScriptManager.cs">
       <Link>Source\Core\Cv_ScriptManager.cs</Link>
@@ -118,11 +139,17 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_TransformEntity.cs">
       <Link>Source\Core\Events\Cv_Event_TransformEntity.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_RawTextureResource.cs">
+      <Link>Source\Core\Resource\Cv_RawTextureResource.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_Resource.cs">
       <Link>Source\Core\Resource\Cv_Resource.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_ResourceBundle.cs">
       <Link>Source\Core\Resource\Cv_ResourceBundle.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_ResourceData.cs">
+      <Link>Source\Core\Resource\Cv_ResourceData.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_ResourceManager.cs">
       <Link>Source\Core\Resource\Cv_ResourceManager.cs</Link>
@@ -135,18 +162,6 @@
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_ZipResourceBundle.cs">
       <Link>Source\Core\Resource\Cv_ZipResourceBundle.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\CaravelApp.cs">
-      <Link>Source\CaravelApp.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\Program.cs">
-      <Link>Source\Program.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\Core\Resource\Cv_RawTextureResource.cs">
-      <Link>Source\Core\Resource\Cv_RawTextureResource.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\Core\Resource\Cv_ResourceData.cs">
-      <Link>Source\Core\Resource\Cv_ResourceData.cs</Link>
     </Compile>
     <Compile Include="..\Source\Debugging\Cv_Debug.cs">
       <Link>Source\Debugging\Cv_Debug.cs</Link>
