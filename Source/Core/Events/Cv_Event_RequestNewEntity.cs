@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Events
@@ -20,12 +21,14 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public int GameViewID
+        public Cv_GameViewID GameViewID
         {
             get; private set;
         }
 
-        public Cv_Event_RequestNewEntity(string entityResource, Cv_Transform initialTransform, Cv_EntityID serverEntityID = Cv_EntityID.INVALID_ENTITY, int gameViewId = 0)
+        public Cv_Event_RequestNewEntity(string entityResource, Cv_Transform initialTransform,
+                                            Cv_EntityID serverEntityID = Cv_EntityID.INVALID_ENTITY,
+                                            Cv_GameViewID gameViewId = Cv_GameViewID.INVALID_GAMEVIEW)
         {
             EntityResource = entityResource;
             InitialTransform = initialTransform;

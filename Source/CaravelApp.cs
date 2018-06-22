@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using static Caravel.Core.Cv_GameView;
 
 namespace Caravel
 {
@@ -38,6 +39,11 @@ namespace Caravel
             get { return m_GameLogic; }
         }
 
+        public Cv_GameOptions GameOptions
+        {
+            get; private set;
+        }
+
         public bool EditorRunning
         {
             get { return m_bIsEditorRunning; }
@@ -45,8 +51,8 @@ namespace Caravel
 
         public Vector2 ScreenSize
         {
-            get { return new Vector2(m_Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                                        m_Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight); }
+            get { return new Vector2(Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                                        Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight); }
         }
 
         public string SaveGameDirectory
@@ -60,9 +66,7 @@ namespace Caravel
         protected bool m_bIsEditorRunning;
         protected string m_sSaveGameDirectory;
 
-        protected Cv_GameLogic              m_GameLogic;
-        protected Cv_GameOptions            m_GameOptions;
-
+        protected Cv_GameLogic m_GameLogic;
         protected Cv_Debug m_Debug;
 
         // Managers
@@ -91,17 +95,20 @@ namespace Caravel
             get; private set;
         }
 
-        private GraphicsDeviceManager       m_Graphics;
-        private SpriteBatch                 m_SpriteBatch;
+        public GraphicsDeviceManager Graphics
+        {
+            get; private set;
+        }
+
         private Dictionary<string, string>  m_TextResource;
         
 #endregion
 
         public CaravelApp(int screenWidth, int screenHeight)
         {
-            m_Graphics = new GraphicsDeviceManager(this);
-            m_Graphics.PreferredBackBufferWidth = screenWidth;
-            m_Graphics.PreferredBackBufferHeight = screenHeight;
+            Graphics = new GraphicsDeviceManager(this);
+            Graphics.PreferredBackBufferWidth = screenWidth;
+            Graphics.PreferredBackBufferHeight = screenHeight;
             Window.Title = "Loading";
             Instance = this;
         }
@@ -192,16 +199,13 @@ namespace Caravel
 
             m_bIsRunning = true;
 
+            VInitialize();
+
             base.Initialize();
         }
         
         protected sealed override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            m_SpriteBatch = new SpriteBatch(GraphicsDevice);
-
-            var res = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>("scenes/testScene.xml");
-
             //TODO(JM): use this.Content to load game content here
         }
         
@@ -213,7 +217,9 @@ namespace Caravel
         protected sealed override void Update(GameTime gameTime)
         {
             var res = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>("scenes/testScene.xml");
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
+                    || Keyboard.GetState().IsKeyDown(Keys.Escape)
+                    || m_bQuitting)
             {
                 Cv_Debug.Info("Exiting Game.");
                 Exit();
@@ -228,14 +234,12 @@ namespace Caravel
         {
             GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
 
-            var res = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>("profile.png");
-            var tex = res.GetTexture().Texture;
+            foreach (var gv in m_GameLogic.GameViews)
+            {
+                gv.VOnRender(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+            }
 
-            m_SpriteBatch.Begin();
-            m_SpriteBatch.Draw(tex, Vector2.Zero, Microsoft.Xna.Framework.Color.White);
-            m_SpriteBatch.End();
-
-            //TODO(JM): Add drawing code here
+            m_GameLogic.VRenderDiagnostics();
 
             base.Draw(gameTime);
         }
@@ -244,13 +248,13 @@ namespace Caravel
 #region Functions to be defined by the game
         protected abstract string           VGetGameTitle();
         protected abstract string           VGetGameAppDirectory();
-        protected abstract bool             VInitialize();
-        protected abstract bool             VLoadGame();
         protected abstract bool             VCheckGameSystemResources();
         protected abstract Cv_GameLogic     VCreateGameLogic();
         protected abstract Cv_GameView[]    VCreateGameViews();
         protected abstract Cv_GamePhysics   VCreateGamePhysics();
         protected abstract void             VRegisterGameEvents();
+        protected internal abstract bool    VInitialize();
+        protected internal abstract bool    VLoadGame();
 #endregion
 
 #region CaravelApp functions
@@ -271,10 +275,22 @@ namespace Caravel
             return "";
         }
 
-        /*public Cv_PlayerView GetPlayerView(PlayerIndex player)
+        public Cv_PlayerView GetPlayerView(PlayerIndex player)
         {
+            foreach (var gv in m_GameLogic.GameViews)
+            {
+                if (gv.Type == Cv_GameViewType.Player)
+                {
+                    var pView = (Cv_PlayerView) gv;
+                    if (pView.PlayerIdx == player)
+                    {
+                        return pView;
+                    }
+                }
+            }
+
             return null;
-        }*/
+        }
 
         public bool AttachAsClient()
         {

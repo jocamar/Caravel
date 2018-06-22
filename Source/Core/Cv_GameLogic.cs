@@ -5,6 +5,7 @@ using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
+using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;
 
@@ -109,11 +110,6 @@ namespace Caravel.Core
             get; private set;
         }
 
-        protected Cv_GameView[] GameViews
-        {
-            get { return m_GameViews.ToArray(); }
-        }
-
         protected Cv_GamePhysics GamePhysics
         {
             get; private set;
@@ -129,6 +125,11 @@ namespace Caravel.Core
             get; private set;
         }
 #endregion
+
+        protected internal Cv_GameView[] GameViews
+        {
+            get { return m_GameViews.ToArray(); }
+        }
 
         protected NewEventDelegate OnTransformEntity
         {
@@ -280,11 +281,16 @@ namespace Caravel.Core
 #region GameView methods
         public void AddView(Cv_GameView view, Cv_EntityID entityId = 0)
         {
+            Cv_GameViewID gvID = (Cv_GameViewID) m_GameViews.Count;
+
+            m_GameViews.Add(view);
+            view.VOnAttach(gvID, entityId);
             VGameOnAddView(view, entityId);
         }
 
         public void RemoveView(Cv_GameView view)
         {
+            m_GameViews.Remove(view);
             VGameOnRemoveView(view);
         }
 #endregion
@@ -340,11 +346,11 @@ namespace Caravel.Core
 
             foreach(var gv in m_GameViews)
             {
-                /*if (gv.Type == Cv_GameViewType.Player)
+                if (gv.Type == Cv_GameViewType.Player)
                 {
                     var playerView = (Cv_PlayerView) gv;
                     playerView.LoadGame(root);
-                }*/
+                }
             }
 
             if (!VGameOnLoadScene(root))
@@ -373,7 +379,53 @@ namespace Caravel.Core
 
         public void ChangeState(Cv_GameState newState)
         {
+            //var changedStateEvt = new Cv_Event_NewState(State, newState);
+
+            if (newState == Cv_GameState.WaitingForPlayers)
+            {
+                ExpectedPlayers = 1; //NOTE(JM): this must change for splitscreen
+                //ExpectedRemotePlayers = Caravel.GameOptions.ExpectedPlayers - ExpectedPlayers;
+                //ExpectedAI = Caravel.GameOptions.NumAI;
+
+                /*if (!string.IsNullOrEmpty(Caravel.GameOptions.GameHost))
+                {
+                    IsProxy = true;
+                    ExpectedAI = 0;
+                    ExpectedRemotePlayers = 0;
+
+                    if (!Caravel.AttachAsClient())
+                    {
+                        ChangeState(Cv_GameState.MainMenu);
+                        return;
+                    }
+                }
+                else if (ExpectedRemotePlayers > 0)
+                {
+                    //Add socket on GameOptions.ListenPort
+                }*/
+            }
+            else if (newState == Cv_GameState.LoadingGameEnvironment)
+            {
+                State = newState;
+                VGameOnChangeState(newState);
+                //Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
+
+                if (!Caravel.VLoadGame())
+                {
+                    Cv_Debug.Error("Error loading game.");
+                    Caravel.AbortGame();
+                    return;
+                }
+                else
+                {
+                    ChangeState(Cv_GameState.WaitingForPlayersToLoadEnvironment);
+                    return;
+                }
+            }
+
+            State = newState;
             VGameOnChangeState(newState);
+            //Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
         }
 
         public void VRenderDiagnostics()
@@ -418,6 +470,58 @@ namespace Caravel.Core
 
         internal void OnUpdate(float time, float timeElapsed)
         {
+            switch (State)
+            {
+                case Cv_GameState.Initializing:
+                    ChangeState(Cv_GameState.MainMenu);
+                    break;
+                case Cv_GameState.MainMenu:
+                    break;
+                case Cv_GameState.LoadingGameEnvironment:
+                    break;
+                case Cv_GameState.WaitingForPlayersToLoadEnvironment:
+                    if (ExpectedPlayers + ExpectedRemotePlayers == HumanPlayersLoaded)
+                    {
+                        ChangeState(Cv_GameState.SpawningPlayerEntities);
+                    }
+                    break;
+                case Cv_GameState.SpawningPlayerEntities:
+                    ChangeState(Cv_GameState.Running);
+                    break;
+                case Cv_GameState.WaitingForPlayers:
+                    if (ExpectedPlayers + ExpectedRemotePlayers == HumanPlayersAttached)
+                    {
+                        //if (!string.IsNullOrEmpty(Caravel.GameOptions.Level))
+                        //{
+                            ChangeState(Cv_GameState.LoadingGameEnvironment);
+                        //}*/
+                    }
+                    break;
+                case Cv_GameState.Running:
+                    //m_pProcessManager->UpdateProcesses(deltaMilliseconds);
+                    //TODO(JM): Update ProcessManager in Caravel Update
+
+                    if (GamePhysics != null && !IsProxy)
+                    {
+                        //GamePhysics.VOnUpdate(timeElapsed);
+                        //GamePhysics.SyncVisibleScene();
+                    }
+                    break;
+                default:
+                    Cv_Debug.Error("Unrecognized state.");
+                    break;
+            }
+
+            foreach (var gv in GameViews)
+            {
+                gv.VOnUpdate(time, timeElapsed);
+            }
+
+            foreach (var e in Entities)
+            {
+                e.Value.OnUpdate(timeElapsed);
+            }
+
             VGameOnUpdate(time, timeElapsed);
         }
 

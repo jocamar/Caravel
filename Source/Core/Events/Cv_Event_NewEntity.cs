@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Events
@@ -10,12 +11,12 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public int GameViewID
+        public Cv_GameViewID GameViewID
         {
             get; private set;
         }
 
-        public Cv_Event_NewEntity(Cv_EntityID entityID, int gameViewId = 0)
+        public Cv_Event_NewEntity(Cv_EntityID entityID, Cv_GameViewID gameViewId = 0)
         {
             EntityID = entityID;
             GameViewID = gameViewId;

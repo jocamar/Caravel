@@ -1,4 +1,6 @@
 using Caravel.Core;
+using Microsoft.Xna.Framework;
+using static Caravel.Core.Cv_GameLogic;
 
 namespace Caravel.TestSamples
 {
@@ -25,7 +27,11 @@ namespace Caravel.TestSamples
 
         protected override Cv_GameView[] VCreateGameViews()
         {
-            return new Cv_GameView[]{};
+            var gvs = new Cv_GameView[1];
+
+            gvs[0] = new Cv_PlayerView(PlayerIndex.One);
+
+            return gvs;
         }
 
         protected override string VGetGameAppDirectory()
@@ -38,18 +44,20 @@ namespace Caravel.TestSamples
             return "Simple Example Game";
         }
 
-        protected override bool VInitialize()
-        {
-            return true;
-        }
-
-        protected override bool VLoadGame()
-        {
-            return true;
-        }
-
         protected override void VRegisterGameEvents()
         {
+        }
+
+        protected internal override bool VInitialize()
+        {
+            GameLogic.ChangeState(Cv_GameState.LoadingGameEnvironment);
+            return true;
+        }
+
+        protected internal override bool VLoadGame()
+        {
+            GameLogic.LoadScene("scenes/testScene.xml");
+            return true;
         }
     }
 }
