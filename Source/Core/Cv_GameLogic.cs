@@ -204,11 +204,11 @@ namespace Caravel.Core
                 return null;
             }
 
-            if (IsProxy && serverEntityId != Cv_EntityID.INVALID_ENTITY)
+            if (!IsProxy && serverEntityId != Cv_EntityID.INVALID_ENTITY)
             {
                 return null;
             }
-            else if (!IsProxy && serverEntityId == Cv_EntityID.INVALID_ENTITY)
+            else if (IsProxy && serverEntityId == Cv_EntityID.INVALID_ENTITY)
             {
                 return null;
             }

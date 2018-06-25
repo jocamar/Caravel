@@ -62,11 +62,11 @@ namespace Caravel.Core
             }
         }
 
+        internal Cv_SceneElement m_Scene;
         private Cv_GameViewType m_Type = Cv_GameViewType.Player;
         private Cv_GameViewID m_ID;
         private Cv_EntityID m_EntityID;
         private Cv_GameState m_GameState;
-        private Cv_SceneElement m_Scene;
         private bool m_bRunFullSpeed;
         private bool m_bAreSoundsPaused;
         //private Cv_Console m_Console;
@@ -156,6 +156,7 @@ namespace Caravel.Core
                     if (se == m_Scene)
                     {
                         m_Renderer.BeginDraw(Camera);
+                        m_Scene.Camera = Camera;
                     }
                     else
                     {

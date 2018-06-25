@@ -52,7 +52,7 @@ namespace Caravel.Core.Entity
             {
                 float rad;
 
-                rad = float.Parse(positionNode.Attributes["radians"].Value);
+                rad = float.Parse(rotationNode.Attributes["radians"].Value);
 
                 var rotation = rad;
                 Transform.Rotation = rotation;
@@ -63,8 +63,8 @@ namespace Caravel.Core.Entity
             {
                 float x, y;
 
-                x = int.Parse(positionNode.Attributes["x"].Value);
-                y = int.Parse(positionNode.Attributes["y"].Value);
+                x = int.Parse(scaleNode.Attributes["x"].Value);
+                y = int.Parse(scaleNode.Attributes["y"].Value);
 
                 var scale = new Vector2(x,y);
                 Transform.Scale = scale;

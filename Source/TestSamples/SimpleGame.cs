@@ -1,4 +1,5 @@
 using Caravel.Core;
+using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Cv_GameLogic;
 
@@ -6,6 +7,8 @@ namespace Caravel.TestSamples
 {
     public class SimpleGame : CaravelApp
     {
+        Cv_PlayerView pv;
+
         public SimpleGame(int screenWidth, int screenHeight) : base(screenWidth, screenHeight)
         {
         }
@@ -29,7 +32,7 @@ namespace Caravel.TestSamples
         {
             var gvs = new Cv_GameView[1];
 
-            var pv = new Cv_PlayerView(PlayerIndex.One, 640, 360);
+            pv = new Cv_PlayerView(PlayerIndex.One, 640, 360);
             pv.Camera.Position = new Vector3(0, 0, 0);
             gvs[0] = pv;
 
@@ -59,6 +62,9 @@ namespace Caravel.TestSamples
         protected internal override bool VLoadGame()
         {
             GameLogic.LoadScene("scenes/testScene.xml");
+            var entity = GameLogic.CreateEntity("entities/simpleSprite.xml", null);
+            var node = new Cv_SpriteNode(entity.ID, entity.GetComponent<Cv_SpriteComponent>(), entity.GetComponent<Cv_TransformComponent>().Transform);
+            pv.m_Scene.AddNode(entity.ID, node);
             return true;
         }
     }

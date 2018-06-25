@@ -44,11 +44,6 @@ namespace Caravel.Core
 
         public override void VOnRender(float time, float timeElapsed)
         {
-            var res = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>("profile.png");
-            var tex = res.GetTexture();
-            
-            Renderer.Draw(tex.Texture, new Rectangle(-250, -250, 500, 500), Color.White);
-
 			if (m_Root != null && Camera != null)
 			{
 				m_Root.VPreRender(this);
@@ -124,7 +119,7 @@ namespace Caravel.Core
 		{
 			Cv_Transform currTransform = null;
 
-			if (m_TransformStack.Count > 0)
+			if (m_TransformStack.Count <= 0)
 			{
 				currTransform = new Cv_Transform();
 			}
@@ -139,7 +134,6 @@ namespace Caravel.Core
 		public void PopTransform() 
 		{
 			m_TransformStack.RemoveAt(m_TransformStack.Count-1);
-			var transf = m_TransformStack[m_TransformStack.Count-1];
 		}
 
 		bool Pick(Vector2 screenPosition) {

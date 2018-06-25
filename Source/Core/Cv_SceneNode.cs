@@ -114,7 +114,7 @@ namespace Caravel.Core
             Properties.ToWorld = to;
             Properties.FromWorld = from;
             Properties.Name = renderComponent != null ? renderComponent.GetType().Name : "SceneNode";
-            Properties.Radius = 0;
+            Properties.Radius = 1;
             m_RenderComponent = renderComponent;
             m_Children = new List<Cv_SceneNode>();
         }
@@ -158,7 +158,7 @@ namespace Caravel.Core
             
             var deltaX = fromWorldPos.X - nearestX;
             var deltaY = fromWorldPos.Y - nearestY;
-            return (deltaX * deltaX + deltaY * deltaY) < (Radius * Radius);
+            return (deltaX * deltaX + deltaY * deltaY) < (Radius*camTransform.Scale.X * Radius*camTransform.Scale.X);
         }
 
         public virtual void VRender(Cv_SceneElement scene)

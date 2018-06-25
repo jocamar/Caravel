@@ -18,6 +18,7 @@ namespace Caravel.Core.Entity
             m_ComponentFactory = new GenericObjectFactory<Cv_EntityComponent, Cv_ComponentID>();
 
             m_ComponentFactory.Register<Cv_TransformComponent>(Cv_EntityComponent.GetID<Cv_TransformComponent>());
+            m_ComponentFactory.Register<Cv_SpriteComponent>(Cv_EntityComponent.GetID<Cv_SpriteComponent>());
         }
 
         protected internal Cv_Entity CreateEntity(string entityResource, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
@@ -39,7 +40,7 @@ namespace Caravel.Core.Entity
 
             var entity = new Cv_Entity(entityId);
 
-            if (entity.Init(root))
+            if (!entity.Init(root))
             {
                 Cv_Debug.Error("Failed to initialize entity: " + entityResource);
                 return null;
@@ -64,7 +65,7 @@ namespace Caravel.Core.Entity
             }
 
             var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
-            if (tranformComponent != null)
+            if (tranformComponent != null && initialTransform != null)
             {
                 tranformComponent.Transform = initialTransform;
             }
