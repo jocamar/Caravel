@@ -216,7 +216,6 @@ namespace Caravel
         
         protected sealed override void Update(GameTime gameTime)
         {
-            var res = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>("scenes/testScene.xml");
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
                     || Keyboard.GetState().IsKeyDown(Keys.Escape)
                     || m_bQuitting)
@@ -226,8 +225,6 @@ namespace Caravel
             }
 
             GameLogic.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
-
-            //TODO(JM): Add update logic here
 
             base.Update(gameTime);
         }

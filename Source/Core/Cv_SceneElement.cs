@@ -78,12 +78,10 @@ namespace Caravel.Core
 
 		public bool RemoveNode(Cv_EntityID entityID)
 		{
-			if (entityID == Cv_EntityID.INVALID_ENTITY)
+			if (entityID != Cv_EntityID.INVALID_ENTITY)
 			{
-				return false;
+				m_EntitiesMap.Remove(entityID);
 			}
-
-			m_EntitiesMap.Remove(entityID);
 
 			return m_Root.RemoveChild(entityID);
 		}

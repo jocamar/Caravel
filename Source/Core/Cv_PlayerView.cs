@@ -33,7 +33,17 @@ namespace Caravel.Core
 
         public Cv_CameraNode Camera
         {
-            get;
+            get
+			{
+				return m_Camera;
+			}
+
+			set
+			{
+				m_Scene.RemoveNode(Cv_EntityID.INVALID_ENTITY);
+				m_Camera = value;
+				m_Scene.AddNode(Cv_EntityID.INVALID_ENTITY, Camera);
+			}
         }
 
         public PlayerIndex PlayerIdx
@@ -72,6 +82,7 @@ namespace Caravel.Core
         //private Cv_Console m_Console;
         private Cv_Renderer m_Renderer;
         private List<Cv_ScreenElement> m_ScreenElements;
+		private Cv_CameraNode m_Camera;
 
         public Cv_PlayerView(PlayerIndex player, int vWidth, int vHeight)
         {
@@ -91,9 +102,6 @@ namespace Caravel.Core
             m_Renderer.Init();
 
             m_Scene = new Cv_SceneElement(m_Renderer);
-            Camera = new Cv_CameraNode("camera_" + player);
-
-            m_Scene.AddNode(Cv_EntityID.INVALID_ENTITY, Camera);
         }
 
         ~Cv_PlayerView()
@@ -182,37 +190,6 @@ namespace Caravel.Core
             foreach (var se in m_ScreenElements)
             {
                 se.VOnUpdate(time, timeElapsed);
-            }
-
-            //TEST, REMOVE LATER
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-            {
-                Camera.Move(new Vector2(-5,0));
-            }
-            
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-            {
-                Camera.Move(new Vector2(5, 0));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
-            {
-                Camera.Move(new Vector2(0,-5));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                Camera.Move(new Vector2(0, 5));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Q))
-            {
-                Camera.Zoom += 0.01f;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.E))
-            {
-                Camera.Zoom -= 0.01f;
             }
         }
 

@@ -7,7 +7,7 @@ namespace Caravel.TestSamples
 {
     public class SimpleGame : CaravelApp
     {
-        Cv_PlayerView pv;
+        public Cv_PlayerView pv;
 
         public SimpleGame(int screenWidth, int screenHeight) : base(screenWidth, screenHeight)
         {
@@ -20,7 +20,7 @@ namespace Caravel.TestSamples
 
         protected override Cv_GameLogic VCreateGameLogic()
         {
-            return new Cv_GameLogic(this);
+            return new SimpleGameLogic(this);
         }
 
         protected override Cv_GamePhysics VCreateGamePhysics()
@@ -33,6 +33,8 @@ namespace Caravel.TestSamples
             var gvs = new Cv_GameView[1];
 
             pv = new Cv_PlayerView(PlayerIndex.One, 640, 360);
+			var camera = new Cv_CameraNode("camera_" + PlayerIndex.One);
+			pv.Camera = camera;
             pv.Camera.Position = new Vector3(0, 0, 0);
             gvs[0] = pv;
 
