@@ -225,6 +225,8 @@ namespace Caravel
                 Exit();
             }
 
+            GameLogic.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+
             //TODO(JM): Add update logic here
 
             base.Update(gameTime);

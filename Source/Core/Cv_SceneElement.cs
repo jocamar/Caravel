@@ -14,27 +14,53 @@ namespace Caravel.Core
 			get; set;
 		}
 
-        private SpriteBatch m_SpriteBatch;
-		private Cv_SceneNode m_Root;
+		internal Cv_Renderer Renderer;
 
+		private Cv_SceneNode m_Root;
 		private List<Cv_Transform> m_TransformStack;
 		private Dictionary<Cv_EntityID, Cv_SceneNode> m_EntitiesMap;
+        private Cv_Transform m_Transform;
 
-        public Cv_SceneElement(SpriteBatch sb)
+        public Cv_SceneElement(Cv_Renderer renderer)
         {
-            m_SpriteBatch = sb;
+            Renderer = renderer;
+            m_EntitiesMap = new Dictionary<Cv_EntityID, Cv_SceneNode>();
+            m_TransformStack = new List<Cv_Transform>();
+			m_Root = new Cv_SceneNode(Cv_EntityID.INVALID_ENTITY, null, new Cv_Transform());
+
+			//Cv_EventManager.Instance.AddListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
+			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
+			Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
+			//Cv_EventManager.Instance.AddListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
         }
+
+		~Cv_SceneElement()
+		{
+			//Cv_EventManager.Instance.RemoveListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
+			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
+			Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnMoveEntity);
+			//Cv_EventManager.Instance.RemoveListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
+		}
 
         public override void VOnRender(float time, float timeElapsed)
         {
             var res = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>("profile.png");
             var tex = res.GetTexture();
             
-            m_SpriteBatch.Draw(tex.Texture, Vector2.Zero, Color.White);
+            Renderer.Draw(tex.Texture, new Rectangle(-250, -250, 500, 500), Color.White);
+
+			if (m_Root != null && Camera != null)
+			{
+				m_Root.VPreRender(this);
+				m_Root.VRender(this);
+				m_Root.VRenderChildren(this);
+				m_Root.VPostRender(this);
+			}
         }
 
         public override void VOnUpdate(float time, float timeElapsed)
         {
+			m_Root.VOnUpdate(time, timeElapsed, this);
         }
 
 		public Cv_SceneNode GetEntityNode(Cv_EntityID entityID)
@@ -47,18 +73,24 @@ namespace Caravel.Core
 
 		public bool AddNode(Cv_EntityID entityID, Cv_SceneNode node)
 		{
-			m_EntitiesMap.Add(entityID, node);
-			//TODO(JM): Add node to root
+			if (entityID != Cv_EntityID.INVALID_ENTITY)
+			{
+				m_EntitiesMap.Add(entityID, node);
+			}
 
-			return true;
+			return m_Root.AddChild(node);
 		}
 
 		public bool RemoveNode(Cv_EntityID entityID)
 		{
-			m_EntitiesMap.Remove(entityID);
-			//TODO(JM): Remove node from root
+			if (entityID == Cv_EntityID.INVALID_ENTITY)
+			{
+				return false;
+			}
 
-			return true;
+			m_EntitiesMap.Remove(entityID);
+
+			return m_Root.RemoveChild(entityID);
 		}
 
 		public void OnNewRenderComponent(Cv_Event eventData)
@@ -73,12 +105,19 @@ namespace Caravel.Core
 
 		public void OnDestroyEntity(Cv_Event eventData)
 		{
-
+			Cv_Event_DestroyEntity destroyEntity = (Cv_Event_DestroyEntity) eventData;
+			RemoveNode(destroyEntity.EntityID);
 		}
 
 		public void OnMoveEntity(Cv_Event eventData)
 		{
-
+			Cv_Event_TransformEntity transformEntity = (Cv_Event_TransformEntity) eventData;
+			
+			Cv_SceneNode node;
+			if (m_EntitiesMap.TryGetValue(transformEntity.EntityID, out node))
+			{
+				node.Transform = transformEntity.Transform;
+			}
 		}
 
 		public void PushAndSetTransform(Cv_Transform toWorld)
@@ -95,29 +134,16 @@ namespace Caravel.Core
 			}
 			
 			m_TransformStack.Add(Cv_Transform.Multiply(currTransform, toWorld));
-			//m_Renderer.Transform = m_TransformStack[m_TransformStack.Count-1];
 		}
 
-		/*void PopMatrix() 
+		public void PopTransform() 
 		{
-			// Scene::PopMatrix - Chapter 16, page 541
-			m_MatrixStack->Pop(); 
-			Mat4x4 mat = GetTopMatrix();
-			m_Renderer->VSetWorldTransform(&mat);
+			m_TransformStack.RemoveAt(m_TransformStack.Count-1);
+			var transf = m_TransformStack[m_TransformStack.Count-1];
 		}
 
-		const Mat4x4 GetTopMatrix() 
-		{ 
-			// Scene::GetTopMatrix - Chapter 16, page 541
-			return static_cast<const Mat4x4>(*m_MatrixStack->GetTop()); 
-		}
-
-		LightManager *GetLightManager() { return m_LightManager; }
-
-		void AddAlphaSceneNode(AlphaSceneNode *asn) { m_AlphaSceneNodes.push_back(asn); }
-
-		HRESULT Pick(RayCast *pRayCast) { return m_Root->VPick(this, pRayCast); }
-
-		shared_ptr<IRenderer> GetRenderer() { return m_Renderer; }*/
+		bool Pick(Vector2 screenPosition) {
+            return m_Root.VPick(this, screenPosition);
+        }
     }
 }

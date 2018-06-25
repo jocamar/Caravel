@@ -88,6 +88,9 @@
     <Compile Include="..\Source\Core\Cv_ProcessManager.cs">
       <Link>Source\Core\Cv_ProcessManager.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Cv_Renderer.cs">
+      <Link>Source\Core\Cv_Renderer.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Cv_SceneController.cs">
       <Link>Source\Core\Cv_SceneController.cs</Link>
     </Compile>
@@ -103,6 +106,9 @@
     <Compile Include="..\Source\Core\Cv_ScriptManager.cs">
       <Link>Source\Core\Cv_ScriptManager.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Cv_SpriteNode.cs">
+      <Link>Source\Core\Cv_SpriteNode.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Cv_Transform.cs">
       <Link>Source\Core\Cv_Transform.cs</Link>
     </Compile>
@@ -114,6 +120,12 @@
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_EntityFactory.cs">
       <Link>Source\Core\Entity\Cv_EntityFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_RenderComponent.cs">
+      <Link>Source\Core\Entity\Cv_RenderComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_SpriteComponent.cs">
+      <Link>Source\Core\Entity\Cv_SpriteComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_TransformComponent.cs">
       <Link>Source\Core\Entity\Cv_TransformComponent.cs</Link>

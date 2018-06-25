@@ -5,6 +5,7 @@ using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Core.Resource;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using static Caravel.Core.Cv_GameLogic;
 using static Caravel.Core.Entity.Cv_Entity;
@@ -28,6 +29,11 @@ namespace Caravel.Core
             {
                 return m_ID;
             }
+        }
+
+        public Cv_CameraNode Camera
+        {
+            get;
         }
 
         public PlayerIndex PlayerIdx
@@ -59,30 +65,35 @@ namespace Caravel.Core
         private Cv_GameViewType m_Type = Cv_GameViewType.Player;
         private Cv_GameViewID m_ID;
         private Cv_EntityID m_EntityID;
-        private bool m_bRunFullSpeed;
         private Cv_GameState m_GameState;
-        private SpriteBatch m_SpriteBatch;
-        private List<Cv_ScreenElement> m_ScreenElements;
-        private bool m_bAreSoundsPaused;
         private Cv_SceneElement m_Scene;
-        private Cv_CameraNode m_Camera;
+        private bool m_bRunFullSpeed;
+        private bool m_bAreSoundsPaused;
         //private Cv_Console m_Console;
+        private Cv_Renderer m_Renderer;
+        private List<Cv_ScreenElement> m_ScreenElements;
 
-        public Cv_PlayerView(PlayerIndex player)
+        public Cv_PlayerView(PlayerIndex player, int vWidth, int vHeight)
         {
             m_ID = Cv_GameViewID.INVALID_GAMEVIEW;
             m_GameState = Cv_GameState.Initializing;
             RegisterEventListeners();
 
             PlayerIdx = player;
-            m_SpriteBatch = new SpriteBatch(CaravelApp.Instance.GraphicsDevice);
             m_ScreenElements = new List<Cv_ScreenElement>();
             m_bAreSoundsPaused = false;
-            m_Scene = new Cv_SceneElement(m_SpriteBatch);
-            m_Camera = new Cv_CameraNode();
 
-            m_Scene.AddNode(Cv_EntityID.INVALID_ENTITY, m_Camera);
-            m_Scene.Camera = m_Camera;
+            m_Renderer = new Cv_Renderer();
+            m_Renderer.ScreenWidth = CaravelApp.Instance.Graphics.PreferredBackBufferWidth;
+            m_Renderer.ScreenHeight = CaravelApp.Instance.Graphics.PreferredBackBufferHeight;
+            m_Renderer.VirtualWidth = vWidth;
+            m_Renderer.VirtualHeight = vHeight;
+            m_Renderer.Init();
+
+            m_Scene = new Cv_SceneElement(m_Renderer);
+            Camera = new Cv_CameraNode("camera_" + player);
+
+            m_Scene.AddNode(Cv_EntityID.INVALID_ENTITY, Camera);
         }
 
         ~Cv_PlayerView()
@@ -136,21 +147,31 @@ namespace Caravel.Core
             //TODO(JM): Order elements here
             var sortedElements = m_ScreenElements.OrderBy(e => e).ToList();
 
-            m_SpriteBatch.Begin();
-
+            m_Renderer.SetupViewport();
+            CaravelApp.Instance.GraphicsDevice.Clear(m_Renderer.BackgroundColor);
             foreach (var se in sortedElements)
             {
                 if (se.IsVisible)
                 {
+                    if (se == m_Scene)
+                    {
+                        m_Renderer.BeginDraw(Camera);
+                    }
+                    else
+                    {
+                        m_Renderer.BeginDraw();
+                    }
+
                     se.VOnRender(time, timeElapsed);
+
+                    m_Renderer.EndDraw();
                 }
             }
+            m_Renderer.ResetViewport();
 
             VRenderText();
 
             //m_Console.OnRender();
-            
-            m_SpriteBatch.End();
         }
 
         protected internal override void VOnUpdate(float time, float timeElapsed)
@@ -160,6 +181,37 @@ namespace Caravel.Core
             foreach (var se in m_ScreenElements)
             {
                 se.VOnUpdate(time, timeElapsed);
+            }
+
+            //TEST, REMOVE LATER
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {
+                Camera.Move(new Vector2(-5,0));
+            }
+            
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                Camera.Move(new Vector2(5, 0));
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
+            {
+                Camera.Move(new Vector2(0,-5));
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                Camera.Move(new Vector2(0, 5));
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Q))
+            {
+                Camera.Zoom += 0.01f;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.E))
+            {
+                Camera.Zoom -= 0.01f;
             }
         }
 

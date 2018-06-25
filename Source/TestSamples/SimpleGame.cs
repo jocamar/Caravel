@@ -29,7 +29,9 @@ namespace Caravel.TestSamples
         {
             var gvs = new Cv_GameView[1];
 
-            gvs[0] = new Cv_PlayerView(PlayerIndex.One);
+            var pv = new Cv_PlayerView(PlayerIndex.One, 640, 360);
+            pv.Camera.Position = new Vector3(0, 0, 0);
+            gvs[0] = pv;
 
             return gvs;
         }
