@@ -24,14 +24,19 @@ namespace Caravel.Core
             var rot = Rotation;
             var scale = Scale;
 
+			var x = spriteComponent.CurrentFrame % spriteComponent.FrameX;
+			var y = spriteComponent.CurrentFrame / spriteComponent.FrameX;
+			var frameW = tex.Width / spriteComponent.FrameX;
+			var frameH = tex.Height / spriteComponent.FrameY;
+
             scene.Renderer.Draw(tex, new Rectangle((int) pos.X,
                                                     (int)pos.Y,
                                                     (int)(spriteComponent.Width * scale.X),
                                                     (int)(spriteComponent.Height * scale.Y)),
-                                    new Rectangle(0,0,tex.Width, tex.Height),
+                                    new Rectangle(x,y, frameW, frameH),
                                     spriteComponent.Color,
                                     rot,
-                                    new Vector2(tex.Width / 2, tex.Height / 2),
+                                    new Vector2(frameW / 2, frameH / 2),
                                     SpriteEffects.None,
                                     pos.Z);
         }
