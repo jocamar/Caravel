@@ -21,11 +21,6 @@ namespace Caravel.Core.Entity
             get; private set;
         }
 
-        public Color Color
-        {
-            get; private set;
-        }
-
         public Cv_SpriteComponent()
         {
         }
@@ -38,7 +33,7 @@ namespace Caravel.Core.Entity
             Color = color;
         }
 
-        protected internal override bool VInit(XmlElement componentData)
+        protected internal override bool VInheritedInit(XmlElement componentData)
         {
             Cv_Debug.Assert(componentData != null, "Must have valid component data.");
 
@@ -55,23 +50,6 @@ namespace Caravel.Core.Entity
                 Height = int.Parse(sizeNode.Attributes["height"].Value);
             }
 
-            var colorNode = componentData.SelectNodes("//Color").Item(0);
-            if (colorNode != null)
-            {
-                int r, g, b;
-
-                r = int.Parse(colorNode.Attributes["r"].Value);
-                g = int.Parse(colorNode.Attributes["g"].Value);
-                b = int.Parse(colorNode.Attributes["b"].Value);
-
-                Color = new Color(r,g,b);
-            }
-
-            return true;
-        }
-
-        protected internal override bool VPostInit()
-        {
             return true;
         }
 
@@ -79,12 +57,25 @@ namespace Caravel.Core.Entity
         {
         }
 
-        protected internal override void VOnChanged()
+        protected internal override XmlElement VToXML()
         {
             throw new System.NotImplementedException();
         }
 
-        protected internal override XmlElement VToXML()
+        protected override Cv_SceneNode VCreateSceneNode()
+        {
+            var transformComponent = Owner.GetComponent<Cv_TransformComponent>();
+
+            var transform = new Cv_Transform();
+            if(transformComponent != null)
+            {
+                transform = transformComponent.Transform;
+            }
+
+            return new Cv_SpriteNode(Owner.ID, this, transform);
+        }
+
+        protected override XmlElement VCreateInheritedElement(XmlElement baseElement)
         {
             throw new System.NotImplementedException();
         }

@@ -1,4 +1,5 @@
 using Caravel.Core;
+using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -15,6 +16,7 @@ namespace Caravel.TestSamples
 
 		protected override void VGameOnUpdate(float time, float timeElapsed)
 		{
+            simpleGame.guntler.GetComponent<Cv_TransformComponent>().Transform.Rotation += timeElapsed / 1000;
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 simpleGame.pv.Camera.Move(new Vector2(-5,0));

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Caravel.Core.Events;
 using Caravel.Core.Resource;
+using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static Caravel.Core.Cv_GameLogic;
 using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core
@@ -28,18 +30,18 @@ namespace Caravel.Core
             m_TransformStack = new List<Cv_Transform>();
 			m_Root = new Cv_SceneNode(Cv_EntityID.INVALID_ENTITY, null, new Cv_Transform());
 
-			//Cv_EventManager.Instance.AddListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
+			Cv_EventManager.Instance.AddListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
 			Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
-			//Cv_EventManager.Instance.AddListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
+			Cv_EventManager.Instance.AddListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
         }
 
 		~Cv_SceneElement()
 		{
-			//Cv_EventManager.Instance.RemoveListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
+			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnMoveEntity);
-			//Cv_EventManager.Instance.RemoveListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
+			Cv_EventManager.Instance.RemoveListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
 		}
 
         public override void VOnRender(float time, float timeElapsed)
@@ -88,12 +90,35 @@ namespace Caravel.Core
 
 		public void OnNewRenderComponent(Cv_Event eventData)
 		{
+			var castEventData = (Cv_Event_NewRenderComponent) eventData;
+			var entityId = castEventData.EntityID;
+			var sceneNode = castEventData.SceneNode;
 
+			AddNode(entityId, sceneNode);
 		}
 
 		public void OnModifiedRenderComponent(Cv_Event eventData)
 		{
+			var castEventData = (Cv_Event_ModifiedRenderComponent) eventData;
 
+			Cv_EntityID entityId = castEventData.EntityID;
+			if (entityId == Cv_EntityID.INVALID_ENTITY)
+			{
+				Cv_Debug.Error("OnModifiedRenderComponent - Unknown entity ID!");
+				return;
+			}
+
+			if (CaravelApp.Instance.GameLogic.State == Cv_GameState.LoadingGameEnvironment)
+			{
+				return;
+			}
+
+			var sceneNode = GetEntityNode(entityId);
+
+			if (sceneNode == null || !sceneNode.VOnChanged(this))
+			{
+				Cv_Debug.Error("Failed to apply changes to scene node for entity " + entityId);
+			}
 		}
 
 		public void OnDestroyEntity(Cv_Event eventData)

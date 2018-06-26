@@ -74,7 +74,40 @@ namespace Caravel.Core
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle,
                             Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth)
         {
-            m_SpriteBatch.Draw(texture, destinationRectangle, sourceRectangle, color, rotation, origin, effects, layerDepth);
+            m_SpriteBatch.Draw(texture, destinationRectangle,
+                                        sourceRectangle,
+                                        color,
+                                        rotation,
+                                        origin,
+                                        effects,
+                                        layerDepth);
+        }
+
+        public void Draw(Texture2D texture, Vector3 position, Rectangle? sourceRectangle, Color color,
+                                            float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects)
+        {
+            m_SpriteBatch.Draw(texture, new Vector2(position.X, position.Y),
+                                        sourceRectangle,
+                                        color,
+                                        rotation,
+                                        origin,
+                                        scale,
+                                        effects,
+                                        position.Z);
+        }
+
+        public void Draw(Texture2D texture, Vector2? position, int z, Rectangle? destinationRectangle, Rectangle? sourceRectangle,
+                                            Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects)
+        {
+            m_SpriteBatch.Draw(texture, position,
+                                        destinationRectangle,
+                                        sourceRectangle,
+                                        origin,
+                                        rotation,
+                                        scale,
+                                        color,
+                                        effects,
+                                        z);
         }
 
         public Vector2 ScaleMouseToScreenCoordinates(Vector2 screenPosition)
@@ -92,13 +125,13 @@ namespace Caravel.Core
         {
             if (camera == null)
             {
-                m_SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
+                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp,
                                         DepthStencilState.None, RasterizerState.CullNone, null, Transform.TransformMatrix);
             }
             else
             {
                 var cameraTransformMatrix = camera.GetViewTransform(VirtualWidth, VirtualHeight, Transform).TransformMatrix;
-                m_SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
+                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp,
                                         DepthStencilState.None, RasterizerState.CullNone, null, cameraTransformMatrix);
             }
         }

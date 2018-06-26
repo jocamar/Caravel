@@ -2,6 +2,7 @@ using System;
 using Caravel.Core.Entity;
 using Caravel.Core.Resource;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Caravel.Core
 {
@@ -18,13 +19,28 @@ namespace Caravel.Core
             var spriteComponent = (Cv_SpriteComponent) m_RenderComponent;
 
             var resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture);
+            var tex = resource.GetTexture().Texture;
             var pos = Position;
+            var rot = Rotation;
+            var scale = Scale;
 
-            scene.Renderer.Draw(resource.GetTexture().Texture, new Rectangle((int) pos.X - spriteComponent.Width/2,
-                                                                                (int)pos.Y - spriteComponent.Height/2,
-                                                                                spriteComponent.Width,
-                                                                                spriteComponent.Height),
-                                                                spriteComponent.Color);
+            scene.Renderer.Draw(tex, new Rectangle((int) pos.X,
+                                                    (int)pos.Y,
+                                                    (int)(spriteComponent.Width * scale.X),
+                                                    (int)(spriteComponent.Height * scale.Y)),
+                                    new Rectangle(0,0,tex.Width, tex.Height),
+                                    spriteComponent.Color,
+                                    rot,
+                                    new Vector2(tex.Width / 2, tex.Height / 2),
+                                    SpriteEffects.None,
+                                    pos.Z);
+        }
+
+        public override bool VOnChanged(Cv_SceneElement scene)
+        {
+            var comp = ((Cv_SpriteComponent) m_RenderComponent);
+            Radius = (float) Math.Sqrt(comp.Width*comp.Width + comp.Height*comp.Height)/2;
+            return true;
         }
     }
 }

@@ -139,8 +139,14 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_DestroyEntity.cs">
       <Link>Source\Core\Events\Cv_Event_DestroyEntity.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_ModifiedRenderComponent.cs">
+      <Link>Source\Core\Events\Cv_Event_ModifiedRenderComponent.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewEntity.cs">
       <Link>Source\Core\Events\Cv_Event_NewEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_NewRenderComponent.cs">
+      <Link>Source\Core\Events\Cv_Event_NewRenderComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_RequestDestroyEntity.cs">
       <Link>Source\Core\Events\Cv_Event_RequestDestroyEntity.cs</Link>
@@ -186,6 +192,9 @@
     </Compile>
     <Compile Include="..\Source\TestSamples\SimpleGame.cs">
       <Link>Source\TestSamples\SimpleGame.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\TestSamples\SimpleGameLogic.cs">
+      <Link>Source\TestSamples\SimpleGameLogic.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

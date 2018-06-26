@@ -127,6 +127,16 @@ namespace Caravel.Core
             }
         }
 
+        public virtual bool VOnChanged(Cv_SceneElement scene)
+        {
+            foreach (var child in m_Children)
+            {
+                child.VOnChanged(scene);
+            }
+
+            return true;
+        }
+
         public virtual void VPreRender(Cv_SceneElement scene)
         {
             Cv_Entity entity = CaravelApp.Instance.GameLogic.GetEntity(Properties.EntityID);
@@ -153,12 +163,12 @@ namespace Caravel.Core
             var fromWorldPos = Vector3.Transform(worldPos, camTransform.TransformMatrix);
 
             //See: https://yal.cc/rectangle-circle-intersection-test/
-            var nearestX = Math.Max(0, Math.Min(fromWorldPos.X, scene.Renderer.VirtualWidth));
-            var nearestY = Math.Max(0, Math.Min(fromWorldPos.Y, scene.Renderer.VirtualHeight));
+            var nearestX = Math.Max(0, Math.Min(fromWorldPos.X / camTransform.Scale.X, scene.Renderer.VirtualWidth));
+            var nearestY = Math.Max(0, Math.Min(fromWorldPos.Y / camTransform.Scale.Y, scene.Renderer.VirtualHeight));
             
-            var deltaX = fromWorldPos.X - nearestX;
-            var deltaY = fromWorldPos.Y - nearestY;
-            return (deltaX * deltaX + deltaY * deltaY) < (Radius*camTransform.Scale.X * Radius*camTransform.Scale.X);
+            var deltaX = (fromWorldPos.X / camTransform.Scale.X) - nearestX;
+            var deltaY = (fromWorldPos.Y / camTransform.Scale.Y) - nearestY;
+            return (deltaX * deltaX + deltaY * deltaY) < (Radius*camTransform.Scale.X*Transform.Scale.X * Radius*camTransform.Scale.X*Transform.Scale.Y);
         }
 
         public virtual void VRender(Cv_SceneElement scene)
