@@ -8,6 +8,15 @@ using static Caravel.Core.Cv_GameLogic;
 
 namespace Caravel.TestSamples
 {
+	//TODO(JM):
+	//Move rendering code to separate namespace
+	//Origin in transform
+	//TransformEntity
+	//Add missing events (ChangeState evt for example)
+	//InputManager
+	//ProcessManager
+	//Physics integration
+	//more... (see commented code)
     public class SimpleGame : CaravelApp
     {
         public Cv_PlayerView pv;
