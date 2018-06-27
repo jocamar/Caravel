@@ -110,6 +110,11 @@ namespace Caravel.Core
             get; private set;
         }
 
+		protected Dictionary<string, Cv_Entity> EntitiesByName
+		{
+			get; private set;
+		}
+
         protected Cv_GamePhysics GamePhysics
         {
             get; private set;
@@ -170,6 +175,7 @@ namespace Caravel.Core
             LastEntityID = 0;
             State = Cv_GameState.Initializing;
             Entities = new Dictionary<Cv_EntityID, Cv_Entity>();
+			EntitiesByName = new Dictionary<string, Cv_Entity>();
             OnDestroyEntity = RequestDestroyEntityCallback;
             OnRequestNewEntity = RequestNewEntityCallback;
             OnTransformEntity = TransformEntityCallback;
@@ -196,7 +202,15 @@ namespace Caravel.Core
             return ent;
         }
 
-        public Cv_Entity CreateEntity(string entityResource, XmlElement overrides, Cv_Transform transform = null, Cv_EntityID serverEntityId = Cv_EntityID.INVALID_ENTITY)
+		public Cv_Entity GetEntity(string entityName)
+        {
+            Cv_Entity ent = null;
+            EntitiesByName.TryGetValue(entityName, out ent);
+
+            return ent;
+        }
+
+        public Cv_Entity CreateEntity(string entityTypeResource, string name = null, XmlElement overrides = null, Cv_Transform transform = null, Cv_EntityID serverEntityId = Cv_EntityID.INVALID_ENTITY)
         {
             Cv_Debug.Assert(m_EntityFactory != null, "Entity factory should not be null.");
             if (m_EntityFactory == null)
@@ -213,15 +227,21 @@ namespace Caravel.Core
                 return null;
             }
 
-            var entity = m_EntityFactory.CreateEntity(entityResource, overrides, transform, serverEntityId);
+            var entity = m_EntityFactory.CreateEntity(entityTypeResource, overrides, transform, serverEntityId);
 
             if (entity != null)
             {
+				if (name != null)
+				{
+					entity.EntityName = name;
+				}
+
                 Entities.Add(entity.ID, entity);
+				EntitiesByName.Add(entity.EntityName, entity);
 
                 if (!IsProxy && State == Cv_GameState.SpawningPlayerEntities || State == Cv_GameState.Running)
                 {
-                    var requestNewEntityEvent = new Cv_Event_RequestNewEntity(entityResource, transform, entity.ID);
+                    var requestNewEntityEvent = new Cv_Event_RequestNewEntity(entityTypeResource, entity.EntityName, transform, entity.ID);
                     Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
                 }
 
@@ -229,7 +249,7 @@ namespace Caravel.Core
                 return entity;
             }
 
-            Cv_Debug.Error("Could not create entity with resource: " + entityResource);
+            Cv_Debug.Error("Could not create entity with resource: " + entityTypeResource);
             return null;
         }
 
@@ -238,7 +258,13 @@ namespace Caravel.Core
             var destroyEntityEvent = new Cv_Event_DestroyEntity(entityId);
             Cv_EventManager.Instance.TriggerEvent(destroyEntityEvent);
 
-            Entities.Remove(entityId);
+			Cv_Entity entity;
+			if (Entities.TryGetValue(entityId, out entity))
+			{
+				Entities.Remove(entityId);
+				EntitiesByName.Remove(entity.EntityName);
+			}
+            
         }
 
         public void ModifyEntity(Cv_EntityID entityId, XmlElement overrides)
@@ -334,7 +360,8 @@ namespace Caravel.Core
                 foreach(XmlNode e in entitiesNodes)
                 {
                     var entityResource = e.Attributes["resource"].Value;
-                    var entity = CreateEntity(entityResource, (XmlElement) e);
+					var name = e.Attributes?["name"].Value;
+                    var entity = CreateEntity(entityResource, name, (XmlElement) e);
 
                     if (entity != null)
                     {
@@ -541,7 +568,7 @@ namespace Caravel.Core
             }
 
             Cv_Event_RequestNewEntity data = (Cv_Event_RequestNewEntity) eventData;
-            var entity = CreateEntity(data.EntityResource, null, data.InitialTransform, data.ServerEntityID);
+            var entity = CreateEntity(data.EntityResource, data.EntityName,  null, data.InitialTransform, data.ServerEntityID);
             if (entity != null)
             {
                 var newEvent = new Cv_Event_NewEntity(entity.ID, data.GameViewID);

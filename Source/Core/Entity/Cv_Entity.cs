@@ -13,6 +13,11 @@ namespace Caravel.Core.Entity
             INVALID_ENTITY = 0
         }
 
+		public string EntityName
+		{
+			get; internal set;
+		}
+
         public Cv_EntityID ID
         {
             get; private set;
@@ -27,7 +32,6 @@ namespace Caravel.Core.Entity
         private List<Cv_EntityComponent> m_ComponentList;
         private List<Cv_EntityComponent> m_ComponentsToAdd;
         private List<Cv_EntityComponent> m_ComponentsToRemove;
-        private string m_sResource;
 
         public XmlElement ToXML()
         {
@@ -62,8 +66,8 @@ namespace Caravel.Core.Entity
         internal Cv_Entity()
         {
             ID = Cv_EntityID.INVALID_ENTITY;
-            m_sResource = "Unknown";
             EntityType = "Unknown";
+			EntityName = "Unknown_" + ID;
             m_ComponentMap = new Dictionary<Cv_ComponentID, Cv_EntityComponent>();
             m_ComponentList = new List<Cv_EntityComponent>();
             m_ComponentsToAdd = new List<Cv_EntityComponent>();
@@ -73,8 +77,8 @@ namespace Caravel.Core.Entity
         internal Cv_Entity(Cv_EntityID entityId)
         {
             ID = entityId;
-            m_sResource = "Unknown";
             EntityType = "Unknown";
+			EntityName = "Unknown_" + ID;
             m_ComponentMap = new Dictionary<Cv_ComponentID, Cv_EntityComponent>();
             m_ComponentList = new List<Cv_EntityComponent>();
             m_ComponentsToAdd = new List<Cv_EntityComponent>();
@@ -86,10 +90,9 @@ namespace Caravel.Core.Entity
             Cv_Debug.Log("Entity", "Destroying entity " + (int) ID);
         }
 
-        internal bool Init(XmlElement entityData)
+        internal bool Init(XmlElement typeData)
         {
-            EntityType = entityData.Attributes["type"].Value;
-            m_sResource = entityData.Attributes["resource"].Value;
+            EntityType = typeData.Attributes["type"].Value;
             Cv_Debug.Log("Entity", "Initializing entity " + (int) ID + " of type " + EntityType);
             return true;
         }
