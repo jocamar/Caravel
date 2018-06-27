@@ -21,14 +21,14 @@ namespace Caravel.Core.Entity
             m_ComponentFactory.Register<Cv_SpriteComponent>(Cv_EntityComponent.GetID<Cv_SpriteComponent>());
         }
 
-        protected internal Cv_Entity CreateEntity(string entityResource, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
+        protected internal Cv_Entity CreateEntity(string entityTypeResource, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
         {
-            var resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityResource);
+            var resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource);
             XmlElement root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
 
             if (root == null)
             {
-                Cv_Debug.Error("Failed to load entity resource file: " + entityResource);
+                Cv_Debug.Error("Failed to load entity resource file: " + entityTypeResource);
                 return null;
             }
 
@@ -42,7 +42,7 @@ namespace Caravel.Core.Entity
 
             if (!entity.Init(root))
             {
-                Cv_Debug.Error("Failed to initialize entity: " + entityResource);
+                Cv_Debug.Error("Failed to initialize entity: " + entityTypeResource);
                 return null;
             }
 

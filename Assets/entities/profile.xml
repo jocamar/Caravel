@@ -1,4 +1,4 @@
-<Entity type="jocamarProfile" resource="entities/profile.xml">
+<EntityType type="jocamarProfile" resource="entities/profile.xml">
     <Cv_TransformComponent>
         <Position x="0" y="0" z="1"/>
         <Scale x="1" y="1" />
@@ -9,4 +9,4 @@
         <Size width="250" height="250" />
         <Color r="255" g="255" b="255" />
     </Cv_SpriteComponent>
-</Entity>
+</EntityType>

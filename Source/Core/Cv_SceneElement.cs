@@ -21,7 +21,6 @@ namespace Caravel.Core
 		private Cv_SceneNode m_Root;
 		private List<Cv_Transform> m_TransformStack;
 		private Dictionary<Cv_EntityID, Cv_SceneNode> m_EntitiesMap;
-        private Cv_Transform m_Transform;
 
         public Cv_SceneElement(Cv_Renderer renderer)
         {

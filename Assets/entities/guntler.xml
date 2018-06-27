@@ -1,4 +1,4 @@
-<Entity type="guntler" resource="entities/guntler.xml">
+<EntityType type="guntler" resource="entities/guntler.xml">
     <Cv_TransformComponent>
         <Position x="0" y="-200" z="0"/>
         <Scale x="2" y="1" />
@@ -11,4 +11,4 @@
         <Color r="255" g="255" b="255" />
 	    <Animation speed="1" fx="1" fy="1" loop="true" startFrame="0" endFrame="0"/>
     </Cv_SpriteComponent>
-</Entity>
+</EntityType>
