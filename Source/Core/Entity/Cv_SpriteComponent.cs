@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
@@ -6,6 +8,28 @@ namespace Caravel.Core.Entity
 {
     public class Cv_SpriteComponent : Cv_RenderComponent
     {
+        public struct Cv_SpriteSubAnimation
+        {
+            public string ID;
+
+            public int StartFrame
+            {
+                get; set;
+            }
+
+            public int EndFrame
+            {
+                get; set;
+            }
+
+            public int Speed
+            {
+                get; set;
+            }
+        }
+
+        public delegate void OnEndDelegate();
+
         public string Texture
         {
             get; set;
@@ -21,7 +45,7 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
-		public int Speed
+		public int? Speed
         {
             get; set;
         }
@@ -41,12 +65,12 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
-		public int StartFrame
+        public int? StartFrame
         {
             get; set;
         }
 
-		public int EndFrame
+		public int? EndFrame
         {
             get; set;
         }
@@ -66,7 +90,31 @@ namespace Caravel.Core.Entity
             get; private set;
         }
 
+        public OnEndDelegate OnEnd
+        {
+            get; set;
+        }
+
+        public string[] Animations
+        {
+            get
+            {
+                return m_SubAnimations.Keys.ToArray();
+            }
+        }
+
+        public string CurrentAnimation
+        {
+            get
+            {
+                return m_CurrAnim != null ? m_CurrAnim.Value.ID : null;
+            }
+        }
+
 		private long timeSinceLastUpdate;
+        private Dictionary<string, Cv_SpriteSubAnimation> m_SubAnimations;
+        private Cv_SpriteSubAnimation? m_CurrAnim;
+        private int m_ActualStartFrame, m_ActualEndFrame, m_ActualSpeed;
 
         public Cv_SpriteComponent()
         {
@@ -74,20 +122,19 @@ namespace Caravel.Core.Entity
             Width = 1;
             Height = 1;
             Color = Color.White;
-			Speed = 0;
 			FrameX = 1;
 			FrameY = 1;
 			Looping = false;
-			StartFrame = 0;
-			EndFrame = 0;
-			CurrentFrame = StartFrame;
+			CurrentFrame = 0;
 			Paused = false;
 			Ended = false;
 			timeSinceLastUpdate = 0;
+            m_CurrAnim = null;
+            m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
         }
 
-        public Cv_SpriteComponent(string resource, int width, int height, Color color, int speed = 0,
-										int fx = 1, int fy = 1, bool loop = false, int startFrame = 0, int endFrame = 0)
+        public Cv_SpriteComponent(string resource, int width, int height, Color color,
+										int fx = 1, int fy = 1, bool loop = false, int? speed = null, int? startFrame = null, int? endFrame = null)
         {
             Texture = resource;
             Width = width;
@@ -99,10 +146,33 @@ namespace Caravel.Core.Entity
 			Looping = loop;
 			StartFrame = startFrame;
 			EndFrame = endFrame;
-			CurrentFrame = StartFrame;
+			CurrentFrame = StartFrame != null ? StartFrame.Value : 0;
 			Paused = false;
 			Ended = false;
 			timeSinceLastUpdate = 0;
+            m_CurrAnim = null;
+            m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
+        }
+
+        public void SetAnimation(string animationId, OnEndDelegate onEnd = null)
+        {
+            Cv_SpriteSubAnimation anim;
+
+            if (m_SubAnimations.TryGetValue(animationId, out anim))
+            {
+                m_CurrAnim = anim;
+                OnEnd = onEnd;
+            }
+        }
+
+        public void AddAnimation(Cv_SpriteSubAnimation animation)
+        {
+            m_SubAnimations.Add(animation.ID, animation);
+        }
+
+        public void RemoveAnimation(string id)
+        {
+            m_SubAnimations.Remove(id);
         }
 
         protected internal override bool VInheritedInit(XmlElement componentData)
@@ -123,43 +193,100 @@ namespace Caravel.Core.Entity
             }
 
 			var animationNode = componentData.SelectNodes("//Animation").Item(0);
+
             if (animationNode != null)
             {
-                Speed = int.Parse(animationNode.Attributes["speed"].Value);
-                FrameX = int.Parse(animationNode.Attributes["fx"].Value);
-				FrameY = int.Parse(animationNode.Attributes["fy"].Value);
-				Looping = bool.Parse(animationNode.Attributes["loop"].Value);
-				StartFrame = int.Parse(animationNode.Attributes["startFrame"].Value);
-				EndFrame = int.Parse(animationNode.Attributes["endFrame"].Value);
-				CurrentFrame = StartFrame;
-            }
 
+                FrameX = int.Parse(animationNode.Attributes["fx"].Value);
+                FrameY = int.Parse(animationNode.Attributes["fy"].Value);
+                Looping = bool.Parse(animationNode.Attributes["loop"].Value);
+                
+                if (animationNode.Attributes["speed"] != null)
+                {
+                    Speed = int.Parse(animationNode.Attributes["speed"].Value);
+                }
+                    
+                if (animationNode.Attributes["startFrame"] != null)
+                {
+                    StartFrame = int.Parse(animationNode.Attributes["startFrame"].Value);
+                }
+                
+                if (animationNode.Attributes["endFrame"] != null)
+                {
+                    EndFrame = int.Parse(animationNode.Attributes["endFrame"].Value);
+                }
+
+                var subAnimations = animationNode.SelectNodes("//SubAnimation");
+
+                foreach (XmlElement subAnimation in subAnimations)
+                {
+                    var anim = new Cv_SpriteSubAnimation();
+
+                    anim.ID = subAnimation.Attributes["id"].Value;
+                    anim.Speed = int.Parse(subAnimation.Attributes["speed"].Value);
+                    anim.StartFrame = int.Parse(subAnimation.Attributes["startFrame"].Value);
+                    anim.EndFrame = int.Parse(subAnimation.Attributes["endFrame"].Value);
+                    
+                    AddAnimation(anim);
+                }
+
+                if (m_SubAnimations.Count > 0 && animationNode.Attributes["defaultAnim"] != null)
+                {
+                    var defaultAnim = animationNode.Attributes["defaultAnim"].Value;
+                    SetAnimation(defaultAnim);
+                    CurrentFrame = m_CurrAnim != null ? m_CurrAnim.Value.StartFrame : 0;
+                }
+
+                if (StartFrame != null)
+                {
+                    CurrentFrame = StartFrame.Value;
+                }
+            }
+            
             return true;
         }
 
         protected internal override void VOnUpdate(float elapsedTime)
         {
-			if (Speed > 0 && !Paused)
-			{
-				var frameIntervalMillis = 1000 / Speed;
+            m_ActualEndFrame = m_CurrAnim != null ? m_CurrAnim.Value.EndFrame : 0;
+            if (EndFrame != null)
+            {
+                m_ActualEndFrame = EndFrame.Value;
+            }
 
-				if (Speed > 0 && timeSinceLastUpdate > frameIntervalMillis)
+            m_ActualStartFrame = m_CurrAnim != null ? m_CurrAnim.Value.StartFrame : 0;
+            if (StartFrame != null)
+            {
+                m_ActualStartFrame = StartFrame.Value;
+            }
+
+            m_ActualSpeed = m_CurrAnim != null ? m_CurrAnim.Value.Speed : 0;
+            if (Speed != null)
+            {
+                m_ActualSpeed = Speed.Value;
+            }
+
+			if (m_ActualSpeed > 0 && !Paused)
+			{
+				var frameIntervalMillis = 1000 / m_ActualSpeed;
+
+				if (timeSinceLastUpdate > frameIntervalMillis)
                 {
-                    var framesToSkip = timeSinceLastUpdate * frameIntervalMillis;
+                    var framesToSkip = timeSinceLastUpdate / frameIntervalMillis;
                     timeSinceLastUpdate = 0;
 
                     while (framesToSkip > 0)
                     {
-                        if (CurrentFrame + 1 >= EndFrame)
+                        if (CurrentFrame + 1 > m_ActualEndFrame)
                         {
                             if (Looping)
                             {
-                                CurrentFrame = 0;
+                                CurrentFrame = m_ActualStartFrame;
                             }
                             else 
                             {
                                 Ended = true;
-                                //OnStop?.Invoke();
+                                OnEnd?.Invoke();
                                 break;
                             };
                         }

@@ -125,13 +125,13 @@ namespace Caravel.Core
         {
             if (camera == null)
             {
-                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp,
+                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointClamp,
                                         DepthStencilState.None, RasterizerState.CullNone, null, Transform.TransformMatrix);
             }
             else
             {
                 var cameraTransformMatrix = camera.GetViewTransform(VirtualWidth, VirtualHeight, Transform).TransformMatrix;
-                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp,
+                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointClamp,
                                         DepthStencilState.None, RasterizerState.CullNone, null, cameraTransformMatrix);
             }
         }

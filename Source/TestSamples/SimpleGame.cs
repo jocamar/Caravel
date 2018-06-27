@@ -1,6 +1,9 @@
+using System.IO;
 using Caravel.Core;
 using Caravel.Core.Entity;
+using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using static Caravel.Core.Cv_GameLogic;
 
 namespace Caravel.TestSamples
@@ -8,7 +11,7 @@ namespace Caravel.TestSamples
     public class SimpleGame : CaravelApp
     {
         public Cv_PlayerView pv;
-        public Cv_Entity profile, guntler;
+        public Cv_Entity profile, guntler, guybrush;
 
         public SimpleGame(int screenWidth, int screenHeight) : base(screenWidth, screenHeight)
         {
@@ -67,7 +70,18 @@ namespace Caravel.TestSamples
             GameLogic.LoadScene("scenes/testScene.xml");
             profile = GameLogic.CreateEntity("entities/profile.xml", null);
             guntler = GameLogic.CreateEntity("entities/guntler.xml", null);
+            guybrush = GameLogic.CreateEntity("entities/zombie.xml", null);
             return true;
+        }
+
+        public static void CopyStream(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[16*1024];
+            int read;
+            while((read = input.Read (buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write (buffer, 0, read);
+            }
         }
     }
 }

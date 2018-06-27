@@ -46,6 +46,32 @@ namespace Caravel.TestSamples
             {
                 simpleGame.pv.Camera.Zoom -= 0.01f;
             }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
+                var anim = guybrushSprite.CurrentAnimation == "running" ? "walking" : "running";
+                guybrushSprite.SetAnimation(anim);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.P))
+            {
+                var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
+                guybrushSprite.Paused = !guybrushSprite.Paused;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.O))
+            {
+                var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
+                if (guybrushSprite.Speed != null)
+                {
+                    guybrushSprite.Speed = null;
+                }
+                else
+                {
+                    guybrushSprite.Speed = 0;
+                }
+            }
 		}
 	}
 }

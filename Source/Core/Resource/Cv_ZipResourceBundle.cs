@@ -64,6 +64,7 @@ namespace Caravel.Core.Resource
 						Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 					#endif
 					FileStream fs = File.OpenRead(m_sBundleLocation);
+					
 					var zipFile = new ZipFile(fs);
 
 					if (zipFile != null)
@@ -75,7 +76,6 @@ namespace Caravel.Core.Resource
 					{
 						Cv_Debug.Error("Unable to open assets file.");
 					}
-					
 				}
 				else
 				{
@@ -104,9 +104,10 @@ namespace Caravel.Core.Resource
 		protected override Stream OpenStream(string assetName)
 		{
 			int entry = m_ZipFile.FindEntry(assetName, true);
+			Stream zipStream  = null;
 			if (entry != -1)
 			{
-				return m_ZipFile.GetInputStream(entry);
+				zipStream = m_ZipFile.GetInputStream(entry);
 			}
 			else
 			{
@@ -114,8 +115,17 @@ namespace Caravel.Core.Resource
 
 				if (entry != -1)
 				{
-					return m_ZipFile.GetInputStream(entry);
+					zipStream = m_ZipFile.GetInputStream(entry);
 				}
+			}
+
+			if (zipStream != null)
+			{
+				var memoryStream = new MemoryStream();
+
+				zipStream.CopyTo(memoryStream);
+				zipStream.Dispose();
+				return memoryStream;
 			}
 
 			Cv_Debug.Error("Unable to open stream.");

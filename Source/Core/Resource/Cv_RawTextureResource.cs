@@ -20,6 +20,11 @@ namespace Caravel.Core.Resource
                     return 0;
                 }
             }
+
+            ~Cv_TextureData()
+            {
+                Texture.Dispose();
+            }
         }
         
         public string File { get; set; }
@@ -35,6 +40,7 @@ namespace Caravel.Core.Resource
                 return false;
             }
 
+            resourceStream.Position = 0;
             var texture = Texture2D.FromStream(CaravelApp.Instance.GraphicsDevice, resourceStream);
 
             var resData = new Cv_TextureData();

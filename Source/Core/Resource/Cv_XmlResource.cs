@@ -38,6 +38,8 @@ namespace Caravel.Core.Resource
                 return false;
             }
 
+            resourceStream.Position = 0;
+
             var doc = new XmlDocument();
             doc.Load(resourceStream);
 

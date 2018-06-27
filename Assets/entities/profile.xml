@@ -1,6 +1,6 @@
 <Entity type="jocamarProfile" resource="entities/profile.xml">
     <Cv_TransformComponent>
-        <Position x="0" y="0" z="0"/>
+        <Position x="0" y="0" z="1"/>
         <Scale x="1" y="1" />
         <Rotation radians="0" />
     </Cv_TransformComponent>

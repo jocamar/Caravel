@@ -9,6 +9,6 @@
         <Texture resource="ElGuntlero.png" />
         <Size width="250" height="250" />
         <Color r="255" g="255" b="255" />
-	<Animation speed="1" fx="1" fy="1" loop="true" startFrame="0" endFrame="0"/>
+	    <Animation speed="1" fx="1" fy="1" loop="true" startFrame="0" endFrame="0"/>
     </Cv_SpriteComponent>
 </Entity>
