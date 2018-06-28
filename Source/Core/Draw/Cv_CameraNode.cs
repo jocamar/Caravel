@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
 
-namespace Caravel.Core
+namespace Caravel.Core.Draw
 {
     public class Cv_CameraNode : Cv_SceneNode
     {
@@ -107,7 +107,19 @@ namespace Caravel.Core
 
         public override void VRender(Cv_SceneElement scene)
         {
+        }
 
+        public override void VPreRender(Cv_SceneElement scene)
+        {
+        }
+
+        public override bool VIsVisible(Cv_SceneElement scene)
+        {
+            return true;
+        }
+
+        public override void VPostRender(Cv_SceneElement scene)
+        {
         }
     }
 }

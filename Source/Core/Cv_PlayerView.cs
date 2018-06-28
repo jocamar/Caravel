@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using static Caravel.Core.Cv_GameLogic;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;
+using Caravel.Core.Draw;
 
 namespace Caravel.Core
 {
@@ -72,7 +73,7 @@ namespace Caravel.Core
             }
         }
 
-        internal Cv_SceneElement m_Scene;
+        private Cv_SceneElement m_Scene;
         private Cv_GameViewType m_Type = Cv_GameViewType.Player;
         private Cv_GameViewID m_ID;
         private Cv_EntityID m_EntityID;
@@ -152,7 +153,6 @@ namespace Caravel.Core
                 CaravelApp.Instance.Graphics.ApplyChanges();
             }
 
-            //TODO(JM): Order elements here
             var sortedElements = m_ScreenElements.OrderBy(e => e).ToList();
 
             m_Renderer.SetupViewport();

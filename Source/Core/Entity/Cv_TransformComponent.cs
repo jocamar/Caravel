@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Xml;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
@@ -68,6 +69,18 @@ namespace Caravel.Core.Entity
 
                 var scale = new Vector2(x,y);
                 Transform.Scale = scale;
+            }
+
+            var originNode = componentData.SelectNodes("//Origin").Item(0);
+            if (originNode != null)
+            {
+                float x, y;
+
+                x = (float) double.Parse(originNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
+                y = (float) double.Parse(originNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
+
+                var origin = new Vector2(x,y);
+                Transform.Origin = origin;
             }
 
             return true;

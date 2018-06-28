@@ -3,6 +3,7 @@
         <Position x="0" y="0" z="1"/>
         <Scale x="1" y="1" />
         <Rotation radians="0" />
+        <Origin x="0" y="0" />
     </Cv_TransformComponent>
     <Cv_SpriteComponent>
         <Texture resource="profile.png" />

@@ -2,7 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Caravel.Core
+namespace Caravel.Core.Draw
 {
     public class Cv_Renderer
     {

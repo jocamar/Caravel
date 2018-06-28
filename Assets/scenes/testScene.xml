@@ -1,5 +1,7 @@
 <Scene>
-	<Entity name="guybrush" resource="entities/zombie.xml"/>
-	<Entity name="guntler" resource="entities/guntler.xml"/>
-	<Entity name="profile" resource="entities/profile.xml"/>
+	<StaticEntities>
+		<Entity name="guybrush" resource="entities/zombie.xml"/>
+		<Entity name="guntler" resource="entities/guntler.xml"/>
+		<Entity name="profile" resource="entities/profile.xml"/>
+	</StaticEntities>
 </Scene>

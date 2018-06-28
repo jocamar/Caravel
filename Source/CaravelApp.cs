@@ -257,8 +257,6 @@ namespace Caravel
 #endregion
 
 #region CaravelApp functions
-        //TODO(JM): GetRendererImpl()
-
         public void AbortGame()
         {
             m_bQuitting = true;

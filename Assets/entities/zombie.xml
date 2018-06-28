@@ -3,7 +3,7 @@
         <Position x="-200" y="0" z="0"/>
         <Scale x="1" y="1" />
         <Rotation radians="0" />
-	<Origin x="0.5" y="0.5" />
+	    <Origin x="0.5" y="0.5" />
     </Cv_TransformComponent>
     <Cv_SpriteComponent>
         <Texture resource="guybrush.png" />

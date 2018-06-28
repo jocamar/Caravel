@@ -15,6 +15,11 @@ namespace Caravel.Core
             get; set;
         }
 
+        public Vector2 Origin
+        {
+            get; set;
+        }
+
         public float Rotation
         {
             get; set;
@@ -53,6 +58,7 @@ namespace Caravel.Core
             var newMatrix = t1.TransformMatrix * t2.TransformMatrix;
             var newTransform = new Cv_Transform();
             newTransform.TransformMatrix = newMatrix;
+            newTransform.Origin = t2.Origin;
 			return newTransform;
 		}
 
@@ -61,6 +67,7 @@ namespace Caravel.Core
             var inverse = Matrix.Invert(tf.TransformMatrix);
             var newTransform = new Cv_Transform();
             newTransform.TransformMatrix = inverse;
+            newTransform.Origin = tf.Origin;
             return newTransform;
         }
 
@@ -69,13 +76,20 @@ namespace Caravel.Core
             Position = Vector3.Zero;
             Scale = Vector2.One;
             Rotation = 0;
+            Origin = new Vector2(0.5f, 0.5f);
         }
 
-        public Cv_Transform(Vector3 position, Vector2 scale, float rotation)
+        public Cv_Transform(Vector3 position, Vector2 scale, float rotation, Vector2? origin = null)
         {
             Position = position;
             Scale = scale;
             Rotation = rotation;
+            Origin = new Vector2(0.5f, 0.5f);
+
+            if (origin != null)
+            {
+                Origin = origin.Value;
+            }
         }
     }
 }

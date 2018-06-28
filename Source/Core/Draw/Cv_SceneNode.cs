@@ -4,9 +4,9 @@ using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
 
-namespace Caravel.Core
+namespace Caravel.Core.Draw
 {
-    public class Cv_SceneNode
+    public abstract class Cv_SceneNode
     {
         public class Cv_NodeProperties
         {
@@ -55,9 +55,9 @@ namespace Caravel.Core
             {
                 var pos = Position;
 
-                if (m_Parent != null)
+                if (Parent != null)
                 {
-                    pos += m_Parent.WorldPosition;
+                    pos += Parent.WorldPosition;
                 }
 
                 return pos;
@@ -103,8 +103,12 @@ namespace Caravel.Core
             }
         }
 
+        public Cv_SceneNode Parent
+        {
+            get; private set;
+        }
+
         protected List<Cv_SceneNode> m_Children;
-        protected Cv_SceneNode m_Parent;
         protected Cv_RenderComponent m_RenderComponent;
 
         public Cv_SceneNode(Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform from = null)
@@ -137,44 +141,13 @@ namespace Caravel.Core
             return true;
         }
 
-        public virtual void VPreRender(Cv_SceneElement scene)
-        {
-            Cv_Entity entity = CaravelApp.Instance.GameLogic.GetEntity(Properties.EntityID);
+        public abstract void VPreRender(Cv_SceneElement scene);
 
-            if (entity != null)
-            {
-                Cv_TransformComponent tranformComponent = entity.GetComponent<Cv_TransformComponent>();
+        public abstract bool VIsVisible(Cv_SceneElement scene);
 
-                if (tranformComponent != null)
-                {
-                    Transform = tranformComponent.Transform;
-                }
-            }
+        public abstract void VPostRender(Cv_SceneElement scene);
 
-            scene.PushAndSetTransform(Transform);
-        }
-
-        public virtual bool VIsVisible(Cv_SceneElement scene)
-        {
-            Cv_Transform camTransform = scene.Camera.GetViewTransform(scene.Renderer.VirtualWidth, scene.Renderer.VirtualHeight, scene.Renderer.Transform);
-
-            var worldPos = WorldPosition;
-
-            var fromWorldPos = Vector3.Transform(worldPos, camTransform.TransformMatrix);
-
-            //See: https://yal.cc/rectangle-circle-intersection-test/
-            var nearestX = Math.Max(0, Math.Min(fromWorldPos.X / camTransform.Scale.X, scene.Renderer.VirtualWidth));
-            var nearestY = Math.Max(0, Math.Min(fromWorldPos.Y / camTransform.Scale.Y, scene.Renderer.VirtualHeight));
-            
-            var deltaX = (fromWorldPos.X / camTransform.Scale.X) - nearestX;
-            var deltaY = (fromWorldPos.Y / camTransform.Scale.Y) - nearestY;
-            return (deltaX * deltaX + deltaY * deltaY) < (Radius*camTransform.Scale.X*Transform.Scale.X * Radius*camTransform.Scale.X*Transform.Scale.Y);
-        }
-
-        public virtual void VRender(Cv_SceneElement scene)
-        {
-
-        }
+        public abstract void VRender(Cv_SceneElement scene);
 
         public virtual void VRenderChildren(Cv_SceneElement scene)
         {
@@ -193,17 +166,12 @@ namespace Caravel.Core
             }
         }
 
-        public virtual void VPostRender(Cv_SceneElement scene)
-        {
-            scene.PopTransform();
-        }
-
         public virtual bool AddChild(Cv_SceneNode child)
         {
             if (child != null)
             {
                 m_Children.Add(child);
-                child.m_Parent = this;
+                child.Parent = this;
                 var childPos = child.Position;
                 var radius = childPos.Length() + child.Radius;
 
@@ -234,6 +202,14 @@ namespace Caravel.Core
             {
                 m_Children.Remove(toErase);
                 return true;
+            }
+
+            foreach (var c in m_Children)
+            {
+                if (c.RemoveChild(entityId))
+                {
+                    return true;
+                }
             }
 
             return false;

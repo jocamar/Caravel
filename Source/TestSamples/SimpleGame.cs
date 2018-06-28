@@ -1,5 +1,6 @@
 using System.IO;
 using Caravel.Core;
+using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Xna.Framework;
@@ -9,8 +10,7 @@ using static Caravel.Core.Cv_GameLogic;
 namespace Caravel.TestSamples
 {
 	//TODO(JM):
-	//Move rendering code to separate namespace
-	//Origin in transform
+    //Test parent relations between nodes
 	//TransformEntity
 	//Add missing events (ChangeState evt for example)
 	//InputManager
@@ -77,9 +77,10 @@ namespace Caravel.TestSamples
         protected internal override bool VLoadGame()
         {
             GameLogic.LoadScene("scenes/testScene.xml");
-            profile = GameLogic.CreateEntity("entities/profile.xml", null);
-            guntler = GameLogic.CreateEntity("entities/guntler.xml", null);
-            guybrush = GameLogic.CreateEntity("entities/zombie.xml", null);
+
+            profile = GameLogic.GetEntity("profile");
+            guntler = GameLogic.GetEntity("guntler");
+            guybrush = GameLogic.GetEntity("guybrush");
             return true;
         }
 

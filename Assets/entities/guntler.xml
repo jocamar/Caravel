@@ -3,7 +3,7 @@
         <Position x="0" y="-200" z="0"/>
         <Scale x="2" y="1" />
         <Rotation radians="0" />
-	<Origin x="0.5" y="0.5" />
+	    <Origin x="0.5" y="0.5" />
     </Cv_TransformComponent>
     <Cv_SpriteComponent>
         <Texture resource="ElGuntlero.png" />

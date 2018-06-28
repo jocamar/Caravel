@@ -1,4 +1,4 @@
-namespace Caravel.Core
+namespace Caravel.Core.Draw
 {
     public abstract class Cv_ScreenElement
     {

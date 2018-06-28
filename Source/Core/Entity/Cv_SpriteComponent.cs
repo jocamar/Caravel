@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Caravel.Core.Draw;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 

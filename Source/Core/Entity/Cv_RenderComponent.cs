@@ -1,4 +1,5 @@
 using System.Xml;
+using Caravel.Core.Draw;
 using Caravel.Core.Events;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
@@ -30,10 +31,20 @@ namespace Caravel.Core.Entity
             }
         }
 
+        public string OwnersParent
+        {
+            get; protected set;
+        }
+
         private Cv_SceneNode m_SceneNode;
 
         protected internal override bool VInit(XmlElement componentData)
         {
+            if (componentData.Attributes != null && componentData.Attributes["parent"] != null)
+            {
+                OwnersParent = componentData.Attributes["parent"].Value;
+            }
+
             XmlElement colorNode = (XmlElement) componentData.SelectSingleNode("//Color");
             if (colorNode != null)
             {
@@ -60,7 +71,7 @@ namespace Caravel.Core.Entity
         protected internal override bool VPostInit()
         {
             Cv_SceneNode sceneNode = this.SceneNode;
-            Cv_Event newEvent = new Cv_Event_NewRenderComponent(Owner.ID, sceneNode);
+            Cv_Event newEvent = new Cv_Event_NewRenderComponent(Owner.ID, sceneNode, OwnersParent);
             Cv_EventManager.Instance.TriggerEvent(newEvent);
             return true;
         }

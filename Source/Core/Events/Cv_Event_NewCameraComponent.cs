@@ -4,7 +4,7 @@ using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Events
 {
-    public class Cv_Event_NewRenderComponent : Cv_Event
+    public class Cv_Event_NewCameraComponent : Cv_Event
     {
         public string OwnersParent
         {
@@ -16,15 +16,21 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_SceneNode SceneNode
+        public Cv_CameraNode CameraNode
         {
             get; private set;
         }
 
-        public Cv_Event_NewRenderComponent(Cv_EntityID entityID, Cv_SceneNode sceneNode, string ownersParent)
+        public bool IsDefault
+        {
+            get; private set;
+        }
+
+        public Cv_Event_NewCameraComponent(Cv_EntityID entityID, Cv_CameraNode cameraNode, bool isDefault, string ownersParent)
         {
             EntityID = entityID;
-            SceneNode = sceneNode;
+            CameraNode = cameraNode;
+            IsDefault = isDefault;
             OwnersParent = ownersParent;
         }
 
@@ -35,7 +41,8 @@ namespace Caravel.Core.Events
 
         public override string VGetName()
         {
-            return "NewRenderComponent";
+            return "NewCameraComponent";
         }
+        
     }
 }

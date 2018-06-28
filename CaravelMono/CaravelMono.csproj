@@ -58,8 +58,11 @@
     <Compile Include="..\Source\Program.cs">
       <Link>Source\Program.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_CameraNode.cs">
-      <Link>Source\Core\Cv_CameraNode.cs</Link>
+    <Compile Include="..\Source\Core\Draw\Cv_CameraNode.cs">
+      <Link>Source\Core\Draw\Cv_CameraNode.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Draw\Cv_HolderNode.cs">
+      <Link>Source\Core\Draw\Cv_HolderNode.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_GameLogic.cs">
       <Link>Source\Core\Cv_GameLogic.cs</Link>
@@ -88,29 +91,32 @@
     <Compile Include="..\Source\Core\Cv_ProcessManager.cs">
       <Link>Source\Core\Cv_ProcessManager.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_Renderer.cs">
-      <Link>Source\Core\Cv_Renderer.cs</Link>
+    <Compile Include="..\Source\Core\Draw\Cv_Renderer.cs">
+      <Link>Source\Core\Draw\Cv_Renderer.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_SceneController.cs">
       <Link>Source\Core\Cv_SceneController.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_SceneElement.cs">
-      <Link>Source\Core\Cv_SceneElement.cs</Link>
+    <Compile Include="..\Source\Core\Draw\Cv_SceneElement.cs">
+      <Link>Source\Core\Draw\Cv_SceneElement.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_SceneNode.cs">
-      <Link>Source\Core\Cv_SceneNode.cs</Link>
+    <Compile Include="..\Source\Core\Draw\Cv_SceneNode.cs">
+      <Link>Source\Core\Draw\Cv_SceneNode.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_ScreenElement.cs">
-      <Link>Source\Core\Cv_ScreenElement.cs</Link>
+    <Compile Include="..\Source\Core\Draw\Cv_ScreenElement.cs">
+      <Link>Source\Core\Draw\Cv_ScreenElement.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_ScriptManager.cs">
       <Link>Source\Core\Cv_ScriptManager.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_SpriteNode.cs">
-      <Link>Source\Core\Cv_SpriteNode.cs</Link>
+    <Compile Include="..\Source\Core\Draw\Cv_SpriteNode.cs">
+      <Link>Source\Core\Draw\Cv_SpriteNode.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_Transform.cs">
       <Link>Source\Core\Cv_Transform.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_CameraComponent.cs">
+      <Link>Source\Core\Entity\Cv_CameraComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_Entity.cs">
       <Link>Source\Core\Entity\Cv_Entity.cs</Link>
@@ -141,6 +147,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_ModifiedRenderComponent.cs">
       <Link>Source\Core\Events\Cv_Event_ModifiedRenderComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_NewCameraComponent.cs">
+      <Link>Source\Core\Events\Cv_Event_NewCameraComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewEntity.cs">
       <Link>Source\Core\Events\Cv_Event_NewEntity.cs</Link>
