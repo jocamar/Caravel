@@ -29,7 +29,7 @@ namespace Caravel.Core
         {
             get
             {
-                return Matrix.CreateTranslation(Position.X, Position.Y, 0) * Matrix.CreateRotationZ(Rotation) * Matrix.CreateScale(Scale.X, Scale.Y, 1);
+                return  Matrix.CreateScale(Scale.X, Scale.Y, 1) * Matrix.CreateRotationZ(Rotation) * Matrix.CreateTranslation(Position.X, Position.Y, 0);
             }
 
             set
@@ -42,12 +42,14 @@ namespace Caravel.Core
                 Scale = new Vector2(scale.X, scale.Y);
 
                 // See: https://stackoverflow.com/questions/5782658/extracting-yaw-from-a-quaternion
-                rot.X = 0;
-                rot.Y = 0;
                 float mag = (float) Math.Sqrt(rot.W*rot.W + rot.Z*rot.Z);
                 rot.W /= mag;
-                rot.Z /= mag;
                 float ang = 2f * (float) Math.Acos(rot.W);
+
+				if (rot.Z < 0)
+				{
+					ang = (float)(2*Math.PI) - ang;
+				}
 
                 Rotation = ang;
             }
