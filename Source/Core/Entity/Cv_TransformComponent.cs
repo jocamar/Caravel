@@ -10,7 +10,19 @@ namespace Caravel.Core.Entity
     {
         public Cv_Transform Transform
         {
-            get; set;
+            get
+            {
+                return m_Transform;
+            }
+            
+            set
+            {
+                if (value != m_Transform)
+                {
+                    m_Transform = value;
+                    TransformChanged = true;
+                }
+            }
         }
 
         public Vector3 Position
@@ -23,8 +35,58 @@ namespace Caravel.Core.Entity
             set
             {
                 Transform.Position = value;
+                TransformChanged = true;
             }
         }
+
+        public Vector2 Scale
+        {
+            get
+            {
+                return Transform.Scale;
+            }
+
+            set
+            {
+                Transform.Scale = value;
+                TransformChanged = true;
+            }
+        }
+
+        public float Rotation
+        {
+            get
+            {
+                return Transform.Rotation;
+            }
+
+            set
+            {
+                Transform.Rotation = value;
+                TransformChanged = true;
+            }
+        }
+
+        public Vector2 Origin
+        {
+            get
+            {
+                return Transform.Origin;
+            }
+
+            set
+            {
+                Transform.Origin = value;
+                TransformChanged = true;
+            }
+        }
+
+        public bool TransformChanged
+        {
+            get; internal set;
+        }
+
+        private Cv_Transform m_Transform;
 
         public Cv_TransformComponent()
         {
@@ -53,7 +115,7 @@ namespace Caravel.Core.Entity
             {
                 float rad;
 
-                rad = float.Parse(rotationNode.Attributes["radians"].Value);
+                rad = float.Parse(rotationNode.Attributes["radians"].Value, CultureInfo.InvariantCulture);
 
                 var rotation = rad;
                 Transform.Rotation = rotation;

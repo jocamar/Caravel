@@ -19,9 +19,10 @@ namespace Caravel.Core.Entity
 
             m_ComponentFactory.Register<Cv_TransformComponent>(Cv_EntityComponent.GetID<Cv_TransformComponent>());
             m_ComponentFactory.Register<Cv_SpriteComponent>(Cv_EntityComponent.GetID<Cv_SpriteComponent>());
+            m_ComponentFactory.Register<Cv_CameraComponent>(Cv_EntityComponent.GetID<Cv_CameraComponent>());
         }
 
-        protected internal Cv_Entity CreateEntity(string entityTypeResource, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
+        protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
         {
             var resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource);
             XmlElement root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
@@ -40,7 +41,7 @@ namespace Caravel.Core.Entity
 
             var entity = new Cv_Entity(entityId);
 
-            if (!entity.Init(root))
+            if (!entity.Init(root, parent))
             {
                 Cv_Debug.Error("Failed to initialize entity: " + entityTypeResource);
                 return null;
@@ -61,7 +62,7 @@ namespace Caravel.Core.Entity
 
             if (overrides != null)
             {
-                ModifyEntity(entity, overrides);
+                ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity)]"));
             }
 
             var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
@@ -75,9 +76,9 @@ namespace Caravel.Core.Entity
             return entity;
         }
 
-        protected internal void ModifyEntity(Cv_Entity entity, XmlElement overrides)
+        protected internal void ModifyEntity(Cv_Entity entity, XmlNodeList overrides)
         {
-            foreach (XmlElement componentNode in overrides.ChildNodes)
+            foreach (XmlElement componentNode in overrides)
             {
                 var componentID = Cv_EntityComponent.GetID(componentNode.Name);
                 var component = entity.GetComponent(componentID);

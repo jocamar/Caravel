@@ -311,15 +311,7 @@ namespace Caravel.Core.Entity
 
         protected override Cv_SceneNode VCreateSceneNode()
         {
-            var transformComponent = Owner.GetComponent<Cv_TransformComponent>();
-
-            var transform = new Cv_Transform();
-            if(transformComponent != null)
-            {
-                transform = transformComponent.Transform;
-            }
-
-            return new Cv_SpriteNode(Owner.ID, this, transform);
+            return new Cv_SpriteNode(Owner.ID, this, new Cv_Transform());
         }
 
         protected override XmlElement VCreateInheritedElement(XmlElement baseElement)

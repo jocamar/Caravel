@@ -31,8 +31,27 @@ namespace Caravel.Core.Draw
 
             set
             {
-                Properties.ToWorld = value;
-                Properties.FromWorld = Cv_Transform.Inverse(value);
+                if (value != Properties.ToWorld)
+                {
+                    Properties.ToWorld = value;
+                    Properties.FromWorld = Cv_Transform.Inverse(value);
+                    TransformChanged = true;
+                }
+            }
+        }
+
+        public virtual Cv_Transform WorldTransform
+        {
+            get
+            {
+                var trans = Transform;
+
+                if (Parent != null)
+                {
+                    trans = Cv_Transform.Multiply(Parent.WorldTransform, trans);
+                }
+
+                return trans;
             }
         }
 
@@ -46,6 +65,7 @@ namespace Caravel.Core.Draw
             set
             {
                 Properties.ToWorld.Position = value;
+                TransformChanged = true;
             }
         }
 
@@ -53,12 +73,7 @@ namespace Caravel.Core.Draw
         {
             get
             {
-                var pos = Position;
-
-                if (Parent != null)
-                {
-                    pos += Parent.WorldPosition;
-                }
+                var pos = WorldTransform.Position;
 
                 return pos;
             }
@@ -74,6 +89,7 @@ namespace Caravel.Core.Draw
             set
             {
                 Properties.ToWorld.Scale = value;
+                TransformChanged = true;
             }
         }
 
@@ -87,6 +103,7 @@ namespace Caravel.Core.Draw
             set
             {
                 Properties.ToWorld.Rotation = value;
+                TransformChanged = true;
             }
         }
 
@@ -97,9 +114,29 @@ namespace Caravel.Core.Draw
                 return Properties.Radius;
             }
 
-            set
+            protected set
             {
                 Properties.Radius = value;
+            }
+        }
+
+        public bool TransformChanged
+        {
+            get; protected set;
+        }
+
+        public bool WorldTransformChanged
+        {
+            get
+            {
+                var changed = TransformChanged;
+
+                if (Parent != null)
+                {
+                    changed = changed || Parent.WorldTransformChanged;
+                }
+
+                return changed;
             }
         }
 
@@ -109,17 +146,28 @@ namespace Caravel.Core.Draw
         }
 
         protected List<Cv_SceneNode> m_Children;
-        protected Cv_RenderComponent m_RenderComponent;
+        protected Cv_EntityComponent m_Component;
 
-        public Cv_SceneNode(Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform from = null)
+        private string Name
+        {
+            get
+            {
+                 var entity = CaravelApp.Instance.GameLogic.GetEntity(Properties.EntityID);
+                 var name = (entity != null ? entity.EntityName : "root") + "_" + this.GetType().Name;
+                 return name;
+            }
+        }
+
+        public Cv_SceneNode(Cv_EntityID entityID, Cv_EntityComponent renderComponent, Cv_Transform to, Cv_Transform from = null)
         {
             Properties = new Cv_NodeProperties();
             Properties.EntityID = entityID;
             Properties.ToWorld = to;
             Properties.FromWorld = from;
             Properties.Name = renderComponent != null ? renderComponent.GetType().Name : "SceneNode";
-            Properties.Radius = 1;
-            m_RenderComponent = renderComponent;
+            Properties.Radius = -1;
+            TransformChanged = true;
+            m_Component = renderComponent;
             m_Children = new List<Cv_SceneNode>();
         }
 
@@ -145,9 +193,12 @@ namespace Caravel.Core.Draw
 
         public abstract bool VIsVisible(Cv_SceneElement scene);
 
-        public abstract void VPostRender(Cv_SceneElement scene);
-
         public abstract void VRender(Cv_SceneElement scene);
+
+        public virtual void VPostRender(Cv_SceneElement scene)
+        {
+            TransformChanged = false;
+        }
 
         public virtual void VRenderChildren(Cv_SceneElement scene)
         {
@@ -161,6 +212,10 @@ namespace Caravel.Core.Draw
 
                     child.VRenderChildren(scene);
                 }
+                else
+                {
+                    Console.WriteLine(child.Name + " is not visible");
+                }
 
                 child.VPostRender(scene);
             }
@@ -172,13 +227,6 @@ namespace Caravel.Core.Draw
             {
                 m_Children.Add(child);
                 child.Parent = this;
-                var childPos = child.Position;
-                var radius = childPos.Length() + child.Radius;
-
-                if (radius > Radius)
-                {
-                    Radius = radius;
-                }
 
                 return true;
             }
@@ -226,6 +274,27 @@ namespace Caravel.Core.Draw
             }
 
             return true;
+        }
+
+        public void PrintTree(int level)
+        {
+            Console.WriteLine(Name);
+            foreach(var n in m_Children)
+            {
+                for (var i = 0; i <= level; i++)
+                {
+                    Console.Write("\t");
+                }
+                n.PrintTree(level + 1);
+            }
+        }
+
+        internal virtual void UpdateTransformStatus()
+        {
+            foreach (var c in m_Children)
+            {
+                c.UpdateTransformStatus();
+            }
         }
     }
 }

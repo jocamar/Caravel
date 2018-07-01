@@ -19,8 +19,9 @@ namespace Caravel.TestSamples
 	//more... (see commented code)
     public class SimpleGame : CaravelApp
     {
+        public Cv_Entity CameraEntity;
+        public Cv_Entity guntler, guybrush, profile;
         public Cv_PlayerView pv;
-        public Cv_Entity profile, guntler, guybrush;
 
         public SimpleGame(int screenWidth, int screenHeight) : base(screenWidth, screenHeight)
         {
@@ -45,11 +46,8 @@ namespace Caravel.TestSamples
         {
             var gvs = new Cv_GameView[1];
 
-            pv = new Cv_PlayerView(PlayerIndex.One, 640, 640);
-			var camera = new Cv_CameraNode("camera_" + PlayerIndex.One);
-			pv.Camera = camera;
-            pv.Camera.Position = new Vector3(0, 0, 0);
-            gvs[0] = pv;
+            gvs[0] = new Cv_PlayerView(PlayerIndex.One, 1280, 720);
+            pv = (Cv_PlayerView) gvs[0];
 
             return gvs;
         }
@@ -77,10 +75,13 @@ namespace Caravel.TestSamples
         protected internal override bool VLoadGame()
         {
             GameLogic.LoadScene("scenes/testScene.xml");
+            CameraEntity = GameLogic.GetEntity("camera");
 
-            profile = GameLogic.GetEntity("profile");
             guntler = GameLogic.GetEntity("guntler");
             guybrush = GameLogic.GetEntity("guybrush");
+            profile = GameLogic.GetEntity("profile");
+
+            pv.PrintScene();
             return true;
         }
 

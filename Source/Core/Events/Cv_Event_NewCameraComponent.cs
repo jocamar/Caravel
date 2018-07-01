@@ -6,12 +6,12 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_NewCameraComponent : Cv_Event
     {
-        public string OwnersParent
+        public Cv_EntityID EntityID
         {
-            get; set;
+            get; private set;
         }
 
-        public Cv_EntityID EntityID
+        public Cv_EntityID ParentID
         {
             get; private set;
         }
@@ -26,12 +26,12 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_NewCameraComponent(Cv_EntityID entityID, Cv_CameraNode cameraNode, bool isDefault, string ownersParent)
+        public Cv_Event_NewCameraComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_CameraNode cameraNode, bool isDefault)
         {
             EntityID = entityID;
+            ParentID = parentId;
             CameraNode = cameraNode;
             IsDefault = isDefault;
-            OwnersParent = ownersParent;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

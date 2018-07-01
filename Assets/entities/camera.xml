@@ -1,0 +1,9 @@
+<EntityType type="camera" resource="entities/camera.xml">
+    <Cv_TransformComponent>
+        <Position x="0" y="0" z="0"/>
+        <Scale x="1" y="1" />
+        <Rotation radians="0" />
+	    <Origin x="0.5" y="0.5" />
+    </Cv_TransformComponent>
+    <Cv_CameraComponent defaultCamera="true" zoom="1"/>
+</EntityType>

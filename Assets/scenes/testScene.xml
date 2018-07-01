@@ -2,6 +2,8 @@
 	<StaticEntities>
 		<Entity name="guybrush" resource="entities/zombie.xml"/>
 		<Entity name="guntler" resource="entities/guntler.xml"/>
-		<Entity name="profile" resource="entities/profile.xml"/>
+		<Entity name="profile" resource="entities/profile.xml">
+			<Entity name="camera" resource="entities/camera.xml"/>
+		</Entity>
 	</StaticEntities>
 </Scene>

@@ -210,19 +210,9 @@ namespace Caravel.Core.Draw
 			var castEventData = (Cv_Event_NewRenderComponent) eventData;
 			var entityId = castEventData.EntityID;
 			var sceneNode = castEventData.SceneNode;
-			var parentEntityId = Cv_EntityID.INVALID_ENTITY; 
-			
-			if (castEventData.OwnersParent != null)
-			{
-				var entity = CaravelApp.Instance.GameLogic.GetEntity(castEventData.OwnersParent);
+			var parentId = castEventData.ParentID;
 
-				if (entity != null)
-				{
-					parentEntityId = entity.ID;
-				}
-			}
-
-			AddNodeAsChild(parentEntityId, entityId, sceneNode);
+			AddNodeAsChild(parentId, entityId, sceneNode);
 		}
 
 		public void OnNewCameraComponent(Cv_Event eventData)
@@ -230,22 +220,10 @@ namespace Caravel.Core.Draw
 			var castEventData = (Cv_Event_NewCameraComponent) eventData;
 			var entityId = castEventData.EntityID;
 			var cameraNode = castEventData.CameraNode;
-			var parentEntityId = Cv_EntityID.INVALID_ENTITY; 
-			
-			if (castEventData.OwnersParent != null)
-			{
-				var entity = CaravelApp.Instance.GameLogic.GetEntity(castEventData.OwnersParent);
+			var parentId = castEventData.ParentID;
 
-				if (entity != null)
-				{
-					parentEntityId = entity.ID;
-				}
-			}
 
-			if (AddNodeAsChild(parentEntityId, entityId, cameraNode) && castEventData.IsDefault)
-			{
-				Camera = cameraNode;
-			}
+			AddNodeAsChild(parentId, entityId, cameraNode);
 		}
 
 		public void OnModifiedRenderComponent(Cv_Event eventData)
@@ -323,8 +301,18 @@ namespace Caravel.Core.Draw
 			m_TransformStack.RemoveAt(m_TransformStack.Count-1);
 		}
 
-		bool Pick(Vector2 screenPosition) {
+		public bool Pick(Vector2 screenPosition) {
             return m_Root.VPick(this, screenPosition);
         }
+
+		public void PrintTree()
+		{
+			m_Root.PrintTree(0);
+		}
+
+		internal void UpdateTransformStatus()
+		{
+			m_Root.UpdateTransformStatus();
+		}
     }
 }

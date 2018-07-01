@@ -9,7 +9,21 @@ namespace Caravel.Core.Entity
     {
         public float Zoom
         {
-            get; set;
+            get
+            {
+                return m_Zoom;
+            }
+
+            set
+            {
+                m_Zoom = value;
+
+                if (m_Zoom < 0.1)
+                {
+                    m_Zoom = 0.1f;
+                }
+                ZoomChanged = true;
+            }
         }
 
         public Cv_CameraNode CameraNode
@@ -18,18 +32,7 @@ namespace Caravel.Core.Entity
             {
                 if (m_CameraNode == null)
                 {
-                    var transformComponent = Owner.GetComponent<Cv_TransformComponent>();
-
-                    var x = 0;
-                    var y = 0;
-
-                    if (transformComponent != null)
-                    {
-                        x = (int) transformComponent.Transform.Position.X;
-                        x = (int) transformComponent.Transform.Position.Y;
-                    }
-
-                    m_CameraNode = new Cv_CameraNode(CameraName, x, y, Zoom);
+                    m_CameraNode = new Cv_CameraNode(Owner.ID, this);
                 }
 
                 return m_CameraNode;
@@ -51,12 +54,13 @@ namespace Caravel.Core.Entity
             get; protected set;
         }
 
-        public string OwnersParent
+        public bool ZoomChanged
         {
-            get; private set;
+            get; internal set;
         }
 
         private Cv_CameraNode m_CameraNode;
+        private float m_Zoom;
 
         protected internal override bool VInit(XmlElement componentData)
         {
@@ -74,11 +78,6 @@ namespace Caravel.Core.Entity
                 {
                     Zoom = (float) double.Parse(componentData.Attributes["zoom"].Value, CultureInfo.InvariantCulture);
                 }
-
-                if (componentData.Attributes["parent"] != null)
-                {
-                    OwnersParent = componentData.Attributes["parent"].Value;
-                }
             }
 
             //TODO(JM): Maybe add camera offset later
@@ -89,7 +88,7 @@ namespace Caravel.Core.Entity
         protected internal override bool VPostInit()
         {
             Cv_CameraNode cameraNode = this.CameraNode;
-            Cv_Event newEvent = new Cv_Event_NewCameraComponent(Owner.ID, cameraNode, IsDefaultCamera, OwnersParent);
+            Cv_Event newEvent = new Cv_Event_NewCameraComponent(Owner.ID, Owner.Parent, cameraNode, IsDefaultCamera);
             Cv_EventManager.Instance.TriggerEvent(newEvent);
             return true;
         }

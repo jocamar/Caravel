@@ -32,6 +32,8 @@ namespace Caravel.Core.Draw
             }
         }
 
+        internal Matrix CamMatrix;
+
         private double m_dScale;
         private float m_fRatioX;
         private float m_fRatioY;
@@ -130,9 +132,16 @@ namespace Caravel.Core.Draw
             }
             else
             {
-                var cameraTransformMatrix = camera.GetViewTransform(VirtualWidth, VirtualHeight, Transform).TransformMatrix;
+                var cameraTransform = camera.GetViewTransform(VirtualWidth, VirtualHeight, Transform);
+                if (camera.IsViewTransformDirty)
+                {
+                    CamMatrix = Matrix.CreateRotationZ(cameraTransform.Rotation) * Matrix.CreateTranslation(cameraTransform.Position.X, cameraTransform.Position.Y, 0)
+                                                * Matrix.CreateScale(cameraTransform.Scale.X, cameraTransform.Scale.Y, 1);
+                    camera.IsViewTransformDirty = false;
+                }
+
                 m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointClamp,
-                                        DepthStencilState.None, RasterizerState.CullNone, null, cameraTransformMatrix);
+                                        DepthStencilState.None, RasterizerState.CullNone, null, CamMatrix);
             }
         }
 

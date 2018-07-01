@@ -16,35 +16,40 @@ namespace Caravel.TestSamples
 
 		protected override void VGameOnUpdate(float time, float timeElapsed)
 		{
-            simpleGame.guntler.GetComponent<Cv_TransformComponent>().Transform.Rotation += timeElapsed / 1000;
+            simpleGame.guntler.GetComponent<Cv_TransformComponent>().Rotation += timeElapsed / 1000;
+
+            var camTransf = simpleGame.CameraEntity.GetComponent<Cv_TransformComponent>();
+            var camSettings = simpleGame.CameraEntity.GetComponent<Cv_CameraComponent>();
+
+            var profileTransf = simpleGame.profile.GetComponent<Cv_TransformComponent>();
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                simpleGame.pv.Camera.Move(new Vector2(-5,0));
+                camTransf.Position += new Vector3(-5,0,0);
             }
             
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                simpleGame.pv.Camera.Move(new Vector2(5, 0));
+                camTransf.Position += new Vector3(5, 0, 0);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                simpleGame.pv.Camera.Move(new Vector2(0,-5));
+                camTransf.Position += new Vector3(0,-5, 0);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                simpleGame.pv.Camera.Move(new Vector2(0, 5));
+                camTransf.Position += new Vector3(0, 5, 0);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
             {
-                simpleGame.pv.Camera.Zoom += 0.01f;
+                camSettings.Zoom += 0.01f;
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.E))
             {
-                simpleGame.pv.Camera.Zoom -= 0.01f;
+                camSettings.Zoom -= 0.01f;
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
@@ -71,6 +76,26 @@ namespace Caravel.TestSamples
                 {
                     guybrushSprite.Speed = 0;
                 }
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                profileTransf.Position += new Vector3(-5,0,0);
+            }
+            
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                profileTransf.Position += new Vector3(5, 0, 0);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                profileTransf.Rotation += timeElapsed / 1000;
+            }
+            
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                profileTransf.Rotation -= timeElapsed / 1000;
             }
 		}
 	}

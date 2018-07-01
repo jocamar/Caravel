@@ -41,9 +41,7 @@ namespace Caravel.Core
 
 			set
 			{
-				m_Scene.RemoveNode(Cv_EntityID.INVALID_ENTITY);
 				m_Camera = value;
-				m_Scene.AddNode(Cv_EntityID.INVALID_ENTITY, Camera);
 			}
         }
 
@@ -163,6 +161,7 @@ namespace Caravel.Core
                 {
                     if (se == m_Scene)
                     {
+                        m_Scene.UpdateTransformStatus();
                         m_Renderer.BeginDraw(Camera);
                         m_Scene.Camera = Camera;
                     }
@@ -217,12 +216,31 @@ namespace Caravel.Core
         {
             //Cv_EventManager.Instance.AddListener<Cv_Event_PlaySound>(OnPlaySound);
             //Cv_EventManager.Instance.AddListener<Cv_Event_NewState>(OnGameState);
+            Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
         }
 
         private void RemoveEventListeners()
         {
             //Cv_EventManager.Instance.RemoveListener<Cv_Event_PlaySound>(OnPlaySound);
             //Cv_EventManager.Instance.RemoveListener<Cv_Event_NewState>(OnGameState);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
+        }
+
+        public void OnNewCameraComponent(Cv_Event eventData)
+		{
+			var castEventData = (Cv_Event_NewCameraComponent) eventData;
+			var cameraNode = castEventData.CameraNode;
+            var isDefault = castEventData.IsDefault;
+
+            if (isDefault)
+            {
+                Camera = cameraNode;
+            }
+		}
+
+        public void PrintScene()
+        {
+            m_Scene.PrintTree();
         }
     }
 }

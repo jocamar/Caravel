@@ -8,15 +8,34 @@ namespace Caravel.Core.Draw
 {
     public class Cv_SpriteNode : Cv_SceneNode
     {
+        public override float Radius
+        {
+            get
+            {
+                if (Properties.Radius < 0)
+                {
+                    var transf = Parent.Transform;
+                    var originFactorX = Math.Abs(transf.Origin.X - 0.5) + 0.5;
+                    var originFactorY = Math.Abs(transf.Origin.Y - 0.5) + 0.5;
+                    var originFactor = (float) Math.Max(originFactorX, originFactorY);
+
+                    var comp = ((Cv_SpriteComponent) m_Component);
+                    Properties.Radius = (float) Math.Sqrt(comp.Width*comp.Width + comp.Height*comp.Height) * originFactor;
+                    Properties.Radius *= Math.Max(transf.Scale.X, transf.Scale.Y);
+                }
+
+                return Properties.Radius;
+            }
+        }
+
         public Cv_SpriteNode(Cv_Entity.Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform from = null) : base(entityID, renderComponent, to, from)
         {
             var comp = ((Cv_SpriteComponent) renderComponent);
-            Radius = (float) Math.Sqrt(comp.Width*comp.Width + comp.Height*comp.Height)/2;
         }
 
         public override void VRender(Cv_SceneElement scene)
         {
-            var spriteComponent = (Cv_SpriteComponent) m_RenderComponent;
+            var spriteComponent = (Cv_SpriteComponent) m_Component;
 
             var resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture);
             var tex = resource.GetTexture().Texture;
@@ -43,7 +62,7 @@ namespace Caravel.Core.Draw
 
         public override bool VOnChanged(Cv_SceneElement scene)
         {
-            var comp = ((Cv_SpriteComponent) m_RenderComponent);
+            var comp = ((Cv_SpriteComponent) m_Component);
             Radius = (float) Math.Sqrt(comp.Width*comp.Width + comp.Height*comp.Height)/2;
             return true;
         }
@@ -55,10 +74,6 @@ namespace Caravel.Core.Draw
         public override bool VIsVisible(Cv_SceneElement scene)
         {
             return true;
-        }
-
-        public override void VPostRender(Cv_SceneElement scene)
-        {
         }
     }
 }

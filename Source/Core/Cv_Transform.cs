@@ -57,7 +57,7 @@ namespace Caravel.Core
 
 		public static Cv_Transform Multiply(Cv_Transform t1, Cv_Transform t2)
 		{
-            var newMatrix = t1.TransformMatrix * t2.TransformMatrix;
+            var newMatrix = t2.TransformMatrix * t1.TransformMatrix;
             var newTransform = new Cv_Transform();
             newTransform.TransformMatrix = newMatrix;
             newTransform.Origin = t2.Origin;

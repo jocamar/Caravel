@@ -28,6 +28,11 @@ namespace Caravel.Core.Entity
             get; private set;
         }
 
+        public Cv_EntityID Parent
+        {
+            get; private set;
+        }
+
         private Dictionary<Cv_ComponentID, Cv_EntityComponent> m_ComponentMap;
         private List<Cv_EntityComponent> m_ComponentList;
         private List<Cv_EntityComponent> m_ComponentsToAdd;
@@ -90,9 +95,10 @@ namespace Caravel.Core.Entity
             Cv_Debug.Log("Entity", "Destroying entity " + (int) ID);
         }
 
-        internal bool Init(XmlElement typeData)
+        internal bool Init(XmlElement typeData, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
         {
             EntityType = typeData.Attributes["type"].Value;
+            Parent = parent;
             Cv_Debug.Log("Entity", "Initializing entity " + (int) ID + " of type " + EntityType);
             return true;
         }
