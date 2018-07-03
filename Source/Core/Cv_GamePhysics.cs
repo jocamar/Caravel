@@ -13,8 +13,8 @@ namespace Caravel.Core
 
         // Initialization of Physics Objects
         public abstract void VAddSphere(float radius, Cv_Entity gameEntity, /*const Mat4x4& initialTransform, */string densityStr, string physicsMaterial);
-        public abstract void VAddBox(Vector2 dimensions, Cv_Entity gameEntity, /*const Mat4x4& initialTransform, */ string densityStr, string physicsMaterial);
-        public abstract void VAddPointShape(Vector2 verts, int numPoints, Cv_Entity gameEntity, /*const Mat4x4& initialTransform, */ string densityStr, string physicsMaterial);
+		public abstract void VAddBox(Vector2 dimensions, Cv_Entity gameEntity, /*const Mat4x4& initialTransform, */ string densityStr, string physicsMaterial);
+		public abstract void VAddPointShape(Vector2 verts, int numPoints, Cv_Entity gameEntity, /*const Mat4x4& initialTransform, */ string densityStr, string physicsMaterial);
         public abstract void VRemoveEntity(Cv_EntityID id);
 
         // Debugging

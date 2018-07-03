@@ -25,7 +25,7 @@ namespace Caravel.Core
 
         public struct ShapeBoundingBox
         {
-            public Vector2 Start { get; internal set; }
+			public Vector2 Start { get; internal set; }
             public float Width { get; internal set; }
             public float Height { get; internal set; }
         }
@@ -36,7 +36,7 @@ namespace Caravel.Core
             }
         }
 
-        public Vector2 AnchorPoint
+		public Vector2 AnchorPoint
         {
             get
             {
@@ -153,11 +153,17 @@ namespace Caravel.Core
 
         public Cv_CollisionShape(Vertices points, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
         {
-            bool error = points.CheckPolygon();
-            if (error)
-            {
-                //TODO(JM) add checks
-            }
+			PolygonError error = points.CheckPolygon();
+			if (error == PolygonError.AreaTooSmall || error == PolygonError.SideTooSmall)
+				throw new NotImplementedException("CollisionShape does not support shapes of that size.");
+			if (error == PolygonError.InvalidAmountOfVertices)
+				throw new NotImplementedException("CollisionShape does not yet support shapes with over 8 or under 1 vertex.");
+			if (error == PolygonError.NotConvex)
+				throw new NotImplementedException("CollisionShape does not support non convex shapes.");
+			if (error == PolygonError.NotCounterClockWise)
+				throw new NotImplementedException("CollisionShape does not support non counter-clockwise shapes.");
+			if (error == PolygonError.NotSimple)
+				throw new NotImplementedException("CollisionShape does not support non simple shapes.");
 
             Points = points;
 
