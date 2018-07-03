@@ -2,6 +2,15 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v2.0": {
+      "FarseerPhysicsXNA/3.3.1": {
+        "type": "package",
+        "compile": {
+          "lib/FarseerPhysicsXNA.dll": {}
+        },
+        "runtime": {
+          "lib/FarseerPhysicsXNA.dll": {}
+        }
+      },
       "Microsoft.NETCore.App/2.0.0": {
         "type": "package",
         "dependencies": {
@@ -290,6 +299,16 @@
     }
   },
   "libraries": {
+    "FarseerPhysicsXNA/3.3.1": {
+      "sha512": "SCWCeCdxhKgU/Omovu5BdxIEmvGye0gtHV0Ab1hvVEcYvzPWZOciJhixdtp5El5p0Yo11laWejt5I/NRLO5KPA==",
+      "type": "package",
+      "path": "farseerphysicsxna/3.3.1",
+      "files": [
+        "farseerphysicsxna.3.3.1.nupkg.sha512",
+        "farseerphysicsxna.nuspec",
+        "lib/FarseerPhysicsXNA.dll"
+      ]
+    },
     "Microsoft.NETCore.App/2.0.0": {
       "sha512": "/mzXF+UtZef+VpzzN88EpvFq5U6z4rj54ZMq/J968H6pcvyLOmcupmTRpJ3CJm8ILoCGh9WI7qpDdiKtuzswrQ==",
       "type": "package",
@@ -886,6 +905,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
+      "FarseerPhysicsXNA >= 3.3.1",
       "Microsoft.NETCore.App >= 2.0.0",
       "MonoGame.Content.Builder >= 3.7.0.4",
       "MonoGame.Framework.DesktopGL.Core >= 3.7.0.7",
@@ -932,6 +952,10 @@
     "frameworks": {
       "netcoreapp2.0": {
         "dependencies": {
+          "FarseerPhysicsXNA": {
+            "target": "Package",
+            "version": "[3.3.1, )"
+          },
           "Microsoft.NETCore.App": {
             "suppressParent": "All",
             "target": "Package",
@@ -962,5 +986,17 @@
         "warn": true
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'FarseerPhysicsXNA 3.3.1' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "FarseerPhysicsXNA",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v2.0"
+      ]
+    }
+  ]
 }

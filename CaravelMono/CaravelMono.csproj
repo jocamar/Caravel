@@ -64,6 +64,9 @@
     <Compile Include="..\Source\Core\Draw\Cv_HolderNode.cs">
       <Link>Source\Core\Draw\Cv_HolderNode.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Cv_FarseerPhysics.cs">
+      <Link>Source\Core\Cv_FarseerPhysics.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Cv_GameLogic.cs">
       <Link>Source\Core\Cv_GameLogic.cs</Link>
     </Compile>
@@ -81,6 +84,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Cv_NetworkManager.cs">
       <Link>Source\Core\Cv_NetworkManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Cv_NullPhysics.cs">
+      <Link>Source\Core\Cv_NullPhysics.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_PlayerView.cs">
       <Link>Source\Core\Cv_PlayerView.cs</Link>

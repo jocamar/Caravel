@@ -10,8 +10,6 @@ using static Caravel.Core.Cv_GameLogic;
 namespace Caravel.TestSamples
 {
 	//TODO(JM):
-    //Test parent relations between nodes
-	//TransformEntity
 	//Add missing events (ChangeState evt for example)
 	//InputManager
 	//ProcessManager
@@ -39,7 +37,7 @@ namespace Caravel.TestSamples
 
         protected override Cv_GamePhysics VCreateGamePhysics()
         {
-            return new Cv_GamePhysics();
+            return null;// new Cv_GamePhysics();
         }
 
         protected override Cv_GameView[] VCreateGameViews()

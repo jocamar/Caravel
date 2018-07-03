@@ -50,7 +50,7 @@ namespace Caravel.Core
                 if (m_bIsProxy)
                 {
                     Cv_EventManager.Instance.AddListener<Cv_Event_RequestNewEntity>(OnRequestNewEntity);
-                    //GamePhysics = new Cv_NullPhysics();
+                    GamePhysics = Cv_GamePhysics.CreateNullPhysics();
                 }
             }
         }
