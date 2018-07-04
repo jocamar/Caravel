@@ -41,6 +41,7 @@ namespace Caravel.Core.Events
                 Instance = this;
             }
 
+			m_RealTimeEventQueue = new ConcurrentQueue<Cv_Event>();
             m_EventListeners = new Dictionary<Cv_EventType, List<NewEventDelegate>>();
             
             m_EventQueues = new LinkedList<Cv_Event>[NUM_QUEUES];

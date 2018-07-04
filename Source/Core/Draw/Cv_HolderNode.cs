@@ -12,7 +12,7 @@ namespace Caravel.Core.Draw
         {
             get
             {
-                UpdateTransformStatus();
+                //UpdateTransformStatus();
 
                 if (TransformChanged)
                 {
@@ -63,7 +63,7 @@ namespace Caravel.Core.Draw
             base.VPostRender(scene);
             scene.PopTransform();
 
-            Cv_Entity entity = CaravelApp.Instance.GameLogic.GetEntity(Properties.EntityID);
+           /* Cv_Entity entity = CaravelApp.Instance.GameLogic.GetEntity(Properties.EntityID);
 
             if (entity != null)
             {
@@ -73,7 +73,7 @@ namespace Caravel.Core.Draw
                 {
                     tranformComponent.TransformChanged = false;
                 }
-            }
+			}*/
         }
 
         public override void VRender(Cv_SceneElement scene)

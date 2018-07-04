@@ -6,19 +6,13 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_NewEntity : Cv_Event
     {
-        public Cv_EntityID EntityID
-        {
-            get; private set;
-        }
-
         public Cv_GameViewID GameViewID
         {
             get; private set;
         }
 
-        public Cv_Event_NewEntity(Cv_EntityID entityID, Cv_GameViewID gameViewId = 0)
+        public Cv_Event_NewEntity(Cv_EntityID entityID, Cv_GameViewID gameViewId = 0) : base(entityID)
         {
-            EntityID = entityID;
             GameViewID = gameViewId;
         }
 

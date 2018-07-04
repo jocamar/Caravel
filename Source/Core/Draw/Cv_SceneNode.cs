@@ -93,6 +93,20 @@ namespace Caravel.Core.Draw
             }
         }
 
+		public virtual Vector2 Origin
+        {
+            get
+            {
+                return Properties.ToWorld.Origin;
+            }
+
+            set
+            {
+                Properties.ToWorld.Origin = value;
+                TransformChanged = true;
+            }
+        }
+
         public virtual float Rotation
         {
             get

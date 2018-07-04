@@ -268,14 +268,17 @@ namespace Caravel.Core.Draw
 
 		public void OnMoveEntity(Cv_Event eventData)
 		{
-			Cv_Event_TransformEntity transformEntity = (Cv_Event_TransformEntity) eventData;
 			
 			List<Cv_SceneNode> nodes = null;
-			if (m_EntitiesMap.TryGetValue(transformEntity.EntityID, out nodes))
+			if (m_EntitiesMap.TryGetValue(eventData.EntityID, out nodes))
 			{
+				Cv_Event_TransformEntity transformEntity = (Cv_Event_TransformEntity) eventData;
 				if (nodes.Count > 0)
 				{
-					nodes[0].Parent.Transform = transformEntity.Transform;
+					nodes[0].Parent.Position = transformEntity.NewPosition;
+					nodes[0].Parent.Scale = transformEntity.NewScale;
+					nodes[0].Parent.Origin = transformEntity.NewOrigin;
+					nodes[0].Parent.Rotation = transformEntity.NewRotation;
 				}
 			}
 		}

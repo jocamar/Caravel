@@ -318,5 +318,9 @@ namespace Caravel.Core.Entity
         {
             throw new System.NotImplementedException();
         }
-    }
+
+		protected internal override void VPostLoad()
+		{
+		}
+	}
 }

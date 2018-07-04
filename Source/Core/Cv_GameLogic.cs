@@ -5,6 +5,7 @@ using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
+using Microsoft.Xna.Framework;
 using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;
@@ -298,7 +299,7 @@ namespace Caravel.Core
             return null;
         }
 
-        public void TransformEntity(Cv_EntityID entityId, Cv_Transform transform)
+        public void TransformEntity(Cv_EntityID entityId, Vector3 newPos, Vector2 newScale, float newRot)
         {
 
         }
@@ -375,6 +376,11 @@ namespace Caravel.Core
             {
                 var postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript);
             }
+
+			foreach (var e in Entities)
+			{
+				e.Value.PostLoad();
+			}
 
             if (IsProxy)
             {
@@ -542,7 +548,7 @@ namespace Caravel.Core
         private void TransformEntityCallback(Cv_Event eventData)
         {
             Cv_Event_TransformEntity data = (Cv_Event_TransformEntity) eventData;
-            TransformEntity(data.EntityID, data.Transform);
+            TransformEntity(data.EntityID, data.NewPosition, data.NewScale, data.NewRotation);
         }
 
         private void RequestNewEntityCallback(Cv_Event eventData)

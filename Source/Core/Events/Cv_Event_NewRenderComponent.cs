@@ -6,11 +6,6 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_NewRenderComponent : Cv_Event
     {
-        public Cv_EntityID EntityID
-        {
-            get; private set;
-        }
-
         public Cv_EntityID ParentID
         {
             get; private set;
@@ -21,9 +16,8 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_NewRenderComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_SceneNode sceneNode)
+        public Cv_Event_NewRenderComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_SceneNode sceneNode) : base(entityID)
         {
-            EntityID = entityID;
             ParentID = parentId;
             SceneNode = sceneNode;
         }

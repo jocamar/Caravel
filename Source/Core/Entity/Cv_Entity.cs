@@ -111,6 +111,14 @@ namespace Caravel.Core.Entity
             }
         }
 
+		internal void PostLoad()
+        {
+            foreach(var component in m_ComponentMap)
+            {
+                component.Value.VPostLoad();
+            }
+        }
+
         internal void OnUpdate(float timeElapsed)
         {
             foreach (var component in m_ComponentsToAdd)

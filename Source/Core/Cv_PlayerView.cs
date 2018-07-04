@@ -161,7 +161,7 @@ namespace Caravel.Core
                 {
                     if (se == m_Scene)
                     {
-                        m_Scene.UpdateTransformStatus();
+                        //m_Scene.UpdateTransformStatus();
                         m_Renderer.BeginDraw(Camera);
                         m_Scene.Camera = Camera;
                     }

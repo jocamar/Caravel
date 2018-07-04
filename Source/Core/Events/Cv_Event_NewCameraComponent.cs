@@ -6,11 +6,6 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_NewCameraComponent : Cv_Event
     {
-        public Cv_EntityID EntityID
-        {
-            get; private set;
-        }
-
         public Cv_EntityID ParentID
         {
             get; private set;
@@ -26,9 +21,8 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_NewCameraComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_CameraNode cameraNode, bool isDefault)
+        public Cv_Event_NewCameraComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_CameraNode cameraNode, bool isDefault) : base(entityID)
         {
-            EntityID = entityID;
             ParentID = parentId;
             CameraNode = cameraNode;
             IsDefault = isDefault;

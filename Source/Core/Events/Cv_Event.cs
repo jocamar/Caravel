@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Events
 {
@@ -23,13 +24,19 @@ namespace Caravel.Core.Events
             }
         }
 
+		public Cv_EntityID EntityID
+        {
+            get; private set;
+        }
+
         public float TimeStamp
         {
             get; private set;
         }
 
-        public Cv_Event(float timeStamp = 0.0f)
+        public Cv_Event(Cv_EntityID entityId, float timeStamp = 0.0f)
         {
+			EntityID = entityId;
             TimeStamp = timeStamp;
         }
 

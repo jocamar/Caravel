@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Xml;
+using Caravel.Core.Events;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 
@@ -34,8 +35,9 @@ namespace Caravel.Core.Entity
 
             set
             {
-                Transform.Position = value;
                 TransformChanged = true;
+				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, value, Transform.Scale, Transform.Origin, Transform.Rotation);
+				Cv_EventManager.Instance.TriggerEvent(newEvent);
             }
         }
 
@@ -48,8 +50,9 @@ namespace Caravel.Core.Entity
 
             set
             {
-                Transform.Scale = value;
                 TransformChanged = true;
+				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, value, Transform.Origin, Transform.Rotation);
+				Cv_EventManager.Instance.TriggerEvent(newEvent);
             }
         }
 
@@ -62,8 +65,9 @@ namespace Caravel.Core.Entity
 
             set
             {
-                Transform.Rotation = value;
                 TransformChanged = true;
+				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, Transform.Scale, Transform.Origin, value);
+				Cv_EventManager.Instance.TriggerEvent(newEvent);
             }
         }
 
@@ -76,8 +80,9 @@ namespace Caravel.Core.Entity
 
             set
             {
-                Transform.Origin = value;
                 TransformChanged = true;
+				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, Transform.Scale, value, Transform.Rotation);
+				Cv_EventManager.Instance.TriggerEvent(newEvent);
             }
         }
 
@@ -150,8 +155,16 @@ namespace Caravel.Core.Entity
 
         protected internal override bool VPostInit()
         {
+			var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation);
+			Cv_EventManager.Instance.QueueEvent(newEvent);
+			Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
             return true;
         }
+
+		protected internal override void VPostLoad()
+		{
+
+		}
 
         protected internal override void VOnChanged()
         {
@@ -184,5 +197,18 @@ namespace Caravel.Core.Entity
 
             return componentData;
         }
+
+		private void OnTransformEntity(Cv_Event transformEvent)
+		{
+			if (transformEvent.EntityID == Owner.ID)
+			{
+				var tEvent = (Cv_Event_TransformEntity) transformEvent;
+
+				Transform.Position = tEvent.NewPosition;
+				Transform.Scale = tEvent.NewScale;
+				Transform.Rotation = tEvent.NewRotation;
+				Transform.Origin = tEvent.NewOrigin;
+			}
+		}
     }
 }

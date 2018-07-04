@@ -5,14 +5,8 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_DestroyEntity : Cv_Event
     {
-        public Cv_EntityID EntityID
+        public Cv_Event_DestroyEntity(Cv_EntityID entityID) : base(entityID)
         {
-            get; private set;
-        }
-
-        public Cv_Event_DestroyEntity(Cv_EntityID entityID)
-        {
-            EntityID = entityID;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

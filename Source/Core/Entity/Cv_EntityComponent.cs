@@ -53,6 +53,8 @@ namespace Caravel.Core.Entity
 
         protected internal abstract bool VPostInit();
 
+		protected internal abstract void VPostLoad();
+
         protected internal abstract void VOnUpdate(float deltaTime);
 
         protected internal abstract void VOnChanged();
