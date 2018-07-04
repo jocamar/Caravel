@@ -1,5 +1,6 @@
 using System;
 using Caravel.Core.Entity;
+using Caravel.Debugging;
 using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
@@ -13,13 +14,13 @@ namespace Caravel.Core
         {
             get
             {
-                return points;
+                return m_Points;
             }
 
             set
             {
                 IsDirty = true;
-                points = value;
+                m_Points = value;
             }
         }
 
@@ -40,13 +41,13 @@ namespace Caravel.Core
         {
             get
             {
-                return anchorPoint;
+                return m_AnchorPoint;
             }
 
             set
             {
                 IsDirty = true;
-                anchorPoint = value;
+                m_AnchorPoint = value;
             }
         }
 
@@ -54,13 +55,13 @@ namespace Caravel.Core
         {
             get
             {
-                return isSensor;
+                return m_bIsSensor;
             }
 
             set
             {
                 IsDirty = true;
-                isSensor = value;
+                m_bIsSensor = value;
             }
         }
 
@@ -68,13 +69,13 @@ namespace Caravel.Core
         {
             get
             {
-                return isBullet;
+                return m_bIsBullet;
             }
 
             set
             {
                 IsDirty = true;
-                isBullet = value;
+                m_bIsBullet = value;
             }
         }
 
@@ -82,13 +83,13 @@ namespace Caravel.Core
         {
             get
             {
-                return density;
+                return m_fDensity;
             }
 
             set
             {
                 IsDirty = true;
-                density = value;
+                m_fDensity = value;
             }
         }
 
@@ -96,13 +97,13 @@ namespace Caravel.Core
         {
             get
             {
-                return friction;
+                return m_fFriction;
             }
 
             set
             {
                 IsDirty = true;
-                friction = value;
+                m_fFriction = value;
             }
         }
 
@@ -110,13 +111,13 @@ namespace Caravel.Core
         {
             get
             {
-                return categories;
+                return m_Categories;
             }
 
             set
             {
                 IsDirty = true;
-                categories = value;
+                m_Categories = value;
             }
         }
 
@@ -124,13 +125,13 @@ namespace Caravel.Core
         {
             get
             {
-                return collidesWith;
+                return m_CollidesWith;
             }
 
             set
             {
                 IsDirty = true;
-                collidesWith = value;
+                m_CollidesWith = value;
             }
         }
 
@@ -142,28 +143,38 @@ namespace Caravel.Core
         internal Cv_Entity Owner { get; set; }
         internal bool IsDirty { get; set; }
 
-        private Vertices points;
-        private Vector2 anchorPoint;
-        private bool isSensor;
-        private bool isBullet;
-        private float density;
-        private float friction;
-        private Category categories;
-        private Category collidesWith;
+        private Vertices m_Points;
+        private Vector2 m_AnchorPoint;
+        private bool m_bIsSensor;
+        private bool m_bIsBullet;
+        private float m_fDensity;
+        private float m_fFriction;
+        private Category m_Categories;
+        private Category m_CollidesWith;
 
         public Cv_CollisionShape(Vertices points, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
         {
 			PolygonError error = points.CheckPolygon();
 			if (error == PolygonError.AreaTooSmall || error == PolygonError.SideTooSmall)
-				throw new NotImplementedException("CollisionShape does not support shapes of that size.");
+            {
+				Cv_Debug.Error("CollisionShape does not support shapes of that size.");
+            }
 			if (error == PolygonError.InvalidAmountOfVertices)
-				throw new NotImplementedException("CollisionShape does not yet support shapes with over 8 or under 1 vertex.");
+            {
+				Cv_Debug.Error("CollisionShape does not yet support shapes with over 8 or under 1 vertex.");
+            }
 			if (error == PolygonError.NotConvex)
-				throw new NotImplementedException("CollisionShape does not support non convex shapes.");
+            {
+				Cv_Debug.Error("CollisionShape does not support non convex shapes.");
+            }
 			if (error == PolygonError.NotCounterClockWise)
-				throw new NotImplementedException("CollisionShape does not support non counter-clockwise shapes.");
+            {
+				Cv_Debug.Error("CollisionShape does not support non counter-clockwise shapes.");
+            }
 			if (error == PolygonError.NotSimple)
-				throw new NotImplementedException("CollisionShape does not support non simple shapes.");
+            {
+				Cv_Debug.Error("CollisionShape does not support non simple shapes.");
+            }
 
             Points = points;
 
@@ -224,7 +235,7 @@ namespace Caravel.Core
             float maxX = float.MinValue;
             float maxY = float.MinValue;
 
-            foreach (var point in points)
+            foreach (var point in m_Points)
             {
                 var transformedPoint = new Vector2(point.X - offsetX, point.Y - offsetY);
                 transformedPoint = Vector2.Transform(transformedPoint, rotMatrixZ);
