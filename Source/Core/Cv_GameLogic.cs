@@ -522,8 +522,8 @@ namespace Caravel.Core
 
                     if (GamePhysics != null && !IsProxy)
                     {
-                        //GamePhysics.VOnUpdate(timeElapsed);
-                        //GamePhysics.SyncVisibleScene();
+                        GamePhysics.VOnUpdate(timeElapsed);
+                        GamePhysics.VSyncVisibleScene();
                     }
                     break;
                 default:

@@ -22,7 +22,7 @@ namespace Caravel.Core
         {
         }
 
-        public override void VApplyTorque(Vector2 dir, float newtons, Cv_EntityID entityId)
+        public override void VApplyTorque(float newtons, Cv_EntityID entityId)
         {
         }
 
@@ -30,12 +30,12 @@ namespace Caravel.Core
         {
         }
 
-        public override Vector2 VGetAngularVelocity(Cv_EntityID entityId)
+        public override float VGetAngularVelocity(Cv_EntityID entityId)
         {
-            return Vector2.Zero;
+            return 0;
         }
 
-        public override float VGetOrientationY(Cv_EntityID entityId)
+        public override float VGetOrientation(Cv_EntityID entityId)
         {
             return 0;
         }
@@ -55,11 +55,6 @@ namespace Caravel.Core
             return true;
         }
 
-        public override bool VKinematicMove(Cv_Transform transf, Cv_EntityID entityId)
-        {
-            return false;
-        }
-
         public override void VOnUpdate(float deltaSeconds)
         {
         }
@@ -72,11 +67,11 @@ namespace Caravel.Core
         {
         }
 
-        public override void VRotateY(Cv_Entity entityId, float angleRadians, float time)
+        public override void VRotate(Cv_EntityID entityId, float angleRadians, float time)
         {
         }
 
-        public override void VSetAngularVelocity(Cv_EntityID entityId, Vector2 vel)
+        public override void VSetAngularVelocity(Cv_EntityID entityId, float vel)
         {
         }
 
@@ -88,7 +83,7 @@ namespace Caravel.Core
         {
         }
 
-        public override void VStopentity(Cv_EntityID entityId)
+        public override void VStopEntity(Cv_EntityID entityId)
         {
         }
 

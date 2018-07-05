@@ -302,13 +302,5 @@ namespace Caravel.Core.Draw
                 n.PrintTree(level + 1);
             }
         }
-
-        internal virtual void UpdateTransformStatus()
-        {
-            foreach (var c in m_Children)
-            {
-                c.UpdateTransformStatus();
-            }
-        }
     }
 }

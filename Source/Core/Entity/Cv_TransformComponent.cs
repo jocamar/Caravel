@@ -21,7 +21,6 @@ namespace Caravel.Core.Entity
                 if (value != m_Transform)
                 {
                     m_Transform = value;
-                    TransformChanged = true;
                 }
             }
         }
@@ -35,7 +34,6 @@ namespace Caravel.Core.Entity
 
             set
             {
-                TransformChanged = true;
 				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, value, Transform.Scale, Transform.Origin, Transform.Rotation);
 				Cv_EventManager.Instance.TriggerEvent(newEvent);
             }
@@ -50,7 +48,6 @@ namespace Caravel.Core.Entity
 
             set
             {
-                TransformChanged = true;
 				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, value, Transform.Origin, Transform.Rotation);
 				Cv_EventManager.Instance.TriggerEvent(newEvent);
             }
@@ -65,7 +62,6 @@ namespace Caravel.Core.Entity
 
             set
             {
-                TransformChanged = true;
 				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, Transform.Scale, Transform.Origin, value);
 				Cv_EventManager.Instance.TriggerEvent(newEvent);
             }
@@ -80,15 +76,9 @@ namespace Caravel.Core.Entity
 
             set
             {
-                TransformChanged = true;
 				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, Transform.Scale, value, Transform.Rotation);
 				Cv_EventManager.Instance.TriggerEvent(newEvent);
             }
-        }
-
-        public bool TransformChanged
-        {
-            get; internal set;
         }
 
         private Cv_Transform m_Transform;

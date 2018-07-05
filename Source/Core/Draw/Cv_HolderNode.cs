@@ -12,8 +12,6 @@ namespace Caravel.Core.Draw
         {
             get
             {
-                //UpdateTransformStatus();
-
                 if (TransformChanged)
                 {
                     foreach (var child in m_Children)
@@ -62,40 +60,10 @@ namespace Caravel.Core.Draw
         {
             base.VPostRender(scene);
             scene.PopTransform();
-
-           /* Cv_Entity entity = CaravelApp.Instance.GameLogic.GetEntity(Properties.EntityID);
-
-            if (entity != null)
-            {
-                Cv_TransformComponent tranformComponent = entity.GetComponent<Cv_TransformComponent>();
-
-                if (tranformComponent != null)
-                {
-                    tranformComponent.TransformChanged = false;
-                }
-			}*/
         }
 
         public override void VRender(Cv_SceneElement scene)
         {
-        }
-
-        internal override void UpdateTransformStatus()
-        {
-            base.UpdateTransformStatus();
-
-            Cv_Entity entity = CaravelApp.Instance.GameLogic.GetEntity(Properties.EntityID);
-
-            if (entity != null)
-            {
-                Cv_TransformComponent tranformComponent = entity.GetComponent<Cv_TransformComponent>();
-
-                if (tranformComponent != null)
-                {
-                    TransformChanged = tranformComponent.TransformChanged;
-                    Transform = tranformComponent.Transform;
-                }
-            }
         }
     }
 }

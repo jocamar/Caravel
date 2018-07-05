@@ -312,10 +312,5 @@ namespace Caravel.Core.Draw
 		{
 			m_Root.PrintTree(0);
 		}
-
-		internal void UpdateTransformStatus()
-		{
-			m_Root.UpdateTransformStatus();
-		}
     }
 }

@@ -241,13 +241,21 @@ namespace Caravel.Core
                 transformedPoint = Vector2.Transform(transformedPoint, rotMatrixZ);
 
                 if (transformedPoint.X < minX)
+                {
                     minX = transformedPoint.X;
+                }
                 if (transformedPoint.Y < minY)
+                {
                     minY = transformedPoint.Y;
+                }
                 if (transformedPoint.X > maxX)
+                {
                     maxX = transformedPoint.X;
+                }
                 if (transformedPoint.Y > maxY)
+                {
                     maxY = transformedPoint.Y;
+                }
             }
 
             var BoundingBox = new ShapeBoundingBox();

@@ -23,17 +23,16 @@ namespace Caravel.Core
         // Physics world modifiers
         public abstract void VCreateTrigger(Cv_Entity gameEntity, Vector2 pos, float dim);
         public abstract void VApplyForce(Vector2 dir, float newtons, Cv_EntityID entityId);
-        public abstract void VApplyTorque(Vector2 dir, float newtons, Cv_EntityID entityId);
-        public abstract bool VKinematicMove(Cv_Transform transf, Cv_EntityID entityId);
+        public abstract void VApplyTorque(float newtons, Cv_EntityID entityId);
         
         // Physics entity states
-        public abstract void VRotateY(Cv_Entity entityId, float angleRadians, float time);
-        public abstract float VGetOrientationY(Cv_EntityID entityId);
-        public abstract void VStopentity(Cv_EntityID entityId);
+        public abstract void VRotate(Cv_EntityID entityId, float angleRadians, float time);
+        public abstract float VGetOrientation(Cv_EntityID entityId);
+        public abstract void VStopEntity(Cv_EntityID entityId);
         public abstract Vector2 VGetVelocity(Cv_EntityID entityId);
         public abstract void VSetVelocity(Cv_EntityID entityId, Vector2 vel);
-        public abstract Vector2 VGetAngularVelocity(Cv_EntityID entityId);
-        public abstract void VSetAngularVelocity(Cv_EntityID entityId, Vector2 vel);
+        public abstract float VGetAngularVelocity(Cv_EntityID entityId);
+        public abstract void VSetAngularVelocity(Cv_EntityID entityId, float vel);
         public abstract void VTranslate(Cv_EntityID entityId, Vector2 vec);
 
         public abstract void VSetTransform(Cv_EntityID entityId, Cv_Transform transf);
