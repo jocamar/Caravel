@@ -108,7 +108,7 @@ namespace Caravel.Core.Events
 
         public bool TriggerEvent(Cv_Event newEvent)
         {
-            Cv_Debug.Log("Events", "Attempting to trigger event " + newEvent.VGetName());
+            //Cv_Debug.Log("Events", "Attempting to trigger event " + newEvent.VGetName());
             var processed = false;
 
             List<NewEventDelegate> listeners;
@@ -116,7 +116,7 @@ namespace Caravel.Core.Events
             {
                 foreach (var l in listeners)
                 {
-                    Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
+                    //Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
                     l(newEvent);
                     processed = true;
                 }

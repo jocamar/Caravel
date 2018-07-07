@@ -239,8 +239,6 @@ namespace Caravel
                 gv.VOnRender(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             }
 
-            m_GameLogic.VRenderDiagnostics();
-
             base.Draw(gameTime);
         }
 #endregion

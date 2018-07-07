@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Debugging;
-using FarseerPhysics.Common;
-using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -10,7 +11,41 @@ namespace Caravel.Core
 {
     public class Cv_CollisionShape
     {
-        public Vertices Points
+        public class Cv_CollisionCategories
+        {
+            private BitArray m_Categories = new BitArray(32);
+
+            public void AddCategory(int category)
+            {
+                if (category >= 32)
+                {
+                    Cv_Debug.Error("Invalid category. There are only 32 collision categories.");
+                    return;
+                }
+
+                m_Categories.Set(category, true);
+            }
+
+            public void RemoveCategory(int category)
+            {
+                if (category >= 32)
+                {
+                    Cv_Debug.Error("Invalid category. There are only 32 collision categories.");
+                    return;
+                }
+
+                m_Categories.Set(category, false);
+            }
+
+            public int GetCategories()
+            {
+                int[] array = new int[1];
+                m_Categories.CopyTo(array, 0);
+                return array[0];
+            }
+        }
+
+        public List<Vector2> Points
         {
             get
             {
@@ -107,7 +142,7 @@ namespace Caravel.Core
             }
         }
 
-        public Category CollisionCategories
+        public Cv_CollisionCategories CollisionCategories
         {
             get
             {
@@ -121,7 +156,7 @@ namespace Caravel.Core
             }
         }
 
-        public Category CollidesWith
+        public Cv_CollisionCategories CollidesWith
         {
             get
             {
@@ -143,39 +178,17 @@ namespace Caravel.Core
         internal Cv_Entity Owner { get; set; }
         internal bool IsDirty { get; set; }
 
-        private Vertices m_Points;
+        private List<Vector2> m_Points;
         private Vector2 m_AnchorPoint;
         private bool m_bIsSensor;
         private bool m_bIsBullet;
         private float m_fDensity;
         private float m_fFriction;
-        private Category m_Categories;
-        private Category m_CollidesWith;
+        private Cv_CollisionCategories m_Categories;
+        private Cv_CollisionCategories m_CollidesWith;
 
-        public Cv_CollisionShape(Vertices points, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
+        public Cv_CollisionShape(List<Vector2> points, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
         {
-			PolygonError error = points.CheckPolygon();
-			if (error == PolygonError.AreaTooSmall || error == PolygonError.SideTooSmall)
-            {
-				Cv_Debug.Error("CollisionShape does not support shapes of that size.");
-            }
-			if (error == PolygonError.InvalidAmountOfVertices)
-            {
-				Cv_Debug.Error("CollisionShape does not yet support shapes with over 8 or under 1 vertex.");
-            }
-			if (error == PolygonError.NotConvex)
-            {
-				Cv_Debug.Error("CollisionShape does not support non convex shapes.");
-            }
-			if (error == PolygonError.NotCounterClockWise)
-            {
-				Cv_Debug.Error("CollisionShape does not support non counter-clockwise shapes.");
-            }
-			if (error == PolygonError.NotSimple)
-            {
-				Cv_Debug.Error("CollisionShape does not support non simple shapes.");
-            }
-
             Points = points;
 
             if (anchorPoint == null)
@@ -186,8 +199,10 @@ namespace Caravel.Core
             IsBullet = isBullet;
             Density = density;
             Friction = 1f;
-            CollisionCategories = Category.Cat1;
-            CollidesWith = Category.Cat1;
+            CollisionCategories = new Cv_CollisionCategories();
+            CollidesWith = new Cv_CollisionCategories();
+            CollisionCategories.AddCategory(1);
+            CollidesWith.AddCategory(1);
 
             Owner = null;
             IsDirty = true;
@@ -195,7 +210,7 @@ namespace Caravel.Core
 
         public Cv_CollisionShape(Vector2 point, float radius, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
         {
-            Points = new Vertices();
+            Points = new List<Vector2>();
             Points.Add(point);
 
             if (anchorPoint == null)
@@ -208,9 +223,11 @@ namespace Caravel.Core
             IsBullet = isBullet;
             Density = density;
             Friction = 1f;
-            CollisionCategories = Category.Cat1;
-            CollidesWith = Category.Cat1;
-            //CircleOutlineTex = DrawUtils.CreateCircle((int) radius);
+            CollisionCategories = new Cv_CollisionCategories();
+            CollidesWith = new Cv_CollisionCategories();
+            CollisionCategories.AddCategory(1);
+            CollidesWith.AddCategory(1);
+            CircleOutlineTex = Cv_DrawUtils.CreateCircle((int) radius);
 
             Owner = null;
             IsDirty = true;
@@ -220,7 +237,7 @@ namespace Caravel.Core
         {
             if(Owner == null)
             {
-                throw new Exception("Shape is not yet associated with an Entity.");
+                Cv_Debug.Error("Shape not yet associated with an Entity.");
             }
 
             var rotation = Owner.GetComponent<Cv_TransformComponent>().Rotation;

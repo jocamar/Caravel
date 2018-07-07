@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
@@ -12,16 +14,20 @@ namespace Caravel.Core
         public abstract void VOnUpdate( float timeElapsed ); 
 
         // Initialization of Physics Objects
-        public abstract void VAddSphere(float radius, Cv_Entity gameEntity, /*const Mat4x4& initialTransform, */string densityStr, string physicsMaterial);
-		public abstract void VAddBox(Vector2 dimensions, Cv_Entity gameEntity, /*const Mat4x4& initialTransform, */ string densityStr, string physicsMaterial);
-		public abstract void VAddPointShape(Vector2 verts, int numPoints, Cv_Entity gameEntity, /*const Mat4x4& initialTransform, */ string densityStr, string physicsMaterial);
+        public abstract Cv_CollisionShape VAddCircle(float radius, Vector2 anchor, Cv_Entity gameEntity,
+                                                        string densityStr, string physicsMaterial, bool isBullet);
+		public abstract Cv_CollisionShape VAddBox(Vector2 dimensions, Vector2 anchor, Cv_Entity gameEntity,
+                                                        string densityStr, string physicsMaterial, bool isBullet);
+		public abstract Cv_CollisionShape VAddPointShape(List<Vector2> verts, Vector2 anchor, Cv_Entity gameEntity,
+                                                        string densityStr, string physicsMaterial, bool isBullet);
+        public abstract Cv_CollisionShape VCreateTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet);
         public abstract void VRemoveEntity(Cv_EntityID id);
+        public abstract void RemoveCollisionObject(Cv_CollisionShape toRemove);
 
         // Debugging
-        public abstract void VRenderDiagnostics();
+        public abstract void VRenderDiagnostics(Cv_Renderer renderer);
 
-        // Physics world modifiers
-        public abstract void VCreateTrigger(Cv_Entity gameEntity, Vector2 pos, float dim);
+        // Physics world modifiers 
         public abstract void VApplyForce(Vector2 dir, float newtons, Cv_EntityID entityId);
         public abstract void VApplyTorque(float newtons, Cv_EntityID entityId);
         

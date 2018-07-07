@@ -100,6 +100,8 @@ namespace Caravel.Core
             m_Renderer.VirtualHeight = vHeight;
             m_Renderer.Init();
 
+            Cv_DrawUtils.Initialize();
+
             m_Scene = new Cv_SceneElement(m_Renderer);
         }
 
@@ -174,11 +176,16 @@ namespace Caravel.Core
                     m_Renderer.EndDraw();
                 }
             }
-            m_Renderer.ResetViewport();
 
             VRenderText();
 
+            m_Renderer.BeginDraw(Camera);
+            CaravelApp.Instance.GameLogic.VRenderDiagnostics(m_Renderer);
+            m_Renderer.EndDraw();
+
             //m_Console.OnRender();
+
+            m_Renderer.ResetViewport();
         }
 
         protected internal override void VOnUpdate(float time, float timeElapsed)

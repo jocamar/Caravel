@@ -281,6 +281,11 @@ namespace Caravel.Debugging
                 ushort flags;
                 if (m_Tags.TryGetValue(tag, out flags))
                 {
+                    if ((flags & CV_LOGFLAG_WRITETODEBUGGER) <= 0 && (flags & CV_LOGFLAG_WRITETOFILE) <= 0)
+                    {
+                        return;
+                    }
+
                     string finalString = GetOutputString(tag, message, funcName, sourceFile, lineNum);
                     if ((flags & CV_LOGFLAG_WRITETOFILE) > 0)
                     {

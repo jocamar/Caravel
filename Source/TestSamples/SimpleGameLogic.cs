@@ -8,6 +8,7 @@ namespace Caravel.TestSamples
 	public class SimpleGameLogic : Cv_GameLogic
 	{
 		private SimpleGame simpleGame;
+        int entities = 0;
 
 		public SimpleGameLogic(SimpleGame app) : base(app)
 		{
@@ -22,6 +23,7 @@ namespace Caravel.TestSamples
             var camSettings = simpleGame.CameraEntity.GetComponent<Cv_CameraComponent>();
 
             var profileTransf = simpleGame.profile.GetComponent<Cv_TransformComponent>();
+            var profileRigidBody = simpleGame.profile.GetComponent<Cv_RigidBodyComponent>();
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 camTransf.Position += new Vector3(-5,0,0);
@@ -80,12 +82,12 @@ namespace Caravel.TestSamples
 
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                profileTransf.Position += new Vector3(-5,0,0);
+                profileRigidBody.Impulse = new Vector3(-500,0,0);
             }
             
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                profileTransf.Position += new Vector3(5, 0, 0);
+                profileRigidBody.Impulse += new Vector3(500, 0, 0);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
@@ -96,6 +98,12 @@ namespace Caravel.TestSamples
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
                 profileTransf.Rotation -= timeElapsed / 1000;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.R))
+            {
+                CreateEntity("entities/zombie.xml", "entity_" + entities);
+                entities++;
             }
 		}
 	}

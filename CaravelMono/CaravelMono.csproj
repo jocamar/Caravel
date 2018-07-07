@@ -109,8 +109,14 @@
     <Compile Include="..\Source\Core\Draw\Cv_CameraNode.cs">
       <Link>Source\Core\Draw\Cv_CameraNode.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Draw\Cv_DrawUtils.cs">
+      <Link>Source\Core\Draw\Cv_DrawUtils.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Draw\Cv_HolderNode.cs">
       <Link>Source\Core\Draw\Cv_HolderNode.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Draw\Cv_LineBatch.cs">
+      <Link>Source\Core\Draw\Cv_LineBatch.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Draw\Cv_Renderer.cs">
       <Link>Source\Core\Draw\Cv_Renderer.cs</Link>
@@ -165,6 +171,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCameraComponent.cs">
       <Link>Source\Core\Events\Cv_Event_NewCameraComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_NewCollisionShape.cs">
+      <Link>Source\Core\Events\Cv_Event_NewCollisionShape.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewEntity.cs">
       <Link>Source\Core\Events\Cv_Event_NewEntity.cs</Link>

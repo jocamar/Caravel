@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
@@ -6,16 +8,26 @@ namespace Caravel.Core
 {
     public class Cv_NullPhysics : Cv_GamePhysics
     {
-        public override void VAddBox(Vector2 dimensions, Cv_Entity gameentity, string densityStr, string physicsMaterial)
+        public override void RemoveCollisionObject(Cv_CollisionShape toRemove)
         {
         }
 
-        public override void VAddPointShape(Vector2 verts, int numPoints, Cv_Entity gameentity, string densityStr, string physicsMaterial)
+        public override Cv_CollisionShape VAddBox(Vector2 dimensions, Vector2 anchor, Cv_Entity gameEntity,
+                                                    string densityStr, string physicsMaterial, bool isBullet)
         {
+            return null;
         }
 
-        public override void VAddSphere(float radius, Cv_Entity entity, string densityStr, string physicsMaterial)
+        public override Cv_CollisionShape VAddPointShape(List<Vector2> verts, Vector2 anchor, Cv_Entity gameEntity,
+                                                        string densityStr, string physicsMaterial, bool isBullet)
         {
+            return null;
+        }
+
+        public override Cv_CollisionShape VAddCircle(float radius, Vector2 anchor, Cv_Entity gameEntity,
+                                                        string densityStr, string physicsMaterial, bool isBullet)
+        {
+            return null;
         }
 
         public override void VApplyForce(Vector2 dir, float newtons, Cv_EntityID entityId)
@@ -26,8 +38,9 @@ namespace Caravel.Core
         {
         }
 
-        public override void VCreateTrigger(Cv_Entity gameEntity, Vector2 pos, float dim)
+        public override Cv_CollisionShape VCreateTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet)
         {
+            return null;
         }
 
         public override float VGetAngularVelocity(Cv_EntityID entityId)
@@ -63,7 +76,7 @@ namespace Caravel.Core
         {
         }
 
-        public override void VRenderDiagnostics()
+        public override void VRenderDiagnostics(Cv_Renderer renderer)
         {
         }
 

@@ -268,7 +268,6 @@ namespace Caravel.Core.Draw
 
 		public void OnMoveEntity(Cv_Event eventData)
 		{
-			
 			List<Cv_SceneNode> nodes = null;
 			if (m_EntitiesMap.TryGetValue(eventData.EntityID, out nodes))
 			{

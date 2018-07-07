@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Core.Resource;
@@ -192,6 +193,7 @@ namespace Caravel.Core
             m_EntityFactory = VCreateEntityFactory();
             m_SceneController.Init(Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml"));
             Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntity);
+            GamePhysics.VInitialize();
         }
 
 #region Entity methods
@@ -239,6 +241,8 @@ namespace Caravel.Core
 
                 Entities.Add(entity.ID, entity);
 				EntitiesByName.Add(entity.EntityName, entity);
+
+                entity.PostInit();
 
                 if (!IsProxy && State == Cv_GameState.SpawningPlayerEntities || State == Cv_GameState.Running)
                 {
@@ -447,9 +451,9 @@ namespace Caravel.Core
             //Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
         }
 
-        public void VRenderDiagnostics()
+        public void VRenderDiagnostics(Cv_Renderer renderer)
         {
-
+            GamePhysics.VRenderDiagnostics(renderer);
         }
 
         public void AttachProcess(Cv_Process process)

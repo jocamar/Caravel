@@ -20,6 +20,7 @@ namespace Caravel.Core.Entity
             m_ComponentFactory.Register<Cv_TransformComponent>(Cv_EntityComponent.GetID<Cv_TransformComponent>());
             m_ComponentFactory.Register<Cv_SpriteComponent>(Cv_EntityComponent.GetID<Cv_SpriteComponent>());
             m_ComponentFactory.Register<Cv_CameraComponent>(Cv_EntityComponent.GetID<Cv_CameraComponent>());
+            m_ComponentFactory.Register<Cv_RigidBodyComponent>(Cv_EntityComponent.GetID<Cv_RigidBodyComponent>());
         }
 
         protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
@@ -70,8 +71,6 @@ namespace Caravel.Core.Entity
             {
                 tranformComponent.Transform = initialTransform;
             }
-
-            entity.PostInit();
             
             return entity;
         }

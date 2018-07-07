@@ -226,10 +226,6 @@ namespace Caravel.Core.Draw
 
                     child.VRenderChildren(scene);
                 }
-                else
-                {
-                    Console.WriteLine(child.Name + " is not visible");
-                }
 
                 child.VPostRender(scene);
             }

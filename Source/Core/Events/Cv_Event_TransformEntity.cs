@@ -11,7 +11,7 @@ namespace Caravel.Core.Events
             get; private set;
 		}*/
 
-		public Vector3 OldPosition
+		public Vector3? OldPosition
 		{
 			get; private set;
 		}
@@ -21,7 +21,7 @@ namespace Caravel.Core.Events
 			get; private set;
 		}
 
-		public Vector2 OldScale
+		public Vector2? OldScale
 		{
 			get; private set;
 		}
@@ -31,7 +31,7 @@ namespace Caravel.Core.Events
 			get; private set;
 		}
 
-		public Vector2 OldOrigin
+		public Vector2? OldOrigin
 		{
 			get; private set;
 		}
@@ -41,7 +41,7 @@ namespace Caravel.Core.Events
 			get; private set;
 		}
 
-		public float OldRotation
+		public float? OldRotation
 		{
 			get; private set;
 		}
@@ -58,10 +58,14 @@ namespace Caravel.Core.Events
 			NewScale = newScale;
 			NewRotation = newRotation;
 			NewOrigin = newOrigin;
-			OldPosition = oldTransform.Position;
-			OldScale = oldTransform.Scale;
-			OldRotation = oldTransform.Rotation;
-			OldOrigin = oldTransform.Origin;
+
+			if (oldTransform != null)
+			{
+				OldPosition = oldTransform.Position;
+				OldScale = oldTransform.Scale;
+				OldRotation = oldTransform.Rotation;
+				OldOrigin = oldTransform.Origin;
+			}
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

@@ -88,6 +88,11 @@ namespace Caravel.Core.Entity
             Transform = new Cv_Transform();
         }
 
+        ~Cv_TransformComponent()
+        {
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
+        }
+
         protected internal override bool VInit(XmlElement componentData)
         {
             Cv_Debug.Assert(componentData != null, "Must have valid component data.");
@@ -121,8 +126,8 @@ namespace Caravel.Core.Entity
             {
                 float x, y;
 
-                x = int.Parse(scaleNode.Attributes["x"].Value);
-                y = int.Parse(scaleNode.Attributes["y"].Value);
+                x = float.Parse(scaleNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
+                y = float.Parse(scaleNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
 
                 var scale = new Vector2(x,y);
                 Transform.Scale = scale;
@@ -145,7 +150,7 @@ namespace Caravel.Core.Entity
 
         protected internal override bool VPostInit()
         {
-			var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation);
+			var newEvent = new Cv_Event_TransformEntity(Owner.ID, null, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation);
 			Cv_EventManager.Instance.QueueEvent(newEvent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
             return true;
