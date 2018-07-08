@@ -57,10 +57,12 @@ namespace Caravel.Core.Draw
         {
 			if (m_Root != null && Camera != null)
 			{
-				m_Root.VPreRender(this);
-				m_Root.VRender(this);
-				m_Root.VRenderChildren(this);
-				m_Root.VPostRender(this);
+				Renderer.BeginDraw(Camera);
+					m_Root.VPreRender(this);
+					m_Root.VRender(this);
+					m_Root.VRenderChildren(this);
+					m_Root.VPostRender(this);
+				Renderer.EndDraw();
 			}
         }
 
@@ -303,8 +305,12 @@ namespace Caravel.Core.Draw
 			m_TransformStack.RemoveAt(m_TransformStack.Count-1);
 		}
 
-		public bool Pick(Vector2 screenPosition) {
-            return m_Root.VPick(this, screenPosition);
+		public bool Pick(Vector2 mousePosition, out Cv_EntityID[] entities) {
+			var entityList = new List<Cv_EntityID>();
+			var screenPosition = Renderer.ScaleMouseToScreenCoordinates(mousePosition);
+			var result = m_Root.VPick(this, screenPosition, entityList);
+			entities = entityList.ToArray();
+            return result;
         }
 
 		public void PrintTree()

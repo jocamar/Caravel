@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using Caravel.Core.Entity;
 using Caravel.Core.Resource;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Draw
 {
@@ -74,6 +76,62 @@ namespace Caravel.Core.Draw
         public override bool VIsVisible(Cv_SceneElement scene)
         {
             return true;
+        }
+
+        public override bool VPick(Cv_SceneElement scene, Vector2 screenPosition, List<Cv_EntityID> entities)
+        {
+            var camMatrix = scene.Renderer.CamMatrix;
+            var worldTransform = Parent.WorldTransform;
+            var pos = new Vector2(worldTransform.Position.X, worldTransform.Position.Y);
+            var rot = worldTransform.Rotation;
+            var scale = worldTransform.Scale;
+
+            var spriteComponent = (Cv_SpriteComponent) m_Component;
+            var resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture);
+            var tex = resource.GetTexture().Texture;
+            var frameW = tex.Width / spriteComponent.FrameX;
+			var frameH = tex.Height / spriteComponent.FrameY;
+
+            var transformedVertices = new List<Vector2>();
+            var point1 = new Vector2(-(worldTransform.Origin.X * spriteComponent.Width * scale.X),
+                                     -(worldTransform.Origin.Y * spriteComponent.Height * scale.Y));
+
+            var point2 = new Vector2(point1.X + (spriteComponent.Width * scale.X),
+                                     point1.Y);
+
+            var point3 = new Vector2(point2.X,
+                                     point1.Y + (spriteComponent.Height * scale.Y));
+
+            var point4 = new Vector2(point1.X,
+                                     point3.Y);
+
+            Matrix rotMat = Matrix.CreateRotationZ(rot);
+            point1 = Vector2.Transform(point1, rotMat);
+            point2 = Vector2.Transform(point2, rotMat);
+            point3 = Vector2.Transform(point3, rotMat);
+            point4 = Vector2.Transform(point4, rotMat);
+
+            point1 += pos;
+            point2 += pos;
+            point3 += pos;
+            point4 += pos;
+
+            transformedVertices.Add(point1);
+            transformedVertices.Add(point2);
+            transformedVertices.Add(point3);
+            transformedVertices.Add(point4);
+
+            var invertedTransform = Matrix.Invert(camMatrix);
+            var worldPoint = Vector2.Transform(screenPosition, invertedTransform);
+            if (Cv_DrawUtils.PointInPolygon(worldPoint, transformedVertices))
+            {
+                entities.Add(Properties.EntityID);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ using System.IO;
 using Caravel.Core;
 using Caravel.Core.Draw;
 using Caravel.Core.Entity;
+using Caravel.Core.Physics;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,10 +11,9 @@ using static Caravel.Core.Cv_GameLogic;
 namespace Caravel.TestSamples
 {
 	//TODO(JM):
-	//Add missing events (ChangeState evt for example)
+    //Check weird z ordering
 	//InputManager
 	//ProcessManager
-	//Physics integration
 	//more... (see commented code)
     public class SimpleGame : CaravelApp
     {
@@ -68,6 +68,7 @@ namespace Caravel.TestSamples
 
         protected internal override bool VInitialize()
         {
+            IsMouseVisible = true;
             GameLogic.ChangeState(Cv_GameState.LoadingGameEnvironment);
             return true;
         }

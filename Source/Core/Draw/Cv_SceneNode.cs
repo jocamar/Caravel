@@ -273,17 +273,18 @@ namespace Caravel.Core.Draw
             return false;
         }
 
-        public virtual bool VPick(Cv_SceneElement scene,  Vector2 screenPosition)
+        public virtual bool VPick(Cv_SceneElement scene,  Vector2 screenPosition, List<Cv_EntityID> entities)
         {
+            var success = false;
             foreach (var child in m_Children)
             {
-                if (!child.VPick(scene, screenPosition))
+                if (child.VPick(scene, screenPosition, entities))
                 {
-                    return false;
+                    success = true;
                 }
             }
 
-            return true;
+            return success;
         }
 
         public void PrintTree(int level)

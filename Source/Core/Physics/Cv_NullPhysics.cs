@@ -4,7 +4,7 @@ using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
 
-namespace Caravel.Core
+namespace Caravel.Core.Physics
 {
     public class Cv_NullPhysics : Cv_GamePhysics
     {
@@ -38,7 +38,7 @@ namespace Caravel.Core
         {
         }
 
-        public override Cv_CollisionShape VCreateTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet)
+        public override Cv_CollisionShape VAddTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet)
         {
             return null;
         }
@@ -46,16 +46,6 @@ namespace Caravel.Core
         public override float VGetAngularVelocity(Cv_EntityID entityId)
         {
             return 0;
-        }
-
-        public override float VGetOrientation(Cv_EntityID entityId)
-        {
-            return 0;
-        }
-
-        public override Cv_Transform VGetTransform(Cv_EntityID entityId)
-        {
-            return null;
         }
 
         public override Vector2 VGetVelocity(Cv_EntityID entityId)
@@ -80,15 +70,7 @@ namespace Caravel.Core
         {
         }
 
-        public override void VRotate(Cv_EntityID entityId, float angleRadians, float time)
-        {
-        }
-
         public override void VSetAngularVelocity(Cv_EntityID entityId, float vel)
-        {
-        }
-
-        public override void VSetTransform(Cv_EntityID entityId, Cv_Transform transf)
         {
         }
 
@@ -101,10 +83,6 @@ namespace Caravel.Core
         }
 
         public override void VSyncVisibleScene()
-        {
-        }
-
-        public override void VTranslate(Cv_EntityID entityId, Vector2 vec)
         {
         }
     }

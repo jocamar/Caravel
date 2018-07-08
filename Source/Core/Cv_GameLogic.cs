@@ -4,6 +4,7 @@ using System.Xml;
 using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
+using Caravel.Core.Physics;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
@@ -402,7 +403,7 @@ namespace Caravel.Core
 
         public void ChangeState(Cv_GameState newState)
         {
-            //var changedStateEvt = new Cv_Event_NewState(State, newState);
+            var changedStateEvt = new Cv_Event_ChangeState(State, newState);
 
             if (newState == Cv_GameState.WaitingForPlayers)
             {
@@ -431,7 +432,7 @@ namespace Caravel.Core
             {
                 State = newState;
                 VGameOnChangeState(newState);
-                //Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
+                Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
 
                 if (!Caravel.VLoadGame())
                 {
@@ -448,7 +449,7 @@ namespace Caravel.Core
 
             State = newState;
             VGameOnChangeState(newState);
-            //Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
+            Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
         }
 
         public void VRenderDiagnostics(Cv_Renderer renderer)

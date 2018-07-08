@@ -7,7 +7,7 @@ using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Caravel.Core
+namespace Caravel.Core.Physics
 {
     public class Cv_CollisionShape
     {
@@ -47,16 +47,7 @@ namespace Caravel.Core
 
         public List<Vector2> Points
         {
-            get
-            {
-                return m_Points;
-            }
-
-            set
-            {
-                IsDirty = true;
-                m_Points = value;
-            }
+            get; set;
         }
 
         public struct ShapeBoundingBox
@@ -74,118 +65,49 @@ namespace Caravel.Core
 
 		public Vector2 AnchorPoint
         {
-            get
-            {
-                return m_AnchorPoint;
-            }
-
-            set
-            {
-                IsDirty = true;
-                m_AnchorPoint = value;
-            }
+            get; set;
         }
 
         public bool IsSensor
         {
-            get
-            {
-                return m_bIsSensor;
-            }
-
-            set
-            {
-                IsDirty = true;
-                m_bIsSensor = value;
-            }
+            get; set;
         }
 
         public bool IsBullet
         {
-            get
-            {
-                return m_bIsBullet;
-            }
-
-            set
-            {
-                IsDirty = true;
-                m_bIsBullet = value;
-            }
+            get; set;
         }
 
         public float Density
         {
-            get
-            {
-                return m_fDensity;
-            }
-
-            set
-            {
-                IsDirty = true;
-                m_fDensity = value;
-            }
+            get; set;
         }
 
         public float Friction
         {
-            get
-            {
-                return m_fFriction;
-            }
+            get; set;
+        }
 
-            set
-            {
-                IsDirty = true;
-                m_fFriction = value;
-            }
+        public float Restitution
+        {
+            get; set;
         }
 
         public Cv_CollisionCategories CollisionCategories
         {
-            get
-            {
-                return m_Categories;
-            }
-
-            set
-            {
-                IsDirty = true;
-                m_Categories = value;
-            }
+            get; set;
         }
 
         public Cv_CollisionCategories CollidesWith
         {
-            get
-            {
-                return m_CollidesWith;
-            }
-
-            set
-            {
-                IsDirty = true;
-                m_CollidesWith = value;
-            }
+            get; set;
         }
 
         public bool IsCircle { get; private set; }
-        public float Radius { get; set; } //TODO make this set the dirty flag and improve code
-                                            //TODO add subclasses (RectShape, CircleShape, PolygonShape) to simplify
+        public float Radius { get; set; } //TODO(JM): add subclasses (RectShape, CircleShape, PolygonShape) to simplify
         public Texture2D CircleOutlineTex { get; private set; }
 
         internal Cv_Entity Owner { get; set; }
-        internal bool IsDirty { get; set; }
-
-        private List<Vector2> m_Points;
-        private Vector2 m_AnchorPoint;
-        private bool m_bIsSensor;
-        private bool m_bIsBullet;
-        private float m_fDensity;
-        private float m_fFriction;
-        private Cv_CollisionCategories m_Categories;
-        private Cv_CollisionCategories m_CollidesWith;
 
         public Cv_CollisionShape(List<Vector2> points, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
         {
@@ -205,7 +127,6 @@ namespace Caravel.Core
             CollidesWith.AddCategory(1);
 
             Owner = null;
-            IsDirty = true;
         }
 
         public Cv_CollisionShape(Vector2 point, float radius, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
@@ -230,7 +151,6 @@ namespace Caravel.Core
             CircleOutlineTex = Cv_DrawUtils.CreateCircle((int) radius);
 
             Owner = null;
-            IsDirty = true;
         }
 
         private ShapeBoundingBox CalculateAABoundingBox()
@@ -252,7 +172,7 @@ namespace Caravel.Core
             float maxX = float.MinValue;
             float maxY = float.MinValue;
 
-            foreach (var point in m_Points)
+            foreach (var point in Points)
             {
                 var transformedPoint = new Vector2(point.X - offsetX, point.Y - offsetY);
                 transformedPoint = Vector2.Transform(transformedPoint, rotMatrixZ);

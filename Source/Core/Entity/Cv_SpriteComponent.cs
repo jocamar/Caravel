@@ -197,10 +197,20 @@ namespace Caravel.Core.Entity
 
             if (animationNode != null)
             {
+                if (animationNode.Attributes["fx"] != null)
+                {
+                    FrameX = int.Parse(animationNode.Attributes["fx"].Value);
+                }
 
-                FrameX = int.Parse(animationNode.Attributes["fx"].Value);
-                FrameY = int.Parse(animationNode.Attributes["fy"].Value);
-                Looping = bool.Parse(animationNode.Attributes["loop"].Value);
+                if (animationNode.Attributes["fy"] != null)
+                {
+                    FrameY = int.Parse(animationNode.Attributes["fy"].Value);
+                }
+
+                if (animationNode.Attributes["loop"] != null)
+                {
+                    Looping = bool.Parse(animationNode.Attributes["loop"].Value);
+                }
                 
                 if (animationNode.Attributes["speed"] != null)
                 {

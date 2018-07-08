@@ -92,19 +92,6 @@ namespace Caravel.Core.Entity
 
         public bool UseEntityRotation { get; set; }
 
-        public string Density
-        {
-            get
-            {
-                return m_sDensity;
-            }
-
-            private set
-            {
-                m_sDensity = value;
-            }
-        }
-
         public string Material
         {
             get
@@ -214,8 +201,8 @@ namespace Caravel.Core.Entity
                         return false;
                 }
 
-                shapeData.Material = m_sMaterial;
-                shapeData.Density = m_sDensity;
+                shapeData.Material = shape.Attributes?["material"].Value;
+                shapeData.Density = shape.Attributes?["density"].Value;
 
                 int x, y;
 
@@ -262,7 +249,6 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnChanged()
         {
-            throw new System.NotImplementedException();
         }
 
         protected internal override void VOnUpdate(float deltaTime)

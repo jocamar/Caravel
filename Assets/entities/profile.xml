@@ -1,6 +1,6 @@
 <EntityType type="jocamarProfile" resource="entities/profile.xml">
     <Cv_TransformComponent>
-        <Position x="0" y="0" z="1"/>
+        <Position x="250" y="-250" z="1"/>
         <Scale x="1" y="1" />
         <Rotation radians="0" />
         <Origin x="0" y="0" />
@@ -10,4 +10,12 @@
         <Size width="250" height="250" />
         <Color r="255" g="255" b="255" />
     </Cv_SpriteComponent>
+    <Cv_RigidBodyComponent>
+        <Material material="Wood" density="Wood"/>
+        <Physics fixedRotation="false" gravityScale="1" maxVelocity="100" maxAngVelocity="100"/>
+        <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
+	    <CollisionShapes>
+            <Box anchorX="-125" anchorY="-125" isBullet="false" dimensionsX="250" dimensionsY="250" material="Wood" density="Wood"/>
+        </CollisionShapes>
+    </Cv_RigidBodyComponent>
 </EntityType>

@@ -163,17 +163,10 @@ namespace Caravel.Core
                 {
                     if (se == m_Scene)
                     {
-                        m_Renderer.BeginDraw(Camera);
                         m_Scene.Camera = Camera;
-                    }
-                    else
-                    {
-                        m_Renderer.BeginDraw();
                     }
 
                     se.VOnRender(time, timeElapsed);
-
-                    m_Renderer.EndDraw();
                 }
             }
 
@@ -215,20 +208,22 @@ namespace Caravel.Core
 
         internal void OnGameState(Cv_Event eventData)
         {
-            //set m_GameState
+            var newStateEvt = (Cv_Event_ChangeState) eventData;
+
+            m_GameState = newStateEvt.NewState;
         }
 
         private void RegisterEventListeners()
         {
             //Cv_EventManager.Instance.AddListener<Cv_Event_PlaySound>(OnPlaySound);
-            //Cv_EventManager.Instance.AddListener<Cv_Event_NewState>(OnGameState);
+            Cv_EventManager.Instance.AddListener<Cv_Event_ChangeState>(OnGameState);
             Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
         }
 
         private void RemoveEventListeners()
         {
             //Cv_EventManager.Instance.RemoveListener<Cv_Event_PlaySound>(OnPlaySound);
-            //Cv_EventManager.Instance.RemoveListener<Cv_Event_NewState>(OnGameState);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_ChangeState>(OnGameState);
             Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
         }
 
@@ -247,6 +242,11 @@ namespace Caravel.Core
         public void PrintScene()
         {
             m_Scene.PrintTree();
+        }
+
+        public bool Pick(Vector2 mousePos, out Cv_EntityID[] entities)
+        {
+            return m_Scene.Pick(mousePos, out entities);
         }
     }
 }

@@ -16,7 +16,7 @@ using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
 
-namespace Caravel.Core
+namespace Caravel.Core.Physics
 {
     public class Cv_FarseerPhysics : Cv_GamePhysics
     {
@@ -54,15 +54,7 @@ namespace Caravel.Core
 
         public int Screen2WorldRatio
         {
-            get
-            {
-                return m_iScreenToWorldRatio;
-            }
-
-            set
-            {
-                m_iScreenToWorldRatio = value;
-            }
+            get; set;
         }
 
         public bool DebugDraw = true;
@@ -70,19 +62,13 @@ namespace Caravel.Core
         private Dictionary<Cv_EntityID, Cv_PhysicsEntity> m_PhysicsEntities;
         private Dictionary<string, float> m_DensityTable;
         private Dictionary<string, Cv_PhysicsMaterial> m_MaterialsTable;
-        private int m_iScreenToWorldRatio = 30;
 
         private readonly World m_World;
 
         public Cv_FarseerPhysics()
         {
-            //Register events
-            /*REGISTER_EVENT(EvtData_PhysTrigger_Enter);
-            REGISTER_EVENT(EvtData_PhysTrigger_Leave);
-            REGISTER_EVENT(EvtData_PhysCollision);
-            REGISTER_EVENT(EvtData_PhysSeparation);*/
-
             m_World = new World(Vector2.Zero);
+            Screen2WorldRatio = 30;
 
             m_PhysicsEntities = new Dictionary<Cv_EntityID, Cv_PhysicsEntity>();
             m_DensityTable = new Dictionary<string, float>();
@@ -114,21 +100,7 @@ namespace Caravel.Core
 
             if (!m_PhysicsEntities.ContainsKey(gameEntity.ID))
             {
-                body = BodyFactory.CreateBody(m_World);
-                var shapeMap = new Dictionary<Cv_CollisionShape, Fixture>();
-                var physicsEntity = new Cv_PhysicsEntity();
-                physicsEntity.Body = body;
-                physicsEntity.Entity = gameEntity;
-                physicsEntity.Shapes = shapeMap;
-
-                m_PhysicsEntities.Add(gameEntity.ID, physicsEntity);
-
-                if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Kinematic)
-                    body.BodyType = BodyType.Kinematic;
-                else if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Static)
-                    body.BodyType = BodyType.Static;
-                else
-                    body.BodyType = BodyType.Dynamic;
+                body = CreateNewBody(gameEntity);
             }
             
             body = m_PhysicsEntities[gameEntity.ID].Body;
@@ -148,14 +120,12 @@ namespace Caravel.Core
                 Cv_Debug.Error("Material does not exist on the physics system.");
                 return null;
             }
-
-            if (!m_DensityTable.TryGetValue(densityStr, out density))
+            else if (!m_DensityTable.TryGetValue(densityStr, out density))
             {
                 Cv_Debug.Error("Density does not exist on the physics system.");
                 return null;
             }
-
-            if (!CheckPolygonValidity(verts))
+            else if (!CheckPolygonValidity(verts))
             {
                 return null;
             }
@@ -163,40 +133,9 @@ namespace Caravel.Core
             var shape = new Cv_CollisionShape(verts, anchor, density, false, isBullet);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
+            shape.Restitution = material.Restitution;
             
-            var collisionShape = new Vertices();
-            var offsetX = shape.AnchorPoint.X;
-            var offsetY = shape.AnchorPoint.Y;
-
-            foreach (var vertice in shape.Points)
-            {
-                collisionShape.Add(ToWorldCoord(new Vector2(vertice.X - offsetX, vertice.Y - offsetY)));
-            }
-
-            Fixture fixture = null;
-
-            body.Friction = shape.Friction;
-            body.Restitution = material.Restitution;
-            fixture = body.CreateFixture(new PolygonShape(collisionShape, shape.Density), shape);
-
-            fixture.Restitution = material.Restitution;
-            fixture.IsSensor = shape.IsSensor;
-            fixture.Friction = shape.Friction;
-            fixture.CollisionCategories = (Category) shape.CollisionCategories.GetCategories();
-            fixture.CollidesWith = (Category) shape.CollidesWith.GetCategories();
-
-            fixture.OnCollision = OnNewCollisionPair;
-            fixture.BeforeCollision = OnBeforeCollision;
-            fixture.OnSeparation = OnSeparation;
-            fixture.AfterCollision = OnAfterCollision;
-
-            m_PhysicsEntities[rigidBodyComponent.Owner.ID].Shapes[shape] = fixture;
-            shape.IsDirty = false;
-                
-            if (shape.IsBullet)
-                body.IsBullet = true;
-            
-            return shape;
+            return AddShape(gameEntity, shape, false);
         }
 
         public override Cv_CollisionShape VAddPointShape(List<Vector2> verts, Vector2 anchor, Cv_Entity gameEntity, string densityStr, string physicsMaterial, bool isBullet)
@@ -213,21 +152,7 @@ namespace Caravel.Core
 
             if (!m_PhysicsEntities.ContainsKey(gameEntity.ID))
             {
-                body = BodyFactory.CreateBody(m_World);
-                var shapeMap = new Dictionary<Cv_CollisionShape, Fixture>();
-                var physicsEntity = new Cv_PhysicsEntity();
-                physicsEntity.Body = body;
-                physicsEntity.Entity = gameEntity;
-                physicsEntity.Shapes = shapeMap;
-
-                m_PhysicsEntities.Add(gameEntity.ID, physicsEntity);
-
-                if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Kinematic)
-                    body.BodyType = BodyType.Kinematic;
-                else if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Static)
-                    body.BodyType = BodyType.Static;
-                else
-                    body.BodyType = BodyType.Dynamic;
+                body = CreateNewBody(gameEntity);
             }
             
             body = m_PhysicsEntities[gameEntity.ID].Body;
@@ -243,15 +168,12 @@ namespace Caravel.Core
                 Cv_Debug.Error("Material does not exist on the physics system.");
                 return null;
             }
-
-            if (!m_DensityTable.TryGetValue(densityStr, out density))
+            else if (!m_DensityTable.TryGetValue(densityStr, out density))
             {
                 Cv_Debug.Error("Density does not exist on the physics system.");
                 return null;
             }
-
-
-            if (!CheckPolygonValidity(vertices))
+            else if (!CheckPolygonValidity(vertices))
             {
                 return null;
             }
@@ -259,40 +181,9 @@ namespace Caravel.Core
             var shape = new Cv_CollisionShape(vertices, anchor, density, false, isBullet);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
+            shape.Restitution = material.Restitution;
             
-            var collisionShape = new Vertices();
-            var offsetX = shape.AnchorPoint.X;
-            var offsetY = shape.AnchorPoint.Y;
-
-            foreach (var vertice in shape.Points)
-            {
-                collisionShape.Add(ToWorldCoord(new Vector2(vertice.X - offsetX, vertice.Y - offsetY)));
-            }
-
-            Fixture fixture = null;
-
-            body.Friction = shape.Friction;
-            body.Restitution = material.Restitution;
-            fixture = body.CreateFixture(new PolygonShape(collisionShape, shape.Density), shape);
-
-            fixture.Restitution = material.Restitution;
-            fixture.IsSensor = shape.IsSensor;
-            fixture.Friction = shape.Friction;
-            fixture.CollisionCategories = (Category) shape.CollisionCategories.GetCategories();
-            fixture.CollidesWith = (Category) shape.CollidesWith.GetCategories();
-
-            fixture.OnCollision = OnNewCollisionPair;
-            fixture.BeforeCollision = OnBeforeCollision;
-            fixture.OnSeparation = OnSeparation;
-            fixture.AfterCollision = OnAfterCollision;
-
-            m_PhysicsEntities[rigidBodyComponent.Owner.ID].Shapes[shape] = fixture;
-            shape.IsDirty = false;
-                
-            if (shape.IsBullet)
-                body.IsBullet = true;
-            
-            return shape;
+            return AddShape(gameEntity, shape, false);
         }
 
         public override Cv_CollisionShape VAddCircle(float radius, Vector2 anchor, Cv_Entity gameEntity, string densityStr, string physicsMaterial, bool isBullet)
@@ -309,21 +200,7 @@ namespace Caravel.Core
 
             if (!m_PhysicsEntities.ContainsKey(gameEntity.ID))
             {
-                body = BodyFactory.CreateBody(m_World);
-                var shapeMap = new Dictionary<Cv_CollisionShape, Fixture>();
-                var physicsEntity = new Cv_PhysicsEntity();
-                physicsEntity.Body = body;
-                physicsEntity.Entity = gameEntity;
-                physicsEntity.Shapes = shapeMap;
-
-                m_PhysicsEntities.Add(gameEntity.ID, physicsEntity);
-
-                if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Kinematic)
-                    body.BodyType = BodyType.Kinematic;
-                else if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Static)
-                    body.BodyType = BodyType.Static;
-                else
-                    body.BodyType = BodyType.Dynamic;
+                body = CreateNewBody(gameEntity);
             }
             
             body = m_PhysicsEntities[gameEntity.ID].Body;
@@ -337,8 +214,7 @@ namespace Caravel.Core
                 Cv_Debug.Error("Material does not exist on the physics system.");
                 return null;
             }
-
-            if (!m_DensityTable.TryGetValue(densityStr, out density))
+            else if (!m_DensityTable.TryGetValue(densityStr, out density))
             {
                 Cv_Debug.Error("Density does not exist on the physics system.");
                 return null;
@@ -347,43 +223,12 @@ namespace Caravel.Core
             var shape = new Cv_CollisionShape(Vector2.Zero, radius, anchor, density, false, isBullet);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
+            shape.Restitution = material.Restitution;
             
-            var collisionShape = new Vertices();
-            var offsetX = shape.AnchorPoint.X;
-            var offsetY = shape.AnchorPoint.Y;
-
-            foreach (var vertice in shape.Points)
-            {
-                collisionShape.Add(ToWorldCoord(new Vector2(vertice.X - offsetX, vertice.Y - offsetY)));
-            }
-
-            Fixture fixture = null;
-
-            body.Friction = shape.Friction;
-            body.Restitution = material.Restitution;
-            fixture = FixtureFactory.AttachCircle(ToWorldCoord(shape.Radius), shape.Density, body, ToWorldCoord(new Vector2(offsetX, offsetY)), shape);
-
-            fixture.Restitution = material.Restitution;
-            fixture.IsSensor = shape.IsSensor;
-            fixture.Friction = shape.Friction;
-            fixture.CollisionCategories = (Category) shape.CollisionCategories.GetCategories();
-            fixture.CollidesWith = (Category) shape.CollidesWith.GetCategories();
-
-            fixture.OnCollision = OnNewCollisionPair;
-            fixture.BeforeCollision = OnBeforeCollision;
-            fixture.OnSeparation = OnSeparation;
-            fixture.AfterCollision = OnAfterCollision;
-
-            m_PhysicsEntities[rigidBodyComponent.Owner.ID].Shapes[shape] = fixture;
-            shape.IsDirty = false;
-                
-            if (shape.IsBullet)
-                body.IsBullet = true;
-            
-            return shape;
+            return AddShape(gameEntity, shape, false);
         }
 
-        public override Cv_CollisionShape VCreateTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet)
+        public override Cv_CollisionShape VAddTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet)
         {
             var rigidBodyComponent = gameEntity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -397,21 +242,7 @@ namespace Caravel.Core
 
             if (!m_PhysicsEntities.ContainsKey(gameEntity.ID))
             {
-                body = BodyFactory.CreateBody(m_World);
-                var shapeMap = new Dictionary<Cv_CollisionShape, Fixture>();
-                var physicsEntity = new Cv_PhysicsEntity();
-                physicsEntity.Body = body;
-                physicsEntity.Entity = gameEntity;
-                physicsEntity.Shapes = shapeMap;
-
-                m_PhysicsEntities.Add(gameEntity.ID, physicsEntity);
-
-                if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Kinematic)
-                    body.BodyType = BodyType.Kinematic;
-                else if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Static)
-                    body.BodyType = BodyType.Static;
-                else
-                    body.BodyType = BodyType.Dynamic;
+                body = CreateNewBody(gameEntity);
             }
             
             body = m_PhysicsEntities[gameEntity.ID].Body;
@@ -431,36 +262,7 @@ namespace Caravel.Core
             var shape = new Cv_CollisionShape(verts, pos, 1, true, isBullet);
             shape.Owner = gameEntity;
             
-            var collisionShape = new Vertices();
-            var offsetX = shape.AnchorPoint.X;
-            var offsetY = shape.AnchorPoint.Y;
-
-            foreach (var vertice in shape.Points)
-            {
-                collisionShape.Add(ToWorldCoord(new Vector2(vertice.X - offsetX, vertice.Y - offsetY)));
-            }
-
-            Fixture fixture = null;
-
-            fixture = body.CreateFixture(new PolygonShape(collisionShape, shape.Density), shape);
-
-            fixture.IsSensor = shape.IsSensor;
-            fixture.Friction = shape.Friction;
-            fixture.CollisionCategories = (Category) shape.CollisionCategories.GetCategories();
-            fixture.CollidesWith = (Category) shape.CollidesWith.GetCategories();
-
-            fixture.OnCollision = OnNewCollisionPair;
-            fixture.BeforeCollision = OnBeforeCollision;
-            fixture.OnSeparation = OnSeparation;
-            fixture.AfterCollision = OnAfterCollision;
-
-            m_PhysicsEntities[rigidBodyComponent.Owner.ID].Shapes[shape] = fixture;
-            shape.IsDirty = false;
-                
-            if (shape.IsBullet)
-                body.IsBullet = true;
-            
-            return shape;
+            return AddShape(gameEntity, shape, true);
         }
 
         public override void RemoveCollisionObject(Cv_CollisionShape toRemove)
@@ -522,42 +324,6 @@ namespace Caravel.Core
             return 0;
         }
 
-        public override float VGetOrientation(Cv_EntityID entityId)
-        {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
-
-            if (entity != null)
-            {
-                var transformComponent = entity.GetComponent<Cv_TransformComponent>();
-
-                if (transformComponent != null)
-                {
-                    return transformComponent.Rotation;
-                }
-            }
-
-            Cv_Debug.Error("Entity does not exist or does not have transform.");
-            return 0;
-        }
-
-        public override Cv_Transform VGetTransform(Cv_EntityID entityId)
-        {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
-
-            if (entity != null)
-            {
-                var transformComponent = entity.GetComponent<Cv_TransformComponent>();
-
-                if (transformComponent != null)
-                {
-                    return transformComponent.Transform;
-                }
-            }
-
-            Cv_Debug.Error("Entity does not exist or does not have transform.");
-            return null;
-        }
-
         public override Vector2 VGetVelocity(Cv_EntityID entityId)
         {
             var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
@@ -576,21 +342,6 @@ namespace Caravel.Core
             return Vector2.Zero;
         }
 
-         public override void VRotate(Cv_EntityID entityId, float angleRadians, float time)
-        {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
-
-            if (entity != null)
-            {
-                var transformComponent = entity.GetComponent<Cv_TransformComponent>();
-
-                if (transformComponent != null)
-                {
-                    transformComponent.Rotation += angleRadians;
-                }
-            }
-        }
-
         public override void VSetAngularVelocity(Cv_EntityID entityId, float vel)
         {
             var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
@@ -604,11 +355,6 @@ namespace Caravel.Core
                     rigidBodyComponent.AngularVelocity = vel;
                 }
             }
-        }
-
-        public override void VSetTransform(Cv_EntityID entityId, Cv_Transform transf)
-        {
-            throw new System.NotImplementedException();
         }
 
         public override void VSetVelocity(Cv_EntityID entityId, Vector2 vel)
@@ -709,7 +455,7 @@ namespace Caravel.Core
 
         public override void VStopEntity(Cv_EntityID entityId)
         {
-            throw new System.NotImplementedException();
+            VSetVelocity(entityId, Vector2.Zero);
         }
 
         public override void VSyncVisibleScene()
@@ -748,11 +494,6 @@ namespace Caravel.Core
             }
         }
 
-        public override void VTranslate(Cv_EntityID entityId, Vector2 vec)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void OnNewCollisionShape(Cv_Event eventData)
         {
             var newCollisionEvt = (Cv_Event_NewCollisionShape) eventData;
@@ -768,7 +509,7 @@ namespace Caravel.Core
                     VAddBox(shapeData.Dimensions, shapeData.Anchor, entity, shapeData.Density, shapeData.Material, shapeData.IsBullet);
                     break;
                 case Cv_RigidBodyComponent.ShapeType.Trigger:
-                    VCreateTrigger(entity, shapeData.Anchor, shapeData.Dimensions.X, shapeData.IsBullet);
+                    VAddTrigger(entity, shapeData.Anchor, shapeData.Dimensions.X, shapeData.IsBullet);
                     break;
                 default:
                     var points = new List<Vector2>(shapeData.Points);
@@ -853,9 +594,81 @@ namespace Caravel.Core
             }
         }
 
-        private void AddShape(Cv_Entity entity, Cv_CollisionShape shape, float mass, string physicsMaterial)
+        private Cv_CollisionShape AddShape(Cv_Entity entity, Cv_CollisionShape shape, bool isTrigger)
         {
+            var body = m_PhysicsEntities[entity.ID].Body;
+            var rigidBodyComponent = entity.GetComponent<Cv_RigidBodyComponent>();
+            var collisionShape = new Vertices();
+            var offsetX = shape.AnchorPoint.X;
+            var offsetY = shape.AnchorPoint.Y;
 
+            foreach (var vertice in shape.Points)
+            {
+                collisionShape.Add(ToWorldCoord(new Vector2(vertice.X - offsetX, vertice.Y - offsetY)));
+            }
+
+            Fixture fixture = null;
+
+            if (!isTrigger)
+            {
+                var material = m_MaterialsTable[rigidBodyComponent.Material];
+                body.Friction = material.Friction;
+                body.Restitution = material.Restitution;
+            }
+
+            if (shape.IsCircle)
+            {
+                 fixture = FixtureFactory.AttachCircle(ToWorldCoord(shape.Radius), shape.Density, body, ToWorldCoord(new Vector2(offsetX, offsetY)), shape);
+            }
+            else
+            {
+                fixture = body.CreateFixture(new PolygonShape(collisionShape, shape.Density), shape);
+            }
+
+            if (!isTrigger)
+            {
+                fixture.Restitution = shape.Restitution;
+            }
+
+            fixture.IsSensor = shape.IsSensor;
+            fixture.Friction = shape.Friction;
+            fixture.CollisionCategories = (Category) shape.CollisionCategories.GetCategories();
+            fixture.CollidesWith = (Category) shape.CollidesWith.GetCategories();
+
+            fixture.OnCollision = OnNewCollisionPair;
+            fixture.BeforeCollision = OnBeforeCollision;
+            fixture.OnSeparation = OnSeparation;
+            fixture.AfterCollision = OnAfterCollision;
+
+            m_PhysicsEntities[rigidBodyComponent.Owner.ID].Shapes[shape] = fixture;
+                
+            if (shape.IsBullet)
+                body.IsBullet = true;
+            
+            return shape;
+        }
+
+        private Body CreateNewBody(Cv_Entity entity)
+        {
+            var body = BodyFactory.CreateBody(m_World);
+            var shapeMap = new Dictionary<Cv_CollisionShape, Fixture>();
+            var physicsEntity = new Cv_PhysicsEntity();
+            physicsEntity.Body = body;
+            physicsEntity.Entity = entity;
+            physicsEntity.Shapes = shapeMap;
+
+            m_PhysicsEntities.Add(entity.ID, physicsEntity);
+
+            var rigidBodyComponent = entity.GetComponent<Cv_RigidBodyComponent>();
+
+            if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Kinematic)
+                body.BodyType = BodyType.Kinematic;
+            else if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Static)
+                body.BodyType = BodyType.Static;
+            else
+                body.BodyType = BodyType.Dynamic;
+
+            return body;
         }
 
         private void DrawCollisionShape(Vertices collisionShape, Vector2 position, float rotation, Cv_Renderer renderer, Color c)
@@ -927,8 +740,6 @@ namespace Caravel.Core
 
         private bool OnBeforeCollision(Fixture fixtureA, Fixture fixtureB)
         {
-            var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
-            var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
             return true;
         }
 
@@ -936,19 +747,84 @@ namespace Caravel.Core
         {
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
+
+            if (collisionShapeA.IsSensor || collisionShapeB.IsSensor)
+            {
+                Cv_Entity entity;
+                Cv_CollisionShape trigger;
+
+                if (collisionShapeA.IsSensor)
+                {
+                    trigger = collisionShapeA;
+                    entity = collisionShapeB.Owner;
+                }
+                else
+                {
+                    trigger = collisionShapeB;
+                    entity = collisionShapeA.Owner;
+                }
+
+                var newEvent = new Cv_Event_EnterTrigger(entity.ID, trigger);
+                Cv_EventManager.Instance.QueueEvent(newEvent);
+            }
+            else
+            {
+                List<Vector2> collisionPoints = new List<Vector2>();
+                Vector2 normalForce = Vector2.Zero;
+                float frictionForce = 0;
+
+                FixedArray2<Vector2> manifoldPoints;
+                contact.GetWorldManifold(out normalForce, out manifoldPoints);
+
+                for (var i = 0; i < contact.Manifold.PointCount; i++)
+                {
+                    var point = manifoldPoints[i];
+
+                    collisionPoints.Add(ToOutsideVector(point));
+                }
+
+                normalForce += ToOutsideVector(normalForce);
+                frictionForce += contact.Friction;
+
+                var newEvent = new Cv_Event_NewCollision(collisionShapeA, collisionShapeB, normalForce, frictionForce, collisionPoints.ToArray());
+                Cv_EventManager.Instance.QueueEvent(newEvent);
+            }
             return true;
         }
 
         private void OnAfterCollision(Fixture fixtureA, Fixture fixtureB, Contact contact, ContactVelocityConstraint impulse)
         {
-            var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
-            var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
         }
 
         private void OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
+
+            if (collisionShapeA.IsSensor || collisionShapeB.IsSensor)
+            {
+                Cv_Entity entity;
+                Cv_CollisionShape trigger;
+
+                if (collisionShapeA.IsSensor)
+                {
+                    trigger = collisionShapeA;
+                    entity = collisionShapeB.Owner;
+                }
+                else
+                {
+                    trigger = collisionShapeB;
+                    entity = collisionShapeA.Owner;
+                }
+
+                var newEvent = new Cv_Event_LeaveTrigger(entity.ID, trigger);
+                Cv_EventManager.Instance.QueueEvent(newEvent);
+            }
+            else
+            {
+                var newEvent = new Cv_Event_NewSeparation(collisionShapeA, collisionShapeB);
+                Cv_EventManager.Instance.QueueEvent(newEvent);
+            }
         }
 
         private void SyncBodiesToEntities()
@@ -1056,22 +932,22 @@ namespace Caravel.Core
 
         private float ToWorldCoord(float coord)
         {
-            return coord / m_iScreenToWorldRatio;
+            return coord / Screen2WorldRatio;
         }
 
         private Vector2 ToWorldCoord(Vector2 coord)
         {
-            return coord / m_iScreenToWorldRatio;
+            return coord / Screen2WorldRatio;
         }
 
         private float ToScreenCoord(float coord)
         {
-            return coord * m_iScreenToWorldRatio;
+            return coord * Screen2WorldRatio;
         }
 
         private Vector2 ToScreenCoord(Vector2 coord)
         {
-            return coord * m_iScreenToWorldRatio;
+            return coord * Screen2WorldRatio;
         }
 
         private bool CheckPolygonValidity(Vertices points)

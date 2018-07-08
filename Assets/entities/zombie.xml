@@ -17,9 +17,9 @@
     <Cv_RigidBodyComponent>
         <Material material="Wood" density="Wood"/>
         <Physics fixedRotation="false" gravityScale="1" maxVelocity="100" maxAngVelocity="100"/>
-        <Body linearDamping="0.5" angularDamping="0.5" type="dynamic"/>
+        <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
 	    <CollisionShapes>
-            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="102" dimensionsY="148"/>
+            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="102" dimensionsY="148" material="Wood" density="Wood"/>
         </CollisionShapes>
     </Cv_RigidBodyComponent>
 </EntityType>

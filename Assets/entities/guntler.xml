@@ -11,4 +11,12 @@
         <Color r="255" g="255" b="255" />
 	    <Animation speed="1" fx="1" fy="1" loop="true" startFrame="0" endFrame="0"/>
     </Cv_SpriteComponent>
+    <Cv_RigidBodyComponent>
+        <Material material="Wood" density="Wood"/>
+        <Physics fixedRotation="false" gravityScale="0" maxVelocity="100" maxAngVelocity="100"/>
+        <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
+	    <CollisionShapes>
+            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="250" dimensionsY="250" material="Wood" density="Wood"/>
+        </CollisionShapes>
+    </Cv_RigidBodyComponent>
 </EntityType>

@@ -1,7 +1,9 @@
+using System;
 using Caravel.Core;
 using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.TestSamples
 {
@@ -104,6 +106,17 @@ namespace Caravel.TestSamples
             {
                 CreateEntity("entities/zombie.xml", "entity_" + entities);
                 entities++;
+            }
+
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                Vector2 mousePos = new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y);
+
+                Cv_EntityID[] entities;
+                if (this.simpleGame.pv.Pick(mousePos, out entities))
+                {
+                    Console.WriteLine(entities[0]);
+                }
             }
 		}
 	}

@@ -61,11 +61,11 @@
     <Compile Include="..\Source\Program.cs">
       <Link>Source\Program.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_CollisionShape.cs">
-      <Link>Source\Core\Cv_CollisionShape.cs</Link>
+    <Compile Include="..\Source\Core\Physics\Cv_CollisionShape.cs">
+      <Link>Source\Core\Physics\Cv_CollisionShape.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_FarseerPhysics.cs">
-      <Link>Source\Core\Cv_FarseerPhysics.cs</Link>
+    <Compile Include="..\Source\Core\Physics\Cv_FarseerPhysics.cs">
+      <Link>Source\Core\Physics\Cv_FarseerPhysics.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_GameLogic.cs">
       <Link>Source\Core\Cv_GameLogic.cs</Link>
@@ -73,8 +73,8 @@
     <Compile Include="..\Source\Core\Cv_GameOptions.cs">
       <Link>Source\Core\Cv_GameOptions.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_GamePhysics.cs">
-      <Link>Source\Core\Cv_GamePhysics.cs</Link>
+    <Compile Include="..\Source\Core\Physics\Cv_GamePhysics.cs">
+      <Link>Source\Core\Physics\Cv_GamePhysics.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_GameView.cs">
       <Link>Source\Core\Cv_GameView.cs</Link>
@@ -85,8 +85,8 @@
     <Compile Include="..\Source\Core\Cv_NetworkManager.cs">
       <Link>Source\Core\Cv_NetworkManager.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_NullPhysics.cs">
-      <Link>Source\Core\Cv_NullPhysics.cs</Link>
+    <Compile Include="..\Source\Core\Physics\Cv_NullPhysics.cs">
+      <Link>Source\Core\Physics\Cv_NullPhysics.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_PlayerView.cs">
       <Link>Source\Core\Cv_PlayerView.cs</Link>
@@ -163,14 +163,26 @@
     <Compile Include="..\Source\Core\Events\Cv_EventManager.cs">
       <Link>Source\Core\Events\Cv_EventManager.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_ChangeState.cs">
+      <Link>Source\Core\Events\Cv_Event_ChangeState.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_DestroyEntity.cs">
       <Link>Source\Core\Events\Cv_Event_DestroyEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_EnterTrigger.cs">
+      <Link>Source\Core\Events\Cv_Event_EnterTrigger.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_LeaveTrigger.cs">
+      <Link>Source\Core\Events\Cv_Event_LeaveTrigger.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_ModifiedRenderComponent.cs">
       <Link>Source\Core\Events\Cv_Event_ModifiedRenderComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCameraComponent.cs">
       <Link>Source\Core\Events\Cv_Event_NewCameraComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_NewCollision.cs">
+      <Link>Source\Core\Events\Cv_Event_NewCollision.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCollisionShape.cs">
       <Link>Source\Core\Events\Cv_Event_NewCollisionShape.cs</Link>
@@ -180,6 +192,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewRenderComponent.cs">
       <Link>Source\Core\Events\Cv_Event_NewRenderComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_NewSeparation.cs">
+      <Link>Source\Core\Events\Cv_Event_NewSeparation.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_RequestDestroyEntity.cs">
       <Link>Source\Core\Events\Cv_Event_RequestDestroyEntity.cs</Link>
