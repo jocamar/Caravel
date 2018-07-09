@@ -41,11 +41,18 @@ namespace Caravel.Core.Draw
         private SpriteBatch m_SpriteBatch;
         private Vector2 m_VirtualMousePosition = new Vector2();
         private static Cv_Transform m_ScaleTransform;
-        private bool m_bDirtyTransform = true;
+        private bool m_bDirtyTransform;
 
-        public Cv_Renderer()
+        public Cv_Renderer(SpriteBatch spriteBatch)
         {
-            m_SpriteBatch = new SpriteBatch(CaravelApp.Instance.GraphicsDevice);
+            if (spriteBatch == null)
+            {
+                m_SpriteBatch = new SpriteBatch(CaravelApp.Instance.CurrentGraphicsDevice);
+            }
+            else
+            {
+                m_SpriteBatch = spriteBatch;
+            }
         }
         
         public void Init()
@@ -185,7 +192,7 @@ namespace Caravel.Core.Draw
                                 Height = height
                             };
 
-            CaravelApp.Instance.GraphicsDevice.Viewport = Viewport;
+            CaravelApp.Instance.CurrentGraphicsDevice.Viewport = Viewport;
         }
 
         private void SetupFullViewport()
@@ -194,7 +201,7 @@ namespace Caravel.Core.Draw
             vp.X = vp.Y = 0;
             vp.Width = ScreenWidth;
             vp.Height = ScreenHeight;
-            CaravelApp.Instance.GraphicsDevice.Viewport = vp;
+            CaravelApp.Instance.CurrentGraphicsDevice.Viewport = vp;
             m_bDirtyTransform = true;
         }
 

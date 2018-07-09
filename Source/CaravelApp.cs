@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using static Caravel.Core.Cv_GameView;
 
@@ -52,8 +51,13 @@ namespace Caravel
 
         public Vector2 ScreenSize
         {
-            get { return new Vector2(Graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                                        Graphics.GraphicsDevice.PresentationParameters.BackBufferHeight); }
+            get { return new Vector2(CurrentGraphicsDevice.PresentationParameters.BackBufferWidth,
+                                        CurrentGraphicsDevice.PresentationParameters.BackBufferHeight); }
+        }
+
+        public GraphicsDevice CurrentGraphicsDevice
+        {
+            get; set;
         }
 
         public string SaveGameDirectory
@@ -117,6 +121,8 @@ namespace Caravel
 #region MonoGame Functions
         protected sealed override void Initialize()
         {
+            CurrentGraphicsDevice = GraphicsDevice;
+            
             Cv_Debug debug = new Cv_Debug();
             debug.Init("Logs/logTags.xml");
 
@@ -138,7 +144,7 @@ namespace Caravel
             VRegisterGameEvents();
 
             ResourceManager = new Cv_ResourceManager();
-            if (!ResourceManager.Init("Assets.zip"))
+            if (!ResourceManager.Init("Assets.zip", EditorRunning))
             {
                 Cv_Debug.Error("Unable to initialize resource manager.");
                 Exit();
@@ -233,7 +239,10 @@ namespace Caravel
         
         protected sealed override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
+            if (!EditorRunning)
+            {
+                CurrentGraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
+            }
 
             foreach (var gv in m_GameLogic.GameViews)
             {
@@ -254,6 +263,33 @@ namespace Caravel
         protected abstract void             VRegisterGameEvents();
         protected internal abstract bool    VInitialize();
         protected internal abstract bool    VLoadGame();
+#endregion
+
+#region Functions to be used by editor
+    public void EditorInitialize()
+    {
+        Initialize();
+    }
+
+    public void EditorLoadContent()
+    {
+        LoadContent();
+    }
+
+    public void EditorUpdate(GameTime time)
+    {
+        Update(time);
+    }
+
+    public void EditorDraw(GameTime time)
+    {
+        Draw(time);
+    }
+
+    public void EditorUnloadContent()
+    {
+        UnloadContent();
+    }
 #endregion
 
 #region CaravelApp functions

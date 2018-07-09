@@ -594,6 +594,39 @@ namespace Caravel.Core.Physics
             }
         }
 
+        protected void SyncBodiesToEntities()
+        {
+            foreach (var e in m_PhysicsEntities)
+            {
+                var entity = CaravelApp.Instance.GameLogic.GetEntity(e.Key);
+
+                if (entity != null)
+                {
+                    var rigidBodyComponent = entity.GetComponent<Cv_RigidBodyComponent>();
+                    var body = e.Value.Body;
+
+                    if (rigidBodyComponent != null)
+                    {
+                        if (rigidBodyComponent.IsDirty)
+                        {
+                            SyncPhysicsSettings(body, rigidBodyComponent);
+                            rigidBodyComponent.IsDirty = false;
+                        }
+
+                        SyncMovementData(body, rigidBodyComponent);
+
+                        body.ApplyForce(ToPhysicsVector(rigidBodyComponent.Acceleration));
+                        body.ApplyLinearImpulse(ToPhysicsVector(rigidBodyComponent.Impulse));
+                        rigidBodyComponent.Impulse = Vector3.Zero;
+
+                        body.ApplyTorque(rigidBodyComponent.AngularAcceleration);
+                        body.ApplyAngularImpulse(rigidBodyComponent.AngularImpulse);
+                        rigidBodyComponent.AngularImpulse = 0f;
+                    }
+                }
+            }
+        }
+
         private Cv_CollisionShape AddShape(Cv_Entity entity, Cv_CollisionShape shape, bool isTrigger)
         {
             var body = m_PhysicsEntities[entity.ID].Body;
@@ -824,39 +857,6 @@ namespace Caravel.Core.Physics
             {
                 var newEvent = new Cv_Event_NewSeparation(collisionShapeA, collisionShapeB);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
-            }
-        }
-
-        private void SyncBodiesToEntities()
-        {
-            foreach (var e in m_PhysicsEntities)
-            {
-                var entity = CaravelApp.Instance.GameLogic.GetEntity(e.Key);
-
-                if (entity != null)
-                {
-                    var rigidBodyComponent = entity.GetComponent<Cv_RigidBodyComponent>();
-                    var body = e.Value.Body;
-
-                    if (rigidBodyComponent != null)
-                    {
-                        if (rigidBodyComponent.IsDirty)
-                        {
-                            SyncPhysicsSettings(body, rigidBodyComponent);
-                            rigidBodyComponent.IsDirty = false;
-                        }
-
-                        SyncMovementData(body, rigidBodyComponent);
-
-                        body.ApplyForce(ToPhysicsVector(rigidBodyComponent.Acceleration));
-                        body.ApplyLinearImpulse(ToPhysicsVector(rigidBodyComponent.Impulse));
-                        rigidBodyComponent.Impulse = Vector3.Zero;
-
-                        body.ApplyTorque(rigidBodyComponent.AngularAcceleration);
-                        body.ApplyAngularImpulse(rigidBodyComponent.AngularImpulse);
-                        rigidBodyComponent.AngularImpulse = 0f;
-                    }
-                }
             }
         }
 

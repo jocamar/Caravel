@@ -229,6 +229,9 @@
     <Compile Include="..\Source\Core\Resource\Cv_ZipResourceBundle.cs">
       <Link>Source\Core\Resource\Cv_ZipResourceBundle.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_DevelopmentZipResourceBundle.cs">
+      <Link>Source\Core\Resource\Cv_DevelopmentZipResourceBundle.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Debugging\Cv_Debug.cs">
       <Link>Source\Debugging\Cv_Debug.cs</Link>
     </Compile>

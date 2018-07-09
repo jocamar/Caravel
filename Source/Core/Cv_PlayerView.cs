@@ -83,7 +83,7 @@ namespace Caravel.Core
         private List<Cv_ScreenElement> m_ScreenElements;
 		private Cv_CameraNode m_Camera;
 
-        public Cv_PlayerView(PlayerIndex player, int vWidth, int vHeight)
+        public Cv_PlayerView(PlayerIndex player, int vWidth, int vHeight, SpriteBatch spriteBatch = null)
         {
             m_ID = Cv_GameViewID.INVALID_GAMEVIEW;
             m_GameState = Cv_GameState.Initializing;
@@ -93,7 +93,7 @@ namespace Caravel.Core
             m_ScreenElements = new List<Cv_ScreenElement>();
             m_bAreSoundsPaused = false;
 
-            m_Renderer = new Cv_Renderer();
+            m_Renderer = new Cv_Renderer(spriteBatch);
             m_Renderer.ScreenWidth = CaravelApp.Instance.Graphics.PreferredBackBufferWidth;
             m_Renderer.ScreenHeight = CaravelApp.Instance.Graphics.PreferredBackBufferHeight;
             m_Renderer.VirtualWidth = vWidth;
@@ -156,7 +156,6 @@ namespace Caravel.Core
             var sortedElements = m_ScreenElements.OrderBy(e => e).ToList();
 
             m_Renderer.SetupViewport();
-            CaravelApp.Instance.GraphicsDevice.Clear(m_Renderer.BackgroundColor);
             foreach (var se in sortedElements)
             {
                 if (se.IsVisible)

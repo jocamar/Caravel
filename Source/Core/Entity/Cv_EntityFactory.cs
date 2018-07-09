@@ -75,6 +75,36 @@ namespace Caravel.Core.Entity
             return entity;
         }
 
+        protected internal Cv_Entity CreateEmptyEntity(Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
+        {
+            Cv_EntityID entityId = serverEntityID;
+            if (entityId == Cv_EntityID.INVALID_ENTITY)
+            {
+                entityId = GetNextEntityID();
+            }
+
+            var entity = new Cv_Entity(entityId);
+
+            if (!entity.Init(null, parent))
+            {
+                Cv_Debug.Error("Failed to initialize empty entity.");
+                return null;
+            }
+
+            if (overrides != null)
+            {
+                ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity)]"));
+            }
+
+            var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
+            if (tranformComponent != null && initialTransform != null)
+            {
+                tranformComponent.Transform = initialTransform;
+            }
+            
+            return entity;
+        }
+
         protected internal void ModifyEntity(Cv_Entity entity, XmlNodeList overrides)
         {
             foreach (XmlElement componentNode in overrides)

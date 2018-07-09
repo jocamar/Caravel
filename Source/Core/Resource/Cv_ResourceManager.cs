@@ -160,9 +160,16 @@ namespace Caravel.Core.Resource
             Instance = this;
         }
 
-        internal bool Init(string engineAssetsFile)
+        internal bool Init(string engineAssetsFile, bool useDevDirectories = false)
         {
-            AddResourceBundle(m_sDefaultBundleID, new Cv_ZipResourceBundle(engineAssetsFile));
+            if (!useDevDirectories)
+            {
+                AddResourceBundle(m_sDefaultBundleID, new Cv_ZipResourceBundle(engineAssetsFile));
+            }
+            else
+            {
+                AddResourceBundle(m_sDefaultBundleID, new Cv_DevelopmentZipResourceBundle(engineAssetsFile));
+            }
 			return true;
         }
     }

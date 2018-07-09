@@ -97,7 +97,15 @@ namespace Caravel.Core.Entity
 
         internal bool Init(XmlElement typeData, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
         {
-            EntityType = typeData.Attributes["type"].Value;
+            if (typeData != null)
+            {
+                EntityType = typeData.Attributes["type"].Value;
+            }
+            else
+            {
+                EntityType = "Unknown";
+            }
+
             Parent = parent;
             Cv_Debug.Log("Entity", "Initializing entity " + (int) ID + " of type " + EntityType);
             return true;

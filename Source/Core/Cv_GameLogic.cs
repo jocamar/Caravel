@@ -214,9 +214,10 @@ namespace Caravel.Core
             return ent;
         }
 
-        public Cv_Entity CreateEntity(string entityTypeResource, string name = null, Cv_EntityID parentId = Cv_EntityID.INVALID_ENTITY, XmlElement overrides = null, Cv_Transform transform = null, Cv_EntityID serverEntityId = Cv_EntityID.INVALID_ENTITY)
+        public Cv_Entity CreateEntity(string entityTypeResource, string name, Cv_EntityID parentId = Cv_EntityID.INVALID_ENTITY, XmlElement overrides = null, Cv_Transform transform = null, Cv_EntityID serverEntityId = Cv_EntityID.INVALID_ENTITY)
         {
             Cv_Debug.Assert(m_EntityFactory != null, "Entity factory should not be null.");
+            Cv_Debug.Assert(name != null, "Entity must have a name.");
             if (m_EntityFactory == null)
             {
                 return null;
@@ -235,10 +236,7 @@ namespace Caravel.Core
 
             if (entity != null)
             {
-				if (name != null)
-				{
-					entity.EntityName = name;
-				}
+				entity.EntityName = name;
 
                 Entities.Add(entity.ID, entity);
 				EntitiesByName.Add(entity.EntityName, entity);
@@ -256,6 +254,49 @@ namespace Caravel.Core
             }
 
             Cv_Debug.Error("Could not create entity with resource: " + entityTypeResource);
+            return null;
+        }
+
+        public Cv_Entity CreateEmptyEntity(string name,  Cv_EntityID parentId = Cv_EntityID.INVALID_ENTITY, XmlElement overrides = null, Cv_Transform transform = null, Cv_EntityID serverEntityId = Cv_EntityID.INVALID_ENTITY)
+        {
+            Cv_Debug.Assert(m_EntityFactory != null, "Entity factory should not be null.");
+            Cv_Debug.Assert(name != null, "Entity must have a name.");
+            if (m_EntityFactory == null)
+            {
+                return null;
+            }
+
+            if (!IsProxy && serverEntityId != Cv_EntityID.INVALID_ENTITY)
+            {
+                return null;
+            }
+            else if (IsProxy && serverEntityId == Cv_EntityID.INVALID_ENTITY)
+            {
+                return null;
+            }
+
+            var entity = m_EntityFactory.CreateEmptyEntity(parentId, overrides, transform, serverEntityId);
+
+            if (entity != null)
+            {
+				entity.EntityName = name;
+
+                Entities.Add(entity.ID, entity);
+				EntitiesByName.Add(entity.EntityName, entity);
+
+                entity.PostInit();
+
+                if (!IsProxy && State == Cv_GameState.SpawningPlayerEntities || State == Cv_GameState.Running)
+                {
+                    var requestNewEntityEvent = new Cv_Event_RequestNewEntity(null, entity.EntityName, parentId, transform, entity.ID);
+                    Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
+                }
+
+                LastEntityID = entity.ID;
+                return entity;
+            }
+
+            Cv_Debug.Error("Could not create empty entity.");
             return null;
         }
 
@@ -311,9 +352,9 @@ namespace Caravel.Core
 #endregion
 
 #region GameView methods
-        public void AddView(Cv_GameView view, Cv_EntityID entityId = 0)
+        public void AddView(Cv_GameView view, Cv_EntityID entityId = Cv_EntityID.INVALID_ENTITY)
         {
-            Cv_GameViewID gvID = (Cv_GameViewID) m_GameViews.Count;
+            Cv_GameViewID gvID = (Cv_GameViewID) m_GameViews.Count+1;
 
             m_GameViews.Add(view);
             view.VOnAttach(gvID, entityId);
@@ -340,6 +381,11 @@ namespace Caravel.Core
             if (root == null)
             {
                 Cv_Debug.Error("Failed to load scene resource file: " + sceneResource);
+                return false;
+            }
+
+            if (!VGameOnPreLoadScene(root))
+            {
                 return false;
             }
 
@@ -467,6 +513,11 @@ namespace Caravel.Core
         {
         }
 
+        protected virtual bool VGameOnPreLoadScene(XmlElement sceneData)
+        {
+            return true;
+        }
+
         protected virtual bool VGameOnLoadScene(XmlElement sceneData)
         {
             return true;
@@ -565,7 +616,16 @@ namespace Caravel.Core
             }
 
             Cv_Event_RequestNewEntity data = (Cv_Event_RequestNewEntity) eventData;
-            var entity = CreateEntity(data.EntityResource, data.EntityName, data.Parent, null, data.InitialTransform, data.ServerEntityID);
+            Cv_Entity entity;
+            if (data.EntityResource != null)
+            {
+                entity = CreateEntity(data.EntityResource, data.EntityName, data.Parent, null, data.InitialTransform, data.ServerEntityID);
+            }
+            else
+            {
+                entity = CreateEmptyEntity(data.EntityName, data.Parent, null, data.InitialTransform, data.ServerEntityID);
+            }
+
             if (entity != null)
             {
                 var newEvent = new Cv_Event_NewEntity(entity.ID, data.GameViewID);

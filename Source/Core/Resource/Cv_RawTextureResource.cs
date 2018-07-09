@@ -41,7 +41,7 @@ namespace Caravel.Core.Resource
             }
 
             resourceStream.Position = 0;
-            var texture = Texture2D.FromStream(CaravelApp.Instance.GraphicsDevice, resourceStream);
+            var texture = Texture2D.FromStream(CaravelApp.Instance.CurrentGraphicsDevice, resourceStream);
 
             var resData = new Cv_TextureData();
             resData.Texture = texture;

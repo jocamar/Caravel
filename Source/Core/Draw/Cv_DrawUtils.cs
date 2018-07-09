@@ -11,7 +11,7 @@ namespace Caravel.Core.Draw
 
 		public static void Initialize()
         {
-            m_DrawPixel = new Texture2D(CaravelApp.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            m_DrawPixel = new Texture2D(CaravelApp.Instance.CurrentGraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             m_DrawPixel.SetData(new[] { Color.White });
         }
 
@@ -54,7 +54,7 @@ namespace Caravel.Core.Draw
         public static Texture2D CreateCircle(int radius)
         {
             int outerRadius = radius * 2 + 2; // So circle doesn't go out of bounds
-            Texture2D texture = new Texture2D(CaravelApp.Instance.GraphicsDevice, outerRadius, outerRadius);
+            Texture2D texture = new Texture2D(CaravelApp.Instance.CurrentGraphicsDevice, outerRadius, outerRadius);
 
             Color[] data = new Color[outerRadius * outerRadius];
 
