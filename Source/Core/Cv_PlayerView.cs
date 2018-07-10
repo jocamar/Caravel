@@ -33,17 +33,9 @@ namespace Caravel.Core
         }
 
         public Cv_CameraNode Camera
-        {
-            get
-			{
-				return m_Camera;
-			}
-
-			set
-			{
-				m_Camera = value;
-			}
-        }
+		{
+			get; set;
+		}
 
         public PlayerIndex PlayerIdx
         {
@@ -81,7 +73,6 @@ namespace Caravel.Core
         //private Cv_Console m_Console;
         private Cv_Renderer m_Renderer;
         private List<Cv_ScreenElement> m_ScreenElements;
-		private Cv_CameraNode m_Camera;
 
         public Cv_PlayerView(PlayerIndex player, int vWidth, int vHeight, SpriteBatch spriteBatch = null)
         {
@@ -129,6 +120,17 @@ namespace Caravel.Core
         {
             PushScreenElement(m_Scene);
             m_Scene.IsVisible = true;
+			
+			if (sceneData.Attributes["vWidth"] != null)
+			{
+				m_Renderer.VirtualWidth = int.Parse(sceneData.Attributes["vWidth"].Value);
+			}
+
+			if (sceneData.Attributes["vHeight"] != null)
+			{
+				m_Renderer.VirtualHeight = int.Parse(sceneData.Attributes["vHeight"].Value);
+			}
+			
             return true;
         }
 
@@ -247,5 +249,12 @@ namespace Caravel.Core
         {
             return m_Scene.Pick(mousePos, out entities);
         }
+
+		internal void OnWindowResize(int newWidth, int newHeight)
+		{
+			m_Renderer.ScreenWidth = newWidth;
+			m_Renderer.ScreenHeight = newHeight;
+			Camera.RecalculateTransformationMatrices();
+		}
     }
 }

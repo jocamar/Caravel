@@ -1,6 +1,10 @@
-<Scene>
+<Scene vWidth="720" vHeight="720">
 	<StaticEntities>
-		<Entity name="guybrush" resource="entities/zombie.xml"/>
+		<Entity name="guybrush" resource="entities/zombie.xml">
+			<Cv_SpriteComponent>
+				<Color r="255" g="255" b="255" a="170"/>
+			</Cv_SpriteComponent>
+		</Entity>
 		<Entity name="guntler" resource="entities/guntler.xml"/>
 		<Entity name="profile" resource="entities/profile.xml">
 			<Entity name="camera" resource="entities/camera.xml"/>

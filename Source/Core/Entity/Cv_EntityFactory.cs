@@ -50,6 +50,11 @@ namespace Caravel.Core.Entity
 
             foreach(var componentNode in root.ChildNodes)
             {
+				if (componentNode.GetType() != typeof(XmlElement))
+				{
+					continue;
+				}
+				
                 var component = CreateComponent((XmlElement) componentNode);
 
                 if (component != null)

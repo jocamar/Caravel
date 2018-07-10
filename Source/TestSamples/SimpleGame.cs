@@ -11,6 +11,9 @@ using static Caravel.Core.Cv_GameLogic;
 namespace Caravel.TestSamples
 {
 	//TODO(JM):
+	//Add renderer options for blendmode and effects
+	//Decouple asset loading from current folder for editor
+	//fix resizing bug in editor
     //Check weird z ordering
 	//InputManager
 	//ProcessManager
@@ -21,8 +24,9 @@ namespace Caravel.TestSamples
         public Cv_Entity guntler, guybrush, profile;
         public Cv_PlayerView pv;
 
-        public SimpleGame(int screenWidth, int screenHeight) : base(screenWidth, screenHeight)
+        public SimpleGame(int screenWidth, int screenHeight) : base(screenWidth, screenHeight, true)
         {
+			UseDevelopmentDirectories = true;
         }
 
         protected override bool VCheckGameSystemResources()

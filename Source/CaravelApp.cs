@@ -20,33 +20,58 @@ namespace Caravel
     {
 #region Properties
         public static CaravelApp Instance;
+
+		public Color BackgroundColor
+		{
+			get; set;
+		}
+
+		public bool AllowWindowResize
+		{
+			get
+			{
+				return Window.AllowUserResizing;
+			}
+
+			set
+			{
+				Window.AllowUserResizing = value;
+			}
+		}
+
+		public GraphicsDevice CurrentGraphicsDevice
+        {
+            get; set;
+        }
         
         public bool Quitting
         {
-            get { return m_bQuitting; }
-            set { 
-                m_bQuitting = value;
-            }
+            get; set;
         }
+
+		public bool UseDevelopmentDirectories
+		{
+			get; set;
+		}
 
         public bool Running
         {
-            get { return m_bIsRunning; }
+            get; protected set;
         }
 
         public Cv_GameLogic GameLogic
         {
-            get { return m_GameLogic; }
+            get; protected set;
         }
 
         public Cv_GameOptions GameOptions
         {
-            get; private set;
+            get; protected set;
         }
 
         public bool EditorRunning
         {
-            get { return m_bIsEditorRunning; }
+            get; protected set;
         }
 
         public Vector2 ScreenSize
@@ -55,26 +80,14 @@ namespace Caravel
                                         CurrentGraphicsDevice.PresentationParameters.BackBufferHeight); }
         }
 
-        public GraphicsDevice CurrentGraphicsDevice
-        {
-            get; set;
-        }
-
         public string SaveGameDirectory
         {
-            get { return m_sSaveGameDirectory; }
+            get; protected set;
         }
 
-        protected bool m_bIsRunning;
-        protected bool m_bQuitRequested;
-        protected bool m_bQuitting;
-        protected bool m_bIsEditorRunning;
-        protected string m_sSaveGameDirectory;
-
-        protected Cv_GameLogic m_GameLogic;
         protected Cv_Debug m_Debug;
 
-        // Managers
+#region Managers
         public Cv_EventManager EventManager
         {
             get; private set;
@@ -106,16 +119,21 @@ namespace Caravel
         }
 
         private Dictionary<string, string>  m_TextResource;
+#endregion
         
 #endregion
 
-        public CaravelApp(int screenWidth, int screenHeight)
+        public CaravelApp(int screenWidth, int screenHeight, bool allowWindowResize = false)
         {
             Graphics = new GraphicsDeviceManager(this);
             Graphics.PreferredBackBufferWidth = screenWidth;
             Graphics.PreferredBackBufferHeight = screenHeight;
             Window.Title = "Loading";
             Instance = this;
+			AllowWindowResize = allowWindowResize;
+			BackgroundColor = Color.Black;
+        	Window.ClientSizeChanged += OnResize;
+			UseDevelopmentDirectories = false;
         }
 
 #region MonoGame Functions
@@ -144,7 +162,7 @@ namespace Caravel
             VRegisterGameEvents();
 
             ResourceManager = new Cv_ResourceManager();
-            if (!ResourceManager.Init("Assets.zip", EditorRunning))
+            if (!ResourceManager.Init("Assets.zip", UseDevelopmentDirectories))
             {
                 Cv_Debug.Error("Unable to initialize resource manager.");
                 Exit();
@@ -185,10 +203,10 @@ namespace Caravel
             //}
 
             Window.Title = VGetGameTitle();
-            m_sSaveGameDirectory = GetSaveGameDirectory(VGetGameAppDirectory());
+            SaveGameDirectory = GetSaveGameDirectory(VGetGameAppDirectory());
 
-            m_GameLogic = VCreateGameLogic();
-            if (m_GameLogic == null) {
+            GameLogic = VCreateGameLogic();
+            if (GameLogic == null) {
                 Cv_Debug.Error("Unable to create game logic.");
                 Exit();
                 return;
@@ -199,12 +217,12 @@ namespace Caravel
             var gvs = VCreateGameViews();
             foreach (var gv in gvs)
             {
-                m_GameLogic.AddView(gv);
+                GameLogic.AddView(gv);
             }
-            m_GameLogic.AddGamePhysics(VCreateGamePhysics());
-            m_GameLogic.Init();
+            GameLogic.AddGamePhysics(VCreateGamePhysics());
+            GameLogic.Init();
 
-            m_bIsRunning = true;
+            Running = true;
 
             VInitialize();
 
@@ -225,7 +243,7 @@ namespace Caravel
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
                     || Keyboard.GetState().IsKeyDown(Keys.Escape)
-                    || m_bQuitting)
+                    || Quitting)
             {
                 Cv_Debug.Info("Exiting Game.");
                 Exit();
@@ -244,7 +262,7 @@ namespace Caravel
                 CurrentGraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
             }
 
-            foreach (var gv in m_GameLogic.GameViews)
+            foreach (var gv in GameLogic.GameViews)
             {
                 gv.VOnRender(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             }
@@ -295,7 +313,7 @@ namespace Caravel
 #region CaravelApp functions
         public void AbortGame()
         {
-            m_bQuitting = true;
+            Quitting = true;
         }
 
         public bool LoadStrings(string language)
@@ -310,7 +328,7 @@ namespace Caravel
 
         public Cv_PlayerView GetPlayerView(PlayerIndex player)
         {
-            foreach (var gv in m_GameLogic.GameViews)
+            foreach (var gv in GameLogic.GameViews)
             {
                 if (gv.Type == Cv_GameViewType.Player)
                 {
@@ -329,6 +347,19 @@ namespace Caravel
         {
             return true;
         }
+
+		internal void OnResize(Object sender, EventArgs e)
+		{
+			foreach (var gv in GameLogic.GameViews)
+            {
+                if (gv.Type == Cv_GameViewType.Player)
+				{
+					var pv = (Cv_PlayerView) gv;
+
+					pv.OnWindowResize(Window.ClientBounds.Width, Window.ClientBounds.Height);
+				}
+            }
+		}
 
         private void RegisterEngineEvents()
         {

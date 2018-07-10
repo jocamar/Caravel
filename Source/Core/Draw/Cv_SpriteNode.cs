@@ -30,6 +30,8 @@ namespace Caravel.Core.Draw
             }
         }
 
+		private readonly float MaxLayers = 255;
+
         public Cv_SpriteNode(Cv_Entity.Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform from = null) : base(entityID, renderComponent, to, from)
         {
             var comp = ((Cv_SpriteComponent) renderComponent);
@@ -59,7 +61,7 @@ namespace Caravel.Core.Draw
                                     rot,
                                     new Vector2(frameW * scene.Transform.Origin.X, frameH * scene.Transform.Origin.Y),
                                     SpriteEffects.None,
-                                    pos.Z);
+                                    pos.Z / MaxLayers);
         }
 
         public override bool VOnChanged(Cv_SceneElement scene)

@@ -9,7 +9,7 @@
         <Texture resource="guybrush.png" />
         <Size width="102" height="148" />
         <Color r="255" g="255" b="255" />
-	    <Animation fx="6" fy="1" loop="true" defaultAnim="walking">
+		<Animation fx="6" fy="1" loop="true" defaultAnim="walking">
             <SubAnimation id="walking" startFrame="0" endFrame="5" speed="10"/>
             <SubAnimation id="running" startFrame="0" endFrame="5" speed="20"/>
         </Animation>

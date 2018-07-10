@@ -6,7 +6,6 @@ namespace Caravel.Core.Draw
 {
     public class Cv_Renderer
     {
-        public Color BackgroundColor = Color.Black;
         public Viewport Viewport;
 
         public bool RenderingToScreenIsFinished;
