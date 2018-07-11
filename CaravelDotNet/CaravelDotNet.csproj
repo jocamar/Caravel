@@ -262,6 +262,9 @@
     <Compile Include="..\Source\Debugging\Cv_SDL.cs">
       <Link>Cv_SDL.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Editor\Cv_ResizeWindowEvt.cs">
+      <Link>Cv_ResizeWindowEvt.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Program.cs">
       <Link>Program.cs</Link>
     </Compile>

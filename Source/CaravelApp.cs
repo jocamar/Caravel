@@ -3,6 +3,7 @@ using Caravel.Core.Events;
 using Caravel.Core.Physics;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
+using Caravel.Editor;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -139,7 +140,10 @@ namespace Caravel
 #region MonoGame Functions
         protected sealed override void Initialize()
         {
-            CurrentGraphicsDevice = GraphicsDevice;
+            if (!EditorRunning)
+            {
+                CurrentGraphicsDevice = GraphicsDevice;
+            }
             
             Cv_Debug debug = new Cv_Debug();
             debug.Init("Logs/logTags.xml");
@@ -259,7 +263,7 @@ namespace Caravel
         {
             if (!EditorRunning)
             {
-                CurrentGraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
+                CurrentGraphicsDevice.Clear(BackgroundColor);
             }
 
             foreach (var gv in GameLogic.GameViews)
@@ -348,7 +352,7 @@ namespace Caravel
             return true;
         }
 
-		internal void OnResize(Object sender, EventArgs e)
+		public void OnResize(Object sender, EventArgs e)
 		{
 			foreach (var gv in GameLogic.GameViews)
             {
@@ -356,7 +360,15 @@ namespace Caravel
 				{
 					var pv = (Cv_PlayerView) gv;
 
-					pv.OnWindowResize(Window.ClientBounds.Width, Window.ClientBounds.Height);
+                    if (EditorRunning)
+                    {
+                        var args = (Cv_ResizeWindowEvt) e;
+                        pv.OnWindowResize(args.Width, args.Height);
+                    }
+                    else
+                    {
+                        pv.OnWindowResize(Window.ClientBounds.Width, Window.ClientBounds.Height);
+                    }
 				}
             }
 		}

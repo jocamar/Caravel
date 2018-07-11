@@ -11,10 +11,9 @@ using static Caravel.Core.Cv_GameLogic;
 namespace Caravel.TestSamples
 {
 	//TODO(JM):
+    //Check how to do splitscreen
 	//Add renderer options for blendmode and effects
 	//Decouple asset loading from current folder for editor
-	//fix resizing bug in editor
-    //Check weird z ordering
 	//InputManager
 	//ProcessManager
 	//more... (see commented code)

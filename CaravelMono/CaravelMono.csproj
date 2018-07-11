@@ -247,6 +247,9 @@
     <Compile Include="..\Source\TestSamples\SimpleGameLogic.cs">
       <Link>Source\TestSamples\SimpleGameLogic.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Editor\Cv_ResizeWindowEvt.cs">
+      <Link>Source\Editor\Cv_ResizeWindowEvt.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Icon.png" />
