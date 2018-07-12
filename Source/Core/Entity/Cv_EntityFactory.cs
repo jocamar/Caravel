@@ -23,9 +23,19 @@ namespace Caravel.Core.Entity
             m_ComponentFactory.Register<Cv_RigidBodyComponent>(Cv_EntityComponent.GetID<Cv_RigidBodyComponent>());
         }
 
-        protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
+        protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID, string resourceBundle = null)
         {
-            var resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource);
+            Cv_XmlResource resource;
+			
+			if (resourceBundle == null)
+			{
+				resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource);
+			}
+			else
+			{
+				resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource, resourceBundle);
+			}
+
             XmlElement root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
 
             if (root == null)
@@ -40,7 +50,7 @@ namespace Caravel.Core.Entity
                 entityId = GetNextEntityID();
             }
 
-            var entity = new Cv_Entity(entityId);
+            var entity = new Cv_Entity(entityId, resourceBundle);
 
             if (!entity.Init(root, parent))
             {
@@ -54,7 +64,7 @@ namespace Caravel.Core.Entity
 				{
 					continue;
 				}
-				
+
                 var component = CreateComponent((XmlElement) componentNode);
 
                 if (component != null)

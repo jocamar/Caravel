@@ -11,6 +11,7 @@ using static Caravel.Core.Cv_GameLogic;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;
 using Caravel.Core.Draw;
+using static Caravel.Core.Draw.Cv_Renderer;
 
 namespace Caravel.Core
 {
@@ -75,6 +76,32 @@ namespace Caravel.Core
                 }
             }
         }
+
+		public Cv_BlendState Blend
+		{
+			get
+			{
+				return m_Renderer.Blend;
+			}
+
+			set
+			{
+				m_Renderer.Blend = value;
+			}
+		}
+
+		public Cv_SamplerState Sampling
+		{
+			get
+			{
+				return m_Renderer.Sampling;
+			}
+
+			set
+			{
+				m_Renderer.Sampling = value;
+			}
+		}
 
         private Cv_SceneElement m_Scene;
         private Cv_GameViewType m_Type = Cv_GameViewType.Player;

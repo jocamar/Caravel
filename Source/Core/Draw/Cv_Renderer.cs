@@ -6,6 +6,126 @@ namespace Caravel.Core.Draw
 {
     public class Cv_Renderer
     {
+		public enum Cv_BlendState
+		{
+			Additive,
+			AlphaBlend,
+			NonPremultiplied,
+			Opaque
+		}
+
+		public enum Cv_SamplerState
+		{
+			AnisotropicClamp,
+			AnisotropicWrap,
+			LinearClamp,
+			LinearWrap,
+			PointClamp,
+			PointWrap
+		}
+
+		public Cv_BlendState Blend
+		{
+			get
+			{
+				if (m_BlendState == BlendState.Additive)
+				{
+					return Cv_BlendState.Additive;
+				}
+				else if (m_BlendState == BlendState.AlphaBlend)
+				{
+					return Cv_BlendState.AlphaBlend;
+				}
+				else if (m_BlendState == BlendState.NonPremultiplied)
+				{
+					return Cv_BlendState.NonPremultiplied;
+				}
+				else
+				{
+					return Cv_BlendState.Opaque;
+				}
+			}
+
+			set
+			{
+				if (value == Cv_BlendState.Additive)
+				{
+					m_BlendState = BlendState.Additive;
+				}
+				else if (value == Cv_BlendState.AlphaBlend)
+				{
+					m_BlendState = BlendState.AlphaBlend;
+				}
+				else if (value == Cv_BlendState.NonPremultiplied)
+				{
+					m_BlendState = BlendState.NonPremultiplied;
+				}
+				else
+				{
+					m_BlendState = BlendState.Opaque;
+				}
+			}
+		}
+
+		public Cv_SamplerState Sampling
+		{
+			get
+			{
+				if (m_SamplerState == SamplerState.AnisotropicClamp)
+				{
+					return Cv_SamplerState.AnisotropicClamp;
+				}
+				else if (m_SamplerState == SamplerState.AnisotropicWrap)
+				{
+					return Cv_SamplerState.AnisotropicWrap;
+				}
+				else if (m_SamplerState == SamplerState.LinearClamp)
+				{
+					return Cv_SamplerState.LinearClamp;
+				}
+				else if (m_SamplerState == SamplerState.LinearWrap)
+				{
+					return Cv_SamplerState.LinearWrap;
+				}
+				else if (m_SamplerState == SamplerState.PointClamp)
+				{
+					return Cv_SamplerState.PointClamp;
+				}
+				else
+				{
+					return Cv_SamplerState.PointWrap;
+				}
+			}
+
+			set
+			{
+				if (value == Cv_SamplerState.AnisotropicClamp)
+				{
+					m_SamplerState = SamplerState.AnisotropicClamp;
+				}
+				else if (value == Cv_SamplerState.AnisotropicWrap)
+				{
+					m_SamplerState = SamplerState.AnisotropicWrap;
+				}
+				else if (value == Cv_SamplerState.LinearClamp)
+				{
+					m_SamplerState = SamplerState.LinearClamp;
+				}
+				else if (value == Cv_SamplerState.LinearWrap)
+				{
+					m_SamplerState = SamplerState.LinearWrap;
+				}
+				else if (value == Cv_SamplerState.PointClamp)
+				{
+					m_SamplerState = SamplerState.PointClamp;
+				}
+				else
+				{
+					m_SamplerState = SamplerState.PointWrap;
+				}
+			}
+		}
+
         public Viewport Viewport;
 
         public bool RenderingToScreenIsFinished;
@@ -49,6 +169,8 @@ namespace Caravel.Core.Draw
         private Vector2 m_VirtualMousePosition = new Vector2();
         private static Cv_Transform m_ScaleTransform;
         private bool m_bDirtyTransform;
+		private BlendState m_BlendState;
+		private SamplerState m_SamplerState;
 
         public Cv_Renderer(SpriteBatch spriteBatch)
         {
@@ -60,6 +182,9 @@ namespace Caravel.Core.Draw
             {
                 m_SpriteBatch = spriteBatch;
             }
+
+			m_BlendState = BlendState.NonPremultiplied;
+			m_SamplerState = SamplerState.PointClamp;
         }
         
         public void Init()
@@ -141,7 +266,7 @@ namespace Caravel.Core.Draw
         {
             if (camera == null)
             {
-                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, m_BlendState, m_SamplerState,
                                         DepthStencilState.None, RasterizerState.CullNone, null, Transform.TransformMatrix);
             }
             else
@@ -153,7 +278,7 @@ namespace Caravel.Core.Draw
                                                 * Matrix.CreateScale(cameraTransform.Scale.X, cameraTransform.Scale.Y, 1);
                 }
 
-                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointClamp,
+                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, m_BlendState, m_SamplerState,
                                         DepthStencilState.None, RasterizerState.CullNone, null, CamMatrix);
             }
         }

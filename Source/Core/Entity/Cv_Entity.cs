@@ -33,6 +33,11 @@ namespace Caravel.Core.Entity
             get; private set;
         }
 
+		public string ResourceBundle
+		{
+			get; private set;
+		}
+
         private Dictionary<Cv_ComponentID, Cv_EntityComponent> m_ComponentMap;
         private List<Cv_EntityComponent> m_ComponentList;
         private List<Cv_EntityComponent> m_ComponentsToAdd;
@@ -68,7 +73,7 @@ namespace Caravel.Core.Entity
             return null;
         }
 
-        internal Cv_Entity()
+        internal Cv_Entity(string resourceBundle = null)
         {
             ID = Cv_EntityID.INVALID_ENTITY;
             EntityType = "Unknown";
@@ -77,9 +82,10 @@ namespace Caravel.Core.Entity
             m_ComponentList = new List<Cv_EntityComponent>();
             m_ComponentsToAdd = new List<Cv_EntityComponent>();
             m_ComponentsToRemove = new List<Cv_EntityComponent>();
+			ResourceBundle = resourceBundle;
         }
 
-        internal Cv_Entity(Cv_EntityID entityId)
+        internal Cv_Entity(Cv_EntityID entityId, string resourceBundle = null)
         {
             ID = entityId;
             EntityType = "Unknown";
@@ -88,6 +94,7 @@ namespace Caravel.Core.Entity
             m_ComponentList = new List<Cv_EntityComponent>();
             m_ComponentsToAdd = new List<Cv_EntityComponent>();
             m_ComponentsToRemove = new List<Cv_EntityComponent>();
+			ResourceBundle = resourceBundle;
         }
 
         ~Cv_Entity()

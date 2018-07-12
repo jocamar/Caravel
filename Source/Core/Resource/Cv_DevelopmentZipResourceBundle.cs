@@ -38,7 +38,7 @@ namespace Caravel.Core.Resource
 
         public Cv_DevelopmentZipResourceBundle(string fileName) : base(fileName)
         {
-            var currDir = Directory.GetCurrentDirectory();
+            var currDir = CaravelApp.Instance.GetGameWorkingDirectory();
 
             currDir += Path.DirectorySeparatorChar;
             currDir += Path.GetFileNameWithoutExtension(fileName);

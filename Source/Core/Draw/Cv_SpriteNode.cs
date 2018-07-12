@@ -41,7 +41,16 @@ namespace Caravel.Core.Draw
         {
             var spriteComponent = (Cv_SpriteComponent) m_Component;
 
-            var resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture);
+            Cv_RawTextureResource resource;
+			if (spriteComponent.Owner.ResourceBundle == null)
+			{
+				resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture);
+			}
+			else
+			{
+				resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture, spriteComponent.Owner.ResourceBundle);
+			}
+
             var tex = resource.GetTexture().Texture;
             var pos = scene.Transform.Position;
             var rot = scene.Transform.Rotation;
@@ -89,7 +98,17 @@ namespace Caravel.Core.Draw
             var scale = worldTransform.Scale;
 
             var spriteComponent = (Cv_SpriteComponent) m_Component;
-            var resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture);
+
+			Cv_RawTextureResource resource;
+			if (spriteComponent.Owner.ResourceBundle == null)
+			{
+				resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture);
+			}
+			else
+			{
+				resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture, spriteComponent.Owner.ResourceBundle);
+			}
+
             var tex = resource.GetTexture().Texture;
             var frameW = tex.Width / spriteComponent.FrameX;
 			var frameH = tex.Height / spriteComponent.FrameY;

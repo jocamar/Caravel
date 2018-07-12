@@ -214,7 +214,7 @@ namespace Caravel.Core
             return ent;
         }
 
-        public Cv_Entity CreateEntity(string entityTypeResource, string name, Cv_EntityID parentId = Cv_EntityID.INVALID_ENTITY, XmlElement overrides = null, Cv_Transform transform = null, Cv_EntityID serverEntityId = Cv_EntityID.INVALID_ENTITY)
+        public Cv_Entity CreateEntity(string entityTypeResource, string name, string resourceBundle = null, Cv_EntityID parentId = Cv_EntityID.INVALID_ENTITY, XmlElement overrides = null, Cv_Transform transform = null, Cv_EntityID serverEntityId = Cv_EntityID.INVALID_ENTITY)
         {
             Cv_Debug.Assert(m_EntityFactory != null, "Entity factory should not be null.");
             Cv_Debug.Assert(name != null, "Entity must have a name.");
@@ -232,7 +232,7 @@ namespace Caravel.Core
                 return null;
             }
 
-            var entity = m_EntityFactory.CreateEntity(entityTypeResource, parentId, overrides, transform, serverEntityId);
+            var entity = m_EntityFactory.CreateEntity(entityTypeResource, parentId, overrides, transform, serverEntityId, resourceBundle);
 
             if (entity != null)
             {
@@ -245,7 +245,7 @@ namespace Caravel.Core
 
                 if (!IsProxy && State == Cv_GameState.SpawningPlayerEntities || State == Cv_GameState.Running)
                 {
-                    var requestNewEntityEvent = new Cv_Event_RequestNewEntity(entityTypeResource, entity.EntityName, parentId, transform, entity.ID);
+                    var requestNewEntityEvent = new Cv_Event_RequestNewEntity(entityTypeResource, entity.EntityName, resourceBundle, parentId, transform, entity.ID);
                     Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
                 }
 
@@ -288,7 +288,7 @@ namespace Caravel.Core
 
                 if (!IsProxy && State == Cv_GameState.SpawningPlayerEntities || State == Cv_GameState.Running)
                 {
-                    var requestNewEntityEvent = new Cv_Event_RequestNewEntity(null, entity.EntityName, parentId, transform, entity.ID);
+                    var requestNewEntityEvent = new Cv_Event_RequestNewEntity(null, entity.EntityName, null, parentId, transform, entity.ID);
                     Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
                 }
 
@@ -373,9 +373,18 @@ namespace Caravel.Core
             GamePhysics = physics;
         }
 
-        public bool LoadScene(string sceneResource)
+        public bool LoadScene(string sceneResource, string resourceBundle = null)
         {
-            var resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource);
+            Cv_XmlResource resource;
+			
+			if (resourceBundle == null)
+			{
+				resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource);
+			}
+			else
+			{
+				resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource, resourceBundle);
+			}
             var root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
 
             if (root == null)
@@ -402,12 +411,21 @@ namespace Caravel.Core
 
             if (preLoadScript != null)
             {
-                var preLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(preLoadScript);
+                Cv_ScriptResource preLoadRes;
+
+				if (resourceBundle == null)
+				{
+					preLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(preLoadScript);
+				}
+				else
+				{
+					preLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(preLoadScript, resourceBundle);
+				}
             }
 
             var entitiesNodes = root.SelectNodes("StaticEntities/Entity");
 
-            CreateNestedEntities(entitiesNodes, Cv_EntityID.INVALID_ENTITY);
+            CreateNestedEntities(entitiesNodes, Cv_EntityID.INVALID_ENTITY, resourceBundle);
 
             foreach(var gv in m_GameViews)
             {
@@ -425,7 +443,15 @@ namespace Caravel.Core
 
             if (postLoadScript != null)
             {
-                var postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript);
+				Cv_ScriptResource postLoadRes;
+				if (resourceBundle == null)
+				{
+                	postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript);
+				}
+				else
+				{
+					postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript, resourceBundle);
+				}
             }
 
 			foreach (var e in Entities)
@@ -619,7 +645,13 @@ namespace Caravel.Core
             Cv_Entity entity;
             if (data.EntityResource != null)
             {
-                entity = CreateEntity(data.EntityResource, data.EntityName, data.Parent, null, data.InitialTransform, data.ServerEntityID);
+				string bundle = Cv_ResourceManager.DefaultBundleID;
+				
+				if (data.EntityResourceBundle != null)
+				{
+					bundle = data.EntityResourceBundle;
+				}
+                entity = CreateEntity(data.EntityResource, data.EntityName, bundle, data.Parent, null, data.InitialTransform, data.ServerEntityID);
             }
             else
             {
@@ -640,7 +672,7 @@ namespace Caravel.Core
         }
 #endregion
 
-        private void CreateNestedEntities(XmlNodeList entities, Cv_EntityID parentId)
+        private void CreateNestedEntities(XmlNodeList entities, Cv_EntityID parentId, string resourceBundle = null)
         {
              if (entities != null)
             {
@@ -648,7 +680,7 @@ namespace Caravel.Core
                 {
                     var entityResource = e.Attributes["resource"].Value;
 					var name = e.Attributes?["name"].Value;
-                    var entity = CreateEntity(entityResource, name, parentId, (XmlElement) e);
+                    var entity = CreateEntity(entityResource, name, resourceBundle, parentId, (XmlElement) e);
 
                     if (entity != null)
                     {
@@ -660,7 +692,7 @@ namespace Caravel.Core
 
                     if (childEntities.Count > 0)
                     {
-                        CreateNestedEntities(childEntities, entity.ID);
+                        CreateNestedEntities(childEntities, entity.ID, resourceBundle);
                     }
                 }
             }

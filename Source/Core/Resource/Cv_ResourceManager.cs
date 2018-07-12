@@ -14,11 +14,12 @@ namespace Caravel.Core.Resource
 
         public delegate void LoadProgressDelegate(int progress, out bool cancel);
 
+		public const string DefaultBundleID = "Cv_DefaultEngineBundle";
+
         private Dictionary<string, Cv_ResourceBundle> m_ResourceBundles;
         private Dictionary<string, Cv_ResourceData> m_ResourceData;
-        private const string m_sDefaultBundleID = "Cv_DefaultEngineBundle";
 
-        public Resource GetResource<Resource>(string resourceFile, string bundle = m_sDefaultBundleID) where Resource : Cv_Resource, new()
+        public Resource GetResource<Resource>(string resourceFile, string bundle = DefaultBundleID) where Resource : Cv_Resource, new()
         {
             var resource = new Resource();
             resource.File = resourceFile;
@@ -58,7 +59,7 @@ namespace Caravel.Core.Resource
 			return resource;
         }
 
-        public string[] GetResourceList(string pattern, string bundle = m_sDefaultBundleID)
+        public string[] GetResourceList(string pattern, string bundle = DefaultBundleID)
         {
             List<string> resources = new List<string>();
             Regex mask = new Regex(pattern.Replace(".", "[.]").Replace("*", ".*").Replace("?", "."));
@@ -82,7 +83,7 @@ namespace Caravel.Core.Resource
             return resources.ToArray();
         }
 
-        public int Preload<Resource>(string pattern, LoadProgressDelegate progressCallback, string bundle = m_sDefaultBundleID) where Resource : Cv_Resource, new()
+        public int Preload<Resource>(string pattern, LoadProgressDelegate progressCallback, string bundle = DefaultBundleID) where Resource : Cv_Resource, new()
         {
             Cv_ResourceBundle resBundle;
 
@@ -164,11 +165,11 @@ namespace Caravel.Core.Resource
         {
             if (!useDevDirectories)
             {
-                AddResourceBundle(m_sDefaultBundleID, new Cv_ZipResourceBundle(engineAssetsFile));
+                AddResourceBundle(DefaultBundleID, new Cv_ZipResourceBundle(engineAssetsFile));
             }
             else
             {
-                AddResourceBundle(m_sDefaultBundleID, new Cv_DevelopmentZipResourceBundle(engineAssetsFile));
+                AddResourceBundle(DefaultBundleID, new Cv_DevelopmentZipResourceBundle(engineAssetsFile));
             }
 			return true;
         }

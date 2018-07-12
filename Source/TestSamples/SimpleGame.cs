@@ -11,8 +11,6 @@ using static Caravel.Core.Cv_GameLogic;
 namespace Caravel.TestSamples
 {
 	//TODO(JM):
-    //Check how to do splitscreen
-	//Add renderer options for blendmode and effects
 	//Decouple asset loading from current folder for editor
 	//InputManager
 	//ProcessManager
@@ -60,7 +58,7 @@ namespace Caravel.TestSamples
             return gvs;
         }
 
-        protected override string VGetGameAppDirectory()
+        protected override string VGetGameAppDirectoryName()
         {
             return "SimpleGame";
         }

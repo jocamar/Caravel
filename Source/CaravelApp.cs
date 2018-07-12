@@ -76,6 +76,11 @@ namespace Caravel
             get; protected set;
         }
 
+		public string EditorWorkingDirectory
+		{
+			get; set;
+		}
+
         public Vector2 ScreenSize
         {
             get { return new Vector2(CurrentGraphicsDevice.PresentationParameters.BackBufferWidth,
@@ -141,6 +146,7 @@ namespace Caravel
 			BackgroundColor = Color.Black;
         	Window.ClientSizeChanged += OnResize;
 			UseDevelopmentDirectories = false;
+			EditorWorkingDirectory = Directory.GetCurrentDirectory();
         }
 
 #region MonoGame Functions
@@ -210,7 +216,7 @@ namespace Caravel
             //}
 
             Window.Title = VGetGameTitle();
-            SaveGameDirectory = GetSaveGameDirectory(VGetGameAppDirectory());
+            SaveGameDirectory = GetSaveGameDirectory(VGetGameAppDirectoryName());
 
             GameLogic = VCreateGameLogic();
             if (GameLogic == null) {
@@ -286,7 +292,7 @@ namespace Caravel
 
 #region Functions to be defined by the game
         protected abstract string           VGetGameTitle();
-        protected abstract string           VGetGameAppDirectory();
+        protected abstract string           VGetGameAppDirectoryName();
         protected abstract bool             VCheckGameSystemResources();
         protected abstract Cv_GameLogic     VCreateGameLogic();
         protected abstract Cv_GameView[]    VCreateGameViews();
@@ -320,9 +326,32 @@ namespace Caravel
     {
         UnloadContent();
     }
+
+	public void EditorLoadResourceBundle(string bundleId, string editorWorkingLocation, string bundleFile)
+	{
+		EditorWorkingDirectory = editorWorkingLocation;
+		Cv_ResourceManager.Instance.AddResourceBundle(bundleId, new Cv_DevelopmentZipResourceBundle(bundleFile));
+	}
+
+	public void EditorUnloadResourceBundle(string bundleId)
+	{
+		Cv_ResourceManager.Instance.RemoveResourceBundle(bundleId);
+	}
 #endregion
 
 #region CaravelApp functions
+		public string GetGameWorkingDirectory()
+		{
+			if (EditorRunning)
+			{
+				return EditorWorkingDirectory;
+			}
+			else
+			{
+				return Directory.GetCurrentDirectory();
+			}
+		}
+
         public void AbortGame()
         {
             Quitting = true;
