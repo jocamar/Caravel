@@ -25,7 +25,7 @@ namespace Caravel.TestSamples
             var camSettings = simpleGame.CameraEntity.GetComponent<Cv_CameraComponent>();
 
             var profileTransf = simpleGame.profile.GetComponent<Cv_TransformComponent>();
-            //var profileRigidBody = simpleGame.profile.GetComponent<Cv_RigidBodyComponent>();
+            var profileRigidBody = simpleGame.profile.GetComponent<Cv_RigidBodyComponent>();
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 camTransf.Position += new Vector3(-5,0,0);
@@ -82,15 +82,17 @@ namespace Caravel.TestSamples
                 }
             }
 
-            /*if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
                 profileRigidBody.Impulse = new Vector3(-500,0,0);
+                //profileTransf.Position += new Vector3(-5,0,0);
             }
             
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 profileRigidBody.Impulse += new Vector3(500, 0, 0);
-            }*/
+                //profileTransf.Position += new Vector3(5,0,0);
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {

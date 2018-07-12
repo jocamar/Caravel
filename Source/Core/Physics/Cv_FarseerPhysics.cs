@@ -57,8 +57,6 @@ namespace Caravel.Core.Physics
             get; set;
         }
 
-        public bool DebugDraw = true;
-
         private Dictionary<Cv_EntityID, Cv_PhysicsEntity> m_PhysicsEntities;
         private Dictionary<string, float> m_DensityTable;
         private Dictionary<string, Cv_PhysicsMaterial> m_MaterialsTable;
@@ -397,11 +395,11 @@ namespace Caravel.Core.Physics
 
         public override void VRenderDiagnostics(Cv_Renderer renderer)
         {
-            if (!DebugDraw)
+            if (!renderer.DebugDraw)
             {
-                return; 
+                return;
             }
-
+            
             foreach (var e in m_PhysicsEntities.Values)
             {
                 var pos = e.Body.Position;

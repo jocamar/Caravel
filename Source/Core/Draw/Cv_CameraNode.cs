@@ -66,14 +66,14 @@ namespace Caravel.Core.Draw
                 m_ResTranslationTransform.Position = new Vector3(virtualWidth * parentOrigin.X / zoom, virtualHeight * parentOrigin.Y / zoom, 0);
                 var camScale = Matrix.CreateScale(zoom, zoom, 1);
                 var camRot = Matrix.CreateRotationZ(-worldTransform.Rotation);
-                var camTrans = Matrix.CreateTranslation( -transform.Position/* * new Vector3(zoom, zoom, 1)*/);
+                var camTrans = Matrix.CreateTranslation( -transform.Position);
                 var parentTrans = Matrix.CreateTranslation(-parentWorldTranform.Position / new Vector3(rendererTransform.Scale, 1));
 
                 m_Transform.TransformMatrix = camScale *
                                                 parentTrans *
+                                                rendererTransform.TransformMatrix *
                                                 camRot *
                                                 camTrans *
-                                                rendererTransform.TransformMatrix *
                                                 m_ResTranslationTransform.TransformMatrix;
             }
 
@@ -89,21 +89,25 @@ namespace Caravel.Core.Draw
             IsViewTransformDirty = true;
         }
 
-        public override void VRender(Cv_SceneElement scene)
+        public override void VRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
         }
 
-        public override void VPreRender(Cv_SceneElement scene)
+        public override void VPreRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
         }
 
-        public override void VPostRender(Cv_SceneElement scene)
+        public override void VPostRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
-            base.VPostRender(scene);
+        }
+
+        public override void VFinishedRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        {
+            base.VFinishedRender(scene, renderer);
             ((Cv_CameraComponent) m_Component).ZoomChanged = false;
         }
 
-        public override bool VIsVisible(Cv_SceneElement scene)
+        public override bool VIsVisible(Cv_SceneElement scene, Cv_Renderer renderer)
         {
             return true;
         }

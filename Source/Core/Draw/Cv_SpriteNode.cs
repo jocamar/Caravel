@@ -37,7 +37,7 @@ namespace Caravel.Core.Draw
             var comp = ((Cv_SpriteComponent) renderComponent);
         }
 
-        public override void VRender(Cv_SceneElement scene)
+        public override void VRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
             var spriteComponent = (Cv_SpriteComponent) m_Component;
 
@@ -52,7 +52,7 @@ namespace Caravel.Core.Draw
 			var x = (spriteComponent.CurrentFrame % spriteComponent.FrameX) * frameW;
 			var y = (spriteComponent.CurrentFrame / spriteComponent.FrameX) * frameH;
 
-            scene.Renderer.Draw(tex, new Rectangle((int) pos.X,
+            renderer.Draw(tex, new Rectangle((int) pos.X,
                                                     (int)pos.Y,
                                                     (int)(spriteComponent.Width * scale.X),
                                                     (int)(spriteComponent.Height * scale.Y)),
@@ -71,18 +71,18 @@ namespace Caravel.Core.Draw
             return true;
         }
 
-        public override void VPreRender(Cv_SceneElement scene)
+        public override void VPreRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
         }
 
-        public override bool VIsVisible(Cv_SceneElement scene)
+        public override bool VIsVisible(Cv_SceneElement scene, Cv_Renderer renderer)
         {
             return true;
         }
 
-        public override bool VPick(Cv_SceneElement scene, Vector2 screenPosition, List<Cv_EntityID> entities)
+        public override bool VPick(Cv_SceneElement scene, Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
         {
-            var camMatrix = scene.Renderer.CamMatrix;
+            var camMatrix = renderer.CamMatrix;
             var worldTransform = Parent.WorldTransform;
             var pos = new Vector2(worldTransform.Position.X, worldTransform.Position.Y);
             var rot = worldTransform.Rotation;
@@ -134,6 +134,10 @@ namespace Caravel.Core.Draw
             {
                 return false;
             }
+        }
+
+        public override void VPostRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        {
         }
     }
 }

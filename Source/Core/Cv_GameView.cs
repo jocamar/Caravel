@@ -29,6 +29,7 @@ namespace Caravel.Core
         }
 
         protected internal abstract void VOnRender(float time, float timeElapsed);
+        protected internal abstract void VOnPostRender();
         protected internal abstract void VOnUpdate(float time, float timeElapsed);
         protected internal abstract void VOnAttach(Cv_GameViewID id, Cv_EntityID entityId);
     }

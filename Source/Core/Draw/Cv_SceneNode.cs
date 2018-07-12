@@ -203,31 +203,37 @@ namespace Caravel.Core.Draw
             return true;
         }
 
-        public abstract void VPreRender(Cv_SceneElement scene);
+        public abstract void VPreRender(Cv_SceneElement scene, Cv_Renderer renderer);
 
-        public abstract bool VIsVisible(Cv_SceneElement scene);
+        public abstract bool VIsVisible(Cv_SceneElement scene, Cv_Renderer renderer);
 
-        public abstract void VRender(Cv_SceneElement scene);
+        public abstract void VRender(Cv_SceneElement scene, Cv_Renderer renderer);
 
-        public virtual void VPostRender(Cv_SceneElement scene)
+        public abstract void VPostRender(Cv_SceneElement scene, Cv_Renderer renderer);
+
+        public virtual void VFinishedRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
             TransformChanged = false;
+
+            foreach (var child in m_Children)
+            {
+                child.VFinishedRender(scene, renderer);
+            }
         }
 
-        public virtual void VRenderChildren(Cv_SceneElement scene)
+        public virtual void VRenderChildren(Cv_SceneElement scene, Cv_Renderer renderer)
         {
             foreach (var child in m_Children)
             {
-                child.VPreRender(scene);
+                child.VPreRender(scene, renderer);
 
-                if (child.VIsVisible(scene))
+                if (child.VIsVisible(scene, renderer))
                 {
-                    child.VRender(scene);
-
-                    child.VRenderChildren(scene);
+                    child.VRender(scene, renderer);
+                    child.VRenderChildren(scene, renderer);
                 }
 
-                child.VPostRender(scene);
+                child.VPostRender(scene, renderer);
             }
         }
 
@@ -273,12 +279,12 @@ namespace Caravel.Core.Draw
             return false;
         }
 
-        public virtual bool VPick(Cv_SceneElement scene,  Vector2 screenPosition, List<Cv_EntityID> entities)
+        public virtual bool VPick(Cv_SceneElement scene, Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
         {
             var success = false;
             foreach (var child in m_Children)
             {
-                if (child.VPick(scene, screenPosition, entities))
+                if (child.VPick(scene, renderer, screenPosition, entities))
                 {
                     success = true;
                 }

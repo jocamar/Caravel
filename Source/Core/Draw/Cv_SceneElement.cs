@@ -24,15 +24,12 @@ namespace Caravel.Core.Draw
 			}
 		}
 
-		internal Cv_Renderer Renderer;
-
 		private Cv_SceneNode m_Root;
 		private List<Cv_Transform> m_TransformStack;
 		private Dictionary<Cv_EntityID, List<Cv_SceneNode>> m_EntitiesMap;
 
-        public Cv_SceneElement(Cv_Renderer renderer)
+        public Cv_SceneElement()
         {
-            Renderer = renderer;
             m_EntitiesMap = new Dictionary<Cv_EntityID, List<Cv_SceneNode>>();
             m_TransformStack = new List<Cv_Transform>();
 			m_Root = new Cv_HolderNode(Cv_EntityID.INVALID_ENTITY);
@@ -53,18 +50,26 @@ namespace Caravel.Core.Draw
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
 		}
 
-        public override void VOnRender(float time, float timeElapsed)
+        public override void VOnRender(float time, float timeElapsed, Cv_Renderer renderer)
         {
 			if (m_Root != null && Camera != null)
 			{
-				Renderer.BeginDraw(Camera);
-					m_Root.VPreRender(this);
-					m_Root.VRender(this);
-					m_Root.VRenderChildren(this);
-					m_Root.VPostRender(this);
-				Renderer.EndDraw();
+				renderer.BeginDraw(Camera);
+					m_Root.VPreRender(this, renderer);
+					m_Root.VRender(this, renderer);
+					m_Root.VRenderChildren(this, renderer);
+					m_Root.VPostRender(this, renderer);
+				renderer.EndDraw();
 			}
         }
+
+		public override void VOnPostRender(Cv_Renderer renderer)
+		{
+			if (m_Root != null)
+			{
+				m_Root.VFinishedRender(this, renderer);
+			}
+		}
 
         public override void VOnUpdate(float time, float timeElapsed)
         {
@@ -224,7 +229,6 @@ namespace Caravel.Core.Draw
 			var cameraNode = castEventData.CameraNode;
 			var parentId = castEventData.ParentID;
 
-
 			AddNodeAsChild(parentId, entityId, cameraNode);
 		}
 
@@ -305,10 +309,10 @@ namespace Caravel.Core.Draw
 			m_TransformStack.RemoveAt(m_TransformStack.Count-1);
 		}
 
-		public bool Pick(Vector2 mousePosition, out Cv_EntityID[] entities) {
+		public bool Pick(Vector2 mousePosition, out Cv_EntityID[] entities, Cv_Renderer renderer) {
 			var entityList = new List<Cv_EntityID>();
-			var screenPosition = Renderer.ScaleMouseToScreenCoordinates(mousePosition);
-			var result = m_Root.VPick(this, screenPosition, entityList);
+			var screenPosition = renderer.ScaleMouseToScreenCoordinates(mousePosition);
+			var result = m_Root.VPick(this, renderer, screenPosition, entityList);
 			entities = entityList.ToArray();
             return result;
         }

@@ -1,4 +1,5 @@
 ﻿using Caravel.Core;
+using Caravel.Core.Draw;
 using Caravel.Core.Events;
 using Caravel.Core.Physics;
 using Caravel.Core.Resource;
@@ -119,6 +120,11 @@ namespace Caravel
             get; private set;
         }
 
+        internal Cv_SceneElement Scene
+        {
+            get; private set;
+        }
+
         private Dictionary<string, string>  m_TextResource;
 #endregion
         
@@ -161,9 +167,6 @@ namespace Caravel
                 Exit();
                 return;
             }
-
-            RegisterEngineEvents();
-            VRegisterGameEvents();
 
             ResourceManager = new Cv_ResourceManager();
             if (!ResourceManager.Init("Assets.zip", UseDevelopmentDirectories))
@@ -218,6 +221,7 @@ namespace Caravel
 
             RegisterEngineScriptEvents();
 
+            Scene = new Cv_SceneElement();
             var gvs = VCreateGameViews();
             foreach (var gv in gvs)
             {
@@ -271,6 +275,11 @@ namespace Caravel
                 gv.VOnRender(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             }
 
+            foreach (var gv in GameLogic.GameViews)
+            {
+                gv.VOnPostRender();
+            }
+
             base.Draw(gameTime);
         }
 #endregion
@@ -282,7 +291,6 @@ namespace Caravel
         protected abstract Cv_GameLogic     VCreateGameLogic();
         protected abstract Cv_GameView[]    VCreateGameViews();
         protected abstract Cv_GamePhysics   VCreateGamePhysics();
-        protected abstract void             VRegisterGameEvents();
         protected internal abstract bool    VInitialize();
         protected internal abstract bool    VLoadGame();
 #endregion
@@ -372,11 +380,6 @@ namespace Caravel
 				}
             }
 		}
-
-        private void RegisterEngineEvents()
-        {
-
-        }
 
         private void RegisterEngineScriptEvents()
         {

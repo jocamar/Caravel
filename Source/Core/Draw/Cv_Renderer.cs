@@ -18,6 +18,14 @@ namespace Caravel.Core.Draw
         public int ScreenWidth = 1280;
         public int ScreenHeight = 720;
 
+        public Vector2 ScreenSizePercent;
+        public Vector2 ScreenOriginPercent;
+
+        public bool DebugDraw
+        {
+            get; set;
+        }
+
         public Cv_Transform Transform
         {
             get
@@ -143,7 +151,6 @@ namespace Caravel.Core.Draw
                 {
                     CamMatrix = Matrix.CreateRotationZ(cameraTransform.Rotation) * Matrix.CreateTranslation(cameraTransform.Position.X, cameraTransform.Position.Y, 0)
                                                 * Matrix.CreateScale(cameraTransform.Scale.X, cameraTransform.Scale.Y, 1);
-                    camera.IsViewTransformDirty = false;
                 }
 
                 m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointClamp,
