@@ -15,7 +15,12 @@
         <Physics fixedRotation="false" gravityScale="1" maxVelocity="100" maxAngVelocity="100"/>
         <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
 	    <CollisionShapes>
-            <Box anchorX="-125" anchorY="-125" isBullet="false" dimensionsX="250" dimensionsY="250" material="Wood"/>
+            <Box anchorX="-125" anchorY="-125" isBullet="false" dimensionsX="250" dimensionsY="250" material="Wood">
+				<CollisionCategory id="1"/>
+				<CollisionCategory id="2"/>
+				<CollidesWith id="1" directions="All"/>
+				<CollidesWith id="3" directions="Top"/>
+			</Box>
         </CollisionShapes>
     </Cv_RigidBodyComponent>
 </EntityType>

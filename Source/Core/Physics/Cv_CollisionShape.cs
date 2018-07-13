@@ -43,6 +43,25 @@ namespace Caravel.Core.Physics
                 m_Categories.CopyTo(array, 0);
                 return array[0];
             }
+
+			public int[] GetCategoriesArray()
+            {
+				List<int> categories = new List<int>();
+                for(var i = 0; i < m_Categories.Length; i++)
+				{
+					if (m_Categories.Get(i))
+					{
+						categories.Add(i);
+					}
+				}
+
+				return categories.ToArray();
+            }
+
+			public bool HasCategory(int category)
+			{
+				return m_Categories.Get(category);
+			}
         }
 
         public List<Vector2> Points
@@ -109,7 +128,11 @@ namespace Caravel.Core.Physics
 
         internal Cv_Entity Owner { get; set; }
 
-        public Cv_CollisionShape(List<Vector2> points, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
+		private Dictionary<int, string> m_CollisionDirections;
+
+        public Cv_CollisionShape(List<Vector2> points, Vector2? anchorPoint, float density, bool isSensor,
+									bool isBullet, Cv_CollisionCategories categories, Cv_CollisionCategories collidesWith,
+									Dictionary<int, string> directions)
         {
             Points = points;
 
@@ -121,15 +144,16 @@ namespace Caravel.Core.Physics
             IsBullet = isBullet;
             Density = density;
             Friction = 1f;
-            CollisionCategories = new Cv_CollisionCategories();
-            CollidesWith = new Cv_CollisionCategories();
-            CollisionCategories.AddCategory(1);
-            CollidesWith.AddCategory(1);
+            CollisionCategories = categories;
+            CollidesWith = collidesWith;
+			m_CollisionDirections = directions;
 
             Owner = null;
         }
 
-        public Cv_CollisionShape(Vector2 point, float radius, Vector2? anchorPoint = null, float density = 1f, bool isSensor = false, bool isBullet = false)
+        public Cv_CollisionShape(Vector2 point, float radius, Vector2? anchorPoint, float density, bool isSensor,
+									bool isBullet, Cv_CollisionCategories categories, Cv_CollisionCategories collidesWith,
+									Dictionary<int, string> directions)
         {
             Points = new List<Vector2>();
             Points.Add(point);
@@ -144,10 +168,9 @@ namespace Caravel.Core.Physics
             IsBullet = isBullet;
             Density = density;
             Friction = 1f;
-            CollisionCategories = new Cv_CollisionCategories();
-            CollidesWith = new Cv_CollisionCategories();
-            CollisionCategories.AddCategory(1);
-            CollidesWith.AddCategory(1);
+            CollisionCategories = categories;
+            CollidesWith = collidesWith;
+			m_CollisionDirections = directions;
             CircleOutlineTex = Cv_DrawUtils.CreateCircle((int) radius);
 
             Owner = null;
@@ -202,5 +225,22 @@ namespace Caravel.Core.Physics
 
             return BoundingBox;
         }
+
+		public bool CollidesWithFromDirection(Cv_CollisionCategories categories, string direction)
+		{
+			var catArray = categories.GetCategoriesArray();
+			var collides = false;
+
+			foreach (var c in catArray)
+			{
+				if (m_CollisionDirections.ContainsKey(c)
+						&& (m_CollisionDirections[c].Contains(direction) || m_CollisionDirections[c] == "All"))
+				{
+					collides = true;
+				}
+			}
+
+			return collides;
+		}
     }
 }

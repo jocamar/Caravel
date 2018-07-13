@@ -5,24 +5,14 @@ using Caravel.Core.Events;
 using Caravel.Debugging;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using static Caravel.Core.Physics.Cv_CollisionShape;
+using static Caravel.Core.Physics.Cv_GamePhysics;
 
 namespace Caravel.Core.Entity
 {
     public class Cv_RigidBodyComponent : Cv_EntityComponent
     {
         public enum BodyType { Static, Dynamic, Kinematic };
-        public enum ShapeType { Box, Circle, Polygon, Trigger };
-
-        public struct Cv_ShapeData
-        {
-            public ShapeType Type;
-            public Vector2 Anchor;
-            public float Radius;
-            public Vector2 Dimensions;
-            public Vector2[] Points;
-            public bool IsBullet;
-            public string Material;
-        }
 
         public BodyType RigidBodyType
         {
@@ -226,7 +216,8 @@ namespace Caravel.Core.Entity
                 else
                 {
                     var points = new List<Vector2>();
-                    foreach (XmlElement point in shape.ChildNodes)
+					var shapePoints = shape.SelectNodes("//Point");
+                    foreach (XmlElement point in shapePoints)
                     {
                         x = int.Parse(shape.Attributes?["x"].Value, CultureInfo.InvariantCulture);
                         y = int.Parse(shape.Attributes?["y"].Value, CultureInfo.InvariantCulture);
@@ -235,6 +226,24 @@ namespace Caravel.Core.Entity
 
                     shapeData.Points = points.ToArray();
                 }
+
+				var shapeCollisionCategories = shape.SelectNodes("//CollisionCategory");
+				shapeData.Categories = new Cv_CollisionCategories();
+				foreach (XmlElement category in shapeCollisionCategories)
+				{
+					var id = int.Parse(category.Attributes?["id"].Value, CultureInfo.InvariantCulture);
+					shapeData.Categories.AddCategory(id);
+				}
+
+				var shapeCollidesWith = shape.SelectNodes("//CollidesWith");
+				shapeData.CollidesWith = new Cv_CollisionCategories();
+				shapeData.CollisionDirections = new Dictionary<int, string>();
+				foreach (XmlElement category in shapeCollidesWith)
+				{
+					var id = int.Parse(category.Attributes?["id"].Value, CultureInfo.InvariantCulture);
+					shapeData.CollidesWith.AddCategory(id);
+					shapeData.CollisionDirections.Add(id, category.Attributes["directions"].Value);
+				}
 
                 m_Shapes.Add(shapeData);
             }

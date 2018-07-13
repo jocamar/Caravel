@@ -84,7 +84,7 @@ namespace Caravel.Core.Physics
             Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
         }
 
-        public override Cv_CollisionShape VAddBox(Vector2 dimensions, Vector2 anchor, Cv_Entity gameEntity, string physicsMaterial, bool isBullet)
+        public override Cv_CollisionShape VAddBox(Cv_Entity gameEntity, Cv_ShapeData data)
         {
             var rigidBodyComponent = gameEntity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -105,14 +105,14 @@ namespace Caravel.Core.Physics
             body.IsBullet = false;
 
             var verts = new Vertices();
-            verts.Add(new Vector2(-dimensions.X/2, -dimensions.Y/2));
-            verts.Add(new Vector2(dimensions.X/2, -dimensions.Y/2));
-            verts.Add(new Vector2(dimensions.X/2, dimensions.Y/2));
-            verts.Add(new Vector2(-dimensions.X/2, dimensions.Y/2));
+            verts.Add(new Vector2(-data.Dimensions.X/2, -data.Dimensions.Y/2));
+            verts.Add(new Vector2(data.Dimensions.X/2, -data.Dimensions.Y/2));
+            verts.Add(new Vector2(data.Dimensions.X/2, data.Dimensions.Y/2));
+            verts.Add(new Vector2(-data.Dimensions.X/2, data.Dimensions.Y/2));
 
             Cv_PhysicsMaterial material;
             
-            if (!m_MaterialsTable.TryGetValue(physicsMaterial, out material))
+            if (!m_MaterialsTable.TryGetValue(data.Material, out material))
             {
                 Cv_Debug.Error("Material does not exist on the physics system.");
                 return null;
@@ -122,7 +122,8 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(verts, anchor, material.Density, false, isBullet);
+            var shape = new Cv_CollisionShape(verts, data.Anchor, material.Density, false, data.IsBullet,
+													data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
             shape.Restitution = material.Restitution;
@@ -130,7 +131,7 @@ namespace Caravel.Core.Physics
             return AddShape(gameEntity, shape, false);
         }
 
-        public override Cv_CollisionShape VAddPointShape(List<Vector2> verts, Vector2 anchor, Cv_Entity gameEntity, string physicsMaterial, bool isBullet)
+        public override Cv_CollisionShape VAddPointShape(Cv_Entity gameEntity, Cv_ShapeData data)
         {
             var rigidBodyComponent = gameEntity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -150,11 +151,11 @@ namespace Caravel.Core.Physics
             body = m_PhysicsEntities[gameEntity.ID].Body;
             body.IsBullet = false;
 
-            var vertices = new Vertices(verts);
+            var vertices = new Vertices(data.Points);
 
             Cv_PhysicsMaterial material;
             
-            if (!m_MaterialsTable.TryGetValue(physicsMaterial, out material))
+            if (!m_MaterialsTable.TryGetValue(data.Material, out material))
             {
                 Cv_Debug.Error("Material does not exist on the physics system.");
                 return null;
@@ -164,7 +165,8 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(vertices, anchor, material.Density, false, isBullet);
+            var shape = new Cv_CollisionShape(vertices, data.Anchor, material.Density, false, data.IsBullet,
+													data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
             shape.Restitution = material.Restitution;
@@ -172,7 +174,7 @@ namespace Caravel.Core.Physics
             return AddShape(gameEntity, shape, false);
         }
 
-        public override Cv_CollisionShape VAddCircle(float radius, Vector2 anchor, Cv_Entity gameEntity, string physicsMaterial, bool isBullet)
+        public override Cv_CollisionShape VAddCircle(Cv_Entity gameEntity, Cv_ShapeData data)
         {
             var rigidBodyComponent = gameEntity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -194,13 +196,14 @@ namespace Caravel.Core.Physics
 
             Cv_PhysicsMaterial material;
             
-            if (!m_MaterialsTable.TryGetValue(physicsMaterial, out material))
+            if (!m_MaterialsTable.TryGetValue(data.Material, out material))
             {
                 Cv_Debug.Error("Material does not exist on the physics system.");
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(Vector2.Zero, radius, anchor, material.Density, false, isBullet);
+            var shape = new Cv_CollisionShape(Vector2.Zero, data.Radius, data.Anchor, material.Density, false,
+												data.IsBullet, data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
             shape.Restitution = material.Restitution;
@@ -208,7 +211,7 @@ namespace Caravel.Core.Physics
             return AddShape(gameEntity, shape, false);
         }
 
-        public override Cv_CollisionShape VAddTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet)
+        public override Cv_CollisionShape VAddTrigger(Cv_Entity gameEntity, Cv_ShapeData data)
         {
             var rigidBodyComponent = gameEntity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -229,17 +232,18 @@ namespace Caravel.Core.Physics
             body.IsBullet = false;
 
             var verts = new Vertices();
-            verts.Add(new Vector2(-dim/2, -dim/2));
-            verts.Add(new Vector2(dim/2, -dim/2));
-            verts.Add(new Vector2(dim/2, dim/2));
-            verts.Add(new Vector2(-dim/2, dim/2));
+            verts.Add(new Vector2(-data.Dimensions.X/2, -data.Dimensions.X/2));
+            verts.Add(new Vector2(data.Dimensions.X/2, -data.Dimensions.X/2));
+            verts.Add(new Vector2(data.Dimensions.X/2, data.Dimensions.X/2));
+            verts.Add(new Vector2(-data.Dimensions.X/2, data.Dimensions.X/2));
 
             if (!CheckPolygonValidity(verts))
             {
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(verts, pos, 1, true, isBullet);
+            var shape = new Cv_CollisionShape(verts, data.Anchor, 1, true, data.IsBullet,
+												data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             
             return AddShape(gameEntity, shape, true);
@@ -482,18 +486,18 @@ namespace Caravel.Core.Physics
 
             switch (shapeData.Type)
             {
-                case Cv_RigidBodyComponent.ShapeType.Circle:
-                    VAddCircle(shapeData.Radius, shapeData.Anchor, entity, shapeData.Material, shapeData.IsBullet);
+                case ShapeType.Circle:
+                    VAddCircle(entity, shapeData);
                     break;
-                case Cv_RigidBodyComponent.ShapeType.Box:
-                    VAddBox(shapeData.Dimensions, shapeData.Anchor, entity, shapeData.Material, shapeData.IsBullet);
+                case ShapeType.Box:
+                    VAddBox(entity, shapeData);
                     break;
-                case Cv_RigidBodyComponent.ShapeType.Trigger:
-                    VAddTrigger(entity, shapeData.Anchor, shapeData.Dimensions.X, shapeData.IsBullet);
+                case ShapeType.Trigger:
+                    VAddTrigger(entity, shapeData);
                     break;
                 default:
                     var points = new List<Vector2>(shapeData.Points);
-                    VAddPointShape(points, shapeData.Anchor, entity, shapeData.Material, shapeData.IsBullet);
+                    VAddPointShape(entity, shapeData);
                     break;
             }
         }
@@ -522,7 +526,7 @@ namespace Caravel.Core.Physics
 
                     foreach (var f in pe.Shapes)
                     {
-                        if (f.Value.Shape.ShapeType == ShapeType.Polygon)
+                        if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
                         {
                             PolygonShape polygon = (PolygonShape) f.Value.Shape;
 
@@ -537,7 +541,7 @@ namespace Caravel.Core.Physics
 
                             polygon.Vertices = newVerts;
                         }
-                        else if (f.Value.Shape.ShapeType == ShapeType.Circle)
+                        else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
                         {
                             CircleShape circle = (CircleShape) f.Value.Shape;
 

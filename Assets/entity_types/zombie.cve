@@ -19,7 +19,10 @@
         <Physics fixedRotation="false" gravityScale="1" maxVelocity="100" maxAngVelocity="100"/>
         <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
 	    <CollisionShapes>
-            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="102" dimensionsY="148" material="Wood"/>
+            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="102" dimensionsY="148" material="Wood">
+				<CollisionCategory id="3"/>
+				<CollidesWith id="1" directions="All"/>
+			</Box>
         </CollisionShapes>
     </Cv_RigidBodyComponent>
 </EntityType>

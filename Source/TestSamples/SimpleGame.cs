@@ -11,7 +11,8 @@ using static Caravel.Core.Cv_GameLogic;
 namespace Caravel.TestSamples
 {
 	//TODO(JM):
-	//Decouple asset loading from current folder for editor
+	//Remove unused usings
+	//Add collision categories to shapes
 	//InputManager
 	//ProcessManager
 	//more... (see commented code)

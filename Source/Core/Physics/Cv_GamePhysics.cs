@@ -3,24 +3,38 @@ using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
+using static Caravel.Core.Physics.Cv_CollisionShape;
 
 namespace Caravel.Core.Physics
 {
     public abstract class Cv_GamePhysics
     {
+		public enum ShapeType { Box, Circle, Polygon, Trigger };
+
+        public struct Cv_ShapeData
+        {
+            public ShapeType Type;
+            public Vector2 Anchor;
+            public float Radius;
+            public Vector2 Dimensions;
+            public Vector2[] Points;
+            public bool IsBullet;
+            public string Material;
+			public Cv_CollisionCategories Categories;
+			public Cv_CollisionCategories CollidesWith;
+			public Dictionary<int, string> CollisionDirections;
+        }
+
         // Initialiazation and Maintenance of the Physics World
         public abstract bool VInitialize();
         public abstract void VSyncVisibleScene();
         public abstract void VOnUpdate( float timeElapsed ); 
 
         // Initialization of Physics Objects
-        public abstract Cv_CollisionShape VAddCircle(float radius, Vector2 anchor, Cv_Entity gameEntity,
-                                                        string physicsMaterial, bool isBullet);
-		public abstract Cv_CollisionShape VAddBox(Vector2 dimensions, Vector2 anchor, Cv_Entity gameEntity,
-                                                        string physicsMaterial, bool isBullet);
-		public abstract Cv_CollisionShape VAddPointShape(List<Vector2> verts, Vector2 anchor, Cv_Entity gameEntity,
-                                                        string physicsMaterial, bool isBullet);
-        public abstract Cv_CollisionShape VAddTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet);
+        public abstract Cv_CollisionShape VAddCircle(Cv_Entity gameEntity, Cv_ShapeData data);
+		public abstract Cv_CollisionShape VAddBox(Cv_Entity gameEntity, Cv_ShapeData data);
+		public abstract Cv_CollisionShape VAddPointShape(Cv_Entity gameEntity, Cv_ShapeData data);
+        public abstract Cv_CollisionShape VAddTrigger(Cv_Entity gameEntity, Cv_ShapeData data);
         public abstract void VRemoveEntity(Cv_EntityID id);
         public abstract void RemoveCollisionObject(Cv_CollisionShape toRemove);
 

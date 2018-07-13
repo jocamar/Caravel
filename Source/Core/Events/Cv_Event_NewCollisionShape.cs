@@ -1,7 +1,7 @@
 using System.Runtime.Serialization;
 using Caravel.Core.Entity;
 using static Caravel.Core.Entity.Cv_Entity;
-using static Caravel.Core.Entity.Cv_RigidBodyComponent;
+using static Caravel.Core.Physics.Cv_GamePhysics;
 
 namespace Caravel.Core.Events
 {
