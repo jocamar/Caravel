@@ -56,6 +56,11 @@ namespace Caravel.Core.Resource
 
 		public Cv_ZipResourceBundle(string fileName) : base(CaravelApp.Instance.Services, fileName)
 		{
+			if (CaravelApp.Instance.UseDevelopmentDirectories)
+			{
+				return;
+			}
+			
 			if (File.Exists(m_sBundleLocation))
 			{
 				if (Path.GetExtension(m_sBundleLocation) == ".zip")

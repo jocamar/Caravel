@@ -1,4 +1,4 @@
-<EntityType type="camera" resource="entities/camera.xml">
+<EntityType type="camera" resource="entity_types/camera.cve">
     <Cv_TransformComponent>
         <Position x="-100" y="0" z="0"/>
         <Scale x="1" y="1" />

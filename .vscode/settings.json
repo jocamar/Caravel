@@ -1,3 +1,9 @@
 {
-    "csharp.referencesCodeLens.enabled": false
+    "csharp.referencesCodeLens.enabled": false,
+    "files.associations": {
+        "*.cvp": "xml",
+        "*.cvc": "xml",
+        "*.cve": "xml",
+        "*.cvs": "xml"
+    }
 }

@@ -15,11 +15,11 @@ namespace Caravel.Core.Physics
 
         // Initialization of Physics Objects
         public abstract Cv_CollisionShape VAddCircle(float radius, Vector2 anchor, Cv_Entity gameEntity,
-                                                        string densityStr, string physicsMaterial, bool isBullet);
+                                                        string physicsMaterial, bool isBullet);
 		public abstract Cv_CollisionShape VAddBox(Vector2 dimensions, Vector2 anchor, Cv_Entity gameEntity,
-                                                        string densityStr, string physicsMaterial, bool isBullet);
+                                                        string physicsMaterial, bool isBullet);
 		public abstract Cv_CollisionShape VAddPointShape(List<Vector2> verts, Vector2 anchor, Cv_Entity gameEntity,
-                                                        string densityStr, string physicsMaterial, bool isBullet);
+                                                        string physicsMaterial, bool isBullet);
         public abstract Cv_CollisionShape VAddTrigger(Cv_Entity gameEntity, Vector2 pos, float dim, bool isBullet);
         public abstract void VRemoveEntity(Cv_EntityID id);
         public abstract void RemoveCollisionObject(Cv_CollisionShape toRemove);

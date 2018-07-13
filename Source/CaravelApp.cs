@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using static Caravel.Core.Cv_GameView;
 
 namespace Caravel
@@ -92,7 +93,13 @@ namespace Caravel
             get; protected set;
         }
 
-        protected Cv_Debug m_Debug;
+        public string MaterialsLocation
+        {
+            get; private set;
+        }
+
+        private Cv_Debug m_Debug;
+        private XmlElement m_BundleInfo;
 
 #region Managers
         public Cv_EventManager EventManager
@@ -174,8 +181,10 @@ namespace Caravel
                 return;
             }
 
+            ReadProjectFile();
+
             ResourceManager = new Cv_ResourceManager();
-            if (!ResourceManager.Init("Assets.zip", UseDevelopmentDirectories))
+            if (!ResourceManager.Init(m_BundleInfo, UseDevelopmentDirectories))
             {
                 Cv_Debug.Error("Unable to initialize resource manager.");
                 Exit();
@@ -337,6 +346,14 @@ namespace Caravel
 	{
 		Cv_ResourceManager.Instance.RemoveResourceBundle(bundleId);
 	}
+
+    public void EditorReadMaterials(string editorWorkingLocation)
+    {
+        EditorWorkingDirectory = editorWorkingLocation;
+        ReadProjectFile();
+        MaterialsLocation = Path.Combine(editorWorkingLocation, MaterialsLocation);
+        GameLogic.Init();
+    }
 #endregion
 
 #region CaravelApp functions
@@ -427,6 +444,31 @@ namespace Caravel
             var finalPath = Path.Combine(userDataPath, gameDirectory);
             finalPath += Path.DirectorySeparatorChar;
             return finalPath;
+        }
+
+        private void ReadProjectFile()
+        {
+            var files = Directory.GetFiles(GetGameWorkingDirectory(), "*.cvp");
+
+            if (files.Length <= 0)
+            {
+                Cv_Debug.Error("Unable to find project file.");
+            }
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(files[0]);
+            var root = doc.FirstChild;
+
+            var resourceBundles = root.SelectSingleNode("//ResourceBundles");
+            m_BundleInfo = (XmlElement) resourceBundles;
+
+            var materialsNode = root.SelectSingleNode("Materials");
+
+            if (materialsNode != null)
+            {
+                MaterialsLocation = materialsNode.Attributes["materialsFile"].Value;
+            }
+
         }
 #endregion
     }

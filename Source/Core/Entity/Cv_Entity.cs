@@ -73,7 +73,7 @@ namespace Caravel.Core.Entity
             return null;
         }
 
-        internal Cv_Entity(string resourceBundle = null)
+        internal Cv_Entity(string resourceBundle)
         {
             ID = Cv_EntityID.INVALID_ENTITY;
             EntityType = "Unknown";
@@ -85,7 +85,7 @@ namespace Caravel.Core.Entity
 			ResourceBundle = resourceBundle;
         }
 
-        internal Cv_Entity(Cv_EntityID entityId, string resourceBundle = null)
+        internal Cv_Entity(Cv_EntityID entityId, string resourceBundle)
         {
             ID = entityId;
             EntityType = "Unknown";

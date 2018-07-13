@@ -1,0 +1,6 @@
+<CaravelProject name="SimpleGame">
+    <ResourceBundles>
+        <Bundle name="Default" file="Assets.zip"/>
+    </ResourceBundles>
+    <Materials materialsFile="config/physics.xml"/>
+</CaravelProject>

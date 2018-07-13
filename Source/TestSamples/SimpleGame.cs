@@ -77,7 +77,7 @@ namespace Caravel.TestSamples
 
         protected internal override bool VLoadGame()
         {
-            GameLogic.LoadScene("scenes/testScene.xml");
+            GameLogic.LoadScene("scenes/testScene.cvs", "Default");
             CameraEntity = GameLogic.GetEntity("camera");
 
             guntler = GameLogic.GetEntity("guntler");

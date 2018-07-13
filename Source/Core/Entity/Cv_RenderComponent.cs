@@ -38,23 +38,20 @@ namespace Caravel.Core.Entity
             XmlElement colorNode = (XmlElement) componentData.SelectSingleNode("//Color");
             if (colorNode != null)
             {
-                if (colorNode != null)
+                int r, g, b, a;
+
+                r = int.Parse(colorNode.Attributes["r"].Value);
+                g = int.Parse(colorNode.Attributes["g"].Value);
+                b = int.Parse(colorNode.Attributes["b"].Value);
+
+                a = 255;
+
+                if (colorNode.Attributes["a"] != null)
                 {
-                    int r, g, b, a;
-
-                    r = int.Parse(colorNode.Attributes["r"].Value);
-                    g = int.Parse(colorNode.Attributes["g"].Value);
-                    b = int.Parse(colorNode.Attributes["b"].Value);
-
-					a = 255;
-
-					if (colorNode.Attributes["a"] != null)
-					{
-						a = int.Parse(colorNode.Attributes["a"].Value);
-					}
-
-                    Color = new Color(r,g,b,a);
+                    a = int.Parse(colorNode.Attributes["a"].Value);
                 }
+
+                Color = new Color(r,g,b,a);
             }
 
             return VInheritedInit(componentData);

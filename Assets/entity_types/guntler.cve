@@ -1,4 +1,4 @@
-<EntityType type="guntler" resource="entities/guntler.xml">
+<EntityType type="guntler" resource="entity_types/guntler.cve">
     <Cv_TransformComponent>
         <Position x="0" y="-200" z="0"/>
         <Scale x="2" y="1" />
@@ -12,11 +12,11 @@
 	    <Animation speed="1" fx="1" fy="1" loop="true" startFrame="0" endFrame="0"/>
     </Cv_SpriteComponent>
     <Cv_RigidBodyComponent>
-        <Material material="Wood" density="Wood"/>
+        <Material material="Wood"/>
         <Physics fixedRotation="false" gravityScale="0" maxVelocity="100" maxAngVelocity="100"/>
         <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
 	    <CollisionShapes>
-            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="250" dimensionsY="250" material="Wood" density="Wood"/>
+            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="250" dimensionsY="250" material="Wood"/>
         </CollisionShapes>
     </Cv_RigidBodyComponent>
 </EntityType>

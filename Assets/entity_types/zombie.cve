@@ -1,4 +1,4 @@
-<EntityType type="zombie" resource="entities/zombie.xml">
+<EntityType type="zombie" resource="entity_types/zombie.cve">
     <Cv_TransformComponent>
         <Position x="-200" y="0" z="0"/>
         <Scale x="1" y="1" />
@@ -15,11 +15,11 @@
         </Animation>
     </Cv_SpriteComponent>
     <Cv_RigidBodyComponent>
-        <Material material="Wood" density="Wood"/>
+        <Material material="Wood"/>
         <Physics fixedRotation="false" gravityScale="1" maxVelocity="100" maxAngVelocity="100"/>
         <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
 	    <CollisionShapes>
-            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="102" dimensionsY="148" material="Wood" density="Wood"/>
+            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="102" dimensionsY="148" material="Wood"/>
         </CollisionShapes>
     </Cv_RigidBodyComponent>
 </EntityType>

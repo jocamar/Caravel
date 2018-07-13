@@ -106,7 +106,7 @@ namespace Caravel.TestSamples
 
             if (Keyboard.GetState().IsKeyDown(Keys.R))
             {
-                CreateEntity("entities/zombie.xml", "entity_" + entities);
+                CreateEntity("entity_types/zombie.cve", "entity_" + entities, "Default");
                 entities++;
             }
 

@@ -23,18 +23,10 @@ namespace Caravel.Core.Entity
             m_ComponentFactory.Register<Cv_RigidBodyComponent>(Cv_EntityComponent.GetID<Cv_RigidBodyComponent>());
         }
 
-        protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID, string resourceBundle = null)
+        protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID, string resourceBundle)
         {
             Cv_XmlResource resource;
-			
-			if (resourceBundle == null)
-			{
-				resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource);
-			}
-			else
-			{
-				resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource, resourceBundle);
-			}
+			resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource, resourceBundle, CaravelApp.Instance.EditorRunning);
 
             XmlElement root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
 
@@ -90,7 +82,7 @@ namespace Caravel.Core.Entity
             return entity;
         }
 
-        protected internal Cv_Entity CreateEmptyEntity(Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
+        protected internal Cv_Entity CreateEmptyEntity(string resourceBundle, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
         {
             Cv_EntityID entityId = serverEntityID;
             if (entityId == Cv_EntityID.INVALID_ENTITY)
@@ -98,7 +90,7 @@ namespace Caravel.Core.Entity
                 entityId = GetNextEntityID();
             }
 
-            var entity = new Cv_Entity(entityId);
+            var entity = new Cv_Entity(entityId, resourceBundle);
 
             if (!entity.Init(null, parent))
             {

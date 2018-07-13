@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Xml;
 using Caravel.Debugging;
 using static Caravel.Core.Resource.Cv_Resource;
 
@@ -14,19 +15,17 @@ namespace Caravel.Core.Resource
 
         public delegate void LoadProgressDelegate(int progress, out bool cancel);
 
-		public const string DefaultBundleID = "Cv_DefaultEngineBundle";
-
         private Dictionary<string, Cv_ResourceBundle> m_ResourceBundles;
         private Dictionary<string, Cv_ResourceData> m_ResourceData;
 
-        public Resource GetResource<Resource>(string resourceFile, string bundle = DefaultBundleID) where Resource : Cv_Resource, new()
+        public Resource GetResource<Resource>(string resourceFile, string bundle, bool reload = false) where Resource : Cv_Resource, new()
         {
             var resource = new Resource();
             resource.File = resourceFile;
 
             var isOwnedByResManager = resource.VIsManuallyManaged();
             Cv_ResourceData resData;
-            if (isOwnedByResManager && m_ResourceData.TryGetValue(resourceFile, out resData))
+            if (!reload && isOwnedByResManager && m_ResourceData.TryGetValue(resourceFile, out resData))
             {
                 resource.ResourceData = resData;
             }
@@ -52,6 +51,11 @@ namespace Caravel.Core.Resource
 
                 if (isOwnedByResManager)
                 {
+                    if (m_ResourceData.ContainsKey(resourceFile))
+                    {
+                        m_ResourceData.Remove(resourceFile);
+                    }
+                    
                     m_ResourceData.Add(resourceFile, resource.ResourceData);
                 }
             }
@@ -59,7 +63,7 @@ namespace Caravel.Core.Resource
 			return resource;
         }
 
-        public string[] GetResourceList(string pattern, string bundle = DefaultBundleID)
+        public string[] GetResourceList(string pattern, string bundle)
         {
             List<string> resources = new List<string>();
             Regex mask = new Regex(pattern.Replace(".", "[.]").Replace("*", ".*").Replace("?", "."));
@@ -83,7 +87,7 @@ namespace Caravel.Core.Resource
             return resources.ToArray();
         }
 
-        public int Preload<Resource>(string pattern, LoadProgressDelegate progressCallback, string bundle = DefaultBundleID) where Resource : Cv_Resource, new()
+        public int Preload<Resource>(string pattern, LoadProgressDelegate progressCallback, string bundle) where Resource : Cv_Resource, new()
         {
             Cv_ResourceBundle resBundle;
 
@@ -161,16 +165,34 @@ namespace Caravel.Core.Resource
             Instance = this;
         }
 
-        internal bool Init(string engineAssetsFile, bool useDevDirectories = false)
+        internal bool Init(XmlElement bundleInfo, bool useDevDirectories = false)
         {
-            if (!useDevDirectories)
+            if (bundleInfo != null)
             {
-                AddResourceBundle(DefaultBundleID, new Cv_ZipResourceBundle(engineAssetsFile));
+                foreach (XmlElement e in bundleInfo.ChildNodes)
+                {
+                    string bundleName, bundleFile;
+
+                    if (e.Attributes["name"] == null || e.Attributes["file"] == null)
+                    {
+                        Cv_Debug.Error("Bundle is not correctly defined.");
+                        return false;
+                    }
+                    bundleName = e.Attributes["name"].Value;
+                    bundleFile = e.Attributes["file"].Value;
+
+                    if (!useDevDirectories)
+                    {
+                        AddResourceBundle(bundleName, new Cv_ZipResourceBundle(bundleFile));
+                    }
+                    else
+                    {
+                        AddResourceBundle(bundleName, new Cv_DevelopmentZipResourceBundle(bundleFile));
+                    }
+                }
+            
             }
-            else
-            {
-                AddResourceBundle(DefaultBundleID, new Cv_DevelopmentZipResourceBundle(engineAssetsFile));
-            }
+            
 			return true;
         }
     }

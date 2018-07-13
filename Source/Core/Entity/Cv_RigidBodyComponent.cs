@@ -21,7 +21,6 @@ namespace Caravel.Core.Entity
             public Vector2 Dimensions;
             public Vector2[] Points;
             public bool IsBullet;
-            public string Density;
             public string Material;
         }
 
@@ -125,7 +124,6 @@ namespace Caravel.Core.Entity
         private float m_fAngularDamping;
         private float m_fGravityScale;
         private bool m_bFixedRotation;
-        private string m_sDensity;
         private string m_sMaterial;
         #endregion
 
@@ -137,7 +135,6 @@ namespace Caravel.Core.Entity
             if (materialNode != null)
             {
                 m_sMaterial = materialNode.Attributes["material"].Value;
-                m_sDensity = materialNode.Attributes["density"].Value;
             }
 
             XmlElement physicsNode = (XmlElement) componentData.SelectSingleNode("//Physics");
@@ -202,7 +199,6 @@ namespace Caravel.Core.Entity
                 }
 
                 shapeData.Material = shape.Attributes?["material"].Value;
-                shapeData.Density = shape.Attributes?["density"].Value;
 
                 int x, y;
 

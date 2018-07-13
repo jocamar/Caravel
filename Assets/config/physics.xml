@@ -1,8 +1,0 @@
-<Physics>
-    <Materials>
-        <Wood restitution="0.8" friction="0.8"/>
-    </Materials>
-    <Densities>
-        <Wood>1</Wood>
-    </Densities>
-</Physics>

@@ -31,11 +31,13 @@ namespace Caravel.Core.Physics
         {
             public float Friction;
             public float Restitution;
+            public float Density;
 
-            public Cv_PhysicsMaterial(float friction, float restitution)
+            public Cv_PhysicsMaterial(float friction, float restitution, float density)
             {
                 Friction = friction;
                 Restitution = restitution;
+                Density = density;
             }
         }
 
@@ -58,7 +60,6 @@ namespace Caravel.Core.Physics
         }
 
         private Dictionary<Cv_EntityID, Cv_PhysicsEntity> m_PhysicsEntities;
-        private Dictionary<string, float> m_DensityTable;
         private Dictionary<string, Cv_PhysicsMaterial> m_MaterialsTable;
 
         private readonly World m_World;
@@ -69,7 +70,6 @@ namespace Caravel.Core.Physics
             Screen2WorldRatio = 30;
 
             m_PhysicsEntities = new Dictionary<Cv_EntityID, Cv_PhysicsEntity>();
-            m_DensityTable = new Dictionary<string, float>();
             m_MaterialsTable = new Dictionary<string, Cv_PhysicsMaterial>();
 
             Cv_EventManager.Instance.AddListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
@@ -84,7 +84,7 @@ namespace Caravel.Core.Physics
             Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
         }
 
-        public override Cv_CollisionShape VAddBox(Vector2 dimensions, Vector2 anchor, Cv_Entity gameEntity, string densityStr, string physicsMaterial, bool isBullet)
+        public override Cv_CollisionShape VAddBox(Vector2 dimensions, Vector2 anchor, Cv_Entity gameEntity, string physicsMaterial, bool isBullet)
         {
             var rigidBodyComponent = gameEntity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -111,16 +111,10 @@ namespace Caravel.Core.Physics
             verts.Add(new Vector2(-dimensions.X/2, dimensions.Y/2));
 
             Cv_PhysicsMaterial material;
-            float density;
             
             if (!m_MaterialsTable.TryGetValue(physicsMaterial, out material))
             {
                 Cv_Debug.Error("Material does not exist on the physics system.");
-                return null;
-            }
-            else if (!m_DensityTable.TryGetValue(densityStr, out density))
-            {
-                Cv_Debug.Error("Density does not exist on the physics system.");
                 return null;
             }
             else if (!CheckPolygonValidity(verts))
@@ -128,7 +122,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(verts, anchor, density, false, isBullet);
+            var shape = new Cv_CollisionShape(verts, anchor, material.Density, false, isBullet);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
             shape.Restitution = material.Restitution;
@@ -136,7 +130,7 @@ namespace Caravel.Core.Physics
             return AddShape(gameEntity, shape, false);
         }
 
-        public override Cv_CollisionShape VAddPointShape(List<Vector2> verts, Vector2 anchor, Cv_Entity gameEntity, string densityStr, string physicsMaterial, bool isBullet)
+        public override Cv_CollisionShape VAddPointShape(List<Vector2> verts, Vector2 anchor, Cv_Entity gameEntity, string physicsMaterial, bool isBullet)
         {
             var rigidBodyComponent = gameEntity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -159,16 +153,10 @@ namespace Caravel.Core.Physics
             var vertices = new Vertices(verts);
 
             Cv_PhysicsMaterial material;
-            float density;
             
             if (!m_MaterialsTable.TryGetValue(physicsMaterial, out material))
             {
                 Cv_Debug.Error("Material does not exist on the physics system.");
-                return null;
-            }
-            else if (!m_DensityTable.TryGetValue(densityStr, out density))
-            {
-                Cv_Debug.Error("Density does not exist on the physics system.");
                 return null;
             }
             else if (!CheckPolygonValidity(vertices))
@@ -176,7 +164,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(vertices, anchor, density, false, isBullet);
+            var shape = new Cv_CollisionShape(vertices, anchor, material.Density, false, isBullet);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
             shape.Restitution = material.Restitution;
@@ -184,7 +172,7 @@ namespace Caravel.Core.Physics
             return AddShape(gameEntity, shape, false);
         }
 
-        public override Cv_CollisionShape VAddCircle(float radius, Vector2 anchor, Cv_Entity gameEntity, string densityStr, string physicsMaterial, bool isBullet)
+        public override Cv_CollisionShape VAddCircle(float radius, Vector2 anchor, Cv_Entity gameEntity, string physicsMaterial, bool isBullet)
         {
             var rigidBodyComponent = gameEntity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -205,20 +193,14 @@ namespace Caravel.Core.Physics
             body.IsBullet = false;
 
             Cv_PhysicsMaterial material;
-            float density;
             
             if (!m_MaterialsTable.TryGetValue(physicsMaterial, out material))
             {
                 Cv_Debug.Error("Material does not exist on the physics system.");
                 return null;
             }
-            else if (!m_DensityTable.TryGetValue(densityStr, out density))
-            {
-                Cv_Debug.Error("Density does not exist on the physics system.");
-                return null;
-            }
 
-            var shape = new Cv_CollisionShape(Vector2.Zero, radius, anchor, density, false, isBullet);
+            var shape = new Cv_CollisionShape(Vector2.Zero, radius, anchor, material.Density, false, isBullet);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
             shape.Restitution = material.Restitution;
@@ -501,17 +483,17 @@ namespace Caravel.Core.Physics
             switch (shapeData.Type)
             {
                 case Cv_RigidBodyComponent.ShapeType.Circle:
-                    VAddCircle(shapeData.Radius, shapeData.Anchor, entity, shapeData.Density, shapeData.Material, shapeData.IsBullet);
+                    VAddCircle(shapeData.Radius, shapeData.Anchor, entity, shapeData.Material, shapeData.IsBullet);
                     break;
                 case Cv_RigidBodyComponent.ShapeType.Box:
-                    VAddBox(shapeData.Dimensions, shapeData.Anchor, entity, shapeData.Density, shapeData.Material, shapeData.IsBullet);
+                    VAddBox(shapeData.Dimensions, shapeData.Anchor, entity, shapeData.Material, shapeData.IsBullet);
                     break;
                 case Cv_RigidBodyComponent.ShapeType.Trigger:
                     VAddTrigger(entity, shapeData.Anchor, shapeData.Dimensions.X, shapeData.IsBullet);
                     break;
                 default:
                     var points = new List<Vector2>(shapeData.Points);
-                    VAddPointShape(points, shapeData.Anchor, entity, shapeData.Density, shapeData.Material, shapeData.IsBullet);
+                    VAddPointShape(points, shapeData.Anchor, entity, shapeData.Material, shapeData.IsBullet);
                     break;
             }
         }
@@ -733,8 +715,16 @@ namespace Caravel.Core.Physics
 
         private void LoadXML()
         {
-            var physicsConfig = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>("config/physics.xml");
-            var root = ((Cv_XmlResource.Cv_XmlData) physicsConfig.ResourceData).RootNode;
+            if (CaravelApp.Instance.MaterialsLocation == null)
+            {
+                Cv_Debug.Log("Physics", "No materials to load.");
+                return;
+            }
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(CaravelApp.Instance.MaterialsLocation);
+
+            var root = doc.FirstChild;
 
             var materials = root.SelectNodes("//Materials").Item(0);
 
@@ -742,6 +732,7 @@ namespace Caravel.Core.Physics
             {
                 float restitution = 0;
                 float friction = 0;
+                float density = 1;
                 if (material.Attributes["restitution"] != null)
                 {
                     restitution = float.Parse(material.Attributes["restitution"].Value,  CultureInfo.InvariantCulture);
@@ -751,16 +742,13 @@ namespace Caravel.Core.Physics
                 {
                     friction = float.Parse(material.Attributes["friction"].Value,  CultureInfo.InvariantCulture);
                 }
+
+                if (material.Attributes["density"] != null)
+                {
+                    density = float.Parse(material.Attributes["density"].Value,  CultureInfo.InvariantCulture);
+                }
                 
-
-                m_MaterialsTable.Add(material.Name, new Cv_PhysicsMaterial(friction, restitution));
-            }
-
-            var densities = root.SelectNodes("//Densities").Item(0);
-
-            foreach(XmlElement density in densities.ChildNodes)
-            {
-                m_DensityTable.Add(density.Name, float.Parse(density.FirstChild.Value,  CultureInfo.InvariantCulture));
+                m_MaterialsTable.Add(material.Name, new Cv_PhysicsMaterial(friction, restitution, density));
             }
         }
 
