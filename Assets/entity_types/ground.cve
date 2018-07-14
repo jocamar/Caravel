@@ -18,6 +18,7 @@
             <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="250" dimensionsY="250" material="Wood">
 				<CollisionCategory id="1"/>
 				<CollidesWith id="1" directions="All"/>
+                <CollidesWith id="2" directions="All"/>
 				<CollidesWith id="3" directions="All"/>
 			</Box>
         </CollisionShapes>

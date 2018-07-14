@@ -237,6 +237,7 @@ namespace Caravel.Core.Physics
 						&& (m_CollisionDirections[c].Contains(direction) || m_CollisionDirections[c] == "All"))
 				{
 					collides = true;
+                    break;
 				}
 			}
 

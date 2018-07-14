@@ -25,6 +25,14 @@ namespace Caravel.Core.Physics
 			public Dictionary<int, string> CollisionDirections;
         }
 
+        public enum Cv_CollisionDirection
+        {
+            Right,
+            Left,
+            Top,
+            Bottom
+        }
+
         // Initialiazation and Maintenance of the Physics World
         public abstract bool VInitialize();
         public abstract void VSyncVisibleScene();

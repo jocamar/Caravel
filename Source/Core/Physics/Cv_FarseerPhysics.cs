@@ -242,7 +242,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(verts, data.Anchor, 1, true, data.IsBullet,
+            var shape = new Cv_CollisionShape(verts, data.Anchor, 0, true, data.IsBullet,
 												data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             
@@ -763,6 +763,7 @@ namespace Caravel.Core.Physics
 
         private bool OnBeforeCollision(Fixture fixtureA, Fixture fixtureB)
         {
+
             return true;
         }
 
@@ -771,20 +772,62 @@ namespace Caravel.Core.Physics
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
 
-            if (collisionShapeA.IsSensor || collisionShapeB.IsSensor)
+            var collidedShape = collisionShapeA;
+            var collidedFixture = fixtureA;
+            var collidingShape = collisionShapeB;
+            var collidingFixture = fixtureB;
+            if (fixtureA.Body.LinearVelocity.Length() > fixtureB.Body.LinearVelocity.Length())
+            {
+                collidedShape = collisionShapeB;
+                collidedFixture = fixtureB;
+                collidingShape = collisionShapeA;
+                collidingFixture = fixtureA;
+            }
+
+            var collisionDirection = GetCollisionDirection(contact);
+
+            if (collisionDirection == Cv_CollisionDirection.Left || collisionDirection == Cv_CollisionDirection.Right)
+            {
+                if (collidingFixture.Body.LinearVelocity.X > 0)
+                {
+                    collisionDirection = Cv_CollisionDirection.Right;
+                }
+                else
+                {
+                    collisionDirection = Cv_CollisionDirection.Left;
+                }
+            }
+            else
+            {
+                if (collidingFixture.Body.LinearVelocity.Y > 0)
+                {
+                    collisionDirection = Cv_CollisionDirection.Bottom;
+                }
+                else
+                {
+                    collisionDirection = Cv_CollisionDirection.Top;
+                }
+            }
+
+            if (!collidingShape.CollidesWithFromDirection(collidedShape.CollisionCategories, DirectionToString(collisionDirection)))
+            {
+                return false;
+            }
+
+            if (collidingShape.IsSensor || collidedShape.IsSensor)
             {
                 Cv_Entity entity;
                 Cv_CollisionShape trigger;
 
-                if (collisionShapeA.IsSensor)
+                if (collidedShape.IsSensor)
                 {
-                    trigger = collisionShapeA;
-                    entity = collisionShapeB.Owner;
+                    trigger = collidedShape;
+                    entity = collidingShape.Owner;
                 }
                 else
                 {
-                    trigger = collisionShapeB;
-                    entity = collisionShapeA.Owner;
+                    trigger = collidingShape;
+                    entity = collidedShape.Owner;
                 }
 
                 var newEvent = new Cv_Event_EnterTrigger(entity.ID, trigger);
@@ -809,7 +852,7 @@ namespace Caravel.Core.Physics
                 normalForce += ToOutsideVector(normalForce);
                 frictionForce += contact.Friction;
 
-                var newEvent = new Cv_Event_NewCollision(collisionShapeA, collisionShapeB, normalForce, frictionForce, collisionPoints.ToArray());
+                var newEvent = new Cv_Event_NewCollision(collidingShape, collidedShape, normalForce, frictionForce, collisionPoints.ToArray());
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
             return true;
@@ -970,6 +1013,65 @@ namespace Caravel.Core.Physics
             }
 
             return true;
+        }
+
+        private Cv_CollisionDirection GetCollisionDirection(Contact c)
+        {
+            Cv_CollisionDirection direction;
+
+            // Work out collision direction
+            Vector2 colNorm;
+            FixedArray2<Vector2> points;
+            c.GetWorldManifold(out colNorm, out points);
+            if (Math.Abs(colNorm.X) > Math.Abs(colNorm.Y))
+            {
+                // X direction is dominant
+                if (colNorm.X > 0)
+                    direction = Cv_CollisionDirection.Right;
+                else
+                    direction = Cv_CollisionDirection.Left;
+            }
+            else
+            {
+                // Y direction is dominant
+                if (colNorm.Y > 0)
+                    direction = Cv_CollisionDirection.Bottom;
+                else
+                    direction = Cv_CollisionDirection.Top;
+
+            }
+
+            return direction;
+        }
+
+        private string DirectionToString(Cv_CollisionDirection direction)
+        {
+            switch (direction)
+            {
+                case Cv_CollisionDirection.Bottom:
+                    return "Bottom";
+                case Cv_CollisionDirection.Left:
+                    return "Left";
+                case Cv_CollisionDirection.Right:
+                    return "Right";
+                default:
+                    return "Top";
+            }
+        }
+
+        private Cv_CollisionDirection GetReverseDirection(Cv_CollisionDirection direction)
+        {
+            switch(direction)
+            {
+                case Cv_CollisionDirection.Bottom:
+                    return Cv_CollisionDirection.Top;
+                case Cv_CollisionDirection.Left:
+                    return  Cv_CollisionDirection.Right;
+                case Cv_CollisionDirection.Right:
+                    return Cv_CollisionDirection.Left;
+                default:
+                    return Cv_CollisionDirection.Bottom;
+            }
         }
     }
 }

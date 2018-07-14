@@ -21,7 +21,9 @@
 	    <CollisionShapes>
             <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="102" dimensionsY="148" material="Wood">
 				<CollisionCategory id="3"/>
-				<CollidesWith id="1" directions="All"/>
+				<CollidesWith id="2" directions="Left"/>
+                <CollidesWith id="3" directions="All"/>
+                <CollidesWith id="1" directions="All"/>
 			</Box>
         </CollisionShapes>
     </Cv_RigidBodyComponent>
