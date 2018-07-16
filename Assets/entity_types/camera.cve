@@ -5,5 +5,7 @@
         <Rotation radians="0" />
 	    <Origin x="0.5" y="0.5" />
     </Cv_TransformComponent>
-    <Cv_CameraComponent defaultCamera="true" zoom="1"/>
+    <Cv_CameraComponent>
+        <Properties defaultCamera="true" zoom="1" />
+    </Cv_CameraComponent>
 </EntityType>

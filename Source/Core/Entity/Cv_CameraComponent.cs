@@ -67,16 +67,18 @@ namespace Caravel.Core.Entity
             IsDefaultCamera = false;
             Zoom = 1f;
 
-            if (componentData.Attributes != null)
+            var propertiesNode = componentData.SelectSingleNode("//Properties");
+
+            if (propertiesNode != null && propertiesNode.Attributes != null)
             {
-                if (componentData.Attributes["defaultCamera"] != null)
+                if (propertiesNode.Attributes["defaultCamera"] != null)
                 {
-                    IsDefaultCamera = bool.Parse(componentData.Attributes["defaultCamera"].Value);
+                    IsDefaultCamera = bool.Parse(propertiesNode.Attributes["defaultCamera"].Value);
                 }
 
-                if (componentData.Attributes["zoom"] != null)
+                if (propertiesNode.Attributes["zoom"] != null)
                 {
-                    Zoom = (float) double.Parse(componentData.Attributes["zoom"].Value, CultureInfo.InvariantCulture);
+                    Zoom = (float) double.Parse(propertiesNode.Attributes["zoom"].Value, CultureInfo.InvariantCulture);
                 }
             }
 
@@ -105,8 +107,11 @@ namespace Caravel.Core.Entity
         {
             var doc = new XmlDocument();
             var cameraElement = doc.CreateElement(GetComponentName<Cv_CameraComponent>());
-            cameraElement.SetAttribute("defaultCamera", IsDefaultCamera.ToString());
-            cameraElement.SetAttribute("zoom", Zoom.ToString());
+
+            var propertiesElement = doc.CreateElement("Properties");
+            propertiesElement.SetAttribute("defaultCamera", IsDefaultCamera.ToString());
+            propertiesElement.SetAttribute("zoom", Zoom.ToString());
+            cameraElement.AppendChild(propertiesElement);
 
             return cameraElement;
         }

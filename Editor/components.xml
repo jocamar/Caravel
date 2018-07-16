@@ -1,0 +1,28 @@
+<Components>
+
+	<Component name="Cv_TransformComponent">
+		<Element name="Position" type="Vec3" fieldNames="x,y,z" />
+		<Element name="Rotation" type="float" fieldNames="angle" />
+        <Element name="Scale" type="Vec2" fieldNames="x,y" />
+        <Element name="Origin" type="Vec2" fieldNames="x,y" />
+	</Component>
+	
+	<Component name="Cv_RigidBodyComponent">
+		<Element name="Material" type="PhysicsMaterial" />
+		<Element name="Physics" type="PhysicsProperties" />
+        <Element name="Body" type="BodyProperties" />
+        <Element name="CollisionShapes" type="PhysicsShapes" />
+    </Component>
+	
+	<Component name="Cv_SpriteComponent">
+		<Element name="Color" type="RGBA" />
+		<Element name="Texture" type="File" extensions="Image Files(*.BMP;*.JPG;*.GIF;*.DDS)|*.BMP;*.JPG;*.GIF;*.DDS|All files (*.*)|*.*"  />
+		<Element name="Size" type="Vec2" fieldNames="width,height" />
+        <Element name="Animation" type="AnimationProperties" />
+	</Component>
+	
+	<Component name="Cv_CameraComponent">
+		<Element name="Properties" type="CameraProperties" />
+	</Component>
+	
+</Components>

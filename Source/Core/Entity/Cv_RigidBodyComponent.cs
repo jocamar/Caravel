@@ -287,7 +287,7 @@ namespace Caravel.Core.Entity
             var physicsElement = doc.CreateElement("Physics");
             physicsElement.SetAttribute("fixedRotation", m_bFixedRotation.ToString());
             physicsElement.SetAttribute("gravityScale", m_fGravityScale.ToString());
-            physicsElement.SetAttribute("macVelocity", MaxVelocity.ToString());
+            physicsElement.SetAttribute("maxVelocity", MaxVelocity.ToString());
             physicsElement.SetAttribute("maxAngVelocity", MaxAngularVelocity.ToString());
             rigidBodyElement.AppendChild(physicsElement);
 

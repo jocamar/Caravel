@@ -2,5 +2,5 @@
     <ResourceBundles>
         <Bundle name="Default" file="Assets.zip"/>
     </ResourceBundles>
-    <Materials materialsFile="config/physics.xml"/>
+    <Materials materialsFile="Config/physics.xml"/>
 </CaravelProject>
