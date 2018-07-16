@@ -652,9 +652,9 @@ namespace Caravel.Core
             {
                 foreach(XmlNode e in entities)
                 {
-                    var entityResource = e.Attributes["resource"].Value;
+                    var entityTypeResource = e.Attributes["type"].Value;
 					var name = e.Attributes?["name"].Value;
-                    var entity = CreateEntity(entityResource, name, resourceBundle, parentId, (XmlElement) e);
+                    var entity = CreateEntity(entityTypeResource, name, resourceBundle, parentId, (XmlElement) e);
 
                     if (entity != null)
                     {

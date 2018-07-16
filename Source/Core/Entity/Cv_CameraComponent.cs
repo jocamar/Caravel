@@ -103,7 +103,12 @@ namespace Caravel.Core.Entity
 
         protected internal override XmlElement VToXML()
         {
-            throw new System.NotImplementedException();
+            var doc = new XmlDocument();
+            var cameraElement = doc.CreateElement(GetComponentName<Cv_CameraComponent>());
+            cameraElement.SetAttribute("defaultCamera", IsDefaultCamera.ToString());
+            cameraElement.SetAttribute("zoom", Zoom.ToString());
+
+            return cameraElement;
         }
 
 		protected internal override void VPostLoad()

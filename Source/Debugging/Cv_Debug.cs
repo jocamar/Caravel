@@ -67,7 +67,7 @@ namespace Caravel.Debugging
             SetDisplayFlags("INFO", LOGFLAG_DEFAULT);
 
             // Read tags from file
-            if (!string.IsNullOrEmpty(logTagsFile)) {
+            if (!string.IsNullOrEmpty(logTagsFile) && File.Exists(logTagsFile)) {
                 var tagsDoc = new XmlDocument();
                 tagsDoc.Load(logTagsFile);
 

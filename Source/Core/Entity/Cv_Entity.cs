@@ -28,6 +28,11 @@ namespace Caravel.Core.Entity
             get; private set;
         }
 
+        public string EntityTypeResource
+        {
+            get; private set;
+        }
+
         public Cv_EntityID Parent
         {
             get; private set;
@@ -45,7 +50,21 @@ namespace Caravel.Core.Entity
 
         public XmlElement ToXML()
         {
-            return null;
+            XmlDocument doc = new XmlDocument();
+            var entityElement = doc.CreateElement("Entity");
+            entityElement.SetAttribute("name", EntityName);
+            entityElement.SetAttribute("type", EntityTypeResource);
+
+            // components
+            foreach (var component in m_ComponentList)
+            {
+                var componentElement = component.VToXML();
+
+                var importedComponentNode = doc.ImportNode(componentElement, true);
+                entityElement.AppendChild(importedComponentNode);
+            }
+
+            return entityElement;
         }
 
         public Component GetComponent<Component>() where Component : Cv_EntityComponent
@@ -77,6 +96,7 @@ namespace Caravel.Core.Entity
         {
             ID = Cv_EntityID.INVALID_ENTITY;
             EntityType = "Unknown";
+            EntityTypeResource = "Unknown";
 			EntityName = "Unknown_" + ID;
             m_ComponentMap = new Dictionary<Cv_ComponentID, Cv_EntityComponent>();
             m_ComponentList = new List<Cv_EntityComponent>();
@@ -89,6 +109,7 @@ namespace Caravel.Core.Entity
         {
             ID = entityId;
             EntityType = "Unknown";
+            EntityTypeResource = "Unknown";
 			EntityName = "Unknown_" + ID;
             m_ComponentMap = new Dictionary<Cv_ComponentID, Cv_EntityComponent>();
             m_ComponentList = new List<Cv_EntityComponent>();
@@ -102,8 +123,13 @@ namespace Caravel.Core.Entity
             Cv_Debug.Log("Entity", "Destroying entity " + (int) ID);
         }
 
-        internal bool Init(XmlElement typeData, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
+        internal bool Init(string typeResource, XmlElement typeData, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
         {
+            if (typeResource != null)
+            {
+                EntityTypeResource = typeResource;
+            }
+
             if (typeData != null)
             {
                 EntityType = typeData.Attributes["type"].Value;

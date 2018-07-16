@@ -158,7 +158,6 @@ namespace Caravel.Core.Entity
 
 		protected internal override void VPostLoad()
 		{
-
 		}
 
         protected internal override void VOnChanged()
@@ -176,6 +175,7 @@ namespace Caravel.Core.Entity
             var position = componentDoc.CreateElement("Position");
             var rotation = componentDoc.CreateElement("Rotation");
             var scale = componentDoc.CreateElement("Scale");
+            var origin = componentDoc.CreateElement("Origin");
 
             position.SetAttribute("x", ((int) Position.X).ToString());
             position.SetAttribute("y", ((int) Position.Y).ToString());
@@ -186,9 +186,13 @@ namespace Caravel.Core.Entity
             scale.SetAttribute("x", ((int) Transform.Scale.X).ToString());
             scale.SetAttribute("y", ((int) Transform.Scale.Y).ToString());
 
+            origin.SetAttribute("x", Transform.Origin.X.ToString());
+            origin.SetAttribute("y", Transform.Origin.Y.ToString());
+
             componentData.AppendChild(position);
             componentData.AppendChild(rotation);
             componentData.AppendChild(scale);
+            componentData.AppendChild(origin);
 
             return componentData;
         }

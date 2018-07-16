@@ -49,6 +49,11 @@ namespace Caravel.Core.Entity
             return typeof(ComponentType).Name;
         }
 
+        public static string GetComponentName(Cv_EntityComponent component)
+        {
+            return component.GetType().Name;
+        }
+
         protected internal abstract bool VInit(XmlElement componentData);
 
         protected internal abstract bool VPostInit();

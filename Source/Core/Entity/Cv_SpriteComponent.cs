@@ -112,6 +112,7 @@ namespace Caravel.Core.Entity
             }
         }
 
+        private string m_sDefaultAnim;
 		private long timeSinceLastUpdate;
         private Dictionary<string, Cv_SpriteSubAnimation> m_SubAnimations;
         private Cv_SpriteSubAnimation? m_CurrAnim;
@@ -132,6 +133,7 @@ namespace Caravel.Core.Entity
 			timeSinceLastUpdate = 0;
             m_CurrAnim = null;
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
+            m_sDefaultAnim = "";
         }
 
         public Cv_SpriteComponent(string resource, int width, int height, Color color,
@@ -153,6 +155,7 @@ namespace Caravel.Core.Entity
 			timeSinceLastUpdate = 0;
             m_CurrAnim = null;
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
+            m_sDefaultAnim = "";
         }
 
         public void SetAnimation(string animationId, OnEndDelegate onEnd = null)
@@ -244,6 +247,7 @@ namespace Caravel.Core.Entity
                 if (m_SubAnimations.Count > 0 && animationNode.Attributes["defaultAnim"] != null)
                 {
                     var defaultAnim = animationNode.Attributes["defaultAnim"].Value;
+                    m_sDefaultAnim = defaultAnim;
                     SetAnimation(defaultAnim);
                     CurrentFrame = m_CurrAnim != null ? m_CurrAnim.Value.StartFrame : 0;
                 }
@@ -314,11 +318,6 @@ namespace Caravel.Core.Entity
 			}
         }
 
-        protected internal override XmlElement VToXML()
-        {
-            throw new System.NotImplementedException();
-        }
-
         protected override Cv_SceneNode VCreateSceneNode()
         {
             return new Cv_SpriteNode(Owner.ID, this, new Cv_Transform());
@@ -326,7 +325,41 @@ namespace Caravel.Core.Entity
 
         protected override XmlElement VCreateInheritedElement(XmlElement baseElement)
         {
-            throw new System.NotImplementedException();
+            var textureElement = baseElement.OwnerDocument.CreateElement("Texture");
+            textureElement.SetAttribute("resource", Texture);
+            baseElement.AppendChild(textureElement);
+
+            var sizeElement = baseElement.OwnerDocument.CreateElement("Size");
+            sizeElement.SetAttribute("width", Width.ToString());
+            sizeElement.SetAttribute("height", Height.ToString());
+            baseElement.AppendChild(sizeElement);
+
+            var animationElement = baseElement.OwnerDocument.CreateElement("Animation");
+            animationElement.SetAttribute("fx", FrameX.ToString());
+            animationElement.SetAttribute("fy", FrameY.ToString());
+            animationElement.SetAttribute("loop", Looping.ToString());
+            animationElement.SetAttribute("speed", Speed.ToString());
+            animationElement.SetAttribute("startFrame", StartFrame.ToString());
+            animationElement.SetAttribute("endFrame", EndFrame.ToString());
+
+            if (m_SubAnimations.Count > 0)
+            {
+                animationElement.SetAttribute("defaultAnim", m_sDefaultAnim);
+            }
+
+            foreach (var subAnim in m_SubAnimations.Values)
+            {
+                var subAnimationNode = baseElement.OwnerDocument.CreateElement("SubAnimation");
+                subAnimationNode.SetAttribute("id", subAnim.ID);
+                subAnimationNode.SetAttribute("speed", subAnim.Speed.ToString());
+                subAnimationNode.SetAttribute("startFrame", subAnim.StartFrame.ToString());
+                subAnimationNode.SetAttribute("endFrame", subAnim.EndFrame.ToString());
+
+                animationElement.AppendChild(subAnimationNode);
+            }
+
+            baseElement.AppendChild(animationElement);
+            return baseElement;
         }
 
 		protected internal override void VPostLoad()

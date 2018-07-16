@@ -44,7 +44,7 @@ namespace Caravel.Core.Entity
 
             var entity = new Cv_Entity(entityId, resourceBundle);
 
-            if (!entity.Init(root, parent))
+            if (!entity.Init(entityTypeResource, root, parent))
             {
                 Cv_Debug.Error("Failed to initialize entity: " + entityTypeResource);
                 return null;
@@ -92,7 +92,7 @@ namespace Caravel.Core.Entity
 
             var entity = new Cv_Entity(entityId, resourceBundle);
 
-            if (!entity.Init(null, parent))
+            if (!entity.Init(null, null, parent))
             {
                 Cv_Debug.Error("Failed to initialize empty entity.");
                 return null;

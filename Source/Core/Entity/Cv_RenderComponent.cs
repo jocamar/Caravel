@@ -100,7 +100,7 @@ namespace Caravel.Core.Entity
 
         protected virtual XmlElement VCreateBaseElement(XmlDocument doc)
         {
-            return doc.CreateElement(GetType().Name);
+            return doc.CreateElement(GetComponentName(this));
         }
     }
 }
