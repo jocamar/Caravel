@@ -56,7 +56,7 @@ namespace Caravel.Core.Entity
             entityElement.SetAttribute("type", EntityTypeResource);
 
             // components
-            foreach (var component in m_ComponentList)
+            foreach (var component in m_ComponentMap.Values)
             {
                 var componentElement = component.VToXML();
 
