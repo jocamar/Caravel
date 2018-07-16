@@ -86,6 +86,7 @@ namespace Caravel.Core.Entity
             color.SetAttribute("r", Color.R.ToString());
             color.SetAttribute("g", Color.G.ToString());
             color.SetAttribute("b", Color.B.ToString());
+            color.SetAttribute("a", Color.A.ToString());
             baseElement.AppendChild(color);
 
             // create XML for inherited classes
