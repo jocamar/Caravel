@@ -65,6 +65,43 @@ namespace Caravel.Core.Draw
                                     new Vector2(frameW * scene.Transform.Origin.X, frameH * scene.Transform.Origin.Y),
                                     SpriteEffects.None,
                                     pos.Z / MaxLayers);
+
+            
+
+            if (CaravelApp.Instance.EditorRunning && scene.EditorSelectedEntity == Properties.EntityID)
+            {
+                var rotMatrixZ = Matrix.CreateRotationZ(rot);
+
+                Vector2 point1;
+                Vector2 point2;
+                List<Vector2> points = new List<Vector2>();
+                points.Add(new Vector2(0, 0));
+                points.Add(new Vector2((spriteComponent.Width * scale.X), 0));
+                points.Add(new Vector2((spriteComponent.Width * scale.X), (spriteComponent.Height * scale.Y)));
+                points.Add(new Vector2(0, (spriteComponent.Height * scale.Y)));
+                for (int i = 0, j = 1; i < points.Count; i++, j++)
+				{
+					if (j >= points.Count)
+                    {
+						j = 0;
+                    }
+
+                    point1 = new Vector2(points[i].X, points[i].Y);
+                    point2 = new Vector2(points[j].X, points[j].Y);
+                    point1 = Vector2.Transform(point1, rotMatrixZ);
+                    point2 = Vector2.Transform(point2, rotMatrixZ);
+                    point1 += new Vector2(pos.X, pos.Y);
+                    point2 += new Vector2(pos.X, pos.Y);
+                    point1 -= new Vector2((spriteComponent.Width * scale.X) * scene.Transform.Origin.X, (spriteComponent.Height * scale.Y) * scene.Transform.Origin.Y);
+                    point2 -= new Vector2((spriteComponent.Width * scale.X) * scene.Transform.Origin.X, (spriteComponent.Height * scale.Y) * scene.Transform.Origin.Y);
+
+                    Cv_DrawUtils.DrawLine(renderer,
+						                                point1,
+                                                        point2,
+						                                3,
+						                                Color.Yellow);
+                }
+            }
         }
 
         public override bool VOnChanged(Cv_SceneElement scene)

@@ -231,6 +231,7 @@ namespace Caravel.Core.Entity
                 }
 
                 var subAnimations = animationNode.SelectNodes("//SubAnimation");
+                m_SubAnimations.Clear();
 
                 foreach (XmlElement subAnimation in subAnimations)
                 {

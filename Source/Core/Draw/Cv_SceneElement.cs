@@ -11,6 +11,11 @@ namespace Caravel.Core.Draw
 {
     public class Cv_SceneElement : Cv_ScreenElement
     {
+		public Cv_EntityID EditorSelectedEntity
+		{
+			get; set;
+		}
+
 		public Cv_CameraNode Camera
 		{
 			get; set;
@@ -30,6 +35,7 @@ namespace Caravel.Core.Draw
 
         public Cv_SceneElement()
         {
+			EditorSelectedEntity = Cv_EntityID.INVALID_ENTITY;
             m_EntitiesMap = new Dictionary<Cv_EntityID, List<Cv_SceneNode>>();
             m_TransformStack = new List<Cv_Transform>();
 			m_Root = new Cv_HolderNode(Cv_EntityID.INVALID_ENTITY);

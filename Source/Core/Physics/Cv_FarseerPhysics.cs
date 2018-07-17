@@ -379,6 +379,11 @@ namespace Caravel.Core.Physics
             m_PhysicsEntities.Remove(id);
         }
 
+        public override string[] GetMaterials()
+        {
+            return m_MaterialsTable.Keys.ToArray();
+        }
+
         public override void VRenderDiagnostics(Cv_Renderer renderer)
         {
             if (!renderer.DebugDraw)
@@ -426,16 +431,6 @@ namespace Caravel.Core.Physics
                 }
             }
         }
-
-        private void DrawBoundingBox(Cv_CollisionShape shape, Vector2 pos, Cv_Renderer renderer)
-		{
-            var boundingBox = shape.AABoundingBox;
-			Rectangle r = new Rectangle((int) (boundingBox.Start.X + pos.X),
-										(int) (boundingBox.Start.Y + pos.Y),
-										(int) boundingBox.Width,
-										(int) boundingBox.Height);
-			Cv_DrawUtils.DrawRectangle(renderer, r, 2, Color.Green);
-		}
 
         public override void VStopEntity(Cv_EntityID entityId)
         {
@@ -610,6 +605,16 @@ namespace Caravel.Core.Physics
                 }
             }
         }
+
+        private void DrawBoundingBox(Cv_CollisionShape shape, Vector2 pos, Cv_Renderer renderer)
+		{
+            var boundingBox = shape.AABoundingBox;
+			Rectangle r = new Rectangle((int) (boundingBox.Start.X + pos.X),
+										(int) (boundingBox.Start.Y + pos.Y),
+										(int) boundingBox.Width,
+										(int) boundingBox.Height);
+			Cv_DrawUtils.DrawRectangle(renderer, r, 2, Color.Green);
+		}
 
         private Cv_CollisionShape AddShape(Cv_Entity entity, Cv_CollisionShape shape, bool isTrigger)
         {

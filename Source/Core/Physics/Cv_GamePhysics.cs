@@ -46,6 +46,9 @@ namespace Caravel.Core.Physics
         public abstract void VRemoveEntity(Cv_EntityID id);
         public abstract void RemoveCollisionObject(Cv_CollisionShape toRemove);
 
+        //Editor
+        public abstract string[] GetMaterials();
+
         // Debugging
         public abstract void VRenderDiagnostics(Cv_Renderer renderer);
         

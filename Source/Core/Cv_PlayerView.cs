@@ -17,6 +17,19 @@ namespace Caravel.Core
 {
     public class Cv_PlayerView : Cv_GameView
     {
+        public Cv_EntityID EditorSelectedEntity
+        {
+            get
+            {
+                return m_Scene.EditorSelectedEntity;
+            }
+            
+            set
+            {
+                m_Scene.EditorSelectedEntity = value;
+            }
+        }
+
         public override Cv_GameViewType Type
         {
             get
