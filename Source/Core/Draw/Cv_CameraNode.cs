@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Caravel.Core.Entity;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
@@ -35,6 +37,25 @@ namespace Caravel.Core.Draw
         public void Move(Vector2 amount)
         {
             Position += new Vector3(amount, 0);
+        }
+
+        public override float GetRadius(Cv_Renderer renderer)
+        {
+            if (Properties.Radius < 0 || ((Cv_CameraComponent) m_Component).ZoomChanged)
+            {
+                var transf = Parent.Transform;
+                var originFactorX = Math.Abs(transf.Origin.X - 0.5) + 0.5;
+                var originFactorY = Math.Abs(transf.Origin.Y - 0.5) + 0.5;
+                var originFactor = (float) Math.Max(originFactorX, originFactorY);
+
+                var zoom = Zoom;
+                var width = renderer.VirtualWidth / zoom;
+                var height = renderer.VirtualHeight / zoom;
+                Properties.Radius = (float) Math.Sqrt(width*width + height*height) * originFactor;
+                Properties.Radius *= Math.Max(transf.Scale.X, transf.Scale.Y);
+            }
+
+            return Properties.Radius;
         }
 
         public Cv_Transform GetViewTransform(int virtualWidth, int virtualHeight, Cv_Transform rendererTransform)
@@ -91,6 +112,69 @@ namespace Caravel.Core.Draw
 
         public override void VRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
+            if (CaravelApp.Instance.EditorRunning)
+            {
+                var zoom = ((Cv_CameraComponent) m_Component).Zoom;
+                var rot = scene.Transform.Rotation;
+                var pos = scene.Transform.Position;
+                var rotMatrixZ = Matrix.CreateRotationZ(rot);
+
+                Vector2 point1;
+                Vector2 point2;
+                List<Vector2> points = new List<Vector2>();
+                points.Add(new Vector2(0, 0));
+                points.Add(new Vector2((renderer.VirtualWidth / zoom), 0));
+                points.Add(new Vector2((renderer.VirtualWidth / zoom), (renderer.VirtualHeight / zoom)));
+                points.Add(new Vector2(0, (renderer.VirtualHeight / zoom)));
+                for (int i = 0, j = 1; i < points.Count; i++, j++)
+				{
+					if (j >= points.Count)
+                    {
+						j = 0;
+                    }
+
+                    point1 = new Vector2(points[i].X, points[i].Y);
+                    point2 = new Vector2(points[j].X, points[j].Y);
+                    point1 = Vector2.Transform(point1, rotMatrixZ);
+                    point2 = Vector2.Transform(point2, rotMatrixZ);
+                    point1 += new Vector2(pos.X, pos.Y);
+                    point2 += new Vector2(pos.X, pos.Y);
+                    point1 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
+                    point2 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
+
+                    Cv_DrawUtils.DrawLine(renderer,
+						                                point1,
+                                                        point2,
+						                                2,
+						                                Color.Purple);
+                }
+
+                if (scene.EditorSelectedEntity == Properties.EntityID)
+                {
+                    for (int i = 0, j = 1; i < points.Count; i++, j++)
+                    {
+                        if (j >= points.Count)
+                        {
+                            j = 0;
+                        }
+
+                        point1 = new Vector2(points[i].X, points[i].Y);
+                        point2 = new Vector2(points[j].X, points[j].Y);
+                        point1 = Vector2.Transform(point1, rotMatrixZ);
+                        point2 = Vector2.Transform(point2, rotMatrixZ);
+                        point1 += new Vector2(pos.X, pos.Y);
+                        point2 += new Vector2(pos.X, pos.Y);
+                        point1 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
+                        point2 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
+
+                        Cv_DrawUtils.DrawLine(renderer,
+                                                            point1,
+                                                            point2,
+                                                            4,
+                                                            Color.Yellow);
+                    }
+                }
+            }
         }
 
         public override void VPreRender(Cv_SceneElement scene, Cv_Renderer renderer)

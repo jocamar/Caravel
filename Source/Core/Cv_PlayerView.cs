@@ -56,16 +56,29 @@ namespace Caravel.Core
             get; private set;
         }
 
-        public bool DebugDraw
+        public bool DebugDrawPhysics
         {
             get
             {
-                return m_Renderer.DebugDraw;
+                return m_Renderer.DebugDrawPhysics;
             }
             
             set
             {
-                m_Renderer.DebugDraw = value;
+                m_Renderer.DebugDrawPhysics = value;
+            }
+        }
+
+        public bool DebugDrawRadius
+        {
+            get
+            {
+                return m_Renderer.DebugDrawRadius;
+            }
+            
+            set
+            {
+                m_Renderer.DebugDrawRadius = value;
             }
         }
 

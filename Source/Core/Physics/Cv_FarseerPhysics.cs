@@ -386,7 +386,7 @@ namespace Caravel.Core.Physics
 
         public override void VRenderDiagnostics(Cv_Renderer renderer)
         {
-            if (!renderer.DebugDraw)
+            if (!renderer.DebugDrawPhysics)
             {
                 return;
             }

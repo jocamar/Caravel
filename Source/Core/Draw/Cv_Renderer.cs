@@ -141,7 +141,12 @@ namespace Caravel.Core.Draw
         public Vector2 ScreenSizePercent;
         public Vector2 ScreenOriginPercent;
 
-        public bool DebugDraw
+        public bool DebugDrawRadius
+        {
+            get; set;
+        }
+
+        public bool DebugDrawPhysics
         {
             get; set;
         }

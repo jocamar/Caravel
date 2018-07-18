@@ -7,7 +7,11 @@
 			<Cv_TransformComponent>
 				<Position x="600" y="-300" z="0"/>
 			</Cv_TransformComponent>
-			<Entity name="camera2" type="entity_types/camera.cve"/>
+			<Entity name="camera2" type="entity_types/camera.cve">
+				<Cv_CameraComponent>
+					<Properties defaultCamera="true" zoom="2" />
+				</Cv_CameraComponent>
+			</Entity>
 		</Entity>
 		<Entity name="guntler" type="entity_types/guntler.cve"/>
 		<Entity name="profile" type="entity_types/profile.cve">

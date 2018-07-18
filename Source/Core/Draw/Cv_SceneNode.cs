@@ -64,8 +64,11 @@ namespace Caravel.Core.Draw
 
             set
             {
-                Properties.ToWorld.Position = value;
-                TransformChanged = true;
+                if (Properties.ToWorld.Position != value)
+                {
+                    Properties.ToWorld.Position = value;
+                    TransformChanged = true;
+                }
             }
         }
 
@@ -88,8 +91,11 @@ namespace Caravel.Core.Draw
 
             set
             {
-                Properties.ToWorld.Scale = value;
-                TransformChanged = true;
+                if (Properties.ToWorld.Scale != value)
+                {
+                    Properties.ToWorld.Scale = value;
+                    TransformChanged = true;
+                }
             }
         }
 
@@ -102,8 +108,11 @@ namespace Caravel.Core.Draw
 
             set
             {
-                Properties.ToWorld.Origin = value;
-                TransformChanged = true;
+                if (Properties.ToWorld.Origin != value)
+                {
+                    Properties.ToWorld.Origin = value;
+                    TransformChanged = true;
+                }
             }
         }
 
@@ -116,21 +125,11 @@ namespace Caravel.Core.Draw
 
             set
             {
-                Properties.ToWorld.Rotation = value;
-                TransformChanged = true;
-            }
-        }
-
-        public virtual float Radius
-        {
-            get
-            {
-                return Properties.Radius;
-            }
-
-            protected set
-            {
-                Properties.Radius = value;
+                if (Math.Abs(Properties.ToWorld.Rotation - value) > 0.00001)
+                {
+                    Properties.ToWorld.Rotation = value;
+                    TransformChanged = true;
+                }
             }
         }
 
@@ -183,6 +182,16 @@ namespace Caravel.Core.Draw
             TransformChanged = true;
             m_Component = renderComponent;
             m_Children = new List<Cv_SceneNode>();
+        }
+
+        public virtual float GetRadius(Cv_Renderer renderer)
+        {
+            return Properties.Radius;
+        }
+
+        public virtual void SetRadius(float value)
+        {
+            Properties.Radius = value;
         }
 
         public virtual void VOnUpdate(float time, float timeElapsed, Cv_SceneElement scene)

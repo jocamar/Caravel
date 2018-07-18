@@ -51,10 +51,10 @@ namespace Caravel.TestSamples
             gvs[0] = new Cv_PlayerView(PlayerIndex.One, new Vector2(0.5f, 1), Vector2.Zero);
             gvs[1] = new Cv_PlayerView(PlayerIndex.Two, new Vector2(0.5f, 1), new Vector2(0.5f, 0));
             pv = (Cv_PlayerView) gvs[0];
-            pv.DebugDraw = true;
+            pv.DebugDrawRadius = true;
 
             pv2 = (Cv_PlayerView) gvs[1];
-            pv2.DebugDraw = true;
+            pv2.DebugDrawPhysics = true;
 
             return gvs;
         }
