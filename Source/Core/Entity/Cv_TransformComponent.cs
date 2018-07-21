@@ -82,6 +82,7 @@ namespace Caravel.Core.Entity
         }
 
         private Cv_Transform m_Transform;
+        private Cv_Transform m_OldTransform;
 
         public Cv_TransformComponent()
         {
@@ -96,6 +97,8 @@ namespace Caravel.Core.Entity
         protected internal override bool VInit(XmlElement componentData)
         {
             Cv_Debug.Assert(componentData != null, "Must have valid component data.");
+
+            m_OldTransform = new Cv_Transform(Transform);
 
             var positionNode = componentData.SelectNodes("//Position").Item(0);
             if (positionNode != null)
@@ -162,6 +165,8 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnChanged()
         {
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation);
+			Cv_EventManager.Instance.QueueEvent(newEvent);
         }
 
         protected internal override void VOnUpdate(float deltaTime)

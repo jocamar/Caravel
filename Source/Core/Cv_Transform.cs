@@ -81,6 +81,14 @@ namespace Caravel.Core
             Origin = new Vector2(0.5f, 0.5f);
         }
 
+        public Cv_Transform(Cv_Transform toCopy)
+        {
+            Position = toCopy.Position;
+            Scale = toCopy.Scale;
+            Rotation = toCopy.Rotation;
+            Origin = toCopy.Origin;
+        }
+
         public Cv_Transform(Vector3 position, Vector2 scale, float rotation, Vector2? origin = null)
         {
             Position = position;

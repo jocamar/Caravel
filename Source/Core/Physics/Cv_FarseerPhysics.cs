@@ -536,7 +536,7 @@ namespace Caravel.Core.Physics
 
                             polygon.Vertices = newVerts;
                         }
-                        else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
+                        else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Circle)
                         {
                             CircleShape circle = (CircleShape) f.Value.Shape;
 

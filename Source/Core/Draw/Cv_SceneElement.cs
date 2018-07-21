@@ -318,7 +318,13 @@ namespace Caravel.Core.Draw
 		public bool Pick(Vector2 mousePosition, out Cv_EntityID[] entities, Cv_Renderer renderer) {
 			var entityList = new List<Cv_EntityID>();
 			var screenPosition = renderer.ScaleMouseToScreenCoordinates(mousePosition);
-			var result = m_Root.VPick(this, renderer, screenPosition, entityList);
+			var result = false;
+			
+			if (screenPosition.X >= 0 && screenPosition.X <= renderer.VirtualWidth
+					&& screenPosition.Y >= 0 && screenPosition.Y <= renderer.VirtualHeight)
+			{
+				result = m_Root.VPick(this, renderer, screenPosition, entityList);
+			}
 			entities = entityList.ToArray();
             return result;
         }

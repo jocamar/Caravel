@@ -219,8 +219,8 @@ namespace Caravel.Core.Entity
 					var shapePoints = shape.SelectNodes("//Point");
                     foreach (XmlElement point in shapePoints)
                     {
-                        x = int.Parse(shape.Attributes?["x"].Value, CultureInfo.InvariantCulture);
-                        y = int.Parse(shape.Attributes?["y"].Value, CultureInfo.InvariantCulture);
+                        x = int.Parse(point.Attributes?["x"].Value, CultureInfo.InvariantCulture);
+                        y = int.Parse(point.Attributes?["y"].Value, CultureInfo.InvariantCulture);
                         points.Add(new Vector2((float) x, (float) y));
                     }
 

@@ -64,6 +64,8 @@ namespace Caravel.Core.Entity
                 entityElement.AppendChild(importedComponentNode);
             }
 
+            doc.AppendChild(entityElement);
+
             return entityElement;
         }
 
