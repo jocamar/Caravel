@@ -13,6 +13,11 @@ namespace Caravel.Core.Entity
             get; protected set;
         }
 
+        public bool Visible
+        {
+            get; set;
+        }
+
         public Cv_SceneNode SceneNode
         {
             get
@@ -35,6 +40,8 @@ namespace Caravel.Core.Entity
 
         protected internal override bool VInit(XmlElement componentData)
         {
+            Visible = true;
+
             XmlElement colorNode = (XmlElement) componentData.SelectSingleNode("//Color");
             if (colorNode != null)
             {
@@ -52,6 +59,15 @@ namespace Caravel.Core.Entity
                 }
 
                 Color = new Color(r,g,b,a);
+            }
+
+            XmlElement visibleNode = (XmlElement) componentData.SelectSingleNode("//Visible");
+            if (visibleNode != null)
+            {
+                bool visible;
+
+                visible = bool.Parse(visibleNode.Attributes["status"].Value);
+                Visible = visible;
             }
 
             return VInheritedInit(componentData);

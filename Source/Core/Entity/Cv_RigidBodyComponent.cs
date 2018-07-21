@@ -163,89 +163,92 @@ namespace Caravel.Core.Entity
 
             
             var collisionShapesNode = componentData.SelectSingleNode("//CollisionShapes");
-            foreach(XmlElement shape in collisionShapesNode.ChildNodes)
+            if (collisionShapesNode != null)
             {
-                var shapeData = new Cv_ShapeData();
-
-                var shapeType = shape.Name.ToLowerInvariant();
-
-                switch (shapeType)
+                foreach(XmlElement shape in collisionShapesNode.ChildNodes)
                 {
-                    case "box":
-                        shapeData.Type = ShapeType.Box;
-                        break;
-                    case "circle":
-                        shapeData.Type = ShapeType.Circle;
-                        break;
-                    case "polygon":
-                        shapeData.Type = ShapeType.Polygon;
-                        break;
-                    case "trigger":
-                        shapeData.Type = ShapeType.Trigger;
-                        break;
-                    default:
-                        Cv_Debug.Error("Invalid shape type. Unable to build component.");
-                        return false;
-                }
+                    var shapeData = new Cv_ShapeData();
 
-                shapeData.Material = shape.Attributes?["material"].Value;
+                    var shapeType = shape.Name.ToLowerInvariant();
 
-                int x, y;
-
-                x = int.Parse(shape.Attributes?["anchorX"].Value, CultureInfo.InvariantCulture);
-                y = int.Parse(shape.Attributes?["anchorY"].Value, CultureInfo.InvariantCulture);
-                shapeData.Anchor = new Vector2((float) x, (float) y);
-
-                shapeData.IsBullet = bool.Parse(shape.Attributes?["isBullet"].Value);
-
-                if (shapeData.Type == ShapeType.Circle)
-                {
-                    shapeData.Radius = float.Parse(shape.Attributes?["radius"].Value, CultureInfo.InvariantCulture);
-                }
-                else if (shapeData.Type == ShapeType.Box)
-                {
-                    x = int.Parse(shape.Attributes?["dimensionsX"].Value, CultureInfo.InvariantCulture);
-                    y = int.Parse(shape.Attributes?["dimensionsY"].Value, CultureInfo.InvariantCulture);
-                    shapeData.Dimensions = new Vector2((float) x, (float) y);
-                }
-                else if (shapeData.Type == ShapeType.Trigger)
-                {
-                    x = int.Parse(shape.Attributes?["dimensions"].Value, CultureInfo.InvariantCulture);
-                    shapeData.Dimensions = new Vector2((float) x, (float) x);
-                }
-                else
-                {
-                    var points = new List<Vector2>();
-					var shapePoints = shape.SelectNodes("//Point");
-                    foreach (XmlElement point in shapePoints)
+                    switch (shapeType)
                     {
-                        x = int.Parse(point.Attributes?["x"].Value, CultureInfo.InvariantCulture);
-                        y = int.Parse(point.Attributes?["y"].Value, CultureInfo.InvariantCulture);
-                        points.Add(new Vector2((float) x, (float) y));
+                        case "box":
+                            shapeData.Type = ShapeType.Box;
+                            break;
+                        case "circle":
+                            shapeData.Type = ShapeType.Circle;
+                            break;
+                        case "polygon":
+                            shapeData.Type = ShapeType.Polygon;
+                            break;
+                        case "trigger":
+                            shapeData.Type = ShapeType.Trigger;
+                            break;
+                        default:
+                            Cv_Debug.Error("Invalid shape type. Unable to build component.");
+                            return false;
                     }
 
-                    shapeData.Points = points.ToArray();
+                    shapeData.Material = shape.Attributes?["material"].Value;
+
+                    int x, y;
+
+                    x = int.Parse(shape.Attributes?["anchorX"].Value, CultureInfo.InvariantCulture);
+                    y = int.Parse(shape.Attributes?["anchorY"].Value, CultureInfo.InvariantCulture);
+                    shapeData.Anchor = new Vector2((float) x, (float) y);
+
+                    shapeData.IsBullet = bool.Parse(shape.Attributes?["isBullet"].Value);
+
+                    if (shapeData.Type == ShapeType.Circle)
+                    {
+                        shapeData.Radius = float.Parse(shape.Attributes?["radius"].Value, CultureInfo.InvariantCulture);
+                    }
+                    else if (shapeData.Type == ShapeType.Box)
+                    {
+                        x = int.Parse(shape.Attributes?["dimensionsX"].Value, CultureInfo.InvariantCulture);
+                        y = int.Parse(shape.Attributes?["dimensionsY"].Value, CultureInfo.InvariantCulture);
+                        shapeData.Dimensions = new Vector2((float) x, (float) y);
+                    }
+                    else if (shapeData.Type == ShapeType.Trigger)
+                    {
+                        x = int.Parse(shape.Attributes?["dimensions"].Value, CultureInfo.InvariantCulture);
+                        shapeData.Dimensions = new Vector2((float) x, (float) x);
+                    }
+                    else
+                    {
+                        var points = new List<Vector2>();
+                        var shapePoints = shape.SelectNodes("//Point");
+                        foreach (XmlElement point in shapePoints)
+                        {
+                            x = int.Parse(point.Attributes?["x"].Value, CultureInfo.InvariantCulture);
+                            y = int.Parse(point.Attributes?["y"].Value, CultureInfo.InvariantCulture);
+                            points.Add(new Vector2((float) x, (float) y));
+                        }
+
+                        shapeData.Points = points.ToArray();
+                    }
+
+                    var shapeCollisionCategories = shape.SelectNodes("//CollisionCategory");
+                    shapeData.Categories = new Cv_CollisionCategories();
+                    foreach (XmlElement category in shapeCollisionCategories)
+                    {
+                        var id = int.Parse(category.Attributes?["id"].Value, CultureInfo.InvariantCulture);
+                        shapeData.Categories.AddCategory(id);
+                    }
+
+                    var shapeCollidesWith = shape.SelectNodes("//CollidesWith");
+                    shapeData.CollidesWith = new Cv_CollisionCategories();
+                    shapeData.CollisionDirections = new Dictionary<int, string>();
+                    foreach (XmlElement category in shapeCollidesWith)
+                    {
+                        var id = int.Parse(category.Attributes?["id"].Value, CultureInfo.InvariantCulture);
+                        shapeData.CollidesWith.AddCategory(id);
+                        shapeData.CollisionDirections.Add(id, category.Attributes["directions"].Value);
+                    }
+
+                    m_Shapes.Add(shapeData);
                 }
-
-				var shapeCollisionCategories = shape.SelectNodes("//CollisionCategory");
-				shapeData.Categories = new Cv_CollisionCategories();
-				foreach (XmlElement category in shapeCollisionCategories)
-				{
-					var id = int.Parse(category.Attributes?["id"].Value, CultureInfo.InvariantCulture);
-					shapeData.Categories.AddCategory(id);
-				}
-
-				var shapeCollidesWith = shape.SelectNodes("//CollidesWith");
-				shapeData.CollidesWith = new Cv_CollisionCategories();
-				shapeData.CollisionDirections = new Dictionary<int, string>();
-				foreach (XmlElement category in shapeCollidesWith)
-				{
-					var id = int.Parse(category.Attributes?["id"].Value, CultureInfo.InvariantCulture);
-					shapeData.CollidesWith.AddCategory(id);
-					shapeData.CollisionDirections.Add(id, category.Attributes["directions"].Value);
-				}
-
-                m_Shapes.Add(shapeData);
             }
 
             IsDirty = true;

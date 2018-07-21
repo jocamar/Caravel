@@ -56,16 +56,29 @@ namespace Caravel.Core
             get; private set;
         }
 
-        public bool DebugDrawPhysics
+        public bool DebugDrawPhysicsShapes
         {
             get
             {
-                return m_Renderer.DebugDrawPhysics;
+                return m_Renderer.DebugDrawPhysicsShapes;
             }
             
             set
             {
-                m_Renderer.DebugDrawPhysics = value;
+                m_Renderer.DebugDrawPhysicsShapes = value;
+            }
+        }
+
+        public bool DebugDrawPhysicsBoundingBoxes
+        {
+            get
+            {
+                return m_Renderer.DebugDrawPhysicsBoundingBoxes;
+            }
+            
+            set
+            {
+                m_Renderer.DebugDrawPhysicsBoundingBoxes = value;
             }
         }
 
@@ -79,6 +92,19 @@ namespace Caravel.Core
             set
             {
                 m_Renderer.DebugDrawRadius = value;
+            }
+        }
+
+        public bool DebugDrawCameras
+        {
+            get
+            {
+                return m_Renderer.DebugDrawCameras;
+            }
+            
+            set
+            {
+                m_Renderer.DebugDrawCameras = value;
             }
         }
 

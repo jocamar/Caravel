@@ -146,7 +146,17 @@ namespace Caravel.Core.Draw
             get; set;
         }
 
-        public bool DebugDrawPhysics
+        public bool DebugDrawPhysicsShapes
+        {
+            get; set;
+        }
+
+        public bool DebugDrawPhysicsBoundingBoxes
+        {
+            get; set;
+        }
+
+        public bool DebugDrawCameras
         {
             get; set;
         }

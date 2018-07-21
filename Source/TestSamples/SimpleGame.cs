@@ -54,7 +54,7 @@ namespace Caravel.TestSamples
             pv.DebugDrawRadius = true;
 
             pv2 = (Cv_PlayerView) gvs[1];
-            pv2.DebugDrawPhysics = true;
+            pv2.DebugDrawPhysicsShapes = true;
 
             return gvs;
         }

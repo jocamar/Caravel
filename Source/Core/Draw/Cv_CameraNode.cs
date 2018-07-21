@@ -112,7 +112,7 @@ namespace Caravel.Core.Draw
 
         public override void VRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
-            if (CaravelApp.Instance.EditorRunning)
+            if (CaravelApp.Instance.EditorRunning && renderer.DebugDrawCameras)
             {
                 var zoom = ((Cv_CameraComponent) m_Component).Zoom;
                 var rot = scene.Transform.Rotation;
@@ -135,12 +135,12 @@ namespace Caravel.Core.Draw
 
                     point1 = new Vector2(points[i].X, points[i].Y);
                     point2 = new Vector2(points[j].X, points[j].Y);
+                    point1 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
+                    point2 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
                     point1 = Vector2.Transform(point1, rotMatrixZ);
                     point2 = Vector2.Transform(point2, rotMatrixZ);
                     point1 += new Vector2(pos.X, pos.Y);
                     point2 += new Vector2(pos.X, pos.Y);
-                    point1 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
-                    point2 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
 
                     Cv_DrawUtils.DrawLine(renderer,
 						                                point1,

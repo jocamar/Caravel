@@ -386,7 +386,7 @@ namespace Caravel.Core.Physics
 
         public override void VRenderDiagnostics(Cv_Renderer renderer)
         {
-            if (!renderer.DebugDrawPhysics)
+            if (!renderer.DebugDrawPhysicsShapes && !renderer.DebugDrawPhysicsBoundingBoxes)
             {
                 return;
             }
@@ -402,32 +402,38 @@ namespace Caravel.Core.Physics
                 Color color;
                 foreach (var fixture in e.Body.FixtureList)
                 {
-                    color = Color.Red;
-
-                    if (fixture.IsSensor)
-                        color = Color.Green;
-
-                    if (fixture.Shape.GetType() != typeof(CircleShape))
+                    if (renderer.DebugDrawPhysicsShapes)
                     {
-                        verts = ((PolygonShape)fixture.Shape).Vertices;
-                        DrawCollisionShape(verts, pos, e.Body.Rotation, renderer, color);
-                    }
-                    else
-                    {
-                        var circle = ((CircleShape)fixture.Shape);
+                        color = Color.Red;
 
-                        var rotMatrixZ = Matrix.CreateRotationZ(e.Body.Rotation);
-                        var point = circle.Position;
-                        point = Vector2.Transform(point, rotMatrixZ);
+                        if (fixture.IsSensor)
+                            color = Color.Green;
 
-                        Rectangle r2 = new Rectangle((int)(ToScreenCoord(pos.X + point.X - circle.Radius)), 
-                                                    (int)(ToScreenCoord(pos.Y + point.Y - circle.Radius)), 
-                                                    (int)ToScreenCoord(circle.Radius)*2, 
-                                                    (int)ToScreenCoord(circle.Radius)*2);
-                        renderer.Draw(((Cv_CollisionShape) fixture.UserData).CircleOutlineTex, r2, color);
+                        if (fixture.Shape.GetType() != typeof(CircleShape))
+                        {
+                            verts = ((PolygonShape)fixture.Shape).Vertices;
+                            DrawCollisionShape(verts, pos, e.Body.Rotation, renderer, color);
+                        }
+                        else
+                        {
+                            var circle = ((CircleShape)fixture.Shape);
+
+                            var rotMatrixZ = Matrix.CreateRotationZ(e.Body.Rotation);
+                            var point = circle.Position;
+                            point = Vector2.Transform(point, rotMatrixZ);
+
+                            Rectangle r2 = new Rectangle((int)(ToScreenCoord(pos.X + point.X - circle.Radius)), 
+                                                        (int)(ToScreenCoord(pos.Y + point.Y - circle.Radius)), 
+                                                        (int)ToScreenCoord(circle.Radius)*2, 
+                                                        (int)ToScreenCoord(circle.Radius)*2);
+                            renderer.Draw(((Cv_CollisionShape) fixture.UserData).CircleOutlineTex, r2, color);
+                        }
                     }
                     
-                    DrawBoundingBox((Cv_CollisionShape) fixture.UserData, ToScreenCoord(pos), renderer);
+                    if (renderer.DebugDrawPhysicsBoundingBoxes)
+                    {
+                        DrawBoundingBox((Cv_CollisionShape) fixture.UserData, ToScreenCoord(pos), renderer);
+                    }
                 }
             }
         }
@@ -716,7 +722,7 @@ namespace Caravel.Core.Physics
                     Cv_DrawUtils.DrawLine(renderer,
 						                                ToScreenCoord(point1),
                                                         ToScreenCoord(point2),
-						                                1,
+						                                3,
 						                                c);
 				}
 			}

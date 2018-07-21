@@ -21,6 +21,11 @@ namespace Caravel.Core.Draw
         {
             var spriteComponent = (Cv_SpriteComponent) m_Component;
 
+            if (!spriteComponent.Visible)
+            {
+                return;
+            }
+
             Cv_RawTextureResource resource;
 			resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture, spriteComponent.Owner.ResourceBundle);
 			
@@ -55,10 +60,12 @@ namespace Caravel.Core.Draw
                 Vector2 point1;
                 Vector2 point2;
                 List<Vector2> points = new List<Vector2>();
+                var width = spriteComponent.Width * scale.X;
+                var height = spriteComponent.Height * scale.Y;
                 points.Add(new Vector2(0, 0));
-                points.Add(new Vector2((spriteComponent.Width * scale.X), 0));
-                points.Add(new Vector2((spriteComponent.Width * scale.X), (spriteComponent.Height * scale.Y)));
-                points.Add(new Vector2(0, (spriteComponent.Height * scale.Y)));
+                points.Add(new Vector2(width, 0));
+                points.Add(new Vector2(width, height));
+                points.Add(new Vector2(0, height));
                 for (int i = 0, j = 1; i < points.Count; i++, j++)
 				{
 					if (j >= points.Count)
@@ -68,12 +75,13 @@ namespace Caravel.Core.Draw
 
                     point1 = new Vector2(points[i].X, points[i].Y);
                     point2 = new Vector2(points[j].X, points[j].Y);
+
+                    point1 -= new Vector2(scene.Transform.Origin.X*width, scene.Transform.Origin.Y*height);
+                    point2 -= new Vector2(scene.Transform.Origin.X*width, scene.Transform.Origin.Y*height);
                     point1 = Vector2.Transform(point1, rotMatrixZ);
                     point2 = Vector2.Transform(point2, rotMatrixZ);
                     point1 += new Vector2(pos.X, pos.Y);
                     point2 += new Vector2(pos.X, pos.Y);
-                    point1 -= new Vector2((spriteComponent.Width * scale.X) * scene.Transform.Origin.X, (spriteComponent.Height * scale.Y) * scene.Transform.Origin.Y);
-                    point2 -= new Vector2((spriteComponent.Width * scale.X) * scene.Transform.Origin.X, (spriteComponent.Height * scale.Y) * scene.Transform.Origin.Y);
 
                     Cv_DrawUtils.DrawLine(renderer,
 						                                point1,
