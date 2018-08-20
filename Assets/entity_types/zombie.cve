@@ -1,30 +1,25 @@
-<EntityType type="zombie" resource="entity_types/zombie.cve">
-    <Cv_TransformComponent>
-        <Position x="-200" y="0" z="0"/>
-        <Scale x="1" y="1" />
-        <Rotation radians="0" />
-	    <Origin x="0.5" y="0.5" />
-    </Cv_TransformComponent>
-    <Cv_SpriteComponent>
-        <Texture resource="guybrush.png" />
-        <Size width="102" height="148" />
-        <Color r="255" g="255" b="255" />
-		<Animation fx="6" fy="1" loop="true" defaultAnim="walking">
-            <SubAnimation id="walking" startFrame="0" endFrame="5" speed="10"/>
-            <SubAnimation id="running" startFrame="0" endFrame="5" speed="20"/>
-        </Animation>
-    </Cv_SpriteComponent>
-    <Cv_RigidBodyComponent>
-        <Material material="Wood"/>
-        <Physics fixedRotation="false" gravityScale="1" maxVelocity="100" maxAngVelocity="100"/>
-        <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
-	    <CollisionShapes>
-            <Box anchorX="0" anchorY="0" isBullet="false" dimensionsX="102" dimensionsY="148" material="Wood">
-				<CollisionCategory id="3"/>
-				<CollidesWith id="2" directions="Left"/>
-                <CollidesWith id="3" directions="All"/>
-                <CollidesWith id="1" directions="All"/>
-			</Box>
-        </CollisionShapes>
-    </Cv_RigidBodyComponent>
+﻿<EntityType type="zombie" resource="entity_types\zombie.cve">
+  <Cv_TransformComponent>
+    <Position x="600" y="-300" z="0" />
+    <Rotation radians="0" />
+    <Scale x="1" y="1" />
+    <Origin x="0.5" y="0.5" />
+  </Cv_TransformComponent>
+  <Cv_SpriteComponent>
+    <Color r="255" g="255" b="255" a="170" />
+    <Texture resource="zombie.png" />
+    <Size width="102" height="148" />
+    <Animation fx="6" fy="1" loop="True" defaultAnim="walking">
+      <SubAnimation id="walking" speed="15" startFrame="0" endFrame="5" />
+      <SubAnimation id="running" speed="30" startFrame="0" endFrame="5" />
+    </Animation>
+  </Cv_SpriteComponent>
+  <Cv_RigidBodyComponent>
+    <Material material="Wood" />
+    <Physics fixedRotation="False" gravityScale="0" maxVelocity="0" maxAngVelocity="0" />
+    <Body linearDamping="0" angularDamping="0" followEntityRotation="False" type="static" />
+    <CollisionShapes>
+      <Box anchorX="0" anchorY="0" isBullet="False" material="Wood" dimensionsX="250" dimensionsY="250" />
+    </CollisionShapes>
+  </Cv_RigidBodyComponent>
 </EntityType>

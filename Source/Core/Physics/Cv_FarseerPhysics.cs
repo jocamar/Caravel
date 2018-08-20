@@ -73,14 +73,18 @@ namespace Caravel.Core.Physics
             m_MaterialsTable = new Dictionary<string, Cv_PhysicsMaterial>();
 
             Cv_EventManager.Instance.AddListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
+            Cv_EventManager.Instance.AddListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
             Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
+            Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRigidBodyComponent>(OnDestroyEntity);
             Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
         }
 
         ~Cv_FarseerPhysics()
         {
             Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
             Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyRigidBodyComponent>(OnDestroyEntity);
             Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
         }
 
@@ -503,6 +507,19 @@ namespace Caravel.Core.Physics
             }
         }
 
+        public void OnClearCollisionShapes(Cv_Event eventData)
+        {
+            if (m_PhysicsEntities.ContainsKey(eventData.EntityID))
+            {
+                var collisionShapes = m_PhysicsEntities[eventData.EntityID].Shapes.Keys.ToArray();
+
+                foreach (var shape in collisionShapes)
+                {
+                    RemoveCollisionObject(shape);
+                }
+            }
+        }
+
         public void OnDestroyEntity(Cv_Event eventData)
         {
             VRemoveEntity(eventData.EntityID);
@@ -518,47 +535,44 @@ namespace Caravel.Core.Physics
 
                 if (transformEntityEvt.OldScale == null || transformEntityEvt.OldScale.Value != transformEntityEvt.NewScale)
                 {
-                    var oldScale = new Vector2(1, 1);
-
                     if (transformEntityEvt.OldScale != null)
                     {
-                        oldScale = transformEntityEvt.OldScale.Value;
-                    }
-
-                    foreach (var f in pe.Shapes)
-                    {
-                        if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
+                        var oldScale = transformEntityEvt.OldScale.Value;
+                        foreach (var f in pe.Shapes)
                         {
-                            PolygonShape polygon = (PolygonShape) f.Value.Shape;
-
-                            var oldVerts = polygon.Vertices;
-                            var newVerts = new Vertices();
-
-                            foreach (var v in oldVerts)
+                            if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
                             {
-                                var newVert = ToWorldCoord( (ToScreenCoord(v) / oldScale) * transformEntityEvt.NewScale );
-                                newVerts.Add(newVert);
+                                PolygonShape polygon = (PolygonShape) f.Value.Shape;
+
+                                var oldVerts = polygon.Vertices;
+                                var newVerts = new Vertices();
+
+                                foreach (var v in oldVerts)
+                                {
+                                    var newVert = ToWorldCoord( (ToScreenCoord(v) / oldScale) * transformEntityEvt.NewScale );
+                                    newVerts.Add(newVert);
+                                }
+
+                                polygon.Vertices = newVerts;
+                            }
+                            else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Circle)
+                            {
+                                CircleShape circle = (CircleShape) f.Value.Shape;
+
+                                circle.Radius = ToWorldCoord((ToScreenCoord(circle.Radius) / Math.Max(oldScale.X, oldScale.Y))
+                                                                * Math.Max(transformEntityEvt.NewScale.X, transformEntityEvt.NewScale.Y));
                             }
 
-                            polygon.Vertices = newVerts;
-                        }
-                        else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Circle)
-                        {
-                            CircleShape circle = (CircleShape) f.Value.Shape;
+                            var colShape = f.Key;
+                            var newPoints = new List<Vector2>();
+                            foreach (var p in colShape.Points)
+                            {
+                                var newPoint = (p / oldScale) * transformEntityEvt.NewScale;
+                                newPoints.Add(newPoint);
+                            }
 
-                            circle.Radius = ToWorldCoord((ToScreenCoord(circle.Radius) / Math.Max(oldScale.X, oldScale.Y))
-                                                            * Math.Max(transformEntityEvt.NewScale.X, transformEntityEvt.NewScale.Y));
+                            colShape.Points = newPoints;
                         }
-
-                        var colShape = f.Key;
-                        var newPoints = new List<Vector2>();
-                        foreach (var p in colShape.Points)
-                        {
-                            var newPoint = (p / oldScale) * transformEntityEvt.NewScale;
-                            newPoints.Add(newPoint);
-                        }
-
-                        colShape.Points = newPoints;
                     }
                 }
 
@@ -627,6 +641,30 @@ namespace Caravel.Core.Physics
             var body = m_PhysicsEntities[entity.ID].Body;
             var rigidBodyComponent = entity.GetComponent<Cv_RigidBodyComponent>();
             var collisionShape = new Vertices();
+
+            if (entity.GetComponent<Cv_TransformComponent>() != null)
+            {
+                var scale = entity.GetComponent<Cv_TransformComponent>().Scale;
+
+                if (shape.IsCircle)
+                {
+                    shape.Radius *= Math.Max(scale.X, scale.Y);
+                }
+                else
+                {
+                    var newPoints = new List<Vector2>();
+                    foreach (var p in shape.Points)
+                    {
+                        var newPoint = p * scale;
+                        newPoints.Add(newPoint);
+                    }
+
+                    shape.Points = newPoints;
+                }
+
+                shape.AnchorPoint *= scale;
+            }
+
             var offsetX = shape.AnchorPoint.X;
             var offsetY = shape.AnchorPoint.Y;
 
@@ -646,7 +684,7 @@ namespace Caravel.Core.Physics
 
             if (shape.IsCircle)
             {
-                 fixture = FixtureFactory.AttachCircle(ToWorldCoord(shape.Radius), shape.Density, body, ToWorldCoord(new Vector2(offsetX, offsetY)), shape);
+                fixture = FixtureFactory.AttachCircle(ToWorldCoord(shape.Radius), shape.Density, body, ToWorldCoord(new Vector2(offsetX, offsetY)), shape);
             }
             else
             {
@@ -696,6 +734,13 @@ namespace Caravel.Core.Physics
             else
                 body.BodyType = BodyType.Dynamic;
 
+            var transformComponent = entity.GetComponent<Cv_TransformComponent>();
+
+            if (transformComponent != null)
+            {
+                body.Position = ToPhysicsVector(transformComponent.Position);
+            }
+
             return body;
         }
 
@@ -722,7 +767,8 @@ namespace Caravel.Core.Physics
                     Cv_DrawUtils.DrawLine(renderer,
 						                                ToScreenCoord(point1),
                                                         ToScreenCoord(point2),
-						                                3,
+						                                2,
+                                                        255,
 						                                c);
 				}
 			}

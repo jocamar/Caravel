@@ -15,7 +15,7 @@ namespace Caravel.Core.Draw
             m_DrawPixel.SetData(new[] { Color.White });
         }
 
-		public static void DrawLine(Cv_Renderer r, Vector2 start, Vector2 end, int thickness, Color color)
+		public static void DrawLine(Cv_Renderer r, Vector2 start, Vector2 end, int thickness, int z, Color color)
 		{
 			Vector2 edge = end - start;
 			// calculate angle to rotate line
@@ -32,7 +32,7 @@ namespace Caravel.Core.Draw
 				angle,     //angle of line (calulated above)
 				new Vector2(0, 0), // point in line about which to rotate
 				SpriteEffects.None,
-				1);
+				(float)z / 255f);
 		}
 
 		public static void DrawRectangle(Cv_Renderer r, Rectangle rectangleToDraw, int thickness, Color color)
@@ -78,7 +78,7 @@ namespace Caravel.Core.Draw
             return texture;
         }
 
-        //TODO rename and refactor this (use standard C# functions)
+        //TODO(JM) rename and refactor this (use standard C# functions)
         public static bool PointInPolygon(Vector2 point, List<Vector2> polygon)
         {
             // Get the angle between the point and the

@@ -352,7 +352,7 @@ namespace Caravel
         EditorWorkingDirectory = editorWorkingLocation;
         ReadProjectFile();
         MaterialsLocation = Path.Combine(editorWorkingLocation, MaterialsLocation);
-        GameLogic.Init();
+        GameLogic.GamePhysics.VInitialize();
     }
 #endregion
 

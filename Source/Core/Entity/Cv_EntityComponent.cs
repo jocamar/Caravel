@@ -54,6 +54,8 @@ namespace Caravel.Core.Entity
             return component.GetType().Name;
         }
 
+        public abstract XmlElement VToXML();
+
         protected internal abstract bool VInit(XmlElement componentData);
 
         protected internal abstract bool VPostInit();
@@ -64,7 +66,7 @@ namespace Caravel.Core.Entity
 
         protected internal abstract void VOnChanged();
 
-        protected internal abstract XmlElement VToXML();
+        protected internal abstract void VOnDestroy();
 
         internal static Cv_ComponentID GetID(string componentName)
         {

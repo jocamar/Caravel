@@ -49,8 +49,14 @@ namespace Caravel.Core.Resource
             ReadAssetsDirectory(m_AssetsDir);
         }
 
+        public override void Refresh()
+        {
+            ReadAssetsDirectory(m_AssetsDir);
+        }
+
         protected void ReadAssetsDirectory(string fileDir)
         {
+            m_FileInfo.Clear();
             var skipDirectory = fileDir.Length;
             // because we don't want it to be prefixed by a slash
             // if dirPath like "C:\MyFolder", rather than "C:\MyFolder\"

@@ -119,6 +119,122 @@ namespace Caravel.Core.Entity
 
         private List<Cv_ShapeData> m_Shapes = new List<Cv_ShapeData>();
 
+        public override XmlElement VToXML()
+        {
+            var doc = new XmlDocument();
+            var rigidBodyElement = doc.CreateElement(GetComponentName(this));
+
+            var materialElement = doc.CreateElement("Material");
+            materialElement.SetAttribute("material", m_sMaterial);
+            rigidBodyElement.AppendChild(materialElement);
+
+            var physicsElement = doc.CreateElement("Physics");
+            physicsElement.SetAttribute("fixedRotation", m_bFixedRotation.ToString(CultureInfo.InvariantCulture));
+            physicsElement.SetAttribute("gravityScale", m_fGravityScale.ToString(CultureInfo.InvariantCulture));
+            physicsElement.SetAttribute("maxVelocity", MaxVelocity.ToString(CultureInfo.InvariantCulture));
+            physicsElement.SetAttribute("maxAngVelocity", MaxAngularVelocity.ToString(CultureInfo.InvariantCulture));
+            rigidBodyElement.AppendChild(physicsElement);
+
+            var bodyElement = doc.CreateElement("Body");
+            bodyElement.SetAttribute("linearDamping", m_fLinearDamping.ToString(CultureInfo.InvariantCulture));
+            bodyElement.SetAttribute("angularDamping", m_fAngularDamping.ToString(CultureInfo.InvariantCulture));
+            bodyElement.SetAttribute("followEntityRotation", UseEntityRotation.ToString(CultureInfo.InvariantCulture));
+
+            var bodyTypeStr = "";
+
+            switch (m_RigidBodyType)
+            {
+                case BodyType.Static:
+                    bodyTypeStr = "static";
+                    break;
+                case BodyType.Dynamic:
+                    bodyTypeStr = "dynamic";
+                    break;
+                default:
+                    bodyTypeStr = "kinematic";
+                    break;
+            }
+
+            bodyElement.SetAttribute("type", bodyTypeStr);
+            rigidBodyElement.AppendChild(bodyElement);
+
+            var collisionShapesElement = doc.CreateElement("CollisionShapes");
+            
+            foreach (var shape in m_Shapes)
+            {
+                var shapeTypeStr = "";
+
+                switch (shape.Type)
+                {
+                    case ShapeType.Box:
+                        shapeTypeStr = "Box";
+                        break;
+                    case ShapeType.Circle:
+                        shapeTypeStr = "Circle";
+                        break;
+                    case ShapeType.Polygon:
+                        shapeTypeStr = "Polygon";
+                        break;
+                    default:
+                        shapeTypeStr = "Trigger";
+                        break;
+                }
+
+                var shapeElement = doc.CreateElement(shapeTypeStr);
+                shapeElement.SetAttribute("material", shape.Material);
+                shapeElement.SetAttribute("anchorX", ((int)shape.Anchor.X).ToString(CultureInfo.InvariantCulture));
+                shapeElement.SetAttribute("anchorY", ((int)shape.Anchor.Y).ToString(CultureInfo.InvariantCulture));
+                shapeElement.SetAttribute("isBullet", shape.IsBullet.ToString(CultureInfo.InvariantCulture));
+
+                if (shape.Type == ShapeType.Circle)
+                {
+                    shapeElement.SetAttribute("radius", shape.Radius.ToString(CultureInfo.InvariantCulture));
+                }
+                else if (shape.Type == ShapeType.Box)
+                {
+                    shapeElement.SetAttribute("dimensionsX", ((int)shape.Dimensions.X).ToString(CultureInfo.InvariantCulture));
+                    shapeElement.SetAttribute("dimensionsY", ((int)shape.Dimensions.Y).ToString(CultureInfo.InvariantCulture));
+                }
+                else if (shape.Type == ShapeType.Trigger)
+                {
+                    shapeElement.SetAttribute("dimensions", ((int)shape.Dimensions.X).ToString(CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    foreach (var point in shape.Points)
+                    {
+                        var pointElement = doc.CreateElement("Point");
+                        pointElement.SetAttribute("x", ((int)point.X).ToString(CultureInfo.InvariantCulture));
+                        pointElement.SetAttribute("y", ((int)point.Y).ToString(CultureInfo.InvariantCulture));
+                        shapeElement.AppendChild(pointElement);
+                    }
+                }
+
+                var collisionCategories = shape.Categories.GetCategoriesArray();
+                foreach (var category in collisionCategories)
+                {
+                    var collisionCategoriesElement = doc.CreateElement("CollisionCategory");
+                    collisionCategoriesElement.SetAttribute("id", category.ToString(CultureInfo.InvariantCulture));
+                    shapeElement.AppendChild(collisionCategoriesElement);
+                }
+
+                var collidesWith = shape.CollidesWith.GetCategoriesArray();
+                foreach (var category in collidesWith)
+                {
+                    var collidesWithElement = doc.CreateElement("CollidesWith");
+                    collidesWithElement.SetAttribute("id", category.ToString(CultureInfo.InvariantCulture));
+                    collidesWithElement.SetAttribute("directions", shape.CollisionDirections[category]);
+                    shapeElement.AppendChild(collidesWithElement);
+                }
+
+                collisionShapesElement.AppendChild(shapeElement);
+            }
+
+            rigidBodyElement.AppendChild(collisionShapesElement);
+
+            return rigidBodyElement;
+        }
+
         protected internal override bool VInit(XmlElement componentData)
         {
             XmlElement materialNode = (XmlElement) componentData.SelectSingleNode("//Material");
@@ -165,6 +281,8 @@ namespace Caravel.Core.Entity
             var collisionShapesNode = componentData.SelectSingleNode("//CollisionShapes");
             if (collisionShapesNode != null)
             {
+                m_Shapes.Clear();
+                
                 foreach(XmlElement shape in collisionShapesNode.ChildNodes)
                 {
                     var shapeData = new Cv_ShapeData();
@@ -257,6 +375,14 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnChanged()
         {
+            Cv_Event newEvt = new Cv_Event_ClearCollisionShapes(Owner.ID);
+            Cv_EventManager.Instance.TriggerEvent(newEvt);
+
+            foreach (var s in m_Shapes)
+            {
+                newEvt = new Cv_Event_NewCollisionShape(Owner.ID, s);
+                Cv_EventManager.Instance.TriggerEvent(newEvt);
+            }
         }
 
         protected internal override void VOnUpdate(float deltaTime)
@@ -265,12 +391,7 @@ namespace Caravel.Core.Entity
 
         protected internal override bool VPostInit()
         {
-            foreach (var s in m_Shapes)
-            {
-                var newEvt = new Cv_Event_NewCollisionShape(Owner.ID, s);
-                Cv_EventManager.Instance.TriggerEvent(newEvt);
-            }
-
+            VOnChanged();
             return true;
         }
 
@@ -278,120 +399,10 @@ namespace Caravel.Core.Entity
         {
         }
 
-        protected internal override XmlElement VToXML()
+        protected internal override void VOnDestroy()
         {
-            var doc = new XmlDocument();
-            var rigidBodyElement = doc.CreateElement(GetComponentName(this));
-
-            var materialElement = doc.CreateElement("Material");
-            materialElement.SetAttribute("material", m_sMaterial);
-            rigidBodyElement.AppendChild(materialElement);
-
-            var physicsElement = doc.CreateElement("Physics");
-            physicsElement.SetAttribute("fixedRotation", m_bFixedRotation.ToString());
-            physicsElement.SetAttribute("gravityScale", m_fGravityScale.ToString());
-            physicsElement.SetAttribute("maxVelocity", MaxVelocity.ToString());
-            physicsElement.SetAttribute("maxAngVelocity", MaxAngularVelocity.ToString());
-            rigidBodyElement.AppendChild(physicsElement);
-
-            var bodyElement = doc.CreateElement("Body");
-            bodyElement.SetAttribute("linearDamping", m_fLinearDamping.ToString());
-            bodyElement.SetAttribute("angularDamping", m_fAngularDamping.ToString());
-            bodyElement.SetAttribute("followEntityRotation", UseEntityRotation.ToString());
-
-            var bodyTypeStr = "";
-
-            switch (m_RigidBodyType)
-            {
-                case BodyType.Static:
-                    bodyTypeStr = "static";
-                    break;
-                case BodyType.Dynamic:
-                    bodyTypeStr = "dynamic";
-                    break;
-                default:
-                    bodyTypeStr = "kinematic";
-                    break;
-            }
-
-            bodyElement.SetAttribute("type", bodyTypeStr);
-            rigidBodyElement.AppendChild(bodyElement);
-
-            var collisionShapesElement = doc.CreateElement("CollisionShapes");
-            
-            foreach (var shape in m_Shapes)
-            {
-                var shapeTypeStr = "";
-
-                switch (shape.Type)
-                {
-                    case ShapeType.Box:
-                        shapeTypeStr = "Box";
-                        break;
-                    case ShapeType.Circle:
-                        shapeTypeStr = "Circle";
-                        break;
-                    case ShapeType.Polygon:
-                        shapeTypeStr = "Polygon";
-                        break;
-                    default:
-                        shapeTypeStr = "Trigger";
-                        break;
-                }
-
-                var shapeElement = doc.CreateElement(shapeTypeStr);
-                shapeElement.SetAttribute("material", shape.Material);
-                shapeElement.SetAttribute("anchorX", ((int)shape.Anchor.X).ToString());
-                shapeElement.SetAttribute("anchorY", ((int)shape.Anchor.Y).ToString());
-                shapeElement.SetAttribute("isBullet", shape.IsBullet.ToString());
-
-                if (shape.Type == ShapeType.Circle)
-                {
-                    shapeElement.SetAttribute("radius", shape.Radius.ToString());
-                }
-                else if (shape.Type == ShapeType.Box)
-                {
-                    shapeElement.SetAttribute("dimensionsX", ((int)shape.Dimensions.X).ToString());
-                    shapeElement.SetAttribute("dimensionsY", ((int)shape.Dimensions.Y).ToString());
-                }
-                else if (shape.Type == ShapeType.Trigger)
-                {
-                    shapeElement.SetAttribute("dimensions", ((int)shape.Dimensions.X).ToString());
-                }
-                else
-                {
-                    foreach (var point in shape.Points)
-                    {
-                        var pointElement = doc.CreateElement("Point");
-                        pointElement.SetAttribute("x", ((int)point.X).ToString());
-                        pointElement.SetAttribute("y", ((int)point.Y).ToString());
-                        shapeElement.AppendChild(pointElement);
-                    }
-                }
-
-                var collisionCategories = shape.Categories.GetCategoriesArray();
-                foreach (var category in collisionCategories)
-                {
-                    var collisionCategoriesElement = doc.CreateElement("CollisionCategory");
-                    collisionCategoriesElement.SetAttribute("id", category.ToString());
-                    shapeElement.AppendChild(collisionCategoriesElement);
-                }
-
-                var collidesWith = shape.CollidesWith.GetCategoriesArray();
-                foreach (var category in collidesWith)
-                {
-                    var collidesWithElement = doc.CreateElement("CollidesWith");
-                    collidesWithElement.SetAttribute("id", category.ToString());
-                    collidesWithElement.SetAttribute("directions", shape.CollisionDirections[category]);
-                    shapeElement.AppendChild(collidesWithElement);
-                }
-
-                collisionShapesElement.AppendChild(shapeElement);
-            }
-
-            rigidBodyElement.AppendChild(collisionShapesElement);
-
-            return rigidBodyElement;
+            Cv_Event newEvt = new Cv_Event_DestroyRigidBodyComponent(Owner.ID);
+            Cv_EventManager.Instance.TriggerEvent(newEvt);
         }
     }
 }

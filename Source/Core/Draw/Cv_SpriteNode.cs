@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Caravel.Core.Entity;
+using Caravel.Core.Events;
 using Caravel.Core.Resource;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,14 +15,56 @@ namespace Caravel.Core.Draw
 
         public Cv_SpriteNode(Cv_Entity.Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform from = null) : base(entityID, renderComponent, to, from)
         {
-            var comp = ((Cv_SpriteComponent) renderComponent);
         }
 
         public override void VRender(Cv_SceneElement scene, Cv_Renderer renderer)
         {
             var spriteComponent = (Cv_SpriteComponent) m_Component;
 
-            if (!spriteComponent.Visible)
+            var pos = scene.Transform.Position;
+            var rot = scene.Transform.Rotation;
+            var scale = scene.Transform.Scale;
+
+            if (CaravelApp.Instance.EditorRunning && scene.EditorSelectedEntity == Properties.EntityID)
+            {
+                var rotMatrixZ = Matrix.CreateRotationZ(rot);
+
+                Vector2 point1;
+                Vector2 point2;
+                List<Vector2> points = new List<Vector2>();
+                var width = spriteComponent.Width * scale.X;
+                var height = spriteComponent.Height * scale.Y;
+                points.Add(new Vector2(0, 0));
+                points.Add(new Vector2(width, 0));
+                points.Add(new Vector2(width, height));
+                points.Add(new Vector2(0, height));
+                for (int i = 0, j = 1; i < points.Count; i++, j++)
+                {
+                    if (j >= points.Count)
+                    {
+                        j = 0;
+                    }
+
+                    point1 = new Vector2(points[i].X, points[i].Y);
+                    point2 = new Vector2(points[j].X, points[j].Y);
+
+                    point1 -= new Vector2(scene.Transform.Origin.X * width, scene.Transform.Origin.Y * height);
+                    point2 -= new Vector2(scene.Transform.Origin.X * width, scene.Transform.Origin.Y * height);
+                    point1 = Vector2.Transform(point1, rotMatrixZ);
+                    point2 = Vector2.Transform(point2, rotMatrixZ);
+                    point1 += new Vector2(pos.X, pos.Y);
+                    point2 += new Vector2(pos.X, pos.Y);
+
+                    Cv_DrawUtils.DrawLine(renderer,
+                                                        point1,
+                                                        point2,
+                                                        2,
+                                                        255,
+                                                        Color.Yellow);
+                }
+            }
+
+            if (!spriteComponent.Visible || spriteComponent.Texture == null || spriteComponent.Texture == "")
             {
                 return;
             }
@@ -31,9 +74,6 @@ namespace Caravel.Core.Draw
 			
 
             var tex = resource.GetTexture().Texture;
-            var pos = scene.Transform.Position;
-            var rot = scene.Transform.Rotation;
-            var scale = scene.Transform.Scale;
 
             var frameW = tex.Width / spriteComponent.FrameX;
 			var frameH = tex.Height / spriteComponent.FrameY;
@@ -50,46 +90,6 @@ namespace Caravel.Core.Draw
                                     new Vector2(frameW * scene.Transform.Origin.X, frameH * scene.Transform.Origin.Y),
                                     SpriteEffects.None,
                                     pos.Z / MaxLayers);
-
-            
-
-            if (CaravelApp.Instance.EditorRunning && scene.EditorSelectedEntity == Properties.EntityID)
-            {
-                var rotMatrixZ = Matrix.CreateRotationZ(rot);
-
-                Vector2 point1;
-                Vector2 point2;
-                List<Vector2> points = new List<Vector2>();
-                var width = spriteComponent.Width * scale.X;
-                var height = spriteComponent.Height * scale.Y;
-                points.Add(new Vector2(0, 0));
-                points.Add(new Vector2(width, 0));
-                points.Add(new Vector2(width, height));
-                points.Add(new Vector2(0, height));
-                for (int i = 0, j = 1; i < points.Count; i++, j++)
-				{
-					if (j >= points.Count)
-                    {
-						j = 0;
-                    }
-
-                    point1 = new Vector2(points[i].X, points[i].Y);
-                    point2 = new Vector2(points[j].X, points[j].Y);
-
-                    point1 -= new Vector2(scene.Transform.Origin.X*width, scene.Transform.Origin.Y*height);
-                    point2 -= new Vector2(scene.Transform.Origin.X*width, scene.Transform.Origin.Y*height);
-                    point1 = Vector2.Transform(point1, rotMatrixZ);
-                    point2 = Vector2.Transform(point2, rotMatrixZ);
-                    point1 += new Vector2(pos.X, pos.Y);
-                    point2 += new Vector2(pos.X, pos.Y);
-
-                    Cv_DrawUtils.DrawLine(renderer,
-						                                point1,
-                                                        point2,
-						                                4,
-						                                Color.Yellow);
-                }
-            }
         }
 
         public override float GetRadius(Cv_Renderer renderer)
@@ -112,7 +112,7 @@ namespace Caravel.Core.Draw
         public override bool VOnChanged(Cv_SceneElement scene)
         {
             var comp = ((Cv_SpriteComponent) m_Component);
-            SetRadius((float) Math.Sqrt(comp.Width*comp.Width + comp.Height*comp.Height)/2);
+            SetRadius(-1);
             return true;
         }
 
@@ -134,14 +134,7 @@ namespace Caravel.Core.Draw
             var scale = worldTransform.Scale;
 
             var spriteComponent = (Cv_SpriteComponent) m_Component;
-
-			Cv_RawTextureResource resource;
-			resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture, spriteComponent.Owner.ResourceBundle);
-
-            var tex = resource.GetTexture().Texture;
-            var frameW = tex.Width / spriteComponent.FrameX;
-			var frameH = tex.Height / spriteComponent.FrameY;
-
+            
             var transformedVertices = new List<Vector2>();
             var point1 = new Vector2(-(worldTransform.Origin.X * spriteComponent.Width * scale.X),
                                      -(worldTransform.Origin.Y * spriteComponent.Height * scale.Y));

@@ -43,6 +43,11 @@ namespace Caravel.Core.Entity
 			get; private set;
 		}
 
+        public bool DestroyRequested
+        {
+            get; internal set;
+        }
+
         private Dictionary<Cv_ComponentID, Cv_EntityComponent> m_ComponentMap;
         private List<Cv_EntityComponent> m_ComponentList;
         private List<Cv_EntityComponent> m_ComponentsToAdd;
@@ -82,6 +87,19 @@ namespace Caravel.Core.Entity
             return null;
         }
 
+        public Cv_EntityComponent GetComponent(string componentName)
+        {
+            Cv_EntityComponent component;
+            Cv_ComponentID componentID = Cv_EntityComponent.GetID(componentName);
+
+            if (m_ComponentMap.TryGetValue(componentID, out component))
+            {
+                return component;
+            }
+
+            return null;
+        }
+
         public Cv_EntityComponent GetComponent(Cv_ComponentID componentID)
         {
             Cv_EntityComponent component;
@@ -105,6 +123,7 @@ namespace Caravel.Core.Entity
             m_ComponentsToAdd = new List<Cv_EntityComponent>();
             m_ComponentsToRemove = new List<Cv_EntityComponent>();
 			ResourceBundle = resourceBundle;
+            DestroyRequested = false;
         }
 
         internal Cv_Entity(Cv_EntityID entityId, string resourceBundle)
@@ -118,6 +137,7 @@ namespace Caravel.Core.Entity
             m_ComponentsToAdd = new List<Cv_EntityComponent>();
             m_ComponentsToRemove = new List<Cv_EntityComponent>();
 			ResourceBundle = resourceBundle;
+            DestroyRequested = false;
         }
 
         ~Cv_Entity()
@@ -164,6 +184,11 @@ namespace Caravel.Core.Entity
 
         internal void OnUpdate(float timeElapsed)
         {
+            if (DestroyRequested)
+            {
+                return;
+            }
+
             foreach (var component in m_ComponentsToAdd)
             {
                 m_ComponentList.Add(component);
@@ -180,6 +205,23 @@ namespace Caravel.Core.Entity
             {
                 component.VOnUpdate(timeElapsed);
             }
+        }
+
+        internal void OnDestroy()
+        {
+            foreach (var component in m_ComponentList)
+            {
+                component.VOnDestroy();
+                component.Owner = null;
+            }
+        }
+
+        internal void OnRemove()
+        {
+            m_ComponentList.Clear();
+            m_ComponentMap.Clear();
+            m_ComponentsToAdd.Clear();
+            m_ComponentsToRemove.Clear();
         }
 
         internal void AddComponent(Cv_EntityComponent component)
@@ -199,6 +241,20 @@ namespace Caravel.Core.Entity
             {
                 m_ComponentsToRemove.Add(component);
                 m_ComponentMap.Remove(Cv_EntityComponent.GetID<Component>());
+                component.VOnDestroy();
+                component.Owner = null;
+            }
+        }
+
+        internal void RemoveComponent(string componentType)
+        {
+            var component = GetComponent(componentType);
+
+            if (component != null)
+            {
+                m_ComponentsToRemove.Add(component);
+                m_ComponentMap.Remove(Cv_EntityComponent.GetID(componentType));
+                component.VOnDestroy();
                 component.Owner = null;
             }
         }
@@ -222,6 +278,8 @@ namespace Caravel.Core.Entity
             {
                 m_ComponentsToRemove.Add(component);
                 m_ComponentMap.Remove(Cv_EntityComponent.GetID(componentType));
+                component.VOnDestroy();
+                component.Owner = null;
             }
         }
     }

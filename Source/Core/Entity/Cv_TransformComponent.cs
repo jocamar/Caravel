@@ -89,9 +89,33 @@ namespace Caravel.Core.Entity
             Transform = new Cv_Transform();
         }
 
-        ~Cv_TransformComponent()
+        public override XmlElement VToXML()
         {
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
+            var componentDoc = new XmlDocument();
+            var componentData = componentDoc.CreateElement(GetComponentName<Cv_TransformComponent>());
+            var position = componentDoc.CreateElement("Position");
+            var rotation = componentDoc.CreateElement("Rotation");
+            var scale = componentDoc.CreateElement("Scale");
+            var origin = componentDoc.CreateElement("Origin");
+
+            position.SetAttribute("x", ((int) Position.X).ToString(CultureInfo.InvariantCulture));
+            position.SetAttribute("y", ((int) Position.Y).ToString(CultureInfo.InvariantCulture));
+            position.SetAttribute("z", ((int) Position.Z).ToString(CultureInfo.InvariantCulture));
+
+            rotation.SetAttribute("radians", Transform.Rotation.ToString(CultureInfo.InvariantCulture));
+
+            scale.SetAttribute("x", (Transform.Scale.X).ToString(CultureInfo.InvariantCulture));
+            scale.SetAttribute("y", (Transform.Scale.Y).ToString(CultureInfo.InvariantCulture));
+
+            origin.SetAttribute("x", Transform.Origin.X.ToString(CultureInfo.InvariantCulture));
+            origin.SetAttribute("y", Transform.Origin.Y.ToString(CultureInfo.InvariantCulture));
+
+            componentData.AppendChild(position);
+            componentData.AppendChild(rotation);
+            componentData.AppendChild(scale);
+            componentData.AppendChild(origin);
+
+            return componentData;
         }
 
         protected internal override bool VInit(XmlElement componentData)
@@ -169,37 +193,13 @@ namespace Caravel.Core.Entity
 			Cv_EventManager.Instance.QueueEvent(newEvent);
         }
 
-        protected internal override void VOnUpdate(float deltaTime)
+        protected internal override void VOnDestroy()
         {
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
         }
 
-        protected internal override XmlElement VToXML()
+        protected internal override void VOnUpdate(float deltaTime)
         {
-            var componentDoc = new XmlDocument();
-            var componentData = componentDoc.CreateElement(GetComponentName<Cv_TransformComponent>());
-            var position = componentDoc.CreateElement("Position");
-            var rotation = componentDoc.CreateElement("Rotation");
-            var scale = componentDoc.CreateElement("Scale");
-            var origin = componentDoc.CreateElement("Origin");
-
-            position.SetAttribute("x", ((int) Position.X).ToString());
-            position.SetAttribute("y", ((int) Position.Y).ToString());
-            position.SetAttribute("z", ((int) Position.Z).ToString());
-
-            rotation.SetAttribute("radians", Transform.Rotation.ToString());
-
-            scale.SetAttribute("x", ((int) Transform.Scale.X).ToString());
-            scale.SetAttribute("y", ((int) Transform.Scale.Y).ToString());
-
-            origin.SetAttribute("x", Transform.Origin.X.ToString());
-            origin.SetAttribute("y", Transform.Origin.Y.ToString());
-
-            componentData.AppendChild(position);
-            componentData.AppendChild(rotation);
-            componentData.AppendChild(scale);
-            componentData.AppendChild(origin);
-
-            return componentData;
         }
 
 		private void OnTransformEntity(Cv_Event transformEvent)

@@ -106,6 +106,12 @@ namespace Caravel.Core.Resource
 			return m_ZipFile.GetEntry(resourceFile).Size;
 		}
 
+		
+
+        public override void Refresh()
+        {
+        }
+
 		protected override Stream OpenStream(string assetName)
 		{
 			int entry = m_ZipFile.FindEntry(assetName, true);
@@ -136,5 +142,5 @@ namespace Caravel.Core.Resource
 			Cv_Debug.Error("Unable to open stream.");
 			return null;
 		}
-	}
+    }
 }

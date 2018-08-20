@@ -62,6 +62,19 @@ namespace Caravel.Core.Entity
         private Cv_CameraNode m_CameraNode;
         private float m_Zoom;
 
+        public override XmlElement VToXML()
+        {
+            var doc = new XmlDocument();
+            var cameraElement = doc.CreateElement(GetComponentName<Cv_CameraComponent>());
+
+            var propertiesElement = doc.CreateElement("Properties");
+            propertiesElement.SetAttribute("defaultCamera", IsDefaultCamera.ToString());
+            propertiesElement.SetAttribute("zoom", Zoom.ToString(CultureInfo.InvariantCulture));
+            cameraElement.AppendChild(propertiesElement);
+
+            return cameraElement;
+        }
+
         protected internal override bool VInit(XmlElement componentData)
         {
             IsDefaultCamera = false;
@@ -103,21 +116,15 @@ namespace Caravel.Core.Entity
         {
         }
 
-        protected internal override XmlElement VToXML()
-        {
-            var doc = new XmlDocument();
-            var cameraElement = doc.CreateElement(GetComponentName<Cv_CameraComponent>());
-
-            var propertiesElement = doc.CreateElement("Properties");
-            propertiesElement.SetAttribute("defaultCamera", IsDefaultCamera.ToString());
-            propertiesElement.SetAttribute("zoom", Zoom.ToString());
-            cameraElement.AppendChild(propertiesElement);
-
-            return cameraElement;
-        }
-
 		protected internal override void VPostLoad()
 		{
 		}
-	}
+
+        protected internal override void VOnDestroy()
+        {
+            Cv_CameraNode cameraNode = this.CameraNode;
+            Cv_Event newEvent = new Cv_Event_DestroyCameraComponent(Owner.ID,cameraNode);
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+        }
+    }
 }

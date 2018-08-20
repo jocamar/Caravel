@@ -1,11 +1,11 @@
-<EntityType type="camera" resource="entity_types/camera.cve">
-    <Cv_TransformComponent>
-        <Position x="-100" y="0" z="0"/>
-        <Scale x="1" y="1" />
-        <Rotation radians="0" />
-	    <Origin x="0.5" y="0.5" />
-    </Cv_TransformComponent>
-    <Cv_CameraComponent>
-        <Properties defaultCamera="true" zoom="1" />
-    </Cv_CameraComponent>
+﻿<EntityType type="camera" resource="entity_types\camera.cve">
+  <Cv_TransformComponent>
+    <Position x="-100" y="0" z="0" />
+    <Rotation radians="0" />
+    <Scale x="1" y="1" />
+    <Origin x="0.5" y="0.5" />
+  </Cv_TransformComponent>
+  <Cv_CameraComponent>
+    <Properties defaultCamera="True" zoom="1" />
+  </Cv_CameraComponent>
 </EntityType>

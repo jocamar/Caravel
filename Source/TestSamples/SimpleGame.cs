@@ -72,7 +72,7 @@ namespace Caravel.TestSamples
         protected internal override bool VInitialize()
         {
             IsMouseVisible = true;
-            GameLogic.ChangeState(Cv_GameState.LoadingGameEnvironment);
+            GameLogic.ChangeState(Cv_GameState.LoadingScene);
             return true;
         }
 

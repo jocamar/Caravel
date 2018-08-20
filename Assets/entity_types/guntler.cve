@@ -1,26 +1,26 @@
-<EntityType type="guntler" resource="entity_types/guntler.cve">
-    <Cv_TransformComponent>
-        <Position x="0" y="-200" z="0"/>
-        <Scale x="2" y="1" />
-        <Rotation radians="0" />
-	    <Origin x="0.5" y="0.5" />
-    </Cv_TransformComponent>
-    <Cv_SpriteComponent>
-        <Texture resource="ElGuntlero.png" />
-        <Size width="250" height="250" />
-        <Color r="255" g="255" b="255" />
-	    <Animation speed="1" fx="1" fy="1" loop="true" startFrame="0" endFrame="0"/>
-    </Cv_SpriteComponent>
-    <Cv_RigidBodyComponent>
-        <Material material="Wood"/>
-        <Physics fixedRotation="false" gravityScale="0" maxVelocity="100" maxAngVelocity="100"/>
-        <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
-	    <CollisionShapes>
-            <Polygon anchorX="0" anchorY="0" isBullet="false" material="Wood">
-                <Point x="0" y="-100" />
-                <Point x="50" y="100" />
-                <Point x="-50" y="100" />
-            </Polygon>
-        </CollisionShapes>
-    </Cv_RigidBodyComponent>
+﻿<EntityType type="guntler" resource="entity_types\guntler.cve">
+  <Cv_TransformComponent>
+    <Position x="0" y="-200" z="0" />
+    <Rotation radians="0" />
+    <Scale x="2" y="1" />
+    <Origin x="0.5" y="0.5" />
+  </Cv_TransformComponent>
+  <Cv_SpriteComponent>
+    <Color r="255" g="255" b="255" a="255" />
+    <Texture resource="sky.jpg" />
+    <Size width="250" height="250" />
+    <Animation fx="1" fy="1" loop="True" />
+  </Cv_SpriteComponent>
+  <Cv_RigidBodyComponent>
+    <Material material="Wood" />
+    <Physics fixedRotation="False" gravityScale="0" maxVelocity="100" maxAngVelocity="100" />
+    <Body linearDamping="0.5" angularDamping="0.5" followEntityRotation="True" type="dynamic" />
+    <CollisionShapes>
+      <Polygon material="Wood" anchorX="0" anchorY="0" isBullet="False">
+        <Point x="0" y="-100" />
+        <Point x="50" y="100" />
+        <Point x="-50" y="100" />
+      </Polygon>
+    </CollisionShapes>
+  </Cv_RigidBodyComponent>
 </EntityType>

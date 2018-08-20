@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml;
 using Caravel.Core.Draw;
+using Caravel.Core.Events;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 
@@ -38,12 +40,38 @@ namespace Caravel.Core.Entity
 
         public int Width
         {
-            get; set;
+            get
+            {
+                return m_iWidth;
+            }
+
+            set
+            {
+                m_iWidth = value;
+
+                if (SceneNode != null)
+                {
+                    SceneNode.SetRadius(-1);
+                }
+            }
         }
 
         public int Height
         {
-            get; set;
+            get
+            {
+                return m_iHeight;
+            }
+
+            set
+            {
+                m_iHeight = value;
+                
+                if (SceneNode != null)
+                {
+                    SceneNode.SetRadius(-1);
+                }
+            }
         }
 
 		public int? Speed
@@ -117,6 +145,7 @@ namespace Caravel.Core.Entity
         private Dictionary<string, Cv_SpriteSubAnimation> m_SubAnimations;
         private Cv_SpriteSubAnimation? m_CurrAnim;
         private int m_ActualStartFrame, m_ActualEndFrame, m_ActualSpeed;
+        private int m_iWidth, m_iHeight;
 
         public Cv_SpriteComponent()
         {
@@ -134,6 +163,8 @@ namespace Caravel.Core.Entity
             m_CurrAnim = null;
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
             m_sDefaultAnim = "";
+
+            Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
         }
 
         public Cv_SpriteComponent(string resource, int width, int height, Color color,
@@ -156,7 +187,10 @@ namespace Caravel.Core.Entity
             m_CurrAnim = null;
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
             m_sDefaultAnim = "";
+
+            Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
         }
+
 
         public void SetAnimation(string animationId, OnEndDelegate onEnd = null)
         {
@@ -232,6 +266,7 @@ namespace Caravel.Core.Entity
 
                 var subAnimations = animationNode.SelectNodes("//SubAnimation");
                 m_SubAnimations.Clear();
+                m_CurrAnim = null;
 
                 foreach (XmlElement subAnimation in subAnimations)
                 {
@@ -319,6 +354,19 @@ namespace Caravel.Core.Entity
 			}
         }
 
+        protected internal void OnTransformEntity(Cv_Event eventData)
+        {
+            if (Owner != null && eventData.EntityID == Owner.ID)
+            {
+                var transformData = (Cv_Event_TransformEntity) eventData;
+
+                if (transformData.NewOrigin != transformData.OldOrigin || transformData.NewScale != transformData.OldScale)
+                {
+                    SceneNode.SetRadius(-1);
+                }
+            }
+        }
+
         protected override Cv_SceneNode VCreateSceneNode()
         {
             return new Cv_SpriteNode(Owner.ID, this, new Cv_Transform());
@@ -331,17 +379,29 @@ namespace Caravel.Core.Entity
             baseElement.AppendChild(textureElement);
 
             var sizeElement = baseElement.OwnerDocument.CreateElement("Size");
-            sizeElement.SetAttribute("width", Width.ToString());
-            sizeElement.SetAttribute("height", Height.ToString());
+            sizeElement.SetAttribute("width", Width.ToString(CultureInfo.InvariantCulture));
+            sizeElement.SetAttribute("height", Height.ToString(CultureInfo.InvariantCulture));
             baseElement.AppendChild(sizeElement);
 
             var animationElement = baseElement.OwnerDocument.CreateElement("Animation");
-            animationElement.SetAttribute("fx", FrameX.ToString());
-            animationElement.SetAttribute("fy", FrameY.ToString());
-            animationElement.SetAttribute("loop", Looping.ToString());
-            animationElement.SetAttribute("speed", Speed.ToString());
-            animationElement.SetAttribute("startFrame", StartFrame.ToString());
-            animationElement.SetAttribute("endFrame", EndFrame.ToString());
+            animationElement.SetAttribute("fx", FrameX.ToString(CultureInfo.InvariantCulture));
+            animationElement.SetAttribute("fy", FrameY.ToString(CultureInfo.InvariantCulture));
+            animationElement.SetAttribute("loop", Looping.ToString(CultureInfo.InvariantCulture));
+
+            if (Speed != null)
+            {
+                animationElement.SetAttribute("speed", Speed.ToString());
+            }
+
+            if (StartFrame != null)
+            {
+                animationElement.SetAttribute("startFrame", StartFrame.ToString());
+            }
+
+            if (EndFrame != null)
+            {
+                animationElement.SetAttribute("endFrame", EndFrame.ToString());
+            }
 
             if (m_SubAnimations.Count > 0)
             {
@@ -352,9 +412,9 @@ namespace Caravel.Core.Entity
             {
                 var subAnimationNode = baseElement.OwnerDocument.CreateElement("SubAnimation");
                 subAnimationNode.SetAttribute("id", subAnim.ID);
-                subAnimationNode.SetAttribute("speed", subAnim.Speed.ToString());
-                subAnimationNode.SetAttribute("startFrame", subAnim.StartFrame.ToString());
-                subAnimationNode.SetAttribute("endFrame", subAnim.EndFrame.ToString());
+                subAnimationNode.SetAttribute("speed", subAnim.Speed.ToString(CultureInfo.InvariantCulture));
+                subAnimationNode.SetAttribute("startFrame", subAnim.StartFrame.ToString(CultureInfo.InvariantCulture));
+                subAnimationNode.SetAttribute("endFrame", subAnim.EndFrame.ToString(CultureInfo.InvariantCulture));
 
                 animationElement.AppendChild(subAnimationNode);
             }
@@ -366,5 +426,11 @@ namespace Caravel.Core.Entity
 		protected internal override void VPostLoad()
 		{
 		}
+
+        protected internal override void VOnDestroy()
+        {
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
+            base.VOnDestroy();
+        }
 	}
 }

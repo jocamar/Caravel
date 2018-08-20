@@ -1,25 +1,22 @@
-<EntityType type="jocamarProfile" resource="entity_types/profile.cve">
-    <Cv_TransformComponent>
-        <Position x="250" y="-250" z="1"/>
-        <Scale x="1" y="1" />
-        <Rotation radians="0" />
-        <Origin x="0" y="0" />
-    </Cv_TransformComponent>
-    <Cv_SpriteComponent>
-        <Texture resource="profile.png" />
-        <Size width="250" height="250" />
-        <Color r="255" g="255" b="255" />
-    </Cv_SpriteComponent>
-    <Cv_RigidBodyComponent>
-        <Material material="Wood"/>
-        <Physics fixedRotation="false" gravityScale="1" maxVelocity="100" maxAngVelocity="100"/>
-        <Body linearDamping="0.5" angularDamping="0.5" type="dynamic" followEntityRotation="true"/>
-	    <CollisionShapes>
-            <Box anchorX="-125" anchorY="-125" isBullet="false" dimensionsX="250" dimensionsY="250" material="Wood">
-				<CollisionCategory id="2"/>
-				<CollidesWith id="1" directions="All"/>
-				<CollidesWith id="3" directions="Left"/>
-			</Box>
-        </CollisionShapes>
-    </Cv_RigidBodyComponent>
+﻿<EntityType type="profile" resource="entity_types\profile.cve">
+  <Cv_TransformComponent>
+    <Position x="250" y="-250" z="1" />
+    <Rotation radians="0" />
+    <Scale x="1" y="1" />
+    <Origin x="0" y="0" />
+  </Cv_TransformComponent>
+  <Cv_RigidBodyComponent>
+    <Material material="Wood" />
+    <Physics fixedRotation="False" gravityScale="1" maxVelocity="100" maxAngVelocity="100" />
+    <Body linearDamping="0.5" angularDamping="0.5" followEntityRotation="True" type="dynamic" />
+    <CollisionShapes>
+      <Box anchorX="0" anchorY="0" isBullet="False" material="Wood" dimensionsX="150" dimensionsY="150" />
+    </CollisionShapes>
+  </Cv_RigidBodyComponent>
+  <Cv_SpriteComponent>
+    <Color r="255" g="255" b="255" a="255" />
+    <Texture resource="profile.png" />
+    <Size width="250" height="250" />
+    <Animation fx="1" fy="1" loop="False" />
+  </Cv_SpriteComponent>
 </EntityType>

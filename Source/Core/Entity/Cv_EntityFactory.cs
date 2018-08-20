@@ -130,9 +130,34 @@ namespace Caravel.Core.Entity
                     if (component != null)
                     {
                         entity.AddComponent(component);
+                        component.VPostInit();
                     }
                 }
             }
+        }
+
+        protected internal Cv_EntityComponent CreateComponent(string componentName)
+        {
+            var component = m_ComponentFactory.Create(Cv_EntityComponent.GetID(componentName));
+
+            if (component == null)
+            {
+                Cv_Debug.Error("Couldn't find component " + componentName + ". All components must be registered before use.");
+            }
+
+            return component;
+        }
+
+        protected internal Component CreateComponent<Component>() where Component : Cv_EntityComponent
+        {
+            var component = (Component) m_ComponentFactory.Create(Cv_EntityComponent.GetID(typeof(Component)));
+
+            if (component == null)
+            {
+                Cv_Debug.Error("Couldn't find component " + typeof(Component).Name + ". All components must be registered before use.");
+            }
+
+            return component;
         }
 
         protected Cv_EntityComponent CreateComponent(XmlElement componentData)

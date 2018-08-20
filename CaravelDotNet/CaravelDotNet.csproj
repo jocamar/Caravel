@@ -190,11 +190,23 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCameraComponent.cs">
       <Link>Cv_Event_NewCameraComponent.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_DestroyCameraComponent.cs">
+      <Link>Cv_Event_DestroyCameraComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_DestroyRenderComponent.cs">
+      <Link>Cv_Event_DestroyRenderComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_DestroyRigidBodyComponent.cs">
+      <Link>Cv_Event_DestroyRigidBodyComponent.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCollision.cs">
       <Link>Cv_Event_NewCollision.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCollisionShape.cs">
       <Link>Cv_Event_NewCollisionShape.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_ClearCollisionShapes.cs">
+      <Link>Cv_Event_ClearCollisionShapes.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewEntity.cs">
       <Link>Cv_Event_NewEntity.cs</Link>

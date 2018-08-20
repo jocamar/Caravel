@@ -20,11 +20,9 @@ namespace Caravel.Core
         {
             Invalid,
             Initializing,
-            MainMenu,
             WaitingForPlayers,
-            LoadingGameEnvironment,
-            WaitingForPlayersToLoadEnvironment,
-            SpawningPlayerEntities,
+            LoadingScene,
+            WaitingForPlayersToLoadScene,
             Running
         };
 
@@ -118,11 +116,6 @@ namespace Caravel.Core
 			get; private set;
 		}
 
-        protected Cv_GamePhysics GamePhysics
-        {
-            get; private set;
-        }
-
         protected bool RenderDiagnostics
         {
             get; set;
@@ -132,16 +125,16 @@ namespace Caravel.Core
         {
             get; private set;
         }
+
+        protected internal Cv_GamePhysics GamePhysics
+        {
+            get; private set;
+        }
 #endregion
 
         protected internal Cv_GameView[] GameViews
         {
             get { return m_GameViews.ToArray(); }
-        }
-
-        protected NewEventDelegate OnTransformEntity
-        {
-            get; private set;
         }
 
         protected NewEventDelegate OnRequestNewEntity
@@ -159,6 +152,9 @@ namespace Caravel.Core
         private List<Cv_GameView> m_GameViews;
         private Cv_EntityFactory m_EntityFactory;
         private Cv_SceneController m_SceneController;
+        private List<Cv_Entity> m_EntitiesToDestroy;
+        private List<Cv_Entity> m_EntitiesToAdd;
+        private List<Cv_Entity> m_EntityList;
 
         public Cv_GameLogic(CaravelApp app)
         {
@@ -179,9 +175,11 @@ namespace Caravel.Core
             State = Cv_GameState.Initializing;
             Entities = new Dictionary<Cv_EntityID, Cv_Entity>();
 			EntitiesByName = new Dictionary<string, Cv_Entity>();
+            m_EntitiesToDestroy = new List<Cv_Entity>();
+            m_EntitiesToAdd = new List<Cv_Entity>();
+            m_EntityList = new List<Cv_Entity>();
             OnDestroyEntity = RequestDestroyEntityCallback;
             OnRequestNewEntity = RequestNewEntityCallback;
-            OnTransformEntity = TransformEntityCallback;
         }
 
         ~Cv_GameLogic()
@@ -237,13 +235,13 @@ namespace Caravel.Core
             if (entity != null)
             {
 				entity.EntityName = name;
-
+                m_EntitiesToAdd.Add(entity);
                 Entities.Add(entity.ID, entity);
 				EntitiesByName.Add(entity.EntityName, entity);
 
                 entity.PostInit();
 
-                if (!IsProxy && State == Cv_GameState.SpawningPlayerEntities || State == Cv_GameState.Running)
+                if (!IsProxy && State == Cv_GameState.Running)
                 {
                     var requestNewEntityEvent = new Cv_Event_RequestNewEntity(entityTypeResource, entity.EntityName, resourceBundle, parentId, transform, entity.ID);
                     Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
@@ -280,13 +278,13 @@ namespace Caravel.Core
             if (entity != null)
             {
 				entity.EntityName = name;
-
+                m_EntitiesToAdd.Add(entity);
                 Entities.Add(entity.ID, entity);
 				EntitiesByName.Add(entity.EntityName, entity);
 
                 entity.PostInit();
 
-                if (!IsProxy && State == Cv_GameState.SpawningPlayerEntities || State == Cv_GameState.Running)
+                if (!IsProxy && State == Cv_GameState.Running)
                 {
                     var requestNewEntityEvent = new Cv_Event_RequestNewEntity(null, entity.EntityName, resourceBundle, parentId, transform, entity.ID);
                     Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
@@ -302,16 +300,26 @@ namespace Caravel.Core
 
         public void DestroyEntity(Cv_EntityID entityId)
         {
-            var destroyEntityEvent = new Cv_Event_DestroyEntity(entityId);
-            Cv_EventManager.Instance.TriggerEvent(destroyEntityEvent);
-
 			Cv_Entity entity;
 			if (Entities.TryGetValue(entityId, out entity))
 			{
-				Entities.Remove(entityId);
-				EntitiesByName.Remove(entity.EntityName);
+                foreach (var e in m_EntityList) //TODO(JM): this might get really slow with tons of entities. Optimize if it becomes a problem
+                {
+                    if (e.ID != entityId && e.Parent == entityId)
+                    {
+                        DestroyEntity(e.ID);
+                    }
+                }
+
+                m_EntitiesToDestroy.Add(entity);
+
+                var destroyEntityEvent = new Cv_Event_DestroyEntity(entityId);
+                Cv_EventManager.Instance.TriggerEvent(destroyEntityEvent);
+                Entities.Remove(entityId);
+                EntitiesByName.Remove(entity.EntityName);
+                entity.OnDestroy();
+                entity.DestroyRequested = true;
 			}
-            
         }
 
         public void ModifyEntity(Cv_EntityID entityId, XmlNodeList overrides)
@@ -345,10 +353,93 @@ namespace Caravel.Core
             return null;
         }
 
-        public void TransformEntity(Cv_EntityID entityId, Vector3 newPos, Vector2 newScale, float newRot)
+        public void RemoveComponent<Component>(Cv_EntityID entityId) where Component : Cv_EntityComponent
         {
+            var entity = GetEntity(entityId);
 
+            if (entity != null)
+            {
+                entity.RemoveComponent<Component>();
+            }
         }
+
+        public void RemoveComponent<Component>(string entityName) where Component : Cv_EntityComponent
+        {
+            var entity = GetEntity(entityName);
+
+            if (entity != null)
+            {
+                entity.RemoveComponent<Component>();
+            }
+        }
+
+        public void RemoveComponent(Cv_EntityID entityId, string componentName)
+        {
+            var entity = GetEntity(entityId);
+
+            if (entity != null)
+            {
+                entity.RemoveComponent(componentName);
+            }
+        }
+
+        public Component CreateComponent<Component>() where Component : Cv_EntityComponent
+        {
+            return m_EntityFactory.CreateComponent<Component>();
+        }
+
+        public Cv_EntityComponent CreateComponent(string componentName)
+        {
+            return m_EntityFactory.CreateComponent(componentName);
+        }
+
+        public void AddComponent(Cv_EntityID entityId, Cv_EntityComponent component)
+        {
+            if (component.Owner != null)
+            {
+                Cv_Debug.Error("Trying to add a component that already has an owner.");
+            }
+
+            var entity = GetEntity(entityId);
+
+            if (entity != null)
+            {
+                entity.AddComponent(component);
+                component.VPostInit();
+            }
+        }
+
+        public void AddComponent(string entityName, Cv_EntityComponent component)
+        {
+            if (component.Owner != null)
+            {
+                Cv_Debug.Error("Trying to add a component that already has an owner.");
+            }
+            
+            var entity = GetEntity(entityName);
+
+            if (entity != null)
+            {
+                entity.AddComponent(component);
+                component.VPostInit();
+            }
+        }
+
+        public void ChangeType(Cv_EntityID entityId, string type, string typeResource)
+        {
+            XmlDocument doc = new XmlDocument();
+            XmlElement typeNode = doc.CreateElement("Entity");
+
+            typeNode.SetAttribute("type", type);
+            
+            var entity = GetEntity(entityId);
+
+            if (entity != null)
+            {
+                entity.Init(typeResource, typeNode, entity.Parent);
+            }
+        }
+        
 #endregion
 
 #region GameView methods
@@ -452,15 +543,15 @@ namespace Caravel.Core
             return true;
         }
 
-        public void ChangeState(Cv_GameState newState)
+        public bool ChangeState(Cv_GameState newState)
         {
-            var changedStateEvt = new Cv_Event_ChangeState(State, newState);
-
             if (newState == Cv_GameState.WaitingForPlayers)
             {
                 ExpectedPlayers = 1; //NOTE(JM): this must change for splitscreen
                 //ExpectedRemotePlayers = Caravel.GameOptions.ExpectedPlayers - ExpectedPlayers;
                 //ExpectedAI = Caravel.GameOptions.NumAI;
+                HumanPlayersAttached = 0;
+                HumanPlayersLoaded = 0;
 
                 /*if (!string.IsNullOrEmpty(Caravel.GameOptions.GameHost))
                 {
@@ -470,8 +561,7 @@ namespace Caravel.Core
 
                     if (!Caravel.AttachAsClient())
                     {
-                        ChangeState(Cv_GameState.MainMenu);
-                        return;
+                        return false;
                     }
                 }
                 else if (ExpectedRemotePlayers > 0)
@@ -479,28 +569,14 @@ namespace Caravel.Core
                     //Add socket on GameOptions.ListenPort
                 }*/
             }
-            else if (newState == Cv_GameState.LoadingGameEnvironment)
-            {
-                State = newState;
-                VGameOnChangeState(newState);
-                Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
 
-                if (!Caravel.VLoadGame())
-                {
-                    Cv_Debug.Error("Error loading game.");
-                    Caravel.AbortGame();
-                    return;
-                }
-                else
-                {
-                    ChangeState(Cv_GameState.WaitingForPlayersToLoadEnvironment);
-                    return;
-                }
-            }
+            var changedStateEvt = new Cv_Event_ChangeState(State, newState);
 
             State = newState;
             VGameOnChangeState(newState);
             Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
+
+            return true;
         }
 
         public void VRenderDiagnostics(Cv_Renderer renderer)
@@ -553,33 +629,36 @@ namespace Caravel.Core
             switch (State)
             {
                 case Cv_GameState.Initializing:
-                    ChangeState(Cv_GameState.MainMenu);
-                    break;
-                case Cv_GameState.MainMenu:
-                    break;
-                case Cv_GameState.LoadingGameEnvironment:
-                    break;
-                case Cv_GameState.WaitingForPlayersToLoadEnvironment:
-                    if (ExpectedPlayers + ExpectedRemotePlayers == HumanPlayersLoaded)
-                    {
-                        ChangeState(Cv_GameState.SpawningPlayerEntities);
-                    }
-                    break;
-                case Cv_GameState.SpawningPlayerEntities:
-                    ChangeState(Cv_GameState.Running);
                     break;
                 case Cv_GameState.WaitingForPlayers:
                     if (ExpectedPlayers + ExpectedRemotePlayers == HumanPlayersAttached)
                     {
-                        //if (!string.IsNullOrEmpty(Caravel.GameOptions.Level))
+                        //if (!string.IsNullOrEmpty(Caravel.GameOptions.Scene))
                         //{
-                            ChangeState(Cv_GameState.LoadingGameEnvironment);
+                            ChangeState(Cv_GameState.LoadingScene);
                         //}*/
+                    }
+                    break;
+                case Cv_GameState.LoadingScene:
+                    if (!Caravel.VLoadGame()) //TODO(JM): Maybe change this to automatically load the scene set in the options instead of being overriden by subclass
+                    {
+                        Cv_Debug.Error("Error loading scene.");
+                        Caravel.AbortGame();
+                    }
+                    else
+                    {
+                        HumanPlayersLoaded++; //TODO(JM): In future maybe change this to event handler (to handle remote players too)
+                        ChangeState(Cv_GameState.WaitingForPlayersToLoadScene);
+                    }
+                    break;
+                case Cv_GameState.WaitingForPlayersToLoadScene:
+                    if (ExpectedPlayers + ExpectedRemotePlayers == HumanPlayersLoaded)
+                    {
+                        ChangeState(Cv_GameState.Running);
                     }
                     break;
                 case Cv_GameState.Running:
                     //m_pProcessManager->UpdateProcesses(deltaMilliseconds);
-                    //TODO(JM): Update ProcessManager in Caravel Update
 
                     if (GamePhysics != null && !IsProxy)
                     {
@@ -591,26 +670,34 @@ namespace Caravel.Core
                     Cv_Debug.Error("Unrecognized state.");
                     break;
             }
-
+            
             foreach (var gv in GameViews)
             {
                 gv.VOnUpdate(time, timeElapsed);
             }
 
-            foreach (var e in Entities)
+            foreach (var e in m_EntityList)
             {
-                e.Value.OnUpdate(timeElapsed);
+                e.OnUpdate(timeElapsed);
             }
+
+            foreach (var e in m_EntitiesToDestroy)
+            {
+                m_EntityList.Remove(e);
+                e.OnRemove();
+            }
+            m_EntitiesToDestroy.Clear();
+
+            foreach (var e in m_EntitiesToAdd)
+            {
+                m_EntityList.Add(e);
+            }
+            m_EntitiesToAdd.Clear();
 
             VGameOnUpdate(time, timeElapsed);
         }
 
 #region Event callbacks
-        private void TransformEntityCallback(Cv_Event eventData)
-        {
-            Cv_Event_TransformEntity data = (Cv_Event_TransformEntity) eventData;
-            TransformEntity(data.EntityID, data.NewPosition, data.NewScale, data.NewRotation);
-        }
 
         private void RequestNewEntityCallback(Cv_Event eventData)
         {

@@ -35,6 +35,7 @@ namespace Caravel.Core.Resource
 		}
 
 		public abstract long VGetResourceSize(string resourceFile);
+		public abstract void Refresh();
 		protected abstract override Stream OpenStream(string assetName);
     }
 }

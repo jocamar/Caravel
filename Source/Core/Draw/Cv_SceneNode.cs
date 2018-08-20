@@ -277,15 +277,50 @@ namespace Caravel.Core.Draw
                 return true;
             }
 
+            var removed = false;
+
             foreach (var c in m_Children)
             {
                 if (c.RemoveChild(entityId))
                 {
-                    return true;
+                    removed = true;
+                    break;
                 }
             }
 
-            return false;
+            return removed;
+        }
+
+        public virtual bool RemoveChild(Cv_SceneNode node)
+        {
+            Cv_SceneNode toErase = null;
+            foreach (var c in m_Children)
+            {
+                if (c == node)
+                {
+                    toErase = c;
+                    break;
+                }
+            }
+
+            if (toErase != null)
+            {
+                m_Children.Remove(toErase);
+                return true;
+            }
+
+            var removed = false;
+
+            foreach (var c in m_Children)
+            {
+                if (c.RemoveChild(node))
+                {
+                    removed = true;
+                    break;
+                }
+            }
+
+            return removed;
         }
 
         public virtual bool VPick(Cv_SceneElement scene, Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)

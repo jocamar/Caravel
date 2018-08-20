@@ -158,6 +158,14 @@ namespace Caravel.Core.Resource
             m_ResourceBundles.Remove(bundleID);
         }
 
+        public void RefreshResourceBundle(string bundleID)
+        {
+            if (m_ResourceBundles.ContainsKey(bundleID))
+            {
+                m_ResourceBundles[bundleID].Refresh();
+            }
+        }
+
 		internal Cv_ResourceManager()
         {
             m_ResourceData = new Dictionary<string, Cv_ResourceData>();

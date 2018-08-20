@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
@@ -32,17 +33,21 @@ namespace Caravel.Core.Draw
 		private Cv_SceneNode m_Root;
 		private List<Cv_Transform> m_TransformStack;
 		private Dictionary<Cv_EntityID, List<Cv_SceneNode>> m_EntitiesMap;
+		private Dictionary<Cv_EntityID, Cv_HolderNode> m_HolderNodes;
 
         public Cv_SceneElement()
         {
 			EditorSelectedEntity = Cv_EntityID.INVALID_ENTITY;
             m_EntitiesMap = new Dictionary<Cv_EntityID, List<Cv_SceneNode>>();
+			m_HolderNodes = new Dictionary<Cv_EntityID, Cv_HolderNode>();
             m_TransformStack = new List<Cv_Transform>();
 			m_Root = new Cv_HolderNode(Cv_EntityID.INVALID_ENTITY);
 
 			Cv_EventManager.Instance.AddListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
+			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyCameraComponent>(OnDestroyCameraComponent);
+			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRenderComponent>(OnDestroyRenderComponent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
 			Cv_EventManager.Instance.AddListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
         }
@@ -52,6 +57,8 @@ namespace Caravel.Core.Draw
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
+			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyCameraComponent>(OnDestroyCameraComponent);
+			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyRenderComponent>(OnDestroyRenderComponent);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnMoveEntity);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
 		}
@@ -100,38 +107,37 @@ namespace Caravel.Core.Draw
 
 			if (entityID != Cv_EntityID.INVALID_ENTITY)
 			{
-				bool holderNodeExists = false;
-				Cv_SceneNode holderNode = null;
-				List<Cv_SceneNode> nodes;
-				if (m_EntitiesMap.TryGetValue(entityID, out nodes))
+				Cv_HolderNode holderNode = null;
+				if (m_HolderNodes.TryGetValue(entityID, out holderNode))
 				{
-					var siblingNode = nodes.Find(n => n.Parent.Parent.Properties.EntityID != Cv_EntityID.INVALID_ENTITY);
-					if (siblingNode != null)
+					if (holderNode.Parent.Properties.EntityID != Cv_EntityID.INVALID_ENTITY) //holderNode is not direct child of root
 					{
 						Cv_Debug.Error("Cannot have two nodes belonging to the same entity with different parents.");
 						return false;
 					}
 
-					if (nodes.Count > 0)
-					{
-						siblingNode = nodes[0];
-						holderNodeExists = true;
-						holderNode = siblingNode.Parent;
-					}
-
-					nodes.Add(node);
+					m_EntitiesMap[entityID].Add(node);
 				}
-				else
+
+				if (holderNode == null)
 				{
-					nodes = new List<Cv_SceneNode>();
+					var nodes = new List<Cv_SceneNode>();
 					nodes.Add(node);
 					m_EntitiesMap.Add(entityID, nodes);
-				}
 
-				if (!holderNodeExists)
-				{
 					holderNode = new Cv_HolderNode(entityID);
 					m_Root.AddChild(holderNode);
+					m_HolderNodes.Add(entityID, holderNode);
+
+					var entity = CaravelApp.Instance.GameLogic.GetEntity(entityID);
+					var transformComponent = entity.GetComponent<Cv_TransformComponent>();
+					if (transformComponent != null)
+					{
+						holderNode.Position = transformComponent.Position;
+						holderNode.Scale = transformComponent.Scale;
+						holderNode.Origin = transformComponent.Origin;
+						holderNode.Rotation = transformComponent.Rotation;
+					}
 				}
 
 				return holderNode.AddChild(node);
@@ -150,51 +156,100 @@ namespace Caravel.Core.Draw
 
 			if (entityID != Cv_EntityID.INVALID_ENTITY)
 			{
+				Cv_HolderNode ancestorNode = null;
+
 				if (parentEntity == Cv_EntityID.INVALID_ENTITY)
 				{
 					return AddNode(entityID, node);
 				}
-				else if (!m_EntitiesMap.ContainsKey(parentEntity)
-							|| m_EntitiesMap[parentEntity].Count <= 0
-							|| m_EntitiesMap[parentEntity][0].Parent.Properties.EntityID != parentEntity)
+				else if (!m_HolderNodes.ContainsKey(parentEntity))
 				{
-					Cv_Debug.Error("Parent does not exist on the scene graph.");
-					return false;
-				}
-				else
-				{
-					Cv_SceneNode holderNode = null;
-					List<Cv_SceneNode> nodes = null;
-					if (m_EntitiesMap.TryGetValue(entityID, out nodes))
+					Cv_Debug.Warning("Parent does not exist on the scene graph. Adding holder node.");
+
+					var currEntity = CaravelApp.Instance.GameLogic.GetEntity(parentEntity);
+					var entityStack = new Stack<Cv_Entity>();
+
+					//Rebuild path to root
+					entityStack.Push(currEntity);
+					while (currEntity.Parent != Cv_EntityID.INVALID_ENTITY)
 					{
-						var siblingNode = nodes.Find(n => n.Parent.Parent.Properties.EntityID != parentEntity);
-						if (siblingNode != null)
+						currEntity = CaravelApp.Instance.GameLogic.GetEntity(currEntity.Parent);
+
+						if (m_HolderNodes.ContainsKey(currEntity.ID))
 						{
-							Cv_Debug.Error("Cannot have two nodes belonging to the same entity with different parents.");
-							return false;
+							ancestorNode = m_HolderNodes[currEntity.ID];
+							break;
 						}
-						else if (nodes[0].Parent.Properties.EntityID == entityID)
+
+						entityStack.Push(currEntity);
+					}
+
+					//Add all the nodes starting with the closest to the root
+					while (entityStack.Count > 0)
+					{
+						currEntity = entityStack.Pop();
+
+						var newNodes = new List<Cv_SceneNode>();
+						m_EntitiesMap.Add(currEntity.ID, newNodes);
+
+						var hNode = new Cv_HolderNode(currEntity.ID);
+						m_HolderNodes.Add(currEntity.ID, hNode);
+						
+						if (ancestorNode != null)
 						{
-							holderNode = nodes[0].Parent;
+							ancestorNode.AddChild(hNode);
 						}
 						else
 						{
-							Cv_Debug.Error("Invalid holder node for existing entity nodes.");
-							return false;
+							m_Root.AddChild(hNode);
 						}
-					}
-					else
-					{
-						holderNode = new Cv_HolderNode(entityID);
-						m_EntitiesMap[parentEntity][0].Parent.AddChild(holderNode);
 
-						nodes = new List<Cv_SceneNode>();
-						m_EntitiesMap.Add(entityID, nodes);
+						ancestorNode = hNode;
 					}
-
-					nodes.Add(node);
-					return holderNode.AddChild(node);
 				}
+				else
+				{
+					ancestorNode = m_HolderNodes[parentEntity];
+				}
+
+				if (ancestorNode == null)
+				{
+					Cv_Debug.Error("Error while trying to find a parent for the new node.");
+					return false;
+				}
+
+				Cv_HolderNode holderNode = null;
+				List<Cv_SceneNode> nodes = null;
+				if (m_HolderNodes.TryGetValue(entityID, out holderNode))
+				{
+					if (holderNode.Parent.Properties.EntityID != parentEntity)
+					{
+						Cv_Debug.Error("Cannot have two nodes belonging to the same entity with different parents.");
+						return false;
+					}
+				}
+				else
+				{
+					holderNode = new Cv_HolderNode(entityID);
+					ancestorNode.AddChild(holderNode);
+
+					var entity = CaravelApp.Instance.GameLogic.GetEntity(entityID);
+					var transformComponent = entity.GetComponent<Cv_TransformComponent>();
+					if (transformComponent != null)
+					{
+						holderNode.Position = transformComponent.Position;
+						holderNode.Scale = transformComponent.Scale;
+						holderNode.Origin = transformComponent.Origin;
+						holderNode.Rotation = transformComponent.Rotation;
+					}
+
+					nodes = new List<Cv_SceneNode>();
+					m_EntitiesMap.Add(entityID, nodes);
+					m_HolderNodes.Add(entityID, holderNode);
+				}
+
+				nodes.Add(node);
+				return holderNode.AddChild(node);
 			}
 			else
 			{
@@ -213,6 +268,7 @@ namespace Caravel.Core.Draw
 			if (entityID != Cv_EntityID.INVALID_ENTITY)
 			{
 				m_EntitiesMap.Remove(entityID);
+				m_HolderNodes.Remove(entityID);
 			}
 
 			return m_Root.RemoveChild(entityID);
@@ -249,7 +305,7 @@ namespace Caravel.Core.Draw
 				return;
 			}
 
-			if (CaravelApp.Instance.GameLogic.State == Cv_GameState.LoadingGameEnvironment)
+			if (CaravelApp.Instance.GameLogic.State == Cv_GameState.LoadingScene)
 			{
 				return;
 			}
@@ -278,19 +334,28 @@ namespace Caravel.Core.Draw
 			RemoveNode(destroyEntity.EntityID);
 		}
 
+		public void OnDestroyCameraComponent(Cv_Event eventData)
+		{
+			Cv_Event_DestroyCameraComponent destroyCamera = (Cv_Event_DestroyCameraComponent) eventData;
+			RemoveNode(destroyCamera.CameraNode);
+		}
+
+		public void OnDestroyRenderComponent(Cv_Event eventData)
+		{
+			Cv_Event_DestroyRenderComponent destroyRender = (Cv_Event_DestroyRenderComponent) eventData;
+			RemoveNode(destroyRender.SceneNode);
+		}
+
 		public void OnMoveEntity(Cv_Event eventData)
 		{
-			List<Cv_SceneNode> nodes = null;
-			if (m_EntitiesMap.TryGetValue(eventData.EntityID, out nodes))
+			Cv_HolderNode holderNode = null;
+			if (m_HolderNodes.TryGetValue(eventData.EntityID, out holderNode))
 			{
 				Cv_Event_TransformEntity transformEntity = (Cv_Event_TransformEntity) eventData;
-				if (nodes.Count > 0)
-				{
-					nodes[0].Parent.Position = transformEntity.NewPosition;
-					nodes[0].Parent.Scale = transformEntity.NewScale;
-					nodes[0].Parent.Origin = transformEntity.NewOrigin;
-					nodes[0].Parent.Rotation = transformEntity.NewRotation;
-				}
+				holderNode.Position = transformEntity.NewPosition;
+				holderNode.Scale = transformEntity.NewScale;
+				holderNode.Origin = transformEntity.NewOrigin;
+				holderNode.Rotation = transformEntity.NewRotation;
 			}
 		}
 
@@ -332,6 +397,29 @@ namespace Caravel.Core.Draw
 		public void PrintTree()
 		{
 			m_Root.PrintTree(0);
+		}
+
+		private bool RemoveNode(Cv_SceneNode node)
+		{
+			if (m_Root.RemoveChild(node))
+			{
+				m_EntitiesMap[node.Properties.EntityID].Remove(node);
+				if (m_EntitiesMap[node.Properties.EntityID].Count <= 0)
+				{
+					m_EntitiesMap.Remove(node.Properties.EntityID);
+					
+					if (m_HolderNodes.ContainsKey(node.Properties.EntityID))
+					{
+						var holderNode = m_HolderNodes[node.Properties.EntityID];
+						m_Root.RemoveChild(holderNode);
+						m_HolderNodes.Remove(node.Properties.EntityID);
+					}
+				}
+
+				return true;
+			}
+
+			return false;
 		}
     }
 }

@@ -3,6 +3,7 @@ using Caravel.Core.Draw;
 using Caravel.Core.Events;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
+using System.Globalization;
 
 namespace Caravel.Core.Entity
 {
@@ -22,7 +23,7 @@ namespace Caravel.Core.Entity
         {
             get
             {
-                if (m_SceneNode == null)
+                if (m_SceneNode == null && Owner != null)
                 {
                     m_SceneNode = VCreateSceneNode();
                 }
@@ -37,6 +38,25 @@ namespace Caravel.Core.Entity
         }
 
         private Cv_SceneNode m_SceneNode;
+
+        public override XmlElement VToXML()
+        {
+            XmlDocument doc = new XmlDocument();
+            XmlElement baseElement = VCreateBaseElement(doc);
+
+            // color
+            XmlElement color = doc.CreateElement("Color");
+            color.SetAttribute("r", Color.R.ToString(CultureInfo.InvariantCulture));
+            color.SetAttribute("g", Color.G.ToString(CultureInfo.InvariantCulture));
+            color.SetAttribute("b", Color.B.ToString(CultureInfo.InvariantCulture));
+            color.SetAttribute("a", Color.A.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(color);
+
+            // create XML for inherited classes
+            VCreateInheritedElement(baseElement);
+
+            return baseElement;
+        }
 
         protected internal override bool VInit(XmlElement componentData)
         {
@@ -92,23 +112,11 @@ namespace Caravel.Core.Entity
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
-        protected internal override XmlElement VToXML()
+        protected internal override void VOnDestroy()
         {
-            XmlDocument doc = new XmlDocument();
-            XmlElement baseElement = VCreateBaseElement(doc);
-
-            // color
-            XmlElement color = doc.CreateElement("Color");
-            color.SetAttribute("r", Color.R.ToString());
-            color.SetAttribute("g", Color.G.ToString());
-            color.SetAttribute("b", Color.B.ToString());
-            color.SetAttribute("a", Color.A.ToString());
-            baseElement.AppendChild(color);
-
-            // create XML for inherited classes
-            VCreateInheritedElement(baseElement);
-
-            return baseElement;
+            Cv_SceneNode renderNode = this.SceneNode;
+            Cv_Event newEvent = new Cv_Event_DestroyRenderComponent(Owner.ID, renderNode);
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
         protected abstract Cv_SceneNode VCreateSceneNode();

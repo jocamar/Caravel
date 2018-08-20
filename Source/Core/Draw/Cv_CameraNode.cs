@@ -146,6 +146,7 @@ namespace Caravel.Core.Draw
 						                                point1,
                                                         point2,
 						                                2,
+                                                        254,
 						                                Color.Purple);
                 }
 
@@ -170,7 +171,8 @@ namespace Caravel.Core.Draw
                         Cv_DrawUtils.DrawLine(renderer,
                                                             point1,
                                                             point2,
-                                                            4,
+                                                            2,
+                                                            255,
                                                             Color.Yellow);
                     }
                 }
