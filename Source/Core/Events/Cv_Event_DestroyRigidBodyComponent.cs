@@ -5,7 +5,15 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_DestroyRigidBodyComponent : Cv_Event
     {
-        public Cv_Event_DestroyRigidBodyComponent(Cv_EntityID entityID) : base(entityID)
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+        
+        public Cv_Event_DestroyRigidBodyComponent(Cv_EntityID entityID, object sender) : base(entityID, sender)
         {
         }
 

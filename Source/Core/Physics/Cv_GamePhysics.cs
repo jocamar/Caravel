@@ -50,7 +50,7 @@ namespace Caravel.Core.Physics
         public abstract string[] GetMaterials();
 
         // Debugging
-        public abstract void VRenderDiagnostics(Cv_Renderer renderer);
+        public abstract void VRenderDiagnostics(Cv_CameraNode camera, Cv_Renderer renderer);
         
         // Physics entity states
         public abstract void VStopEntity(Cv_EntityID entityId);
@@ -61,9 +61,9 @@ namespace Caravel.Core.Physics
         public abstract void VApplyForce(Vector2 dir, float newtons, Cv_EntityID entityId);
         public abstract void VApplyTorque(float newtons, Cv_EntityID entityId);
 
-        public static Cv_GamePhysics CreateNullPhysics()
+        public static Cv_GamePhysics CreateNullPhysics(CaravelApp app)
         {
-            return new Cv_NullPhysics();
+            return new Cv_NullPhysics(app);
         }
     }
 }

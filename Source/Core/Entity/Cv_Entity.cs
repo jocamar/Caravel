@@ -48,6 +48,11 @@ namespace Caravel.Core.Entity
             get; internal set;
         }
 
+        public bool Visible
+        {
+            get; set;
+        }
+
         private Dictionary<Cv_ComponentID, Cv_EntityComponent> m_ComponentMap;
         private List<Cv_EntityComponent> m_ComponentList;
         private List<Cv_EntityComponent> m_ComponentsToAdd;
@@ -59,6 +64,7 @@ namespace Caravel.Core.Entity
             var entityElement = doc.CreateElement("Entity");
             entityElement.SetAttribute("name", EntityName);
             entityElement.SetAttribute("type", EntityTypeResource);
+            entityElement.SetAttribute("visible", Visible.ToString());
 
             // components
             foreach (var component in m_ComponentMap.Values)
@@ -124,6 +130,7 @@ namespace Caravel.Core.Entity
             m_ComponentsToRemove = new List<Cv_EntityComponent>();
 			ResourceBundle = resourceBundle;
             DestroyRequested = false;
+            Visible = true;
         }
 
         internal Cv_Entity(Cv_EntityID entityId, string resourceBundle)
@@ -138,6 +145,7 @@ namespace Caravel.Core.Entity
             m_ComponentsToRemove = new List<Cv_EntityComponent>();
 			ResourceBundle = resourceBundle;
             DestroyRequested = false;
+            Visible = true;
         }
 
         ~Cv_Entity()
@@ -145,7 +153,7 @@ namespace Caravel.Core.Entity
             Cv_Debug.Log("Entity", "Destroying entity " + (int) ID);
         }
 
-        internal bool Init(string typeResource, XmlElement typeData, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
+        internal bool Initialize(string typeResource, XmlElement typeData, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
         {
             if (typeResource != null)
             {
@@ -166,11 +174,11 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        internal void PostInit()
+        internal void PostInitialize()
         {
             foreach(var component in m_ComponentMap)
             {
-                component.Value.VPostInit();
+                component.Value.VPostInitialize();
             }
         }
 

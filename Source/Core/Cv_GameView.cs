@@ -28,6 +28,16 @@ namespace Caravel.Core
             get;
         }
 
+        public CaravelApp Caravel
+        {
+            get; private set;
+        }
+
+        public void Initialize(CaravelApp app)
+        {
+            Caravel = app;
+        }
+
         protected internal abstract void VOnRender(float time, float timeElapsed);
         protected internal abstract void VOnPostRender();
         protected internal abstract void VOnUpdate(float time, float timeElapsed);

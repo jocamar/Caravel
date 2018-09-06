@@ -1,22 +1,111 @@
-<Scene vWidth="720" vHeight="720">
-	<StaticEntities>
-		<Entity name="guybrush" type="entity_types/zombie.cve">
-			<Cv_SpriteComponent>
-				<Color r="255" g="255" b="255" a="170"/>
-			</Cv_SpriteComponent>
-			<Cv_TransformComponent>
-				<Position x="600" y="-300" z="0"/>
-			</Cv_TransformComponent>
-			<Entity name="camera2" type="entity_types/camera.cve">
-				<Cv_CameraComponent>
-					<Properties defaultCamera="true" zoom="2" />
-				</Cv_CameraComponent>
-			</Entity>
-		</Entity>
-		<Entity name="guntler" type="entity_types/guntler.cve"/>
-		<Entity name="profile" type="entity_types/profile.cve">
-			<Entity name="camera" type="entity_types/camera.cve"/>
-		</Entity>
-		<Entity name="ground" type="entity_types/ground.cve"/>
-	</StaticEntities>
+﻿<Scene vWidth="720" vHeight="720">
+  <StaticEntities>
+    <Entity name="guybrush" type="entity_types/zombie.cve" visible="True">
+      <Cv_RigidBodyComponent>
+        <CollisionShapes>
+          <Box material="Wood" anchorX="0" anchorY="0" isBullet="False" dimensionsX="100" dimensionsY="150">
+            <CollisionCategory id="0" />
+            <CollidesWith id="0" directions="All" />
+            <CollidesWith id="1" directions="All" />
+          </Box>
+        </CollisionShapes>
+      </Cv_RigidBodyComponent>
+      <Entity name="camera2" type="entity_types/camera.cve" visible="True">
+        <Cv_CameraComponent>
+          <Properties defaultCamera="True" zoom="2" />
+        </Cv_CameraComponent>
+      </Entity>
+    </Entity>
+    <Entity name="guntler" type="entity_types/guntler.cve" visible="True" />
+    <Entity name="profile" type="entity_types/profile.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="248" y="-257" z="1" />
+        <Origin x="0.5" y="0.5" />
+      </Cv_TransformComponent>
+      <Cv_RigidBodyComponent>
+        <Physics fixedRotation="True" gravityScale="1" maxVelocity="100" maxAngVelocity="100" />
+        <CollisionShapes>
+          <Box material="Wood" anchorX="0" anchorY="0" isBullet="False" dimensionsX="150" dimensionsY="150">
+            <CollisionCategory id="0" />
+            <CollidesWith id="1" directions="All" />
+          </Box>
+        </CollisionShapes>
+      </Cv_RigidBodyComponent>
+      <Entity name="camera" type="entity_types/camera.cve" visible="True" />
+    </Entity>
+    <Entity name="ground" type="entity_types/chao.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="179" y="39" z="3" />
+        <Rotation radians="0.4273333" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_0" type="entity_types/chao.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="332" y="136" z="3" />
+        <Rotation radians="0.6676668" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_1" type="entity_types/chao.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="496" y="198" z="3" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_2" type="entity_types/chao.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="1" y="4" z="1" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_3" type="entity_types/earth.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="149" y="391" z="2" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_4" type="entity_types/earth.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="251" y="475" z="2" />
+        <Rotation radians="3.480333" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_5" type="entity_types/earth.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="407" y="574" z="2" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_6" type="entity_types/earth.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="503" y="563" z="2" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_7" type="entity_types/earth.cve" visible="True" />
+    <Entity name="Entity_8" type="entity_types/collider.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="0" y="100" z="0" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_9" type="entity_types/collider.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="144" y="135" z="0" />
+        <Rotation radians="0.45" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_10" type="entity_types/collider.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="295" y="230" z="0" />
+        <Rotation radians="0.66" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="Entity_11" type="entity_types/collider.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="500" y="290" z="0" />
+      </Cv_TransformComponent>
+      <Cv_RigidBodyComponent>
+        <CollisionShapes>
+          <Box material="Wood" anchorX="-200" anchorY="0" isBullet="False" dimensionsX="600" dimensionsY="200">
+            <CollisionCategory id="1" />
+            <CollidesWith id="0" directions="All" />
+          </Box>
+        </CollisionShapes>
+      </Cv_RigidBodyComponent>
+    </Entity>
+  </StaticEntities>
 </Scene>

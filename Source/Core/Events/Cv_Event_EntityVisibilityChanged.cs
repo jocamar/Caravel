@@ -1,12 +1,13 @@
 using System.Runtime.Serialization;
-using Caravel.Core.Draw;
+using Caravel.Core.Entity;
+using Caravel.Core.Physics;
 using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Events
 {
-    public class Cv_Event_DestroyCameraComponent : Cv_Event
+    public class Cv_Event_EntityVisibilityChanged : Cv_Event
     {
-        public Cv_CameraNode CameraNode
+        public bool NewVisibility
         {
             get; private set;
         }
@@ -18,10 +19,10 @@ namespace Caravel.Core.Events
                 return false;
             }
         }
-
-        public Cv_Event_DestroyCameraComponent(Cv_EntityID entityID, Cv_CameraNode cameraNode, object sender) : base(entityID, sender)
+    
+        public Cv_Event_EntityVisibilityChanged(Cv_EntityID entityId, bool visibility, float timeStamp = 0) : base(entityId, timeStamp)
         {
-            CameraNode = cameraNode;
+            NewVisibility = visibility;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -31,7 +32,7 @@ namespace Caravel.Core.Events
 
         public override string VGetName()
         {
-            return "DestroyCameraComponent";
+            return "EntityVisibilityChanged";
         }
     }
 }

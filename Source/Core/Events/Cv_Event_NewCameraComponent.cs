@@ -21,7 +21,15 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_NewCameraComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_CameraNode cameraNode, bool isDefault) : base(entityID)
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public Cv_Event_NewCameraComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_CameraNode cameraNode, bool isDefault, object sender) : base(entityID, sender)
         {
             ParentID = parentId;
             CameraNode = cameraNode;

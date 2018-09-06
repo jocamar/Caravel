@@ -193,6 +193,9 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCollision.cs">
       <Link>Source\Core\Events\Cv_Event_NewCollision.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_EntityVisibilityChanged.cs">
+      <Link>Source\Core\Events\Cv_Event_EntityVisibilityChanged.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCollisionShape.cs">
       <Link>Source\Core\Events\Cv_Event_NewCollisionShape.cs</Link>
     </Compile>

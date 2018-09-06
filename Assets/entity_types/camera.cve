@@ -1,6 +1,6 @@
 ﻿<EntityType type="camera" resource="entity_types\camera.cve">
   <Cv_TransformComponent>
-    <Position x="-100" y="0" z="0" />
+    <Position x="0" y="0" z="0" />
     <Rotation radians="0" />
     <Scale x="1" y="1" />
     <Origin x="0.5" y="0.5" />

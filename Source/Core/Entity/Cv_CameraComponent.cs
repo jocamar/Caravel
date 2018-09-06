@@ -75,7 +75,7 @@ namespace Caravel.Core.Entity
             return cameraElement;
         }
 
-        protected internal override bool VInit(XmlElement componentData)
+        protected internal override bool VInitialize(XmlElement componentData)
         {
             IsDefaultCamera = false;
             Zoom = 1f;
@@ -100,10 +100,10 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override bool VPostInit()
+        protected internal override bool VPostInitialize()
         {
             Cv_CameraNode cameraNode = this.CameraNode;
-            Cv_Event newEvent = new Cv_Event_NewCameraComponent(Owner.ID, Owner.Parent, cameraNode, IsDefaultCamera);
+            Cv_Event newEvent = new Cv_Event_NewCameraComponent(Owner.ID, Owner.Parent, cameraNode, IsDefaultCamera, this);
             Cv_EventManager.Instance.TriggerEvent(newEvent);
             return true;
         }
@@ -123,7 +123,7 @@ namespace Caravel.Core.Entity
         protected internal override void VOnDestroy()
         {
             Cv_CameraNode cameraNode = this.CameraNode;
-            Cv_Event newEvent = new Cv_Event_DestroyCameraComponent(Owner.ID,cameraNode);
+            Cv_Event newEvent = new Cv_Event_DestroyCameraComponent(Owner.ID,cameraNode, this);
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
     }

@@ -17,7 +17,7 @@ namespace Caravel.Core
         private List<string> m_Scenes;
         private int m_iCurrentScene;
 
-        internal bool Init(string[] scenes)
+        internal bool Initialize(string[] scenes)
         {
             m_Scenes = new List<string>(scenes);
             return true;

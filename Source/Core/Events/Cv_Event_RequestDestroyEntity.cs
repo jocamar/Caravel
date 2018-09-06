@@ -5,7 +5,7 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_RequestDestroyEntity : Cv_Event
     {
-        public Cv_Event_RequestDestroyEntity(Cv_EntityID entityID) : base(entityID)
+        public Cv_Event_RequestDestroyEntity(Cv_EntityID entityID, object sender) : base(entityID, sender)
         {
         }
 

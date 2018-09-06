@@ -12,6 +12,14 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public Cv_Event_NewCollisionShape(Cv_EntityID entityId, Cv_ShapeData shape, float timeStamp = 0) : base(entityId, timeStamp)
         {
             ShapeData = shape;

@@ -173,7 +173,7 @@ namespace Caravel.Core.Resource
             Instance = this;
         }
 
-        internal bool Init(XmlElement bundleInfo, bool useDevDirectories = false)
+        internal bool Initialize(XmlElement bundleInfo, bool useDevDirectories = false)
         {
             if (bundleInfo != null)
             {

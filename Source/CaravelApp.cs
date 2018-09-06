@@ -62,7 +62,7 @@ namespace Caravel
             get; protected set;
         }
 
-        public Cv_GameLogic GameLogic
+        public Cv_GameLogic Logic
         {
             get; protected set;
         }
@@ -132,7 +132,7 @@ namespace Caravel
             get; private set;
         }
 
-        internal Cv_SceneElement Scene
+        public Cv_SceneElement Scene
         {
             get; private set;
         }
@@ -165,7 +165,7 @@ namespace Caravel
             }
             
             Cv_Debug debug = new Cv_Debug();
-            debug.Init("Logs/logTags.xml");
+            debug.Initialize("Logs/logTags.xml");
 
             if (!CheckEngineSystemResources())
             {
@@ -184,7 +184,7 @@ namespace Caravel
             ReadProjectFile();
 
             ResourceManager = new Cv_ResourceManager();
-            if (!ResourceManager.Init(m_BundleInfo, UseDevelopmentDirectories))
+            if (!ResourceManager.Initialize(m_BundleInfo, UseDevelopmentDirectories))
             {
                 Cv_Debug.Error("Unable to initialize resource manager.");
                 Exit();
@@ -200,7 +200,7 @@ namespace Caravel
 
             //TODO(JM): init the script manager here
             //ScriptManager = new Cv_ScriptManager("Scripts/PreInit.lua");
-            //if (!ScriptManager.Init())
+            //if (!ScriptManager.Initialize())
             //{
             //    Cv_Debug.Error("Unable to initialize script manager.");
             //    Exit();
@@ -208,7 +208,7 @@ namespace Caravel
             //}
 
             EventManager = new Cv_EventManager(true);
-            if (!EventManager.Init())
+            if (!EventManager.Initialize())
             {
                 Cv_Debug.Error("Unable to initialize event manager.");
                 Exit();
@@ -217,7 +217,7 @@ namespace Caravel
 
             //TODO(JM): init the process manager here
             //ProcessManager = new Cv_ProcessManager();
-            //if (!ProcessManager.Init())
+            //if (!ProcessManager.Initialize())
             //{
             //    Cv_Debug.Error("Unable to initialize process manager.");
             //    Exit();
@@ -227,8 +227,8 @@ namespace Caravel
             Window.Title = VGetGameTitle();
             SaveGameDirectory = GetSaveGameDirectory(VGetGameAppDirectoryName());
 
-            GameLogic = VCreateGameLogic();
-            if (GameLogic == null) {
+            Logic = VCreateGameLogic();
+            if (Logic == null) {
                 Cv_Debug.Error("Unable to create game logic.");
                 Exit();
                 return;
@@ -236,14 +236,14 @@ namespace Caravel
 
             RegisterEngineScriptEvents();
 
-            Scene = new Cv_SceneElement();
+            Scene = new Cv_SceneElement(this);
             var gvs = VCreateGameViews();
             foreach (var gv in gvs)
             {
-                GameLogic.AddView(gv);
+                Logic.AddView(gv);
             }
-            GameLogic.AddGamePhysics(VCreateGamePhysics());
-            GameLogic.Init();
+            Logic.AddGamePhysics(VCreateGamePhysics());
+            Logic.Initialize();
 
             Running = true;
 
@@ -273,7 +273,7 @@ namespace Caravel
             }
 
 			EventManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
-            GameLogic.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+            Logic.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
 
             base.Update(gameTime);
         }
@@ -285,12 +285,12 @@ namespace Caravel
                 CurrentGraphicsDevice.Clear(BackgroundColor);
             }
 
-            foreach (var gv in GameLogic.GameViews)
+            foreach (var gv in Logic.GameViews)
             {
                 gv.VOnRender(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             }
 
-            foreach (var gv in GameLogic.GameViews)
+            foreach (var gv in Logic.GameViews)
             {
                 gv.VOnPostRender();
             }
@@ -352,7 +352,7 @@ namespace Caravel
         EditorWorkingDirectory = editorWorkingLocation;
         ReadProjectFile();
         MaterialsLocation = Path.Combine(editorWorkingLocation, MaterialsLocation);
-        GameLogic.GamePhysics.VInitialize();
+        Logic.GamePhysics.VInitialize();
     }
 #endregion
 
@@ -386,7 +386,7 @@ namespace Caravel
 
         public Cv_PlayerView GetPlayerView(PlayerIndex player)
         {
-            foreach (var gv in GameLogic.GameViews)
+            foreach (var gv in Logic.GameViews)
             {
                 if (gv.Type == Cv_GameViewType.Player)
                 {
@@ -408,7 +408,7 @@ namespace Caravel
 
 		public void OnResize(Object sender, EventArgs e)
 		{
-			foreach (var gv in GameLogic.GameViews)
+			foreach (var gv in Logic.GameViews)
             {
                 if (gv.Type == Cv_GameViewType.Player)
 				{

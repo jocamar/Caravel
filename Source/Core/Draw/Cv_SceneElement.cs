@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Core.Resource;
@@ -22,6 +23,11 @@ namespace Caravel.Core.Draw
 			get; set;
 		}
 
+		public CaravelApp Caravel
+		{
+			get; private set;
+		}
+
 		public Cv_Transform Transform
 		{
 			get
@@ -35,8 +41,9 @@ namespace Caravel.Core.Draw
 		private Dictionary<Cv_EntityID, List<Cv_SceneNode>> m_EntitiesMap;
 		private Dictionary<Cv_EntityID, Cv_HolderNode> m_HolderNodes;
 
-        public Cv_SceneElement()
+        public Cv_SceneElement(CaravelApp app)
         {
+			Caravel = app;
 			EditorSelectedEntity = Cv_EntityID.INVALID_ENTITY;
             m_EntitiesMap = new Dictionary<Cv_EntityID, List<Cv_SceneNode>>();
 			m_HolderNodes = new Dictionary<Cv_EntityID, Cv_HolderNode>();
@@ -68,10 +75,10 @@ namespace Caravel.Core.Draw
 			if (m_Root != null && Camera != null)
 			{
 				renderer.BeginDraw(Camera);
-					m_Root.VPreRender(this, renderer);
-					m_Root.VRender(this, renderer);
-					m_Root.VRenderChildren(this, renderer);
-					m_Root.VPostRender(this, renderer);
+					m_Root.VPreRender(renderer);
+					m_Root.VRender(renderer);
+					m_Root.VRenderChildren(renderer);
+					m_Root.VPostRender(renderer);
 				renderer.EndDraw();
 			}
         }
@@ -80,13 +87,13 @@ namespace Caravel.Core.Draw
 		{
 			if (m_Root != null)
 			{
-				m_Root.VFinishedRender(this, renderer);
+				m_Root.VFinishedRender(renderer);
 			}
 		}
 
         public override void VOnUpdate(float time, float timeElapsed)
         {
-			m_Root.VOnUpdate(time, timeElapsed, this);
+			m_Root.VOnUpdate(time, timeElapsed);
         }
 
 		public Cv_SceneNode[] GetEntityNodes(Cv_EntityID entityID)
@@ -129,15 +136,7 @@ namespace Caravel.Core.Draw
 					m_Root.AddChild(holderNode);
 					m_HolderNodes.Add(entityID, holderNode);
 
-					var entity = CaravelApp.Instance.GameLogic.GetEntity(entityID);
-					var transformComponent = entity.GetComponent<Cv_TransformComponent>();
-					if (transformComponent != null)
-					{
-						holderNode.Position = transformComponent.Position;
-						holderNode.Scale = transformComponent.Scale;
-						holderNode.Origin = transformComponent.Origin;
-						holderNode.Rotation = transformComponent.Rotation;
-					}
+					SetNodeTransform(holderNode);
 				}
 
 				return holderNode.AddChild(node);
@@ -166,14 +165,14 @@ namespace Caravel.Core.Draw
 				{
 					Cv_Debug.Warning("Parent does not exist on the scene graph. Adding holder node.");
 
-					var currEntity = CaravelApp.Instance.GameLogic.GetEntity(parentEntity);
+					var currEntity = Caravel.Logic.GetEntity(parentEntity);
 					var entityStack = new Stack<Cv_Entity>();
 
 					//Rebuild path to root
 					entityStack.Push(currEntity);
 					while (currEntity.Parent != Cv_EntityID.INVALID_ENTITY)
 					{
-						currEntity = CaravelApp.Instance.GameLogic.GetEntity(currEntity.Parent);
+						currEntity = Caravel.Logic.GetEntity(currEntity.Parent);
 
 						if (m_HolderNodes.ContainsKey(currEntity.ID))
 						{
@@ -233,15 +232,7 @@ namespace Caravel.Core.Draw
 					holderNode = new Cv_HolderNode(entityID);
 					ancestorNode.AddChild(holderNode);
 
-					var entity = CaravelApp.Instance.GameLogic.GetEntity(entityID);
-					var transformComponent = entity.GetComponent<Cv_TransformComponent>();
-					if (transformComponent != null)
-					{
-						holderNode.Position = transformComponent.Position;
-						holderNode.Scale = transformComponent.Scale;
-						holderNode.Origin = transformComponent.Origin;
-						holderNode.Rotation = transformComponent.Rotation;
-					}
+					SetNodeTransform(holderNode);
 
 					nodes = new List<Cv_SceneNode>();
 					m_EntitiesMap.Add(entityID, nodes);
@@ -305,7 +296,7 @@ namespace Caravel.Core.Draw
 				return;
 			}
 
-			if (CaravelApp.Instance.GameLogic.State == Cv_GameState.LoadingScene)
+			if (Caravel.Logic.State == Cv_GameState.LoadingScene)
 			{
 				return;
 			}
@@ -320,7 +311,7 @@ namespace Caravel.Core.Draw
 			{
 				foreach (var n in sceneNodes)
 				{
-					if (!n.VOnChanged(this))
+					if (!n.VOnChanged())
 					{
 						Cv_Debug.Error("Error applying changes to scene node for entity " + entityId);
 					}
@@ -351,21 +342,17 @@ namespace Caravel.Core.Draw
 			Cv_HolderNode holderNode = null;
 			if (m_HolderNodes.TryGetValue(eventData.EntityID, out holderNode))
 			{
-				Cv_Event_TransformEntity transformEntity = (Cv_Event_TransformEntity) eventData;
-				holderNode.Position = transformEntity.NewPosition;
-				holderNode.Scale = transformEntity.NewScale;
-				holderNode.Origin = transformEntity.NewOrigin;
-				holderNode.Rotation = transformEntity.NewRotation;
+				SetNodeTransform(holderNode);
 			}
 		}
 
 		public void PushAndSetTransform(Cv_Transform toWorld)
 		{
-			Cv_Transform currTransform = null;
+			Cv_Transform currTransform = Cv_Transform.Identity;
 
 			if (m_TransformStack.Count <= 0)
 			{
-				currTransform = new Cv_Transform();
+				currTransform = Cv_Transform.Identity;
 			}
 			else
 			{
@@ -385,12 +372,15 @@ namespace Caravel.Core.Draw
 			var screenPosition = renderer.ScaleMouseToScreenCoordinates(mousePosition);
 			var result = false;
 			
-			if (screenPosition.X >= 0 && screenPosition.X <= renderer.VirtualWidth
-					&& screenPosition.Y >= 0 && screenPosition.Y <= renderer.VirtualHeight)
+			if (screenPosition.X >= 0 && screenPosition.X <= renderer.Viewport.Width
+					&& screenPosition.Y >= 0 && screenPosition.Y <= renderer.Viewport.Height)
 			{
-				result = m_Root.VPick(this, renderer, screenPosition, entityList);
+				result = m_Root.VPick(renderer, screenPosition, entityList);
 			}
 			entities = entityList.ToArray();
+			entities = entities.OrderBy(e => Caravel.Logic.GetEntity(e).GetComponent<Cv_TransformComponent>() != null ? 1 : 2)
+					.ThenByDescending(e => Caravel.Logic.GetEntity(e).GetComponent<Cv_TransformComponent>() != null ?
+											Caravel.Logic.GetEntity(e).GetComponent<Cv_TransformComponent>().Position.Z : 0).ToArray();
             return result;
         }
 
@@ -420,6 +410,24 @@ namespace Caravel.Core.Draw
 			}
 
 			return false;
+		}
+
+		private void SetNodeTransform(Cv_SceneNode node)
+		{
+			if (node.Properties.EntityID == Cv_EntityID.INVALID_ENTITY)
+			{
+				return;
+			}
+
+			var entity = Caravel.Logic.GetEntity(node.Properties.EntityID);
+			var transformComponent = entity.GetComponent<Cv_TransformComponent>();
+			if (transformComponent != null)
+			{
+				node.Position = transformComponent.Position;
+				node.Scale = transformComponent.Scale;
+				node.Origin = transformComponent.Origin;
+				node.Rotation = transformComponent.Rotation;
+			}
 		}
     }
 }

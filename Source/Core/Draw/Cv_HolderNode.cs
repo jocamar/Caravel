@@ -2,6 +2,7 @@ using System;
 using Caravel.Core;
 using Caravel.Core.Draw;
 using Caravel.Core.Entity;
+using Caravel.Core.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -10,14 +11,18 @@ namespace Caravel.Core.Draw
     public class Cv_HolderNode : Cv_SceneNode
     {
         private Texture2D m_DebugCircleTex;
+        private Cv_Entity m_Entity;
+        private bool m_bPreviousVisibility;
+        private bool m_bCalculatingVisibilityFirstTime = true;
 
-        public Cv_HolderNode(Cv_Entity.Cv_EntityID entityID) : base(entityID, null, new Cv_Transform())
+        public Cv_HolderNode(Cv_Entity.Cv_EntityID entityID) : base(entityID, null, Cv_Transform.Identity)
         {
+            m_Entity = CaravelApp.Instance.Logic.GetEntity(entityID);
         }
 
-        public override void VPreRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VPreRender(Cv_Renderer renderer)
         {
-            scene.PushAndSetTransform(Transform);
+            CaravelApp.Instance.Scene.PushAndSetTransform(Transform);
 
             if (Properties.Radius > 0 && m_DebugCircleTex == null && renderer.DebugDrawRadius)
             {
@@ -42,10 +47,21 @@ namespace Caravel.Core.Draw
             return Properties.Radius;
         }
 
-        public override bool VIsVisible(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override bool VIsVisible(Cv_Renderer renderer)
         {
-            Cv_Transform camTransform = new Cv_Transform();
-            camTransform.TransformMatrix = renderer.CamMatrix;
+            if (!m_Entity.Visible)
+            {
+                if (!m_bCalculatingVisibilityFirstTime && m_bPreviousVisibility == true)
+                {
+                    var visibilityChangedEvt = new Cv_Event_EntityVisibilityChanged(Properties.EntityID, false);
+                    Cv_EventManager.Instance.QueueEvent(visibilityChangedEvt);
+                }
+
+                m_bPreviousVisibility = false;
+                return false;
+            }
+
+            Cv_Transform camTransform = Cv_Transform.FromMatrix(renderer.CamMatrix, new Vector2(0.5f, 0.5f));
             var worldPos = WorldPosition;
 
             var fromWorldPos = Vector3.Transform(worldPos, renderer.CamMatrix);
@@ -59,19 +75,28 @@ namespace Caravel.Core.Draw
 
             var radius = GetRadius(renderer);
             var scale = camTransform.Scale.X / Math.Max(renderer.Transform.Scale.X,renderer.Transform.Scale.Y);
-            return (deltaX * deltaX + deltaY * deltaY) < (radius*scale*radius*scale);
+            var visibility = (deltaX * deltaX + deltaY * deltaY) < (radius*scale*radius*scale);
+
+            if (!m_bCalculatingVisibilityFirstTime && m_bPreviousVisibility != visibility)
+            {
+                var visibilityChangedEvt = new Cv_Event_EntityVisibilityChanged(Properties.EntityID, visibility);
+                Cv_EventManager.Instance.QueueEvent(visibilityChangedEvt);
+            }
+
+            m_bPreviousVisibility = visibility;
+            return visibility;
         }
 
-        public override void VPostRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VPostRender(Cv_Renderer renderer)
         {
-            scene.PopTransform();
+            CaravelApp.Instance.Scene.PopTransform();
         }
 
-        public override void VRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VRender(Cv_Renderer renderer)
         {
             if (renderer.DebugDrawRadius && GetRadius(renderer) > 0 && m_DebugCircleTex != null)
             {
-                var pos = scene.Transform.Position;
+                var pos = CaravelApp.Instance.Scene.Transform.Position;
                 var radius = GetRadius(renderer);
 
                 Rectangle r2 = new Rectangle((int)(pos.X - radius), 

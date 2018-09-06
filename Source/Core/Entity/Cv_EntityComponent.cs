@@ -56,9 +56,9 @@ namespace Caravel.Core.Entity
 
         public abstract XmlElement VToXML();
 
-        protected internal abstract bool VInit(XmlElement componentData);
+        protected internal abstract bool VInitialize(XmlElement componentData);
 
-        protected internal abstract bool VPostInit();
+        protected internal abstract bool VPostInitialize();
 
 		protected internal abstract void VPostLoad();
 

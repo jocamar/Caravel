@@ -20,14 +20,15 @@ namespace Caravel.Core.Physics
 {
     public class Cv_FarseerPhysics : Cv_GamePhysics
     {
-        private struct Cv_PhysicsEntity
+        private class Cv_PhysicsEntity
         {
             public Cv_Entity Entity;
             public Body Body;
             public Dictionary<Cv_CollisionShape, Fixture> Shapes;
+            public Cv_Transform PrevWorldTransform;
         }
 
-        private struct Cv_PhysicsMaterial
+        public struct Cv_PhysicsMaterial
         {
             public float Friction;
             public float Restitution;
@@ -59,24 +60,34 @@ namespace Caravel.Core.Physics
             get; set;
         }
 
+        public CaravelApp Caravel
+        {
+            get; private set;
+        }
+
         private Dictionary<Cv_EntityID, Cv_PhysicsEntity> m_PhysicsEntities;
+        private List<Cv_PhysicsEntity> m_PhysicsEntitiesList;
+        private List<Cv_PhysicsEntity> m_PhysicsEntitiesToUpdate;
         private Dictionary<string, Cv_PhysicsMaterial> m_MaterialsTable;
 
         private readonly World m_World;
 
-        public Cv_FarseerPhysics()
+        public Cv_FarseerPhysics(CaravelApp app)
         {
+            Caravel = app;
             m_World = new World(Vector2.Zero);
             Screen2WorldRatio = 30;
 
             m_PhysicsEntities = new Dictionary<Cv_EntityID, Cv_PhysicsEntity>();
+            m_PhysicsEntitiesList = new List<Cv_PhysicsEntity>();
+            m_PhysicsEntitiesToUpdate = new List<Cv_PhysicsEntity>();
             m_MaterialsTable = new Dictionary<string, Cv_PhysicsMaterial>();
 
             Cv_EventManager.Instance.AddListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
             Cv_EventManager.Instance.AddListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
             Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
             Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRigidBodyComponent>(OnDestroyEntity);
-            Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
+            Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
         }
 
         ~Cv_FarseerPhysics()
@@ -85,7 +96,7 @@ namespace Caravel.Core.Physics
             Cv_EventManager.Instance.RemoveListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
             Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
             Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyRigidBodyComponent>(OnDestroyEntity);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnMoveEntity);
         }
 
         public override Cv_CollisionShape VAddBox(Cv_Entity gameEntity, Cv_ShapeData data)
@@ -264,7 +275,7 @@ namespace Caravel.Core.Physics
 
         public override void VApplyForce(Vector2 dir, float newtons, Cv_EntityID entityId)
         {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
+            var entity = Caravel.Logic.GetEntity(entityId);
 
             if (entity != null)
             {
@@ -281,7 +292,7 @@ namespace Caravel.Core.Physics
 
         public override void VApplyTorque(float newtons, Cv_EntityID entityId)
         {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
+            var entity = Caravel.Logic.GetEntity(entityId);
 
             if (entity != null)
             {
@@ -296,7 +307,7 @@ namespace Caravel.Core.Physics
 
         public override float VGetAngularVelocity(Cv_EntityID entityId)
         {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
+            var entity = Caravel.Logic.GetEntity(entityId);
 
             if (entity != null)
             {
@@ -314,7 +325,7 @@ namespace Caravel.Core.Physics
 
         public override Vector2 VGetVelocity(Cv_EntityID entityId)
         {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
+            var entity = Caravel.Logic.GetEntity(entityId);
 
             if (entity != null)
             {
@@ -332,7 +343,7 @@ namespace Caravel.Core.Physics
 
         public override void VSetAngularVelocity(Cv_EntityID entityId, float vel)
         {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
+            var entity = Caravel.Logic.GetEntity(entityId);
 
             if (entity != null)
             {
@@ -347,7 +358,7 @@ namespace Caravel.Core.Physics
 
         public override void VSetVelocity(Cv_EntityID entityId, Vector2 vel)
         {
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(entityId);
+            var entity = Caravel.Logic.GetEntity(entityId);
 
             if (entity != null)
             {
@@ -374,13 +385,15 @@ namespace Caravel.Core.Physics
 
         public override void VRemoveEntity(Cv_EntityID id)
         {
-            if (!m_PhysicsEntities.ContainsKey(id))
+            Cv_PhysicsEntity entity;
+            if (!m_PhysicsEntities.TryGetValue(id, out entity))
             {
                 return;
             }
 
             m_World.RemoveBody(m_PhysicsEntities[id].Body);
             m_PhysicsEntities.Remove(id);
+            m_PhysicsEntitiesList.Remove(entity);
         }
 
         public override string[] GetMaterials()
@@ -388,14 +401,14 @@ namespace Caravel.Core.Physics
             return m_MaterialsTable.Keys.ToArray();
         }
 
-        public override void VRenderDiagnostics(Cv_Renderer renderer)
+        public override void VRenderDiagnostics(Cv_CameraNode camera, Cv_Renderer renderer)
         {
             if (!renderer.DebugDrawPhysicsShapes && !renderer.DebugDrawPhysicsBoundingBoxes)
             {
                 return;
             }
             
-            foreach (var e in m_PhysicsEntities.Values)
+            foreach (var e in m_PhysicsEntitiesList)
             {
                 var pos = e.Body.Position;
 
@@ -416,7 +429,7 @@ namespace Caravel.Core.Physics
                         if (fixture.Shape.GetType() != typeof(CircleShape))
                         {
                             verts = ((PolygonShape)fixture.Shape).Vertices;
-                            DrawCollisionShape(verts, pos, e.Body.Rotation, renderer, color);
+                            DrawCollisionShape(verts, pos, e.Body.Rotation, renderer, camera.Zoom, color);
                         }
                         else
                         {
@@ -436,7 +449,7 @@ namespace Caravel.Core.Physics
                     
                     if (renderer.DebugDrawPhysicsBoundingBoxes)
                     {
-                        DrawBoundingBox((Cv_CollisionShape) fixture.UserData, ToScreenCoord(pos), renderer);
+                        DrawBoundingBox((Cv_CollisionShape) fixture.UserData, ToScreenCoord(pos), renderer, camera.Zoom);
                     }
                 }
             }
@@ -449,11 +462,9 @@ namespace Caravel.Core.Physics
 
         public override void VSyncVisibleScene()
         {
-            foreach (var e in m_PhysicsEntities)
+            foreach (var e in m_PhysicsEntitiesList)
             {
-                var eID = e.Key;
-
-                var entity = CaravelApp.Instance.GameLogic.GetEntity(eID);
+                var entity = e.Entity;
 
                 if (entity != null)
                 {
@@ -461,33 +472,47 @@ namespace Caravel.Core.Physics
 
                     if (transformComponent != null)
                     {
-                        if (Math.Floor(transformComponent.Position.X) != Math.Floor(ToScreenCoord(e.Value.Body.Position.X))
-                            || Math.Floor(transformComponent.Position.Y) != Math.Floor(ToScreenCoord(e.Value.Body.Position.Y)))
+                        var worldTransform = transformComponent.WorldTransform;
+                        var newWorldPosition = ToOutsideVector(e.Body.Position, true);
+                        var oldWorldPosition = new Vector2(worldTransform.Position.X, worldTransform.Position.Y);
+                        var posDifference = newWorldPosition - oldWorldPosition;
+
+                        if (posDifference != Vector2.Zero)
                         {
-                            transformComponent.Position = new Vector3(ToOutsideVector(e.Value.Body.Position), transformComponent.Position.Z);
+                            var newPosition = new Vector3 (transformComponent.Position.X + posDifference.X, transformComponent.Position.Y + posDifference.Y, transformComponent.Position.Z);
+                            transformComponent.SetPosition(newPosition, this);
                         }
 
                         var rigidBodyComponent = entity.GetComponent<Cv_RigidBodyComponent>();
 
                         if (rigidBodyComponent != null)
                         {
-                            if(rigidBodyComponent.UseEntityRotation && e.Value.Body.Rotation != transformComponent.Rotation)
+                            var newWorldRotation = e.Body.Rotation;
+                            var oldWorldRotation = worldTransform.Rotation;
+                            var rotDifference = newWorldRotation - oldWorldRotation;
+                            if(rigidBodyComponent.UseEntityRotation && e.Body.Rotation != worldTransform.Rotation)
                             {
-                               transformComponent.Rotation = e.Value.Body.Rotation;
+                                var newRotation = transformComponent.Rotation + rotDifference;
+                                transformComponent.SetRotation(newRotation, this);
                             }
 
-                            SyncMovementDataFromBody(e.Value.Body, rigidBodyComponent);
+                            SyncMovementDataFromBody(e.Body, rigidBodyComponent);
                         }
                     }
                 }
             }
         }
 
+        public Cv_PhysicsMaterial GetMaterial(string material)
+        {
+            return m_MaterialsTable[material];
+        }
+
         public void OnNewCollisionShape(Cv_Event eventData)
         {
             var newCollisionEvt = (Cv_Event_NewCollisionShape) eventData;
             var shapeData = newCollisionEvt.ShapeData;
-            var entity = CaravelApp.Instance.GameLogic.GetEntity(newCollisionEvt.EntityID);
+            var entity = Caravel.Logic.GetEntity(newCollisionEvt.EntityID);
 
             switch (shapeData.Type)
             {
@@ -525,71 +550,84 @@ namespace Caravel.Core.Physics
             VRemoveEntity(eventData.EntityID);
         }
 
-        public void OnTransformEntity(Cv_Event eventData)
+        public void OnMoveEntity(Cv_Event eventData)
         {
-            var transformEntityEvt = (Cv_Event_TransformEntity) eventData;
+            if (eventData.Sender == this)
+            {
+                return;
+            }
+
+            GetChildEntitiesToUpdate(eventData.EntityID);
 
             if (m_PhysicsEntities.ContainsKey(eventData.EntityID))
             {
                 var pe = m_PhysicsEntities[eventData.EntityID];
+                m_PhysicsEntitiesToUpdate.Add(pe);
+            }
 
-                if (transformEntityEvt.OldScale == null || transformEntityEvt.OldScale.Value != transformEntityEvt.NewScale)
+            foreach (var pe in m_PhysicsEntitiesToUpdate)
+            {
+                if (pe.Entity.GetComponent<Cv_TransformComponent>() == null)
                 {
-                    if (transformEntityEvt.OldScale != null)
+                    continue;
+                }
+
+                var worldTransform = pe.Entity.GetComponent<Cv_TransformComponent>().WorldTransform;
+                if (pe.PrevWorldTransform.Scale != worldTransform.Scale)
+                {
+                    var oldScale = pe.PrevWorldTransform.Scale;
+                    foreach (var f in pe.Shapes)
                     {
-                        var oldScale = transformEntityEvt.OldScale.Value;
-                        foreach (var f in pe.Shapes)
+                        if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
                         {
-                            if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
+                            PolygonShape polygon = (PolygonShape) f.Value.Shape;
+
+                            var oldVerts = polygon.Vertices;
+                            var newVerts = new Vertices();
+
+                            foreach (var v in oldVerts)
                             {
-                                PolygonShape polygon = (PolygonShape) f.Value.Shape;
-
-                                var oldVerts = polygon.Vertices;
-                                var newVerts = new Vertices();
-
-                                foreach (var v in oldVerts)
-                                {
-                                    var newVert = ToWorldCoord( (ToScreenCoord(v) / oldScale) * transformEntityEvt.NewScale );
-                                    newVerts.Add(newVert);
-                                }
-
-                                polygon.Vertices = newVerts;
-                            }
-                            else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Circle)
-                            {
-                                CircleShape circle = (CircleShape) f.Value.Shape;
-
-                                circle.Radius = ToWorldCoord((ToScreenCoord(circle.Radius) / Math.Max(oldScale.X, oldScale.Y))
-                                                                * Math.Max(transformEntityEvt.NewScale.X, transformEntityEvt.NewScale.Y));
+                                var newVert = ToWorldCoord( (ToScreenCoord(v) / oldScale) * worldTransform.Scale );
+                                newVerts.Add(newVert);
                             }
 
-                            var colShape = f.Key;
-                            var newPoints = new List<Vector2>();
-                            foreach (var p in colShape.Points)
-                            {
-                                var newPoint = (p / oldScale) * transformEntityEvt.NewScale;
-                                newPoints.Add(newPoint);
-                            }
-
-                            colShape.Points = newPoints;
+                            polygon.Vertices = newVerts;
                         }
+                        else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Circle)
+                        {
+                            CircleShape circle = (CircleShape) f.Value.Shape;
+
+                            circle.Radius = ToWorldCoord((ToScreenCoord(circle.Radius) / Math.Max(oldScale.X, oldScale.Y))
+                                                            * Math.Max(worldTransform.Scale.X, worldTransform.Scale.Y));
+                        }
+
+                        var colShape = f.Key;
+                        var newPoints = new List<Vector2>();
+                        foreach (var p in colShape.Points)
+                        {
+                            var newPoint = (p / oldScale) * worldTransform.Scale;
+                            newPoints.Add(newPoint);
+                        }
+
+                        colShape.Points = newPoints;
                     }
                 }
 
-                if (transformEntityEvt.OldPosition == null
-                    || Math.Floor(transformEntityEvt.NewPosition.X) != Math.Floor(transformEntityEvt.OldPosition.Value.X)
-                    || Math.Floor(transformEntityEvt.NewPosition.Y) != Math.Floor(transformEntityEvt.OldPosition.Value.Y))
+                if (Math.Floor(worldTransform.Position.X) != Math.Floor(pe.PrevWorldTransform.Position.X)
+                    || Math.Floor(worldTransform.Position.Y) != Math.Floor(pe.PrevWorldTransform.Position.Y))
                 {
-                    pe.Body.Position = ToPhysicsVector(transformEntityEvt.NewPosition);
+                    pe.Body.Position = ToPhysicsVector(worldTransform.Position);
                 }
 
-                if (transformEntityEvt.OldRotation == null || transformEntityEvt.NewRotation != transformEntityEvt.OldRotation.Value)
+                if (worldTransform.Rotation != pe.PrevWorldTransform.Rotation)
                 {
                     if(pe.Entity.GetComponent<Cv_RigidBodyComponent>().UseEntityRotation)
                     {
-                        pe.Body.Rotation = transformEntityEvt.NewRotation;
+                        pe.Body.Rotation = worldTransform.Rotation;
                     }
                 }
+
+                pe.PrevWorldTransform = worldTransform;
             }
         }
 
@@ -597,7 +635,7 @@ namespace Caravel.Core.Physics
         {
             foreach (var e in m_PhysicsEntities)
             {
-                var entity = CaravelApp.Instance.GameLogic.GetEntity(e.Key);
+                var entity = Caravel.Logic.GetEntity(e.Key);
 
                 if (entity != null)
                 {
@@ -626,14 +664,20 @@ namespace Caravel.Core.Physics
             }
         }
 
-        private void DrawBoundingBox(Cv_CollisionShape shape, Vector2 pos, Cv_Renderer renderer)
+        private void DrawBoundingBox(Cv_CollisionShape shape, Vector2 pos, Cv_Renderer renderer, float zoom)
 		{
+            var thickness = (int) Math.Round(2 / zoom);
+            if (thickness <= 0)
+            {
+                thickness = 1;
+            }
+
             var boundingBox = shape.AABoundingBox;
 			Rectangle r = new Rectangle((int) (boundingBox.Start.X + pos.X),
 										(int) (boundingBox.Start.Y + pos.Y),
 										(int) boundingBox.Width,
 										(int) boundingBox.Height);
-			Cv_DrawUtils.DrawRectangle(renderer, r, 2, Color.Green);
+			Cv_DrawUtils.DrawRectangle(renderer, r, thickness, Color.Green);
 		}
 
         private Cv_CollisionShape AddShape(Cv_Entity entity, Cv_CollisionShape shape, bool isTrigger)
@@ -644,7 +688,7 @@ namespace Caravel.Core.Physics
 
             if (entity.GetComponent<Cv_TransformComponent>() != null)
             {
-                var scale = entity.GetComponent<Cv_TransformComponent>().Scale;
+                var scale = entity.GetComponent<Cv_TransformComponent>().WorldTransform.Scale;
 
                 if (shape.IsCircle)
                 {
@@ -724,6 +768,7 @@ namespace Caravel.Core.Physics
             physicsEntity.Shapes = shapeMap;
 
             m_PhysicsEntities.Add(entity.ID, physicsEntity);
+            m_PhysicsEntitiesList.Add(physicsEntity);
 
             var rigidBodyComponent = entity.GetComponent<Cv_RigidBodyComponent>();
 
@@ -738,13 +783,20 @@ namespace Caravel.Core.Physics
 
             if (transformComponent != null)
             {
-                body.Position = ToPhysicsVector(transformComponent.Position);
+                var worldTransform = transformComponent.WorldTransform;
+                body.Position = ToPhysicsVector(worldTransform.Position);
+                body.Rotation = worldTransform.Rotation;
+                physicsEntity.PrevWorldTransform = worldTransform;
+            }
+            else
+            {
+                physicsEntity.PrevWorldTransform = Cv_Transform.Identity;
             }
 
             return body;
         }
 
-        private void DrawCollisionShape(Vertices collisionShape, Vector2 position, float rotation, Cv_Renderer renderer, Color c)
+        private void DrawCollisionShape(Vertices collisionShape, Vector2 position, float rotation, Cv_Renderer renderer, float zoom, Color c)
 		{
 			if(collisionShape.Count >= 2)
 			{
@@ -764,10 +816,16 @@ namespace Caravel.Core.Physics
                     point1 += position;
                     point2 += position;
 
+                    var thickness = (int) Math.Round(2 / zoom);
+                    if (thickness <= 0)
+                    {
+                        thickness = 1;
+                    }
+
                     Cv_DrawUtils.DrawLine(renderer,
 						                                ToScreenCoord(point1),
                                                         ToScreenCoord(point2),
-						                                2,
+						                                thickness,
                                                         255,
 						                                c);
 				}
@@ -776,14 +834,16 @@ namespace Caravel.Core.Physics
 
         private void LoadXML()
         {
-            if (CaravelApp.Instance.MaterialsLocation == null)
+            if (Caravel.MaterialsLocation == null)
             {
                 Cv_Debug.Log("Physics", "No materials to load.");
                 return;
             }
 
+            m_MaterialsTable.Clear();
+
             XmlDocument doc = new XmlDocument();
-            doc.Load(CaravelApp.Instance.MaterialsLocation);
+            doc.Load(Caravel.MaterialsLocation);
 
             var root = doc.FirstChild;
 
@@ -811,11 +871,6 @@ namespace Caravel.Core.Physics
                 
                 m_MaterialsTable.Add(material.Name, new Cv_PhysicsMaterial(friction, restitution, density));
             }
-        }
-
-        private Cv_PhysicsMaterial LookupMaterial(string material)
-        {
-            return m_MaterialsTable[material];
         }
 
         private bool OnBeforeCollision(Fixture fixtureA, Fixture fixtureB)
@@ -1010,11 +1065,19 @@ namespace Caravel.Core.Physics
             return vector2D;
         }
 
-        private Vector2 ToOutsideVector(Vector2 vector2D)
+        private Vector2 ToOutsideVector(Vector2 vector2D, bool round = false)
         {
             Vector2 outsideV;
-            outsideV = new Vector2(ToScreenCoord(vector2D.X),
-                                    ToScreenCoord(vector2D.Y));
+            if (round)
+            {
+                outsideV = new Vector2((float)Math.Round(ToScreenCoord(vector2D.X)),
+                                        (float)Math.Round(ToScreenCoord(vector2D.Y)));
+            }
+            else
+            {
+                outsideV = new Vector2(ToScreenCoord(vector2D.X),
+                                        ToScreenCoord(vector2D.Y));
+            }
             
 
             return outsideV;
@@ -1129,6 +1192,39 @@ namespace Caravel.Core.Physics
                 default:
                     return Cv_CollisionDirection.Bottom;
             }
+        }
+
+        private void GetChildEntitiesToUpdate(Cv_EntityID entityId)
+        {
+            m_PhysicsEntitiesToUpdate.Clear();
+            if (entityId == Cv_EntityID.INVALID_ENTITY)
+            {
+                return;
+            }
+            
+            foreach (var pe in m_PhysicsEntitiesList)
+            {
+                if (EntityIsDescendantOf(pe.Entity, entityId))
+                {
+                    m_PhysicsEntitiesToUpdate.Add(pe);
+                }
+            }
+        }
+
+        private bool EntityIsDescendantOf(Cv_Entity entity1, Cv_EntityID entity2)
+        {
+            var currEntity = entity1;
+            while (currEntity.Parent != Cv_EntityID.INVALID_ENTITY)
+            {
+                if (entity1.Parent == entity2)
+                {
+                    return true;
+                }
+
+                currEntity = Caravel.Logic.GetEntity(entity1.Parent);
+            }
+
+            return false;
         }
     }
 }

@@ -1,0 +1,15 @@
+﻿<EntityType type="chao" resource="entity_types\chao.cve">
+  <Cv_TransformComponent>
+    <Position x="0" y="0" z="3" />
+    <Rotation radians="0" />
+    <Scale x="1" y="1" />
+    <Origin x="0.5" y="0.5" />
+  </Cv_TransformComponent>
+  <Cv_SpriteComponent>
+    <Color r="255" g="255" b="255" a="255" />
+    <Visible status="True" />
+    <Texture resource="ground.png" />
+    <Size width="200" height="200" />
+    <Animation fx="1" fy="1" loop="False" />
+  </Cv_SpriteComponent>
+</EntityType>

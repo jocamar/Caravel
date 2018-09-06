@@ -21,12 +21,12 @@ namespace Caravel.Core
         {
             get
             {
-                return m_Scene.EditorSelectedEntity;
+                return Scene.EditorSelectedEntity;
             }
             
             set
             {
-                m_Scene.EditorSelectedEntity = value;
+                Scene.EditorSelectedEntity = value;
             }
         }
 
@@ -60,12 +60,12 @@ namespace Caravel.Core
         {
             get
             {
-                return m_Renderer.DebugDrawPhysicsShapes;
+                return Renderer.DebugDrawPhysicsShapes;
             }
             
             set
             {
-                m_Renderer.DebugDrawPhysicsShapes = value;
+                Renderer.DebugDrawPhysicsShapes = value;
             }
         }
 
@@ -73,12 +73,12 @@ namespace Caravel.Core
         {
             get
             {
-                return m_Renderer.DebugDrawPhysicsBoundingBoxes;
+                return Renderer.DebugDrawPhysicsBoundingBoxes;
             }
             
             set
             {
-                m_Renderer.DebugDrawPhysicsBoundingBoxes = value;
+                Renderer.DebugDrawPhysicsBoundingBoxes = value;
             }
         }
 
@@ -86,12 +86,12 @@ namespace Caravel.Core
         {
             get
             {
-                return m_Renderer.DebugDrawRadius;
+                return Renderer.DebugDrawRadius;
             }
             
             set
             {
-                m_Renderer.DebugDrawRadius = value;
+                Renderer.DebugDrawRadius = value;
             }
         }
 
@@ -99,12 +99,12 @@ namespace Caravel.Core
         {
             get
             {
-                return m_Renderer.DebugDrawCameras;
+                return Renderer.DebugDrawCameras;
             }
             
             set
             {
-                m_Renderer.DebugDrawCameras = value;
+                Renderer.DebugDrawCameras = value;
             }
         }
 
@@ -120,11 +120,11 @@ namespace Caravel.Core
                 m_bAreSoundsPaused = value;
                 if (value)
                 {
-                    //CaravelApp.Instance.SoundManager.StopAllSounds();
+                    //Caravel.SoundManager.StopAllSounds();
                 }
                 else
                 {
-                    //CaravelApp.Instance.SoundManager.ResumeAllSounds();
+                    //Caravel.SoundManager.ResumeAllSounds();
                 }
             }
         }
@@ -133,12 +133,12 @@ namespace Caravel.Core
 		{
 			get
 			{
-				return m_Renderer.Blend;
+				return Renderer.Blend;
 			}
 
 			set
 			{
-				m_Renderer.Blend = value;
+				Renderer.Blend = value;
 			}
 		}
 
@@ -146,62 +146,86 @@ namespace Caravel.Core
 		{
 			get
 			{
-				return m_Renderer.Sampling;
+				return Renderer.Sampling;
 			}
 
 			set
 			{
-				m_Renderer.Sampling = value;
+				Renderer.Sampling = value;
 			}
 		}
 
-        private Cv_SceneElement m_Scene;
+        protected Cv_SceneElement Scene
+        {
+            get; private set;
+        }
+
+        protected Cv_EntityID EntityID
+        {
+            get; private set;
+        }
+        
+        protected Cv_GameState GameState
+        {
+            get; private set;
+        }
+
+        protected bool RunFullSpeed
+        {
+            get; private set;
+        }
+
+        //protected Cv_Console Console;
+
+        protected Cv_Renderer Renderer
+        {
+            get; private set;
+        }
+
+        protected List<Cv_ScreenElement> ScreenElements
+        {
+            get; private set;
+        }
+
         private Cv_GameViewType m_Type = Cv_GameViewType.Player;
         private Cv_GameViewID m_ID;
-        private Cv_EntityID m_EntityID;
-        private Cv_GameState m_GameState;
-        private bool m_bRunFullSpeed;
         private bool m_bAreSoundsPaused;
-        //private Cv_Console m_Console;
-        private Cv_Renderer m_Renderer;
-        private List<Cv_ScreenElement> m_ScreenElements;
 
         public Cv_PlayerView(PlayerIndex player, Vector2? size, Vector2 startPos, SpriteBatch spriteBatch = null)
         {
             m_ID = Cv_GameViewID.INVALID_GAMEVIEW;
-            m_GameState = Cv_GameState.Initializing;
+            GameState = Cv_GameState.Initializing;
             RegisterEventListeners();
 
             PlayerIdx = player;
-            m_ScreenElements = new List<Cv_ScreenElement>();
+            ScreenElements = new List<Cv_ScreenElement>();
             m_bAreSoundsPaused = false;
 
-            m_Renderer = new Cv_Renderer(spriteBatch);
+            Renderer = new Cv_Renderer(spriteBatch);
 
             if (size == null)
             {
-                m_Renderer.ScreenSizePercent = new Vector2(1,1);
-                m_Renderer.ScreenWidth = CaravelApp.Instance.Graphics.PreferredBackBufferWidth;
-                m_Renderer.ScreenHeight = CaravelApp.Instance.Graphics.PreferredBackBufferHeight;
+                Renderer.ScreenSizePercent = new Vector2(1,1);
+                Renderer.ScreenWidth = CaravelApp.Instance.Graphics.PreferredBackBufferWidth;
+                Renderer.ScreenHeight = CaravelApp.Instance.Graphics.PreferredBackBufferHeight;
             }
             else
             {
-                m_Renderer.ScreenSizePercent = size.Value;
-                m_Renderer.ScreenWidth = (int) (size.Value.X * CaravelApp.Instance.Graphics.PreferredBackBufferWidth);
-                m_Renderer.ScreenHeight = (int) (size.Value.Y * CaravelApp.Instance.Graphics.PreferredBackBufferHeight);
+                Renderer.ScreenSizePercent = size.Value;
+                Renderer.ScreenWidth = (int) (size.Value.X * CaravelApp.Instance.Graphics.PreferredBackBufferWidth);
+                Renderer.ScreenHeight = (int) (size.Value.Y * CaravelApp.Instance.Graphics.PreferredBackBufferHeight);
             }
 
-            m_Renderer.ScreenOriginPercent = startPos;
-            m_Renderer.VirtualWidth = m_Renderer.ScreenWidth;
-            m_Renderer.VirtualHeight = m_Renderer.ScreenHeight;
-            m_Renderer.StartX = (int) (startPos.X * CaravelApp.Instance.Graphics.PreferredBackBufferWidth);
-            m_Renderer.StartY = (int) (startPos.Y * CaravelApp.Instance.Graphics.PreferredBackBufferHeight);
-            m_Renderer.Init();
+            Renderer.ScreenOriginPercent = startPos;
+            Renderer.VirtualWidth = Renderer.ScreenWidth;
+            Renderer.VirtualHeight = Renderer.ScreenHeight;
+            Renderer.StartX = (int) (startPos.X * CaravelApp.Instance.Graphics.PreferredBackBufferWidth);
+            Renderer.StartY = (int) (startPos.Y * CaravelApp.Instance.Graphics.PreferredBackBufferHeight);
+            Renderer.Initialize();
 
             Cv_DrawUtils.Initialize();
 
-            m_Scene = CaravelApp.Instance.Scene;
-            //m_Scene = scene;
+            Scene = CaravelApp.Instance.Scene;
         }
 
         ~Cv_PlayerView()
@@ -211,15 +235,15 @@ namespace Caravel.Core
 
         public void PushScreenElement(Cv_ScreenElement element)
         {
-            m_ScreenElements.Add(element);
+            ScreenElements.Add(element);
         }
 
         public void RemoveScreenElement(Cv_ScreenElement element)
         {
-            m_ScreenElements.Remove(element);
+            ScreenElements.Remove(element);
         }
 
-         public void OnNewCameraComponent(Cv_Event eventData)
+        public void OnNewCameraComponent(Cv_Event eventData)
 		{
 			var castEventData = (Cv_Event_NewCameraComponent) eventData;
 			var cameraNode = castEventData.CameraNode;
@@ -233,98 +257,83 @@ namespace Caravel.Core
 
         public void PrintScene()
         {
-            m_Scene.PrintTree();
+            Scene.PrintTree();
         }
 
         public bool Pick(Vector2 mousePos, out Cv_EntityID[] entities)
         {
-            return m_Scene.Pick(mousePos, out entities, m_Renderer);
+            return Scene.Pick(mousePos, out entities, Renderer);
         }
 
 
         protected internal virtual void VRenderText()
         {
-
         }
 
-        protected internal virtual bool VOnLoadGame(XmlElement sceneData)
+        protected internal virtual void VOnLoadGame(XmlElement sceneData)
         {
-            PushScreenElement(m_Scene);
-            m_Scene.IsVisible = true;
-			
-			if (sceneData.Attributes["vWidth"] != null)
-			{
-				m_Renderer.VirtualWidth = int.Parse(sceneData.Attributes["vWidth"].Value);
-			}
-
-			if (sceneData.Attributes["vHeight"] != null)
-			{
-				m_Renderer.VirtualHeight = int.Parse(sceneData.Attributes["vHeight"].Value);
-			}
-			
-            return true;
         }
 
         protected internal override void VOnAttach(Cv_GameViewID id, Cv_EntityID entityId)
         {
             m_ID = id;
-            m_EntityID = entityId;
+            EntityID = entityId;
         }
 
         protected internal override void VOnRender(float time, float timeElapsed)
         {
-            if (m_bRunFullSpeed && CaravelApp.Instance.IsFixedTimeStep)
+            if (RunFullSpeed && Caravel.IsFixedTimeStep)
             {
-                CaravelApp.Instance.IsFixedTimeStep = false;
-                CaravelApp.Instance.Graphics.SynchronizeWithVerticalRetrace = false;
-                CaravelApp.Instance.Graphics.ApplyChanges();
+                Caravel.IsFixedTimeStep = false;
+                Caravel.Graphics.SynchronizeWithVerticalRetrace = false;
+                Caravel.Graphics.ApplyChanges();
             }
-            else if (!CaravelApp.Instance.IsFixedTimeStep)
+            else if (!Caravel.IsFixedTimeStep)
             {
-                CaravelApp.Instance.IsFixedTimeStep = true;
-                CaravelApp.Instance.Graphics.SynchronizeWithVerticalRetrace = true;
-                CaravelApp.Instance.Graphics.ApplyChanges();
+                Caravel.IsFixedTimeStep = true;
+                Caravel.Graphics.SynchronizeWithVerticalRetrace = true;
+                Caravel.Graphics.ApplyChanges();
             }
 
-            var sortedElements = m_ScreenElements.OrderBy(e => e).ToList();
+            var sortedElements = ScreenElements.OrderBy(e => e).ToList();
 
-            m_Renderer.SetupViewport();
+            Renderer.SetupViewport();
             foreach (var se in sortedElements)
             {
                 if (se.IsVisible)
                 {
-                    if (se == m_Scene)
+                    if (se == Scene)
                     {
-                        m_Scene.Camera = Camera;
+                        Scene.Camera = Camera;
                     }
 
-                    se.VOnRender(time, timeElapsed, m_Renderer);
+                    se.VOnRender(time, timeElapsed, Renderer);
                 }
             }
 
             VRenderText();
 
-            m_Renderer.BeginDraw(Camera);
-            CaravelApp.Instance.GameLogic.VRenderDiagnostics(m_Renderer);
-            m_Renderer.EndDraw();
+            Renderer.BeginDraw(Camera);
+            Caravel.Logic.VRenderDiagnostics(Camera, Renderer);
+            Renderer.EndDraw();
 
             //m_Console.OnRender();
 
-            m_Renderer.ResetViewport();
+            Renderer.ResetViewport();
         }
 
         protected internal override void VOnPostRender()
         {
             Camera.IsViewTransformDirty = false;
 
-            m_Scene.VOnPostRender(m_Renderer);
+            Scene.VOnPostRender(Renderer);
         }
 
         protected internal override void VOnUpdate(float time, float timeElapsed)
         {
             //m_Console.OnUpdate(time, timeElapsed);
 
-            foreach (var se in m_ScreenElements)
+            foreach (var se in ScreenElements)
             {
                 se.VOnUpdate(time, timeElapsed);
             }
@@ -332,12 +341,28 @@ namespace Caravel.Core
 
         internal void LoadGame(XmlElement sceneData)
         {
+            if (!ScreenElements.Contains(Scene)) {
+                PushScreenElement(Scene);
+            }
+
+            Scene.IsVisible = true;
+			
+			if (sceneData.Attributes["vWidth"] != null)
+			{
+				Renderer.VirtualWidth = int.Parse(sceneData.Attributes["vWidth"].Value);
+			}
+
+			if (sceneData.Attributes["vHeight"] != null)
+			{
+				Renderer.VirtualHeight = int.Parse(sceneData.Attributes["vHeight"].Value);
+			}
+
             VOnLoadGame(sceneData);
         }
 
         internal void SetPlayerEntity(Cv_EntityID entityId)
         {
-            m_EntityID = entityId;
+            EntityID = entityId;
         }
 
         internal void OnPlaySound(Cv_Event eventData)
@@ -349,15 +374,15 @@ namespace Caravel.Core
         {
             var newStateEvt = (Cv_Event_ChangeState) eventData;
 
-            m_GameState = newStateEvt.NewState;
+            GameState = newStateEvt.NewState;
         }
 
         internal void OnWindowResize(int newWidth, int newHeight)
 		{
-			m_Renderer.ScreenWidth = (int) (newWidth * m_Renderer.ScreenSizePercent.X);
-			m_Renderer.ScreenHeight = (int) (newHeight * m_Renderer.ScreenSizePercent.Y);
-            m_Renderer.StartX = (int) (newWidth * m_Renderer.ScreenOriginPercent.X);
-            m_Renderer.StartY = (int) (newHeight * m_Renderer.ScreenOriginPercent.Y);
+			Renderer.ScreenWidth = (int) (newWidth * Renderer.ScreenSizePercent.X);
+			Renderer.ScreenHeight = (int) (newHeight * Renderer.ScreenSizePercent.Y);
+            Renderer.StartX = (int) (newWidth * Renderer.ScreenOriginPercent.X);
+            Renderer.StartY = (int) (newHeight * Renderer.ScreenOriginPercent.Y);
 			Camera.RecalculateTransformationMatrices();
 		}
 

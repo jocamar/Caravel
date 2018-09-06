@@ -39,7 +39,7 @@ namespace Caravel.TestSamples
 
         protected override Cv_GamePhysics VCreateGamePhysics()
         {
-            var phys = new Cv_FarseerPhysics();
+            var phys = new Cv_FarseerPhysics(this);
             phys.Gravity = new Vector2(0,1);
             return phys;
         }
@@ -51,10 +51,10 @@ namespace Caravel.TestSamples
             gvs[0] = new Cv_PlayerView(PlayerIndex.One, new Vector2(0.5f, 1), Vector2.Zero);
             gvs[1] = new Cv_PlayerView(PlayerIndex.Two, new Vector2(0.5f, 1), new Vector2(0.5f, 0));
             pv = (Cv_PlayerView) gvs[0];
-            pv.DebugDrawRadius = true;
+            pv.DebugDrawRadius = false;
 
             pv2 = (Cv_PlayerView) gvs[1];
-            pv2.DebugDrawPhysicsShapes = true;
+            pv2.DebugDrawPhysicsShapes = false;
 
             return gvs;
         }
@@ -72,20 +72,20 @@ namespace Caravel.TestSamples
         protected internal override bool VInitialize()
         {
             IsMouseVisible = true;
-            GameLogic.ChangeState(Cv_GameState.LoadingScene);
+            Logic.ChangeState(Cv_GameState.LoadingScene);
             return true;
         }
 
         protected internal override bool VLoadGame()
         {
-            GameLogic.LoadScene("scenes/testScene.cvs", "Default");
-            CameraEntity = GameLogic.GetEntity("camera");
+            Logic.LoadScene("scenes/testScene.cvs", "Default");
+            CameraEntity = Logic.GetEntity("camera");
 
-            guntler = GameLogic.GetEntity("guntler");
-            guybrush = GameLogic.GetEntity("guybrush");
-            profile = GameLogic.GetEntity("profile");
+            guntler = Logic.GetEntity("guntler");
+            guybrush = Logic.GetEntity("guybrush");
+            profile = Logic.GetEntity("profile");
 
-            pv2.Camera = GameLogic.GetEntity("camera2").GetComponent<Cv_CameraComponent>().CameraNode;
+            pv2.Camera = Logic.GetEntity("camera2").GetComponent<Cv_CameraComponent>().CameraNode;
 
             pv.PrintScene();
             pv2.PrintScene();

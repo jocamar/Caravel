@@ -23,7 +23,9 @@ namespace Caravel.Core.Entity
             m_ComponentFactory.Register<Cv_RigidBodyComponent>(Cv_EntityComponent.GetID<Cv_RigidBodyComponent>());
         }
 
-        protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID, string resourceBundle)
+        protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,
+                                                    XmlElement overrides, Cv_Transform? initialTransform,
+                                                    Cv_EntityID serverEntityID, string resourceBundle)
         {
             Cv_XmlResource resource;
 			resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource, resourceBundle, CaravelApp.Instance.EditorRunning);
@@ -44,7 +46,7 @@ namespace Caravel.Core.Entity
 
             var entity = new Cv_Entity(entityId, resourceBundle);
 
-            if (!entity.Init(entityTypeResource, root, parent))
+            if (!entity.Initialize(entityTypeResource, root, parent))
             {
                 Cv_Debug.Error("Failed to initialize entity: " + entityTypeResource);
                 return null;
@@ -76,13 +78,14 @@ namespace Caravel.Core.Entity
             var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
             if (tranformComponent != null && initialTransform != null)
             {
-                tranformComponent.Transform = initialTransform;
+                tranformComponent.Transform = (initialTransform != null ? initialTransform.Value : Cv_Transform.Identity);
             }
             
             return entity;
         }
 
-        protected internal Cv_Entity CreateEmptyEntity(string resourceBundle, Cv_EntityID parent, XmlElement overrides, Cv_Transform initialTransform, Cv_EntityID serverEntityID)
+        protected internal Cv_Entity CreateEmptyEntity(string resourceBundle, Cv_EntityID parent, XmlElement overrides,
+                                                                Cv_Transform? initialTransform, Cv_EntityID serverEntityID)
         {
             Cv_EntityID entityId = serverEntityID;
             if (entityId == Cv_EntityID.INVALID_ENTITY)
@@ -92,7 +95,7 @@ namespace Caravel.Core.Entity
 
             var entity = new Cv_Entity(entityId, resourceBundle);
 
-            if (!entity.Init(null, null, parent))
+            if (!entity.Initialize(null, null, parent))
             {
                 Cv_Debug.Error("Failed to initialize empty entity.");
                 return null;
@@ -106,7 +109,7 @@ namespace Caravel.Core.Entity
             var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
             if (tranformComponent != null && initialTransform != null)
             {
-                tranformComponent.Transform = initialTransform;
+                tranformComponent.Transform = (initialTransform != null ? initialTransform.Value : Cv_Transform.Identity);
             }
             
             return entity;
@@ -121,7 +124,7 @@ namespace Caravel.Core.Entity
 
                 if (component != null)
                 {
-                    component.VInit(componentNode);
+                    component.VInitialize(componentNode);
                     component.VOnChanged();
                 }
                 else
@@ -130,7 +133,7 @@ namespace Caravel.Core.Entity
                     if (component != null)
                     {
                         entity.AddComponent(component);
-                        component.VPostInit();
+                        component.VPostInitialize();
                     }
                 }
             }
@@ -166,7 +169,7 @@ namespace Caravel.Core.Entity
 
             if (component != null)
             {
-                if (!component.VInit(componentData))
+                if (!component.VInitialize(componentData))
                 {
                     Cv_Debug.Error("Failed to initialize component: " + componentData.Name);
                     return null;

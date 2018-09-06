@@ -7,6 +7,14 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_ClearCollisionShapes : Cv_Event
     {
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+        
         public Cv_Event_ClearCollisionShapes(Cv_EntityID entityId, float timeStamp = 0) : base(entityId, timeStamp)
         {
         }

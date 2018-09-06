@@ -235,15 +235,15 @@ namespace Caravel.Core.Entity
             return rigidBodyElement;
         }
 
-        protected internal override bool VInit(XmlElement componentData)
+        protected internal override bool VInitialize(XmlElement componentData)
         {
-            XmlElement materialNode = (XmlElement) componentData.SelectSingleNode("//Material");
+            XmlElement materialNode = (XmlElement) componentData.SelectSingleNode("Material");
             if (materialNode != null)
             {
                 m_sMaterial = materialNode.Attributes["material"].Value;
             }
 
-            XmlElement physicsNode = (XmlElement) componentData.SelectSingleNode("//Physics");
+            XmlElement physicsNode = (XmlElement) componentData.SelectSingleNode("Physics");
             if (physicsNode != null)
             {
                 m_bFixedRotation = bool.Parse(physicsNode.Attributes["fixedRotation"].Value);
@@ -252,7 +252,7 @@ namespace Caravel.Core.Entity
                 MaxAngularVelocity = float.Parse(physicsNode.Attributes["maxAngVelocity"].Value, CultureInfo.InvariantCulture);
             }
 
-            XmlElement bodyNode = (XmlElement) componentData.SelectSingleNode("//Body");
+            XmlElement bodyNode = (XmlElement) componentData.SelectSingleNode("Body");
             if (bodyNode != null)
             {
                 m_fLinearDamping = float.Parse(bodyNode.Attributes["linearDamping"].Value, CultureInfo.InvariantCulture);
@@ -278,7 +278,7 @@ namespace Caravel.Core.Entity
             }
 
             
-            var collisionShapesNode = componentData.SelectSingleNode("//CollisionShapes");
+            var collisionShapesNode = componentData.SelectSingleNode("CollisionShapes");
             if (collisionShapesNode != null)
             {
                 m_Shapes.Clear();
@@ -336,7 +336,7 @@ namespace Caravel.Core.Entity
                     else
                     {
                         var points = new List<Vector2>();
-                        var shapePoints = shape.SelectNodes("//Point");
+                        var shapePoints = shape.SelectNodes("Point");
                         foreach (XmlElement point in shapePoints)
                         {
                             x = int.Parse(point.Attributes?["x"].Value, CultureInfo.InvariantCulture);
@@ -347,7 +347,7 @@ namespace Caravel.Core.Entity
                         shapeData.Points = points.ToArray();
                     }
 
-                    var shapeCollisionCategories = shape.SelectNodes("//CollisionCategory");
+                    var shapeCollisionCategories = shape.SelectNodes("CollisionCategory");
                     shapeData.Categories = new Cv_CollisionCategories();
                     foreach (XmlElement category in shapeCollisionCategories)
                     {
@@ -355,7 +355,7 @@ namespace Caravel.Core.Entity
                         shapeData.Categories.AddCategory(id);
                     }
 
-                    var shapeCollidesWith = shape.SelectNodes("//CollidesWith");
+                    var shapeCollidesWith = shape.SelectNodes("CollidesWith");
                     shapeData.CollidesWith = new Cv_CollisionCategories();
                     shapeData.CollisionDirections = new Dictionary<int, string>();
                     foreach (XmlElement category in shapeCollidesWith)
@@ -376,12 +376,12 @@ namespace Caravel.Core.Entity
         protected internal override void VOnChanged()
         {
             Cv_Event newEvt = new Cv_Event_ClearCollisionShapes(Owner.ID);
-            Cv_EventManager.Instance.TriggerEvent(newEvt);
+            Cv_EventManager.Instance.QueueEvent(newEvt);
 
             foreach (var s in m_Shapes)
             {
                 newEvt = new Cv_Event_NewCollisionShape(Owner.ID, s);
-                Cv_EventManager.Instance.TriggerEvent(newEvt);
+                Cv_EventManager.Instance.QueueEvent(newEvt);
             }
         }
 
@@ -389,7 +389,7 @@ namespace Caravel.Core.Entity
         {
         }
 
-        protected internal override bool VPostInit()
+        protected internal override bool VPostInitialize()
         {
             VOnChanged();
             return true;
@@ -401,7 +401,7 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnDestroy()
         {
-            Cv_Event newEvt = new Cv_Event_DestroyRigidBodyComponent(Owner.ID);
+            Cv_Event newEvt = new Cv_Event_DestroyRigidBodyComponent(Owner.ID, this);
             Cv_EventManager.Instance.TriggerEvent(newEvt);
         }
     }

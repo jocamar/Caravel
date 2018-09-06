@@ -181,6 +181,9 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_EnterTrigger.cs">
       <Link>Cv_Event_EnterTrigger.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_EntityVisibilityChanged.cs">
+      <Link>Cv_Event_EntityVisibilityChanged.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_LeaveTrigger.cs">
       <Link>Cv_Event_LeaveTrigger.cs</Link>
     </Compile>
@@ -310,6 +313,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SDL2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="Icon.ico" />
     <Content Include="OpenTK.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

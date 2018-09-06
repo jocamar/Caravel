@@ -23,13 +23,13 @@ namespace Caravel.Core.Draw
             get; internal set;
         }
 
-        private Cv_Transform m_Transform = new Cv_Transform();
-        private Cv_Transform m_ResTranslationTransform = new Cv_Transform();
+        private Cv_Transform m_Transform = Cv_Transform.Identity;
+        private Cv_Transform m_ResTranslationTransform = Cv_Transform.Identity;
 
         private int m_iPreviousVirtualWidth = -1;
         private int m_iPreviousVirtualHeight = -1;
 
-        public Cv_CameraNode(Cv_EntityID entityId, Cv_CameraComponent component) : base(entityId, component, new Cv_Transform())
+        public Cv_CameraNode(Cv_EntityID entityId, Cv_CameraComponent component) : base(entityId, component, Cv_Transform.Identity)
         {
             IsDebugCamera = false;
         }
@@ -77,25 +77,26 @@ namespace Caravel.Core.Draw
                 var worldTransform = WorldTransform;
                 var transform = Parent.Transform;
                 var parentOrigin = m_Component.Owner.GetComponent<Cv_TransformComponent>().Origin;
-                var parentWorldTranform = new Cv_Transform();
+                var parentWorldTranform = Cv_Transform.Identity;
 
                 if (Parent.Parent != null)
                 {
                     parentWorldTranform = Parent.Parent.WorldTransform;
                 }
 
-                m_ResTranslationTransform.Position = new Vector3(virtualWidth * parentOrigin.X / zoom, virtualHeight * parentOrigin.Y / zoom, 0);
+                var resTrans = new Vector3(virtualWidth * parentOrigin.X / zoom, virtualHeight * parentOrigin.Y / zoom, 0);
+                m_ResTranslationTransform = new Cv_Transform(resTrans, m_ResTranslationTransform.Scale, m_ResTranslationTransform.Rotation, m_ResTranslationTransform.Origin);
                 var camScale = Matrix.CreateScale(zoom, zoom, 1);
                 var camRot = Matrix.CreateRotationZ(-worldTransform.Rotation);
                 var camTrans = Matrix.CreateTranslation( -transform.Position);
                 var parentTrans = Matrix.CreateTranslation(-parentWorldTranform.Position / new Vector3(rendererTransform.Scale, 1));
 
-                m_Transform.TransformMatrix = camScale *
+                m_Transform = Cv_Transform.FromMatrix(camScale *
                                                 parentTrans *
                                                 rendererTransform.TransformMatrix *
                                                 camRot *
                                                 camTrans *
-                                                m_ResTranslationTransform.TransformMatrix;
+                                                m_ResTranslationTransform.TransformMatrix, m_Transform.Origin);
             }
 
             m_iPreviousVirtualWidth = virtualWidth;
@@ -110,9 +111,10 @@ namespace Caravel.Core.Draw
             IsViewTransformDirty = true;
         }
 
-        public override void VRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VRender(Cv_Renderer renderer)
         {
-            if (CaravelApp.Instance.EditorRunning && renderer.DebugDrawCameras)
+            var scene = CaravelApp.Instance.Scene;
+            if (scene.Caravel.EditorRunning && renderer.DebugDrawCameras)
             {
                 var zoom = ((Cv_CameraComponent) m_Component).Zoom;
                 var rot = scene.Transform.Rotation;
@@ -168,10 +170,16 @@ namespace Caravel.Core.Draw
                         point1 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
                         point2 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
 
+                        var thickness = (int) Math.Round(3 / scene.Camera.Zoom);
+                        if (thickness <= 0)
+                        {
+                            thickness = 1;
+                        }
+
                         Cv_DrawUtils.DrawLine(renderer,
                                                             point1,
                                                             point2,
-                                                            2,
+                                                            thickness,
                                                             255,
                                                             Color.Yellow);
                     }
@@ -179,21 +187,21 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public override void VPreRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VPreRender(Cv_Renderer renderer)
         {
         }
 
-        public override void VPostRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VPostRender(Cv_Renderer renderer)
         {
         }
 
-        public override void VFinishedRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VFinishedRender(Cv_Renderer renderer)
         {
-            base.VFinishedRender(scene, renderer);
+            base.VFinishedRender(renderer);
             ((Cv_CameraComponent) m_Component).ZoomChanged = false;
         }
 
-        public override bool VIsVisible(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override bool VIsVisible(Cv_Renderer renderer)
         {
             return true;
         }

@@ -1,5 +1,6 @@
-<Physics>
-    <Materials>
-        <Wood restitution="0.6" friction="0.8" density="1"/>
-    </Materials>
+﻿<Physics>
+  <Materials>
+    <Wood density="1" friction="1" restitution="0.5" />
+    <Rock density="3" friction="2" restitution="0.5" />
+  </Materials>
 </Physics>

@@ -16,7 +16,15 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_NewRenderComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_SceneNode sceneNode) : base(entityID)
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public Cv_Event_NewRenderComponent(Cv_EntityID entityID, Cv_EntityID parentId, Cv_SceneNode sceneNode, object sender) : base(entityID, sender)
         {
             ParentID = parentId;
             SceneNode = sceneNode;

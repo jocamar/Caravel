@@ -16,6 +16,14 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public Cv_Event_NewSeparation(Cv_CollisionShape shapeA, Cv_CollisionShape shapeB, float timeStamp = 0) : base(shapeA.Owner.ID, timeStamp)
         {
             ShapeA = shapeA;

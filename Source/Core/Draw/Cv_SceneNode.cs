@@ -22,6 +22,7 @@ namespace Caravel.Core.Draw
             get; private set;
         }
 
+        //Updated on the OnMoveEntity callback in the scene element
         public virtual Cv_Transform Transform
         {
             get
@@ -31,7 +32,10 @@ namespace Caravel.Core.Draw
 
             set
             {
-                if (value != Properties.ToWorld)
+                if (value.Position != Properties.ToWorld.Position
+                    || value.Rotation != Properties.ToWorld.Rotation
+                    || value.Scale != Properties.ToWorld.Scale
+                    || value.Origin != Properties.ToWorld.Origin)
                 {
                     Properties.ToWorld = value;
                     Properties.FromWorld = Cv_Transform.Inverse(value);
@@ -66,7 +70,7 @@ namespace Caravel.Core.Draw
             {
                 if (Properties.ToWorld.Position != value)
                 {
-                    Properties.ToWorld.Position = value;
+                    Properties.ToWorld = new Cv_Transform(value, Properties.ToWorld.Scale, Properties.ToWorld.Rotation, Properties.ToWorld.Origin);
                     TransformChanged = true;
                 }
             }
@@ -93,7 +97,7 @@ namespace Caravel.Core.Draw
             {
                 if (Properties.ToWorld.Scale != value)
                 {
-                    Properties.ToWorld.Scale = value;
+                    Properties.ToWorld = new Cv_Transform(Properties.ToWorld.Position, value, Properties.ToWorld.Rotation, Properties.ToWorld.Origin);
                     TransformChanged = true;
                 }
             }
@@ -110,7 +114,7 @@ namespace Caravel.Core.Draw
             {
                 if (Properties.ToWorld.Origin != value)
                 {
-                    Properties.ToWorld.Origin = value;
+                    Properties.ToWorld = new Cv_Transform(Properties.ToWorld.Position, Properties.ToWorld.Scale, Properties.ToWorld.Rotation, value);
                     TransformChanged = true;
                 }
             }
@@ -127,7 +131,7 @@ namespace Caravel.Core.Draw
             {
                 if (Math.Abs(Properties.ToWorld.Rotation - value) > 0.00001)
                 {
-                    Properties.ToWorld.Rotation = value;
+                    Properties.ToWorld = new Cv_Transform(Properties.ToWorld.Position, Properties.ToWorld.Scale, value, Properties.ToWorld.Origin);
                     TransformChanged = true;
                 }
             }
@@ -165,18 +169,18 @@ namespace Caravel.Core.Draw
         {
             get
             {
-                 var entity = CaravelApp.Instance.GameLogic.GetEntity(Properties.EntityID);
+                 var entity = CaravelApp.Instance.Logic.GetEntity(Properties.EntityID);
                  var name = (entity != null ? entity.EntityName : "root") + "_" + this.GetType().Name;
                  return name;
             }
         }
 
-        public Cv_SceneNode(Cv_EntityID entityID, Cv_EntityComponent renderComponent, Cv_Transform to, Cv_Transform from = null)
+        public Cv_SceneNode(Cv_EntityID entityID, Cv_EntityComponent renderComponent, Cv_Transform to, Cv_Transform? from = null)
         {
             Properties = new Cv_NodeProperties();
             Properties.EntityID = entityID;
             Properties.ToWorld = to;
-            Properties.FromWorld = from;
+            Properties.FromWorld = (from != null ? from.Value : Cv_Transform.Identity);
             Properties.Name = renderComponent != null ? renderComponent.GetType().Name : "SceneNode";
             Properties.Radius = -1;
             TransformChanged = true;
@@ -194,55 +198,55 @@ namespace Caravel.Core.Draw
             Properties.Radius = value;
         }
 
-        public virtual void VOnUpdate(float time, float timeElapsed, Cv_SceneElement scene)
+        public virtual void VOnUpdate(float time, float timeElapsed)
         {
             foreach (var child in m_Children)
             {
-                child.VOnUpdate(time, timeElapsed, scene);
+                child.VOnUpdate(time, timeElapsed);
             }
         }
 
-        public virtual bool VOnChanged(Cv_SceneElement scene)
+        public virtual bool VOnChanged()
         {
             foreach (var child in m_Children)
             {
-                child.VOnChanged(scene);
+                child.VOnChanged();
             }
 
             return true;
         }
 
-        public abstract void VPreRender(Cv_SceneElement scene, Cv_Renderer renderer);
+        public abstract void VPreRender(Cv_Renderer renderer);
 
-        public abstract bool VIsVisible(Cv_SceneElement scene, Cv_Renderer renderer);
+        public abstract bool VIsVisible(Cv_Renderer renderer);
 
-        public abstract void VRender(Cv_SceneElement scene, Cv_Renderer renderer);
+        public abstract void VRender(Cv_Renderer renderer);
 
-        public abstract void VPostRender(Cv_SceneElement scene, Cv_Renderer renderer);
+        public abstract void VPostRender(Cv_Renderer renderer);
 
-        public virtual void VFinishedRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public virtual void VFinishedRender(Cv_Renderer renderer)
         {
             TransformChanged = false;
 
             foreach (var child in m_Children)
             {
-                child.VFinishedRender(scene, renderer);
+                child.VFinishedRender(renderer);
             }
         }
 
-        public virtual void VRenderChildren(Cv_SceneElement scene, Cv_Renderer renderer)
+        public virtual void VRenderChildren(Cv_Renderer renderer)
         {
             foreach (var child in m_Children)
             {
-                child.VPreRender(scene, renderer);
+                child.VPreRender(renderer);
 
-                if (child.VIsVisible(scene, renderer))
+                if (child.VIsVisible(renderer))
                 {
-                    child.VRender(scene, renderer);
-                    child.VRenderChildren(scene, renderer);
+                    child.VRender(renderer);
+                    child.VRenderChildren(renderer);
                 }
 
-                child.VPostRender(scene, renderer);
+                child.VPostRender(renderer);
             }
         }
 
@@ -323,12 +327,12 @@ namespace Caravel.Core.Draw
             return removed;
         }
 
-        public virtual bool VPick(Cv_SceneElement scene, Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
+        public virtual bool VPick(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
         {
             var success = false;
             foreach (var child in m_Children)
             {
-                if (child.VPick(scene, renderer, screenPosition, entities))
+                if (child.VPick(renderer, screenPosition, entities))
                 {
                     success = true;
                 }

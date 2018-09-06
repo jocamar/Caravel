@@ -51,7 +51,7 @@ namespace Caravel.Core.Events
             }
         }
 
-        public bool Init()
+        public bool Initialize()
         {
             return true;
         }
@@ -108,7 +108,11 @@ namespace Caravel.Core.Events
 
         public bool TriggerEvent(Cv_Event newEvent)
         {
-            //Cv_Debug.Log("Events", "Attempting to trigger event " + newEvent.VGetName());
+            if (newEvent.WriteToLog)
+            {
+                Cv_Debug.Log("Events", "Attempting to trigger event " + newEvent.VGetName() + " for entity " + newEvent.EntityID);
+            }
+
             var processed = false;
 
             List<NewEventDelegate> listeners;
@@ -116,7 +120,11 @@ namespace Caravel.Core.Events
             {
                 foreach (var l in listeners)
                 {
-                    //Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
+                    if (newEvent.WriteToLog)
+                    {
+                        Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
+                    }
+
                     l(newEvent);
                     processed = true;
                 }
@@ -137,12 +145,18 @@ namespace Caravel.Core.Events
                     return false;
                 }
 
-                Cv_Debug.Log("Events", "Attempting to queue event " + newEvent.VGetName());
+                if (newEvent.WriteToLog)
+                {
+                    Cv_Debug.Log("Events", "Attempting to queue event " + newEvent.VGetName() + " for entity " + newEvent.EntityID);
+                }
 
                 if (m_EventListeners.ContainsKey(newEvent.Type))
                 {
                     m_EventQueues[m_iActiveQueue].AddLast(newEvent);
-                    Cv_Debug.Log("Events", "Successfully queued event " + newEvent.VGetName());
+                    if (newEvent.WriteToLog)
+                    {
+                        Cv_Debug.Log("Events", "Successfully queued event " + newEvent.VGetName());
+                    }
                     return true;
                 }
                 else
@@ -233,7 +247,11 @@ namespace Caravel.Core.Events
                 {
                     foreach (var l in listeners)
                     {
-                        Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
+                        if (e.WriteToLog)
+                        {
+                            Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
+                        }
+                        
                         l(e);
                     }
                 }

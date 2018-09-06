@@ -13,19 +13,21 @@ namespace Caravel.Core.Draw
     {
 		private readonly float MaxLayers = 255;
 
-        public Cv_SpriteNode(Cv_Entity.Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform from = null) : base(entityID, renderComponent, to, from)
+        public Cv_SpriteNode(Cv_Entity.Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform? from = null) : base(entityID, renderComponent, to, from)
         {
         }
 
-        public override void VRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VRender(Cv_Renderer renderer)
         {
             var spriteComponent = (Cv_SpriteComponent) m_Component;
+            var scene = CaravelApp.Instance.Scene;
 
             var pos = scene.Transform.Position;
             var rot = scene.Transform.Rotation;
             var scale = scene.Transform.Scale;
 
-            if (CaravelApp.Instance.EditorRunning && scene.EditorSelectedEntity == Properties.EntityID)
+            //Draws the yellow contour when an entity is selected in the editor
+            if (scene.Caravel.EditorRunning && scene.EditorSelectedEntity == Properties.EntityID)
             {
                 var rotMatrixZ = Matrix.CreateRotationZ(rot);
 
@@ -55,10 +57,16 @@ namespace Caravel.Core.Draw
                     point1 += new Vector2(pos.X, pos.Y);
                     point2 += new Vector2(pos.X, pos.Y);
 
+                    var thickness = (int) Math.Round(3 / scene.Camera.Zoom);
+                    if (thickness <= 0)
+                    {
+                        thickness = 1;
+                    }
+
                     Cv_DrawUtils.DrawLine(renderer,
                                                         point1,
                                                         point2,
-                                                        2,
+                                                        thickness,
                                                         255,
                                                         Color.Yellow);
                 }
@@ -109,23 +117,23 @@ namespace Caravel.Core.Draw
             return Properties.Radius;
         }
 
-        public override bool VOnChanged(Cv_SceneElement scene)
+        public override bool VOnChanged()
         {
             var comp = ((Cv_SpriteComponent) m_Component);
             SetRadius(-1);
             return true;
         }
 
-        public override void VPreRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VPreRender(Cv_Renderer renderer)
         {
         }
 
-        public override bool VIsVisible(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override bool VIsVisible(Cv_Renderer renderer)
         {
             return true;
         }
 
-        public override bool VPick(Cv_SceneElement scene, Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
+        public override bool VPick(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
         {
             var camMatrix = renderer.CamMatrix;
             var worldTransform = Parent.WorldTransform;
@@ -177,7 +185,7 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public override void VPostRender(Cv_SceneElement scene, Cv_Renderer renderer)
+        public override void VPostRender(Cv_Renderer renderer)
         {
         }
     }

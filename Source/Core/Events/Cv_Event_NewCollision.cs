@@ -32,6 +32,14 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public Cv_Event_NewCollision(Cv_CollisionShape shapeA, Cv_CollisionShape shapeB, Vector2 normalForce,
                                         float frictionForce, Vector2[] collisionPoints, float timeStamp = 0) : base(shapeA.Owner.ID, timeStamp)
         {

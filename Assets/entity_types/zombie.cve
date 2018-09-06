@@ -7,6 +7,7 @@
   </Cv_TransformComponent>
   <Cv_SpriteComponent>
     <Color r="255" g="255" b="255" a="170" />
+    <Visible status="True" />
     <Texture resource="zombie.png" />
     <Size width="102" height="148" />
     <Animation fx="6" fy="1" loop="True" defaultAnim="walking">
@@ -16,10 +17,14 @@
   </Cv_SpriteComponent>
   <Cv_RigidBodyComponent>
     <Material material="Wood" />
-    <Physics fixedRotation="False" gravityScale="0" maxVelocity="0" maxAngVelocity="0" />
-    <Body linearDamping="0" angularDamping="0" followEntityRotation="False" type="static" />
+    <Physics fixedRotation="False" gravityScale="1" maxVelocity="200" maxAngVelocity="200" />
+    <Body linearDamping="0" angularDamping="0" followEntityRotation="True" type="dynamic" />
     <CollisionShapes>
-      <Box anchorX="0" anchorY="0" isBullet="False" material="Wood" dimensionsX="250" dimensionsY="250" />
+      <Box anchorX="0" anchorY="0" isBullet="False" material="Wood" dimensionsX="100" dimensionsY="150">
+        <CollisionCategory id="0" />
+        <CollidesWith id="1" directions="All" />
+        <CollidesWith id="0" directions="All" />
+      </Box>
     </CollisionShapes>
   </Cv_RigidBodyComponent>
 </EntityType>

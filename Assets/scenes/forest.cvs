@@ -1,0 +1,41 @@
+﻿<Scene vWidth="1280" vHeight="720">
+  <StaticEntities>
+    <Entity name="gound1" type="entity_types/chao.cve" visible="True">
+      <Entity name="tree3" type="entity_types/tree.cve" visible="True">
+        <Cv_SpriteComponent>
+          <Texture resource="tree2.png" />
+        </Cv_SpriteComponent>
+      </Entity>
+    </Entity>
+    <Entity name="ground2" type="entity_types/chao.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="200" y="0" z="1" />
+      </Cv_TransformComponent>
+      <Entity name="tree2" type="entity_types/tree.cve" visible="True" />
+    </Entity>
+    <Entity name="ground3" type="entity_types/chao.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="-200" y="0" z="1" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="earth1" type="entity_types/earth.cve" visible="True" />
+    <Entity name="earth2" type="entity_types/earth.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="200" y="400" z="0" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="earth3" type="entity_types/earth.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="-200" y="400" z="0" />
+      </Cv_TransformComponent>
+    </Entity>
+    <Entity name="camera" type="entity_types/camera.cve" visible="True">
+      <Cv_TransformComponent>
+        <Position x="0" y="-100" z="0" />
+      </Cv_TransformComponent>
+      <Cv_CameraComponent>
+        <Properties defaultCamera="True" zoom="2.2" />
+      </Cv_CameraComponent>
+    </Entity>
+  </StaticEntities>
+</Scene>

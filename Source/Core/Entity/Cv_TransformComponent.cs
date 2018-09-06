@@ -4,6 +4,7 @@ using System.Xml;
 using Caravel.Core.Events;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
+using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Entity
 {
@@ -13,72 +14,82 @@ namespace Caravel.Core.Entity
         {
             get
             {
-                return m_Transform;
+                return new Cv_Transform(Position, Scale, Rotation, Origin);
             }
             
             set
             {
-                if (value != m_Transform)
+                Position = value.Position;
+                Scale = value.Scale;
+                Rotation = value.Rotation;
+                Origin = value.Origin;
+                
+                m_OldTransform = m_Transform;
+                m_Transform = value;
+
+                if (Owner != null)
                 {
-                    m_Transform = value;
+                    var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, m_Transform.Position, m_Transform.Scale, m_Transform.Origin, m_Transform.Rotation, this);
+                    Cv_EventManager.Instance.TriggerEvent(newEvent);
                 }
+                
+            }
+        }
+
+        // Even though the scene nodes already keep track of their own transforms and world positions
+        // this is needed for other components that might need to do stuff according to world position
+        // such as the rigid body components
+        public virtual Cv_Transform WorldTransform
+        {
+            get
+            {
+                var trans = Transform;
+
+                if (Owner.Parent != Cv_EntityID.INVALID_ENTITY)
+                {
+                    var parent = CaravelApp.Instance.Logic.GetEntity(Owner.Parent);
+
+                    if (parent.GetComponent<Cv_TransformComponent>() != null)
+                    {
+                        trans = Cv_Transform.Multiply(parent.GetComponent<Cv_TransformComponent>().WorldTransform, trans);
+                    }
+                }
+
+                return trans;
             }
         }
 
         public Vector3 Position
         {
+            get; private set;
+        }
+
+        // Even though the scene nodes already keep track of their own transforms and world positions
+        // this is needed for other components that might need to do stuff according to world position
+        // such as the rigid body components
+        public virtual Vector3 WorldPosition
+        {
             get
             {
-                return Transform.Position;
-            }
+                var pos = WorldTransform.Position;
 
-            set
-            {
-				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, value, Transform.Scale, Transform.Origin, Transform.Rotation);
-				Cv_EventManager.Instance.TriggerEvent(newEvent);
+                return pos;
             }
         }
 
         public Vector2 Scale
         {
-            get
-            {
-                return Transform.Scale;
-            }
-
-            set
-            {
-				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, value, Transform.Origin, Transform.Rotation);
-				Cv_EventManager.Instance.TriggerEvent(newEvent);
-            }
+            get; private set;
         }
 
         public float Rotation
         {
-            get
-            {
-                return Transform.Rotation;
-            }
-
-            set
-            {
-				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, Transform.Scale, Transform.Origin, value);
-				Cv_EventManager.Instance.TriggerEvent(newEvent);
-            }
+            get; private set;
         }
 
         public Vector2 Origin
         {
-            get
-            {
-                return Transform.Origin;
-            }
-
-            set
-            {
-				var newEvent = new Cv_Event_TransformEntity(Owner.ID, Transform, Transform.Position, Transform.Scale, value, Transform.Rotation);
-				Cv_EventManager.Instance.TriggerEvent(newEvent);
-            }
+            get; private set;
         }
 
         private Cv_Transform m_Transform;
@@ -86,7 +97,40 @@ namespace Caravel.Core.Entity
 
         public Cv_TransformComponent()
         {
-            Transform = new Cv_Transform();
+            m_OldTransform = Cv_Transform.Identity;
+            Transform = Cv_Transform.Identity;
+        }
+
+        public void SetPosition(Vector3 value, object caller = null)
+        {
+            m_OldTransform = Transform;
+            Position = value;
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, value, Transform.Scale, Transform.Origin, Transform.Rotation, (caller != null ? caller : this));
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+        }
+
+        public void SetScale(Vector2 value, object caller = null)
+        {
+            m_OldTransform = Transform;
+            Scale = value;
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, value, Transform.Origin, Transform.Rotation, (caller != null ? caller : this));
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+        }
+
+        public void SetRotation(float value, object caller = null)
+        {
+            m_OldTransform = Transform;
+            Rotation = value;
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, value, (caller != null ? caller : this));
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+        }
+
+        public void SetOrigin(Vector2 value, object caller = null)
+        {
+            m_OldTransform = Transform;
+            Origin = value;
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, value, Transform.Rotation, (caller != null ? caller : this));
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
         public override XmlElement VToXML()
@@ -118,13 +162,13 @@ namespace Caravel.Core.Entity
             return componentData;
         }
 
-        protected internal override bool VInit(XmlElement componentData)
+        protected internal override bool VInitialize(XmlElement componentData)
         {
             Cv_Debug.Assert(componentData != null, "Must have valid component data.");
 
-            m_OldTransform = new Cv_Transform(Transform);
+            m_OldTransform = Transform;
 
-            var positionNode = componentData.SelectNodes("//Position").Item(0);
+            var positionNode = componentData.SelectNodes("Position").Item(0);
             if (positionNode != null)
             {
                 float x, y, z;
@@ -134,10 +178,10 @@ namespace Caravel.Core.Entity
                 z = int.Parse(positionNode.Attributes["z"].Value);
 
                 var position = new Vector3(x,y,z);
-                Transform.Position = position;
+                Position = position;
             }
 
-            var rotationNode = componentData.SelectNodes("//Rotation").Item(0);
+            var rotationNode = componentData.SelectNodes("Rotation").Item(0);
             if (rotationNode != null)
             {
                 float rad;
@@ -145,10 +189,10 @@ namespace Caravel.Core.Entity
                 rad = float.Parse(rotationNode.Attributes["radians"].Value, CultureInfo.InvariantCulture);
 
                 var rotation = rad;
-                Transform.Rotation = rotation;
+                Rotation = rotation;
             }
 
-            var scaleNode = componentData.SelectNodes("//Scale").Item(0);
+            var scaleNode = componentData.SelectNodes("Scale").Item(0);
             if (scaleNode != null)
             {
                 float x, y;
@@ -157,10 +201,10 @@ namespace Caravel.Core.Entity
                 y = float.Parse(scaleNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
 
                 var scale = new Vector2(x,y);
-                Transform.Scale = scale;
+                Scale = scale;
             }
 
-            var originNode = componentData.SelectNodes("//Origin").Item(0);
+            var originNode = componentData.SelectNodes("Origin").Item(0);
             if (originNode != null)
             {
                 float x, y;
@@ -169,17 +213,14 @@ namespace Caravel.Core.Entity
                 y = (float) double.Parse(originNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
 
                 var origin = new Vector2(x,y);
-                Transform.Origin = origin;
+                Origin = origin;
             }
 
             return true;
         }
 
-        protected internal override bool VPostInit()
+        protected internal override bool VPostInitialize()
         {
-			var newEvent = new Cv_Event_TransformEntity(Owner.ID, null, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation);
-			Cv_EventManager.Instance.QueueEvent(newEvent);
-			Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
             return true;
         }
 
@@ -189,30 +230,16 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnChanged()
         {
-            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation);
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation, this);
 			Cv_EventManager.Instance.QueueEvent(newEvent);
         }
 
         protected internal override void VOnDestroy()
         {
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
         }
 
         protected internal override void VOnUpdate(float deltaTime)
         {
         }
-
-		private void OnTransformEntity(Cv_Event transformEvent)
-		{
-			if (transformEvent.EntityID == Owner.ID)
-			{
-				var tEvent = (Cv_Event_TransformEntity) transformEvent;
-
-				Transform.Position = tEvent.NewPosition;
-				Transform.Scale = tEvent.NewScale;
-				Transform.Rotation = tEvent.NewRotation;
-				Transform.Origin = tEvent.NewOrigin;
-			}
-		}
     }
 }

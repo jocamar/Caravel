@@ -51,21 +51,26 @@ namespace Caravel.Core.Events
 			get; private set;
 		}
 
+		public override bool WriteToLog
+		{
+			get
+			{
+				return false;
+			}
+		}
+
         public Cv_Event_TransformEntity(Cv_EntityID entityID, Cv_Transform oldTransform, Vector3 newPos,
-														Vector2 newScale, Vector2 newOrigin, float newRotation) : base(entityID)
+														Vector2 newScale, Vector2 newOrigin, float newRotation, object sender) : base(entityID, sender)
         {
             NewPosition = newPos;
 			NewScale = newScale;
 			NewRotation = newRotation;
 			NewOrigin = newOrigin;
-
-			if (oldTransform != null)
-			{
-				OldPosition = oldTransform.Position;
-				OldScale = oldTransform.Scale;
-				OldRotation = oldTransform.Rotation;
-				OldOrigin = oldTransform.Origin;
-			}
+			
+			OldPosition = oldTransform.Position;
+			OldScale = oldTransform.Scale;
+			OldRotation = oldTransform.Rotation;
+			OldOrigin = oldTransform.Origin;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

@@ -7,6 +7,7 @@
   </Cv_TransformComponent>
   <Cv_SpriteComponent>
     <Color r="255" g="255" b="255" a="255" />
+    <Visible status="True" />
     <Texture resource="sky.jpg" />
     <Size width="250" height="250" />
     <Animation fx="1" fy="1" loop="True" />

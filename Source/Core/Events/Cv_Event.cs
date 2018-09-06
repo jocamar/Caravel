@@ -29,13 +29,27 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public object Sender
+        {
+            get; private set;
+        }
+
         public float TimeStamp
         {
             get; private set;
         }
 
-        public Cv_Event(Cv_EntityID entityId, float timeStamp = 0.0f)
+        public virtual bool WriteToLog
         {
+            get
+            {
+                return true;
+            }
+        }
+
+        public Cv_Event(Cv_EntityID entityId, object sender, float timeStamp = 0.0f)
+        {
+            Sender = sender;
 			EntityID = entityId;
             TimeStamp = timeStamp;
         }

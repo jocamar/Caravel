@@ -56,7 +56,7 @@ namespace Caravel.Debugging
         private Dictionary<string, ushort> m_Tags = new Dictionary<string, ushort>();
         private Dictionary<int, ErrorMessenger> m_ErrorMessengers = new Dictionary<int, ErrorMessenger>();
 
-        public void Init(string logTagsFile)
+        public void Initialize(string logTagsFile)
         {
             instance = this;
 

@@ -19,7 +19,8 @@ namespace Caravel.TestSamples
 
 		protected override void VGameOnUpdate(float time, float timeElapsed)
 		{
-            simpleGame.guntler.GetComponent<Cv_TransformComponent>().Rotation += timeElapsed / 1000;
+            var guntlerTransf = simpleGame.guntler.GetComponent<Cv_TransformComponent>();
+            guntlerTransf.SetRotation(guntlerTransf.Rotation + (timeElapsed / 1000));
 
             var camTransf = simpleGame.CameraEntity.GetComponent<Cv_TransformComponent>();
             var camSettings = simpleGame.CameraEntity.GetComponent<Cv_CameraComponent>();
@@ -28,22 +29,22 @@ namespace Caravel.TestSamples
             var profileRigidBody = simpleGame.profile.GetComponent<Cv_RigidBodyComponent>();
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                camTransf.Position += new Vector3(-5,0,0);
+                camTransf.SetPosition(camTransf.Position + new Vector3(-5,0,0));
             }
             
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                camTransf.Position += new Vector3(5, 0, 0);
+                camTransf.SetPosition(camTransf.Position + new Vector3(5, 0, 0));
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                camTransf.Position += new Vector3(0,-5, 0);
+                camTransf.SetPosition(camTransf.Position + new Vector3(0,-5, 0));
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                camTransf.Position += new Vector3(0, 5, 0);
+                camTransf.SetPosition(camTransf.Position + new Vector3(0, 5, 0));
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
@@ -96,12 +97,12 @@ namespace Caravel.TestSamples
 
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                profileTransf.Rotation += timeElapsed / 1000;
+                profileTransf.SetRotation(profileTransf.Rotation + (timeElapsed / 1000));
             }
             
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                profileTransf.Rotation -= timeElapsed / 1000;
+                profileTransf.SetRotation(profileTransf.Rotation - (timeElapsed / 1000));
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.R))

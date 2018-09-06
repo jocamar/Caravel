@@ -41,13 +41,19 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_RequestNewEntity(string entityResource, string entityName, string resourceBundle, Cv_EntityID parentId, Cv_Transform initialTransform,
+        public bool Visible
+        {
+            get; private set;
+        }
+
+        public Cv_Event_RequestNewEntity(string entityResource, string entityName, string resourceBundle, bool visible,
+                                            Cv_EntityID parentId, Cv_Transform? initialTransform, object sender,
                                             Cv_EntityID serverEntityID = Cv_EntityID.INVALID_ENTITY,
-                                            Cv_GameViewID gameViewId = Cv_GameViewID.INVALID_GAMEVIEW) : base(Cv_EntityID.INVALID_ENTITY)
+                                            Cv_GameViewID gameViewId = Cv_GameViewID.INVALID_GAMEVIEW) : base(Cv_EntityID.INVALID_ENTITY, sender)
         {
 			EntityName = entityName;
             EntityResource = entityResource;
-            InitialTransform = initialTransform;
+            InitialTransform = (initialTransform != null ? initialTransform.Value : Cv_Transform.Identity);
             ServerEntityID = serverEntityID;
             GameViewID = gameViewId;
             Parent = parentId;

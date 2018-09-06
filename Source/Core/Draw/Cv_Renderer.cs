@@ -161,6 +161,11 @@ namespace Caravel.Core.Draw
             get; set;
         }
 
+        public double Scale
+        {
+            get; private set;
+        }
+
         public Cv_Transform Transform
         {
             get
@@ -176,7 +181,6 @@ namespace Caravel.Core.Draw
 
         internal Matrix CamMatrix;
 
-        private double m_dScale;
         private float m_fRatioX;
         private float m_fRatioY;
 
@@ -202,12 +206,9 @@ namespace Caravel.Core.Draw
 			m_SamplerState = SamplerState.PointClamp;
         }
         
-        public void Init()
+        public void Initialize()
         {
             SetupVirtualScreenViewport();
-
-            m_fRatioX = (float)Viewport.Width / VirtualWidth;
-            m_fRatioY = (float)Viewport.Height / VirtualHeight;
 
             m_bDirtyTransform = true;
         }
@@ -271,8 +272,8 @@ namespace Caravel.Core.Draw
             var realX = screenPosition.X - Viewport.X;
             var realY = screenPosition.Y - Viewport.Y;
 
-            m_VirtualMousePosition.X = realX / m_fRatioX;
-            m_VirtualMousePosition.Y = realY / m_fRatioY;
+            m_VirtualMousePosition.X = realX;
+            m_VirtualMousePosition.Y = realY;
 
             return m_VirtualMousePosition;
         }
@@ -324,10 +325,10 @@ namespace Caravel.Core.Draw
             widthScale = (double)ScreenWidth / VirtualWidth;
             heightScale = (double)ScreenHeight / VirtualHeight;
 
-            m_dScale = Math.Min(widthScale, heightScale);
+            Scale = Math.Min(widthScale, heightScale);
 
-            width = (int)(VirtualWidth * m_dScale);
-            height = (int)(VirtualHeight * m_dScale);
+            width = (int)(VirtualWidth * Scale);
+            height = (int)(VirtualHeight * Scale);
 
             // set up the new viewport centered in the backbuffer
             Viewport = new Viewport
@@ -339,6 +340,9 @@ namespace Caravel.Core.Draw
                             };
 
             CaravelApp.Instance.CurrentGraphicsDevice.Viewport = Viewport;
+
+            m_fRatioX = (float)Viewport.Width / VirtualWidth;
+            m_fRatioY = (float)Viewport.Height / VirtualHeight;
         }
 
         private void SetupFullViewport()
@@ -353,7 +357,7 @@ namespace Caravel.Core.Draw
 
         private void RecreateScaleMatrix()
         {
-            Cv_Transform newScale = new Cv_Transform(Vector3.Zero, new Vector2((float) m_dScale, (float) m_dScale), 0);
+            Cv_Transform newScale = new Cv_Transform(Vector3.Zero, new Vector2((float) Scale, (float) Scale), 0);
             m_ScaleTransform = newScale;
             m_bDirtyTransform = false;
         }

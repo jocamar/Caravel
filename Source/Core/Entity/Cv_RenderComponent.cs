@@ -52,17 +52,22 @@ namespace Caravel.Core.Entity
             color.SetAttribute("a", Color.A.ToString(CultureInfo.InvariantCulture));
             baseElement.AppendChild(color);
 
+            // color
+            XmlElement visible = doc.CreateElement("Visible");
+            visible.SetAttribute("status", Visible.ToString());
+            baseElement.AppendChild(visible);
+
             // create XML for inherited classes
             VCreateInheritedElement(baseElement);
 
             return baseElement;
         }
 
-        protected internal override bool VInit(XmlElement componentData)
+        protected internal override bool VInitialize(XmlElement componentData)
         {
             Visible = true;
 
-            XmlElement colorNode = (XmlElement) componentData.SelectSingleNode("//Color");
+            XmlElement colorNode = (XmlElement) componentData.SelectSingleNode("Color");
             if (colorNode != null)
             {
                 int r, g, b, a;
@@ -81,7 +86,7 @@ namespace Caravel.Core.Entity
                 Color = new Color(r,g,b,a);
             }
 
-            XmlElement visibleNode = (XmlElement) componentData.SelectSingleNode("//Visible");
+            XmlElement visibleNode = (XmlElement) componentData.SelectSingleNode("Visible");
             if (visibleNode != null)
             {
                 bool visible;
@@ -98,24 +103,24 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override bool VPostInit()
+        protected internal override bool VPostInitialize()
         {
-            Cv_SceneNode sceneNode = this.SceneNode;
-            Cv_Event newEvent = new Cv_Event_NewRenderComponent(Owner.ID, Owner.Parent, sceneNode);
+            Cv_SceneNode sceneNode = SceneNode;
+            Cv_Event newEvent = new Cv_Event_NewRenderComponent(Owner.ID, Owner.Parent, sceneNode, this);
             Cv_EventManager.Instance.TriggerEvent(newEvent);
             return true;
         }
 
         protected internal override void VOnChanged()
         {
-            var newEvent = new Cv_Event_ModifiedRenderComponent(Owner.ID);
+            var newEvent = new Cv_Event_ModifiedRenderComponent(Owner.ID, this);
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
         protected internal override void VOnDestroy()
         {
             Cv_SceneNode renderNode = this.SceneNode;
-            Cv_Event newEvent = new Cv_Event_DestroyRenderComponent(Owner.ID, renderNode);
+            Cv_Event newEvent = new Cv_Event_DestroyRenderComponent(Owner.ID, renderNode, this);
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 

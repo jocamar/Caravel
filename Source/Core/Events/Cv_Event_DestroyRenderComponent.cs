@@ -11,7 +11,15 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_DestroyRenderComponent(Cv_EntityID entityID, Cv_SceneNode renderNode) : base(entityID)
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public Cv_Event_DestroyRenderComponent(Cv_EntityID entityID, Cv_SceneNode renderNode, object sender) : base(entityID, sender)
         {
             SceneNode = renderNode;
         }

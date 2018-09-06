@@ -164,7 +164,7 @@ namespace Caravel.Core.Entity
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
             m_sDefaultAnim = "";
 
-            Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
+            //Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
         }
 
         public Cv_SpriteComponent(string resource, int width, int height, Color color,
@@ -188,7 +188,7 @@ namespace Caravel.Core.Entity
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
             m_sDefaultAnim = "";
 
-            Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnTransformEntity);
+            //Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
         }
 
 
@@ -217,20 +217,20 @@ namespace Caravel.Core.Entity
         {
             Cv_Debug.Assert(componentData != null, "Must have valid component data.");
 
-            var textureNode = componentData.SelectNodes("//Texture").Item(0);
+            var textureNode = componentData.SelectNodes("Texture").Item(0);
             if (textureNode != null)
             {
                 Texture = textureNode.Attributes["resource"].Value;
             }
 
-            var sizeNode = componentData.SelectNodes("//Size").Item(0);
+            var sizeNode = componentData.SelectNodes("Size").Item(0);
             if (sizeNode != null)
             {
                 Width = int.Parse(sizeNode.Attributes["width"].Value);
                 Height = int.Parse(sizeNode.Attributes["height"].Value);
             }
 
-			var animationNode = componentData.SelectNodes("//Animation").Item(0);
+			var animationNode = componentData.SelectNodes("Animation").Item(0);
 
             if (animationNode != null)
             {
@@ -264,7 +264,7 @@ namespace Caravel.Core.Entity
                     EndFrame = int.Parse(animationNode.Attributes["endFrame"].Value);
                 }
 
-                var subAnimations = animationNode.SelectNodes("//SubAnimation");
+                var subAnimations = animationNode.SelectNodes("SubAnimation");
                 m_SubAnimations.Clear();
                 m_CurrAnim = null;
 
@@ -299,6 +299,7 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnUpdate(float elapsedTime)
         {
+            SceneNode.SetRadius(-1);
             m_ActualEndFrame = m_CurrAnim != null ? m_CurrAnim.Value.EndFrame : 0;
             if (EndFrame != null)
             {
@@ -354,22 +355,9 @@ namespace Caravel.Core.Entity
 			}
         }
 
-        protected internal void OnTransformEntity(Cv_Event eventData)
-        {
-            if (Owner != null && eventData.EntityID == Owner.ID)
-            {
-                var transformData = (Cv_Event_TransformEntity) eventData;
-
-                if (transformData.NewOrigin != transformData.OldOrigin || transformData.NewScale != transformData.OldScale)
-                {
-                    SceneNode.SetRadius(-1);
-                }
-            }
-        }
-
         protected override Cv_SceneNode VCreateSceneNode()
         {
-            return new Cv_SpriteNode(Owner.ID, this, new Cv_Transform());
+            return new Cv_SpriteNode(Owner.ID, this, Cv_Transform.Identity);
         }
 
         protected override XmlElement VCreateInheritedElement(XmlElement baseElement)
@@ -429,7 +417,6 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnDestroy()
         {
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnTransformEntity);
             base.VOnDestroy();
         }
 	}
