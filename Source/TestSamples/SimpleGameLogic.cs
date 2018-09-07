@@ -1,6 +1,7 @@
 using System;
 using Caravel.Core;
 using Caravel.Core.Entity;
+using Caravel.Core.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using static Caravel.Core.Entity.Cv_Entity;
@@ -15,6 +16,12 @@ namespace Caravel.TestSamples
 		public SimpleGameLogic(SimpleGame app) : base(app)
 		{
 			simpleGame = app;
+			Caravel.EventManager.AddListener<Cv_Event_NewCollision>(OnCollision);
+		}
+
+		private void OnCollision(Cv_Event eventData)
+		{
+			Caravel.SoundManager.PlaySound("hit2.wav", "Default");
 		}
 
 		protected override void VGameOnUpdate(float time, float timeElapsed)

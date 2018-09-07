@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework.Audio;
@@ -38,17 +39,25 @@ namespace Caravel.Core.Resource
             }
 
             resourceStream.Position = 0;
-            var sound = SoundEffect.FromStream(resourceStream);
+			try {
+				var sound = SoundEffect.FromStream(resourceStream);
 
-            var resData = new Cv_SoundData();
-            resData.Sound = sound;
-            ResourceData = resData;
+				var resData = new Cv_SoundData();
+				resData.Sound = sound;
+				ResourceData = resData;
 
-            size = 0;
+				size = 0;
 
-            resourceStream.Dispose();
-            
-            return true;
+				resourceStream.Dispose();
+				
+				return true;
+			}
+			catch (Exception e)
+			{
+				Cv_Debug.Error("Error loading sound stream.");
+				size = 0;
+				return false;
+			}
         }
 
         public Cv_SoundData GetSoundData()

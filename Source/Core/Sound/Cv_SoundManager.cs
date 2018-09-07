@@ -37,7 +37,8 @@ namespace Caravel.Core.Sound
         private AudioEmitter m_Emitter;
         private AudioListener m_Listener;
 
-        public SoundEffectInstance PlaySound(string soundResource, string resourceBundle, float volume = 1f, float pan = 0f, float pitch = 0f)
+        public SoundEffectInstance PlaySound(string soundResource, string resourceBundle, bool looping = false,
+																	float volume = 1f, float pan = 0f, float pitch = 0f)
         {
             if (soundResource == null || soundResource == "" || resourceBundle == null || resourceBundle == "")
             {
@@ -67,12 +68,13 @@ namespace Caravel.Core.Sound
             soundInstance.Volume = volume * GlobalSoundVolume;
             soundInstance.Pan = pan;
             soundInstance.Pitch = pitch;
+			soundInstance.IsLooped = looping;
             soundInstance.Play();
             return soundInstance;
         }
 
         public SoundEffectInstance PlaySound2D(string soundResource, string resourceBundle, Vector2 listener, Vector2 emitter,
-                                                                                float volume = 1f, float pan = 0f, float pitch = 0f)
+                                                                        bool looping = false, float volume = 1f, float pan = 0f, float pitch = 0f)
         {
             if (soundResource == null || soundResource == "" || resourceBundle == null || resourceBundle == "")
             {
@@ -106,11 +108,13 @@ namespace Caravel.Core.Sound
             soundInstance.Volume = volume * GlobalSoundVolume;
             soundInstance.Pan = pan;
             soundInstance.Pitch = pitch;
+			soundInstance.IsLooped = looping;
             soundInstance.Play();
             return soundInstance;
         }
 
-        public SoundEffectInstance FadeInSound(string soundResource, string resourceBundle, float interval, float volume = 1f, float pan = 0f, float pitch = 0f)
+        public SoundEffectInstance FadeInSound(string soundResource, string resourceBundle, float interval,
+														bool looping = false, float volume = 1f, float pan = 0f, float pitch = 0f)
         {
             if (soundResource == null || soundResource == "" || resourceBundle == null || resourceBundle == "")
             {
@@ -123,14 +127,14 @@ namespace Caravel.Core.Sound
             fadeSoundData.FadeRemainingTime = interval;
             fadeSoundData.FinalVolume = volume;
             fadeSoundData.Paused = false;
-            fadeSoundData.Instance = PlaySound(soundResource, resourceBundle, 0, pan, pitch);
+            fadeSoundData.Instance = PlaySound(soundResource, resourceBundle, looping, 0, pan, pitch);
 
             m_FadeSoundInstanceList.Add(fadeSoundData);
             return fadeSoundData.Instance;
         }
 
         public SoundEffectInstance FadeInSound2D(string soundResource, string resourceBundle, Vector2 listener, Vector2 emitter,
-                                                                        float interval, float volume = 1f, float pan = 0f, float pitch = 0f)
+                                                        float interval, bool looping = false, float volume = 1f, float pan = 0f, float pitch = 0f)
         {
             if (soundResource == null || soundResource == "" || resourceBundle == null || resourceBundle == "")
             {
@@ -143,7 +147,7 @@ namespace Caravel.Core.Sound
             fadeSoundData.FadeRemainingTime = interval;
             fadeSoundData.FinalVolume = volume;
             fadeSoundData.Paused = false;
-            fadeSoundData.Instance = PlaySound2D(soundResource, resourceBundle, listener, emitter, 0, pan, pitch);
+            fadeSoundData.Instance = PlaySound2D(soundResource, resourceBundle, listener, emitter, looping, 0, pan, pitch);
 
             m_FadeSoundInstanceList.Add(fadeSoundData);
             return fadeSoundData.Instance;

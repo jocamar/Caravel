@@ -51,6 +51,11 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+		public bool Looping
+		{
+			get; private set;
+		}
+
         public override bool WriteToLog
 		{
 			get
@@ -59,7 +64,7 @@ namespace Caravel.Core.Events
 			}
 		}
 
-        public Cv_Event_PlaySound(Cv_Entity.Cv_EntityID entityId, object sender, string soundResource, float volume = 1f, float pan = 0f, float pitch = 0f, bool fade = false,
+        public Cv_Event_PlaySound(Cv_Entity.Cv_EntityID entityId, object sender, string soundResource, bool looping = false, float volume = 1f, float pan = 0f, float pitch = 0f, bool fade = false,
                                     float interval = 0f, bool localized = false, Vector2 emitter = default(Vector2), Vector2 listener = default(Vector2), float timeStamp = 0) : base(entityId, sender, timeStamp)
         {
             SoundResource = soundResource;
@@ -71,6 +76,7 @@ namespace Caravel.Core.Events
             Localized = localized;
             Emitter = emitter;
             Listener = listener;
+			Looping = looping;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

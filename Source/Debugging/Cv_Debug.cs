@@ -388,11 +388,11 @@ namespace Caravel.Debugging
             };
 
             mBoxParams.defaultButton = Cv_ButtonType.CV_BUTTON_RETRY;
-            mBoxParams.bgColor = Color.Red;
-            mBoxParams.textColor = Color.Green;
-            mBoxParams.btBorderColor = Color.Yellow;
-            mBoxParams.btBgColor = Color.Blue;
-            mBoxParams.btSelectedColor = Color.Purple;
+			mBoxParams.bgColor = Color.White;
+			mBoxParams.textColor = Color.Black;
+			mBoxParams.btBorderColor = Color.DarkGray;
+			mBoxParams.btBgColor = Color.LightGray;
+            mBoxParams.btSelectedColor = Color.Gray;
             mBoxParams.title = tag;
             mBoxParams.message = finalString;
             mBoxParams.messageType = Cv_MessageType.CV_MESSAGE_ERROR;
