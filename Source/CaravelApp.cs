@@ -3,6 +3,7 @@ using Caravel.Core.Draw;
 using Caravel.Core.Events;
 using Caravel.Core.Physics;
 using Caravel.Core.Resource;
+using Caravel.Core.Sound;
 using Caravel.Debugging;
 using Caravel.Editor;
 using Microsoft.Xna.Framework;
@@ -127,6 +128,11 @@ namespace Caravel
             get; private set;
         }
 
+        public Cv_SoundManager SoundManager
+        {
+            get; private set;
+        }
+
         public GraphicsDeviceManager Graphics
         {
             get; private set;
@@ -215,6 +221,14 @@ namespace Caravel
                 return;
             }
 
+            SoundManager = new Cv_SoundManager();
+            if (!SoundManager.Initialize())
+            {
+                Cv_Debug.Error("Unable to initialize sound manager.");
+                Exit();
+                return;
+            }
+
             //TODO(JM): init the process manager here
             //ProcessManager = new Cv_ProcessManager();
             //if (!ProcessManager.Initialize())
@@ -273,6 +287,7 @@ namespace Caravel
             }
 
 			EventManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+            SoundManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             Logic.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
 
             base.Update(gameTime);

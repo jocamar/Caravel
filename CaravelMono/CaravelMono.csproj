@@ -133,6 +133,9 @@
     <Compile Include="..\Source\Core\Draw\Cv_SpriteNode.cs">
       <Link>Source\Core\Draw\Cv_SpriteNode.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Sound\Cv_SoundManager.cs">
+      <Link>Source\Core\Sound\Cv_SoundManager.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_CameraComponent.cs">
       <Link>Source\Core\Entity\Cv_CameraComponent.cs</Link>
     </Compile>
@@ -220,6 +223,27 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_TransformEntity.cs">
       <Link>Source\Core\Events\Cv_Event_TransformEntity.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_PlaySound.cs">
+      <Link>Source\Core\Events\Cv_Event_PlaySound.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_StopSound.cs">
+      <Link>Source\Core\Events\Cv_Event_StopSound.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_PauseSound.cs">
+      <Link>Source\Core\Events\Cv_Event_PauseSound.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_ResumeSound.cs">
+      <Link>Source\Core\Events\Cv_Event_ResumeSound.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_StopAllSounds.cs">
+      <Link>Source\Core\Events\Cv_Event_StopAllSounds.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_PauseAllSounds.cs">
+      <Link>Source\Core\Events\Cv_Event_PauseAllSounds.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_ResumeAllSounds.cs">
+      <Link>Source\Core\Events\Cv_Event_ResumeAllSounds.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_RawTextureResource.cs">
       <Link>Source\Core\Resource\Cv_RawTextureResource.cs</Link>
     </Compile>
@@ -240,6 +264,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_XmlResource.cs">
       <Link>Source\Core\Resource\Cv_XmlResource.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_SoundResource.cs">
+      <Link>Source\Core\Resource\Cv_SoundResource.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_ZipResourceBundle.cs">
       <Link>Source\Core\Resource\Cv_ZipResourceBundle.cs</Link>

@@ -12,6 +12,7 @@ using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;
 using Caravel.Core.Draw;
 using static Caravel.Core.Draw.Cv_Renderer;
+using Caravel.Debugging;
 
 namespace Caravel.Core
 {
@@ -120,11 +121,13 @@ namespace Caravel.Core
                 m_bAreSoundsPaused = value;
                 if (value)
                 {
-                    //Caravel.SoundManager.StopAllSounds();
+                    var pauseEvt = new Cv_Event_PauseAllSounds(Cv_EntityID.INVALID_ENTITY, this);
+                    Caravel.EventManager.QueueEvent(pauseEvt);
                 }
                 else
                 {
-                    //Caravel.SoundManager.ResumeAllSounds();
+                    var resumeEvt = new Cv_Event_ResumeAllSounds(Cv_EntityID.INVALID_ENTITY, this);
+                    Caravel.EventManager.QueueEvent(resumeEvt);
                 }
             }
         }
@@ -365,11 +368,6 @@ namespace Caravel.Core
             EntityID = entityId;
         }
 
-        internal void OnPlaySound(Cv_Event eventData)
-        {
-            //play sound
-        }
-
         internal void OnGameState(Cv_Event eventData)
         {
             var newStateEvt = (Cv_Event_ChangeState) eventData;
@@ -388,16 +386,109 @@ namespace Caravel.Core
 
         private void RegisterEventListeners()
         {
-            //Cv_EventManager.Instance.AddListener<Cv_Event_PlaySound>(OnPlaySound);
             Cv_EventManager.Instance.AddListener<Cv_Event_ChangeState>(OnGameState);
             Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
+            Cv_EventManager.Instance.AddListener<Cv_Event_PlaySound>(OnPlaySound);
+            Cv_EventManager.Instance.AddListener<Cv_Event_StopSound>(OnStopSound);
+            Cv_EventManager.Instance.AddListener<Cv_Event_PauseSound>(OnPauseSound);
+            Cv_EventManager.Instance.AddListener<Cv_Event_ResumeSound>(OnResumeSound);
+            Cv_EventManager.Instance.AddListener<Cv_Event_StopAllSounds>(OnStopAllSounds);
+            Cv_EventManager.Instance.AddListener<Cv_Event_PauseAllSounds>(OnPauseAllSounds);
+            Cv_EventManager.Instance.AddListener<Cv_Event_ResumeAllSounds>(OnResumeAllSounds);
         }
 
         private void RemoveEventListeners()
         {
-            //Cv_EventManager.Instance.RemoveListener<Cv_Event_PlaySound>(OnPlaySound);
             Cv_EventManager.Instance.RemoveListener<Cv_Event_ChangeState>(OnGameState);
             Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_PlaySound>(OnPlaySound);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_StopSound>(OnStopSound);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_PauseSound>(OnPauseSound);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_ResumeSound>(OnResumeSound);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_StopAllSounds>(OnStopAllSounds);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_PauseAllSounds>(OnPauseAllSounds);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_ResumeAllSounds>(OnResumeAllSounds);
+        }
+
+        private void OnResumeAllSounds(Cv_Event eventData)
+        {
+            Caravel.SoundManager.ResumeAllSounds();
+        }
+
+        private void OnPauseAllSounds(Cv_Event eventData)
+        {
+            Caravel.SoundManager.PauseAllSounds();
+        }
+
+        private void OnStopAllSounds(Cv_Event eventData)
+        {
+            Caravel.SoundManager.StopAllSounds();
+        }
+
+        private void OnResumeSound(Cv_Event eventData)
+        {
+            var resumeEvt = (Cv_Event_ResumeSound) eventData;
+            Caravel.SoundManager.ResumeSound(resumeEvt.SoundResource);
+        }
+
+        private void OnPauseSound(Cv_Event eventData)
+        {
+            var pauseEvt = (Cv_Event_PauseSound) eventData;
+            Caravel.SoundManager.ResumeSound(pauseEvt.SoundResource);
+        }
+
+        private void OnStopSound(Cv_Event eventData)
+        {
+            var stopEvt = (Cv_Event_StopSound) eventData;
+            Caravel.SoundManager.StopSound(stopEvt.SoundResource);
+        }
+
+        private void OnPlaySound(Cv_Event eventData)
+        {
+            var playEvt = (Cv_Event_PlaySound) eventData;
+
+            var entity = CaravelApp.Instance.Logic.GetEntity(playEvt.EntityID);
+            
+            if (playEvt.Fade && playEvt.Interval > 0)
+            {
+                if (playEvt.Volume <= 0)
+                {
+                    Caravel.SoundManager.FadeOutSound(playEvt.SoundResource, playEvt.Interval);
+                    return;
+                }
+
+                if (entity == null)
+                {
+                    Cv_Debug.Error("Attempting to play sound without an entity associated.");
+                    return;
+                }
+
+                if (playEvt.Localized)
+                {
+                    Caravel.SoundManager.FadeInSound2D(playEvt.SoundResource, entity.ResourceBundle, playEvt.Listener, playEvt.Emitter, playEvt.Interval, playEvt.Volume, playEvt.Pan, playEvt.Pitch);
+                }
+                else
+                {
+                    Caravel.SoundManager.FadeInSound(playEvt.SoundResource, entity.ResourceBundle, playEvt.Interval, playEvt.Volume, playEvt.Pan, playEvt.Pitch);
+                }
+            }
+            else
+            {
+                if (entity == null)
+                {
+                    Cv_Debug.Error("Attempting to play sound without an entity associated.");
+                    return;
+                }
+
+                if (playEvt.Localized)
+                {
+                    Caravel.SoundManager.PlaySound2D(playEvt.SoundResource, entity.ResourceBundle, playEvt.Listener, playEvt.Emitter, playEvt.Volume, playEvt.Pan, playEvt.Pitch);
+                }
+                else
+                {
+                    Caravel.SoundManager.PlaySound(playEvt.SoundResource, entity.ResourceBundle, playEvt.Volume, playEvt.Pan, playEvt.Pitch);
+                }
+            }
         }
     }
 }

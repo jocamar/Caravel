@@ -77,10 +77,8 @@ namespace Caravel.Core.Draw
                 return;
             }
 
-            Cv_RawTextureResource resource;
-			resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture, spriteComponent.Owner.ResourceBundle);
+            Cv_RawTextureResource resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture, spriteComponent.Owner.ResourceBundle);
 			
-
             var tex = resource.GetTexture().Texture;
 
             var frameW = tex.Width / spriteComponent.FrameX;

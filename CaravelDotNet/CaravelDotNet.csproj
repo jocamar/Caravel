@@ -142,6 +142,9 @@
     <Compile Include="..\Source\Core\Draw\Cv_SpriteNode.cs">
       <Link>Cv_SpriteNode.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Sound\Cv_SoundManager.cs">
+      <Link>Cv_SoundManager.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_CameraComponent.cs">
       <Link>Cv_CameraComponent.cs</Link>
     </Compile>
@@ -229,6 +232,27 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_TransformEntity.cs">
       <Link>Cv_Event_TransformEntity.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_PlaySound.cs">
+      <Link>Cv_Event_PlaySound.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_StopSound.cs">
+      <Link>Cv_Event_StopSound.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_PauseSound.cs">
+      <Link>Cv_Event_PauseSound.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_ResumeSound.cs">
+      <Link>Cv_Event_ResumeSound.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_StopAllSounds.cs">
+      <Link>Cv_Event_StopAllSounds.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_PauseAllSounds.cs">
+      <Link>Cv_Event_PauseAllSounds.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_ResumeAllSounds.cs">
+      <Link>Cv_Event_ResumeAllSounds.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Physics\Cv_CollisionShape.cs">
       <Link>Cv_CollisionShape.cs</Link>
     </Compile>
@@ -261,6 +285,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_ScriptResource.cs">
       <Link>Cv_ScriptResource.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_SoundResource.cs">
+      <Link>Cv_SoundResource.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_XmlResource.cs">
       <Link>Cv_XmlResource.cs</Link>
