@@ -166,6 +166,12 @@
     <Compile Include="..\Source\Core\Entity\Cv_SpriteComponent.cs">
       <Link>Cv_SpriteComponent.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_SoundEmitterComponent.cs">
+      <Link>Cv_SoundEmitterComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_SoundListenerComponent.cs">
+      <Link>Cv_SoundListenerComponent.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_TransformComponent.cs">
       <Link>Cv_TransformComponent.cs</Link>
     </Compile>

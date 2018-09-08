@@ -9,18 +9,20 @@ namespace Caravel.Core.Entity
 {
     public class Cv_EntityFactory
     {
-        protected GenericObjectFactory<Cv_EntityComponent, Cv_ComponentID> m_ComponentFactory;
+        protected GenericObjectFactory<Cv_EntityComponent, Cv_ComponentID> ComponentFactory;
 
         private Cv_EntityID m_lastEntityID = Cv_EntityID.INVALID_ENTITY;
 
         protected internal Cv_EntityFactory()
         {
-            m_ComponentFactory = new GenericObjectFactory<Cv_EntityComponent, Cv_ComponentID>();
+            ComponentFactory = new GenericObjectFactory<Cv_EntityComponent, Cv_ComponentID>();
 
-            m_ComponentFactory.Register<Cv_TransformComponent>(Cv_EntityComponent.GetID<Cv_TransformComponent>());
-            m_ComponentFactory.Register<Cv_SpriteComponent>(Cv_EntityComponent.GetID<Cv_SpriteComponent>());
-            m_ComponentFactory.Register<Cv_CameraComponent>(Cv_EntityComponent.GetID<Cv_CameraComponent>());
-            m_ComponentFactory.Register<Cv_RigidBodyComponent>(Cv_EntityComponent.GetID<Cv_RigidBodyComponent>());
+            ComponentFactory.Register<Cv_TransformComponent>(Cv_EntityComponent.GetID<Cv_TransformComponent>());
+            ComponentFactory.Register<Cv_SpriteComponent>(Cv_EntityComponent.GetID<Cv_SpriteComponent>());
+            ComponentFactory.Register<Cv_CameraComponent>(Cv_EntityComponent.GetID<Cv_CameraComponent>());
+            ComponentFactory.Register<Cv_RigidBodyComponent>(Cv_EntityComponent.GetID<Cv_RigidBodyComponent>());
+            ComponentFactory.Register<Cv_SoundEmitterComponent>(Cv_EntityComponent.GetID<Cv_SoundEmitterComponent>());
+            ComponentFactory.Register<Cv_SoundListenerComponent>(Cv_EntityComponent.GetID<Cv_SoundListenerComponent>());
         }
 
         protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,
@@ -141,7 +143,7 @@ namespace Caravel.Core.Entity
 
         protected internal Cv_EntityComponent CreateComponent(string componentName)
         {
-            var component = m_ComponentFactory.Create(Cv_EntityComponent.GetID(componentName));
+            var component = ComponentFactory.Create(Cv_EntityComponent.GetID(componentName));
 
             if (component == null)
             {
@@ -153,7 +155,7 @@ namespace Caravel.Core.Entity
 
         protected internal Component CreateComponent<Component>() where Component : Cv_EntityComponent
         {
-            var component = (Component) m_ComponentFactory.Create(Cv_EntityComponent.GetID(typeof(Component)));
+            var component = (Component) ComponentFactory.Create(Cv_EntityComponent.GetID(typeof(Component)));
 
             if (component == null)
             {
@@ -165,7 +167,7 @@ namespace Caravel.Core.Entity
 
         protected Cv_EntityComponent CreateComponent(XmlElement componentData)
         {
-            var component = m_ComponentFactory.Create(Cv_EntityComponent.GetID(componentData.Name));
+            var component = ComponentFactory.Create(Cv_EntityComponent.GetID(componentData.Name));
 
             if (component != null)
             {

@@ -10,6 +10,7 @@
           </Box>
         </CollisionShapes>
       </Cv_RigidBodyComponent>
+      <Cv_SoundListenerComponent />
       <Entity name="camera2" type="entity_types/camera.cve" visible="True">
         <Cv_CameraComponent>
           <Properties defaultCamera="True" zoom="2" />
@@ -25,12 +26,20 @@
       <Cv_RigidBodyComponent>
         <Physics fixedRotation="True" gravityScale="1" maxVelocity="100" maxAngVelocity="100" />
         <CollisionShapes>
-          <Box material="Wood" anchorX="0" anchorY="0" isBullet="False" dimensionsX="150" dimensionsY="150">
+          <Box material="Rock" anchorX="0" anchorY="0" isBullet="False" dimensionsX="150" dimensionsY="150">
             <CollisionCategory id="0" />
             <CollidesWith id="1" directions="All" />
           </Box>
         </CollisionShapes>
       </Cv_RigidBodyComponent>
+      <Cv_SoundEmitterComponent>
+        <SoundEffect resource="hit.wav" />
+        <Volume value="1" />
+        <Pan value="0" />
+        <Pitch value="0" />
+        <Looping value="False" />
+        <IsPositional value="True" />
+      </Cv_SoundEmitterComponent>
       <Entity name="camera" type="entity_types/camera.cve" visible="True" />
     </Entity>
     <Entity name="ground" type="entity_types/chao.cve" visible="True">

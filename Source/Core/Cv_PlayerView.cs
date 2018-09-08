@@ -132,6 +132,11 @@ namespace Caravel.Core
             }
         }
 
+        public Cv_Entity ListenerEntity
+        {
+            get; set;
+        }
+
 		public Cv_BlendState Blend
 		{
 			get
@@ -227,6 +232,8 @@ namespace Caravel.Core
             Renderer.Initialize();
 
             Cv_DrawUtils.Initialize();
+
+            ListenerEntity = null;
 
             Scene = CaravelApp.Instance.Scene;
         }
@@ -428,19 +435,28 @@ namespace Caravel.Core
         private void OnResumeSound(Cv_Event eventData)
         {
             var resumeEvt = (Cv_Event_ResumeSound) eventData;
-            Caravel.SoundManager.ResumeSound(resumeEvt.SoundResource);
+
+            var entity = CaravelApp.Instance.Logic.GetEntity(resumeEvt.EntityID);
+
+            Caravel.SoundManager.ResumeSound(resumeEvt.SoundResource, entity);
         }
 
         private void OnPauseSound(Cv_Event eventData)
         {
             var pauseEvt = (Cv_Event_PauseSound) eventData;
-            Caravel.SoundManager.ResumeSound(pauseEvt.SoundResource);
+
+            var entity = CaravelApp.Instance.Logic.GetEntity(pauseEvt.EntityID);
+
+            Caravel.SoundManager.ResumeSound(pauseEvt.SoundResource, entity);
         }
 
         private void OnStopSound(Cv_Event eventData)
         {
             var stopEvt = (Cv_Event_StopSound) eventData;
-            Caravel.SoundManager.StopSound(stopEvt.SoundResource);
+
+            var entity = CaravelApp.Instance.Logic.GetEntity(stopEvt.EntityID); 
+
+            Caravel.SoundManager.StopSound(stopEvt.SoundResource, entity);
         }
 
         private void OnPlaySound(Cv_Event eventData)
@@ -465,12 +481,12 @@ namespace Caravel.Core
 
                 if (playEvt.Localized)
                 {
-                    Caravel.SoundManager.FadeInSound2D(playEvt.SoundResource, entity.ResourceBundle, playEvt.Listener, playEvt.Emitter,
+                    Caravel.SoundManager.FadeInSound2D(playEvt.SoundResource, entity, playEvt.Listener, playEvt.Emitter,
 															playEvt.Interval, playEvt.Looping, playEvt.Volume, playEvt.Pan, playEvt.Pitch);
                 }
                 else
                 {
-                    Caravel.SoundManager.FadeInSound(playEvt.SoundResource, entity.ResourceBundle, playEvt.Interval, playEvt.Looping,
+                    Caravel.SoundManager.FadeInSound(playEvt.SoundResource, entity, playEvt.Interval, playEvt.Looping,
 																								playEvt.Volume, playEvt.Pan, playEvt.Pitch);
                 }
             }
@@ -484,12 +500,12 @@ namespace Caravel.Core
 
                 if (playEvt.Localized)
                 {
-                    Caravel.SoundManager.PlaySound2D(playEvt.SoundResource, entity.ResourceBundle, playEvt.Listener, playEvt.Emitter,
+                    Caravel.SoundManager.PlaySound2D(playEvt.SoundResource, entity, playEvt.Listener, playEvt.Emitter,
 																			playEvt.Looping, playEvt.Volume, playEvt.Pan, playEvt.Pitch);
                 }
                 else
                 {
-                    Caravel.SoundManager.PlaySound(playEvt.SoundResource, entity.ResourceBundle, playEvt.Looping,
+                    Caravel.SoundManager.PlaySound(playEvt.SoundResource, entity, playEvt.Looping,
 																			playEvt.Volume, playEvt.Pan, playEvt.Pitch);
                 }
             }

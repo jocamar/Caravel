@@ -26,15 +26,12 @@ namespace Caravel.TestSamples
             var newCollisionEvt = (Cv_Event_NewCollision) eventData;
             var camTransf = simpleGame.CameraEntity.GetComponent<Cv_TransformComponent>();
             var collisionEntity = newCollisionEvt.ShapeA.Owner;
-            var entityTransf = collisionEntity.GetComponent<Cv_TransformComponent>();
+            var collisionEntitySnd = collisionEntity.GetComponent<Cv_SoundEmitterComponent>();
 
-            var emitter = Vector2.Zero;
-
-            if (entityTransf != null)
+            if (collisionEntitySnd != null)
             {
-                emitter = new Vector2(entityTransf.Position.X, entityTransf.Position.Y);
+                collisionEntitySnd.PlaySound();
             }
-			Caravel.SoundManager.PlaySound2D("hit.wav", "Default", new Vector2(camTransf.Position.X, camTransf.Position.Y), emitter);
 		}
 
 		protected override void VGameOnUpdate(float time, float timeElapsed)
@@ -79,7 +76,7 @@ namespace Caravel.TestSamples
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                var instance = Caravel.SoundManager.FadeInSound("hit.wav", "Default", 20000, true);
+                var instance = Caravel.SoundManager.FadeInSound("hit.wav", simpleGame.guybrush, 20000, true);
                 var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
                 var anim = guybrushSprite.CurrentAnimation == "running" ? "walking" : "running";
                 guybrushSprite.SetAnimation(anim);
