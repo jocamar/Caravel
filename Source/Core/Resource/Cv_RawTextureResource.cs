@@ -23,7 +23,10 @@ namespace Caravel.Core.Resource
 
             ~Cv_TextureData()
             {
-                Texture.Dispose();
+                if (Texture != null)
+                {
+                    Texture.Dispose();
+                }
             }
         }
         

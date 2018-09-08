@@ -20,24 +20,33 @@ namespace Caravel.Core.Sound
             get; set;
         }
 
-        private class FadeSoundData
+        public float DistanceFallOff
         {
+            get; set;
+        }
+
+        public class Cv_SoundInstanceData
+        {
+            public string Resource;
             public SoundEffectInstance Instance;
             public float FadeRemainingTime;
             public float FinalVolume;
             public bool Paused;
+            public bool Fading;
+
+            internal LinkedListNode<Cv_SoundInstanceData> ListNode;
         }
 
-        private Dictionary<string, List<SoundEffectInstance>> m_SoundInstances;
-        private Dictionary<SoundEffectInstance, string> m_InstancesToResourceMap;
-        private List<SoundEffectInstance> m_SoundInstancesList;
-        private List<SoundEffectInstance> m_SoundInstancesListCopy;
-        private List<FadeSoundData> m_FadeSoundInstanceList;
-        private List<FadeSoundData> m_FadeSoundInstanceListCopy;
+        private readonly int MAX_INSTANCES_PER_SOUND = 5;
+
+        private Dictionary<string, LinkedList<Cv_SoundInstanceData>> m_SoundInstances;
+        private Dictionary<SoundEffectInstance, Cv_SoundInstanceData> m_SoundToDataMap;
+        private LinkedList<Cv_SoundInstanceData> m_SoundInstancesList;
+        private List<Cv_SoundInstanceData> m_SoundInstancesListCopy;
         private AudioEmitter m_Emitter;
         private AudioListener m_Listener;
 
-        public SoundEffectInstance PlaySound(string soundResource, string resourceBundle, bool looping = false,
+        public Cv_SoundInstanceData PlaySound(string soundResource, string resourceBundle, bool looping = false,
 																	float volume = 1f, float pan = 0f, float pitch = 0f)
         {
             if (soundResource == null || soundResource == "" || resourceBundle == null || resourceBundle == "")
@@ -51,29 +60,48 @@ namespace Caravel.Core.Sound
             var soundData = sound.GetSoundData();
             var soundInstance = soundData.Sound.CreateInstance();
 
-            if (m_SoundInstances.ContainsKey(soundResource))
+            var playSoundData = new Cv_SoundInstanceData();
+            playSoundData.Resource = soundResource;
+            playSoundData.FadeRemainingTime = 0;
+            playSoundData.FinalVolume = volume;
+            playSoundData.Paused = false;
+            playSoundData.Instance = soundInstance;
+            playSoundData.Fading = false;
+
+            LinkedList<Cv_SoundInstanceData> soundInstances;
+            if (m_SoundInstances.TryGetValue(soundResource, out soundInstances))
             {
-                m_SoundInstances[soundResource].Add(soundInstance);
+                if (soundInstances.Count >= MAX_INSTANCES_PER_SOUND)
+                {
+                    var soundToStop = soundInstances.First.Value;
+                    soundToStop.Instance.Stop(true);
+                    m_SoundToDataMap.Remove(soundToStop.Instance);
+                    m_SoundInstancesList.Remove(soundToStop.ListNode);
+                    soundInstances.RemoveFirst();
+                    soundToStop.Instance.Dispose();
+                }
+
+                soundInstances.AddLast(playSoundData);
             }
             else
             {
-                var soundList = new List<SoundEffectInstance>();
-                soundList.Add(soundInstance);
+                var soundList = new LinkedList<Cv_SoundInstanceData>();
+                soundList.AddLast(playSoundData);
                 m_SoundInstances.Add(soundResource, soundList);
             }
 
-            m_SoundInstancesList.Add(soundInstance);
-            m_InstancesToResourceMap.Add(soundInstance, soundResource);
+            playSoundData.ListNode = m_SoundInstancesList.AddLast(playSoundData);
+            m_SoundToDataMap.Add(soundInstance, playSoundData);
 
             soundInstance.Volume = volume * GlobalSoundVolume;
             soundInstance.Pan = pan;
             soundInstance.Pitch = pitch;
 			soundInstance.IsLooped = looping;
             soundInstance.Play();
-            return soundInstance;
+            return playSoundData;
         }
 
-        public SoundEffectInstance PlaySound2D(string soundResource, string resourceBundle, Vector2 listener, Vector2 emitter,
+        public Cv_SoundInstanceData PlaySound2D(string soundResource, string resourceBundle, Vector2 listener, Vector2 emitter,
                                                                         bool looping = false, float volume = 1f, float pan = 0f, float pitch = 0f)
         {
             if (soundResource == null || soundResource == "" || resourceBundle == null || resourceBundle == "")
@@ -87,33 +115,56 @@ namespace Caravel.Core.Sound
             var soundData = sound.GetSoundData();
             var soundInstance = soundData.Sound.CreateInstance();
 
-            if (m_SoundInstances.ContainsKey(soundResource))
+            var playSoundData = new Cv_SoundInstanceData();
+            playSoundData.Resource = soundResource;
+            playSoundData.FadeRemainingTime = 0;
+            playSoundData.FinalVolume = volume;
+            playSoundData.Paused = false;
+            playSoundData.Instance = soundInstance;
+            playSoundData.Fading = false;
+
+            LinkedList<Cv_SoundInstanceData> soundInstances;
+            if (m_SoundInstances.TryGetValue(soundResource, out soundInstances))
             {
-                m_SoundInstances[soundResource].Add(soundInstance);
+                if (soundInstances.Count >= MAX_INSTANCES_PER_SOUND)
+                {
+                    var soundToStop = soundInstances.First.Value;
+                    soundToStop.Instance.Stop(true);
+                    m_SoundToDataMap.Remove(soundToStop.Instance);
+                    m_SoundInstancesList.Remove(soundToStop.ListNode);
+                    soundInstances.RemoveFirst();
+                    soundToStop.Instance.Dispose();
+                }
+
+                soundInstances.AddLast(playSoundData);
             }
             else
             {
-                var soundList = new List<SoundEffectInstance>();
-                soundList.Add(soundInstance);
+                var soundList = new LinkedList<Cv_SoundInstanceData>();
+                soundList.AddLast(playSoundData);
                 m_SoundInstances.Add(soundResource, soundList);
             }
 
-            m_SoundInstancesList.Add(soundInstance);
-            m_InstancesToResourceMap.Add(soundInstance, soundResource);
+            playSoundData.ListNode = m_SoundInstancesList.AddLast(playSoundData);
+            m_SoundToDataMap.Add(soundInstance, playSoundData);
 
-            m_Emitter.Position = new Vector3(emitter, 0);
-            m_Listener.Position = new Vector3(listener, 0);
-            soundInstance.Apply3D(m_Listener, m_Emitter);
+            m_Emitter.Position = new Vector3(emitter, 0) * DistanceFallOff;
+            m_Listener.Forward = new Vector3(0, 0, -1);
+            m_Listener.Up = new Vector3(0,1,0);
+            m_Listener.Position = new Vector3(listener, 0) * DistanceFallOff;
 
             soundInstance.Volume = volume * GlobalSoundVolume;
             soundInstance.Pan = pan;
             soundInstance.Pitch = pitch;
 			soundInstance.IsLooped = looping;
+            soundInstance.Apply3D(m_Listener, m_Emitter);
             soundInstance.Play();
-            return soundInstance;
+            soundInstance.Apply3D(m_Listener, m_Emitter);   // This is necessary due to a bug in monogame where 3D sounds do
+                                                            //not work correctly unless Apply3D is called both before and after Play
+            return playSoundData;
         }
 
-        public SoundEffectInstance FadeInSound(string soundResource, string resourceBundle, float interval,
+        public Cv_SoundInstanceData FadeInSound(string soundResource, string resourceBundle, float interval,
 														bool looping = false, float volume = 1f, float pan = 0f, float pitch = 0f)
         {
             if (soundResource == null || soundResource == "" || resourceBundle == null || resourceBundle == "")
@@ -122,18 +173,16 @@ namespace Caravel.Core.Sound
                 return null;
             }
 
-            var fadeSoundData = new FadeSoundData();
+            var fadeSoundData = PlaySound(soundResource, resourceBundle, looping, 0, pan, pitch);
 
             fadeSoundData.FadeRemainingTime = interval;
             fadeSoundData.FinalVolume = volume;
-            fadeSoundData.Paused = false;
-            fadeSoundData.Instance = PlaySound(soundResource, resourceBundle, looping, 0, pan, pitch);
+            fadeSoundData.Fading = true;
 
-            m_FadeSoundInstanceList.Add(fadeSoundData);
-            return fadeSoundData.Instance;
+            return fadeSoundData;
         }
 
-        public SoundEffectInstance FadeInSound2D(string soundResource, string resourceBundle, Vector2 listener, Vector2 emitter,
+        public Cv_SoundInstanceData FadeInSound2D(string soundResource, string resourceBundle, Vector2 listener, Vector2 emitter,
                                                         float interval, bool looping = false, float volume = 1f, float pan = 0f, float pitch = 0f)
         {
             if (soundResource == null || soundResource == "" || resourceBundle == null || resourceBundle == "")
@@ -142,15 +191,13 @@ namespace Caravel.Core.Sound
                 return null;
             }
 
-            var fadeSoundData = new FadeSoundData();
+            var fadeSoundData = PlaySound2D(soundResource, resourceBundle, listener, emitter, looping, 0, pan, pitch);
 
             fadeSoundData.FadeRemainingTime = interval;
             fadeSoundData.FinalVolume = volume;
-            fadeSoundData.Paused = false;
-            fadeSoundData.Instance = PlaySound2D(soundResource, resourceBundle, listener, emitter, looping, 0, pan, pitch);
+            fadeSoundData.Fading = true;
 
-            m_FadeSoundInstanceList.Add(fadeSoundData);
-            return fadeSoundData.Instance;
+            return fadeSoundData;
         }
 
         public void FadeOutSound(string soundResource, float interval)
@@ -165,19 +212,15 @@ namespace Caravel.Core.Sound
             {
                 foreach (var s in m_SoundInstances[soundResource])
                 {
-                    var fadeSoundData = new FadeSoundData();
-
-                    fadeSoundData.FadeRemainingTime = interval;
-                    fadeSoundData.FinalVolume = 0;
-                    fadeSoundData.Paused = false;
-                    fadeSoundData.Instance = s;
-
-                    m_FadeSoundInstanceList.Add(fadeSoundData);
+                    s.FadeRemainingTime = interval;
+                    s.FinalVolume = 0;
+                    s.Paused = false;
+                    s.Fading = true;
                 }
             }
         }
 
-        public void FadeOutSound(SoundEffectInstance instance, float interval)
+        public void FadeOutSound(Cv_SoundInstanceData instance, float interval)
         {
             if (instance == null)
             {
@@ -185,16 +228,12 @@ namespace Caravel.Core.Sound
                 return;
             }
 
-            if (m_InstancesToResourceMap.ContainsKey(instance))
+            if (m_SoundToDataMap.ContainsKey(instance.Instance))
             {
-                var fadeSoundData = new FadeSoundData();
-
-                fadeSoundData.FadeRemainingTime = interval;
-                fadeSoundData.FinalVolume = 0;
-                fadeSoundData.Paused = false;
-                fadeSoundData.Instance = instance;
-
-                m_FadeSoundInstanceList.Add(fadeSoundData);
+                instance.FadeRemainingTime = interval;
+                instance.FinalVolume = 0;
+                instance.Paused = false;
+                instance.Fading = true;
             }
         }
 
@@ -208,18 +247,18 @@ namespace Caravel.Core.Sound
 
             if (m_SoundInstances.ContainsKey(soundResource))
             {
-                foreach (var s in m_SoundInstances[soundResource])
+                foreach (var soundToStop in m_SoundInstances[soundResource])
                 {
-                    s.Stop(immediate);
-                    m_SoundInstancesList.Remove(s);
-                    m_InstancesToResourceMap.Remove(s);
-                    RemoveFadeInstance(s);
+                    soundToStop.Instance.Stop(immediate);
+                    m_SoundToDataMap.Remove(soundToStop.Instance);
+                    m_SoundInstancesList.Remove(soundToStop.ListNode);
+                    soundToStop.Instance.Dispose();
                 }
                 m_SoundInstances[soundResource].Clear();
             }
         }
 
-        public void StopSound(SoundEffectInstance instance, bool immediate = false)
+        public void StopSound(Cv_SoundInstanceData instance, bool immediate = false)
         {
             if (instance == null)
             {
@@ -227,16 +266,13 @@ namespace Caravel.Core.Sound
                 return;
             }
 
-            if (m_InstancesToResourceMap.ContainsKey(instance))
+            if (m_SoundToDataMap.ContainsKey(instance.Instance))
             {
-                var resource = m_InstancesToResourceMap[instance];
-
-                instance.Stop(immediate);
-
-                m_SoundInstances[resource].Remove(instance);
-                m_SoundInstancesList.Remove(instance);
-                m_InstancesToResourceMap.Remove(instance);
-                RemoveFadeInstance(instance);
+                instance.Instance.Stop(immediate);
+                m_SoundToDataMap.Remove(instance.Instance);
+                m_SoundInstancesList.Remove(instance.ListNode);
+                m_SoundInstances[instance.Resource].Remove(instance);
+                instance.Instance.Dispose();
             }
         }
 
@@ -252,13 +288,13 @@ namespace Caravel.Core.Sound
             {
                 foreach (var s in m_SoundInstances[soundResource])
                 {
-                    s.Pause();
-                    PauseFadeInstance(s);
+                    s.Instance.Pause();
+                    s.Paused = true;
                 }
             }
         }
 
-        public void PauseSound(SoundEffectInstance instance)
+        public void PauseSound(Cv_SoundInstanceData instance)
         {
             if (instance == null)
             {
@@ -266,10 +302,10 @@ namespace Caravel.Core.Sound
                 return;
             }
 
-            if (m_InstancesToResourceMap.ContainsKey(instance))
+            if (m_SoundToDataMap.ContainsKey(instance.Instance))
             {
-                instance.Pause();
-                PauseFadeInstance(instance);
+                instance.Instance.Pause();
+                instance.Paused = true;
             }
         }
 
@@ -285,13 +321,13 @@ namespace Caravel.Core.Sound
             {
                 foreach (var s in m_SoundInstances[soundResource])
                 {
-                    s.Resume();
-                    ResumeFadeInstance(s);
+                    s.Instance.Resume();
+                    s.Paused = false;
                 }
             }
         }
 
-        public void ResumeSound(SoundEffectInstance instance)
+        public void ResumeSound(Cv_SoundInstanceData instance)
         {
             if (instance == null)
             {
@@ -299,10 +335,10 @@ namespace Caravel.Core.Sound
                 return;
             }
 
-            if (m_InstancesToResourceMap.ContainsKey(instance))
+            if (m_SoundToDataMap.ContainsKey(instance.Instance))
             {
-                instance.Resume();
-                ResumeFadeInstance(instance);
+                instance.Instance.Resume();
+                instance.Paused = false;
             }
         }
 
@@ -341,7 +377,7 @@ namespace Caravel.Core.Sound
 
                 foreach (var s in instances)
                 {
-                    if (s.State == SoundState.Playing)
+                    if (s.Instance.State == SoundState.Playing)
                     {
                         return true;
                     }
@@ -351,19 +387,19 @@ namespace Caravel.Core.Sound
             return false;
         }
 
-        public bool SoundIsPlaying(SoundEffectInstance instance)
+        public bool SoundIsPlaying(Cv_SoundInstanceData instanceData)
         {
-            return m_InstancesToResourceMap.ContainsKey(instance) && instance.State == SoundState.Playing;
+            return m_SoundToDataMap.ContainsKey(instanceData.Instance) && instanceData.Instance.State == SoundState.Playing;
         }
         
         internal Cv_SoundManager()
         {
-            m_SoundInstances = new Dictionary<string, List<SoundEffectInstance>>();
-            m_SoundInstancesList = new List<SoundEffectInstance>();
-            m_SoundInstancesListCopy = new List<SoundEffectInstance>();
-            m_InstancesToResourceMap = new Dictionary<SoundEffectInstance, string>();
-            m_FadeSoundInstanceList = new List<FadeSoundData>();
-            m_FadeSoundInstanceListCopy = new List<FadeSoundData>();
+            GlobalSoundVolume = 1f;
+            DistanceFallOff = 1f;
+            m_SoundInstances = new Dictionary<string, LinkedList<Cv_SoundInstanceData>>();
+            m_SoundInstancesList = new LinkedList<Cv_SoundInstanceData>();
+            m_SoundInstancesListCopy = new List<Cv_SoundInstanceData>();
+            m_SoundToDataMap = new Dictionary<SoundEffectInstance, Cv_SoundInstanceData>();
             m_Emitter = new AudioEmitter();
             m_Listener = new AudioListener();
             Instance = this;
@@ -381,93 +417,51 @@ namespace Caravel.Core.Sound
 
             foreach (var s in m_SoundInstancesListCopy)
             {
-                if (s.State == SoundState.Stopped)
+                if (s.Fading)
                 {
-                    StopSound(s); //this removes the sound from the manager
-                }
-            }
-
-            m_FadeSoundInstanceListCopy.Clear();
-            m_FadeSoundInstanceListCopy.AddRange(m_FadeSoundInstanceList);
-            foreach (var fadeData in m_FadeSoundInstanceListCopy)
-            {
-                if (fadeData.Paused)
-                {
-                    continue;
-                }
-
-                var volumeDiff = fadeData.FinalVolume - fadeData.Instance.Volume;
-
-                if (volumeDiff == 0 || fadeData.FadeRemainingTime <= 0)
-                {
-                    if (fadeData.FinalVolume <= 0)
+                    if (s.Paused)
                     {
-                        StopSound(fadeData.Instance);
+                        continue;
                     }
-                    else
+
+                    var volumeDiff = s.FinalVolume - s.Instance.Volume;
+
+                    if (volumeDiff == 0 || s.FadeRemainingTime <= 0)
                     {
-                        RemoveFadeInstance(fadeData.Instance);
+                        if (s.FinalVolume <= 0)
+                        {
+                            StopSound(s);
+                        }
+                        else
+                        {
+                            s.Fading = false;
+                        }
+                        continue;
                     }
-                    continue;
+
+                    var volumeIncrement = volumeDiff / s.FadeRemainingTime;
+                    volumeIncrement *= timeElapsed;
+                    var newVolume = s.Instance.Volume + volumeIncrement;
+
+                    if (volumeIncrement <= 0 && newVolume < s.FinalVolume)
+                    {
+                        newVolume = s.FinalVolume;
+                    }
+
+                    if (volumeIncrement > 0 && newVolume > s.FinalVolume)
+                    {
+                        newVolume = s.FinalVolume;
+                    }
+
+                    s.Instance.Volume = newVolume;
+                    s.FadeRemainingTime -= timeElapsed;
                 }
-
-                var volumeIncrement = volumeDiff / fadeData.FadeRemainingTime;
-                volumeIncrement *= timeElapsed;
-                var newVolume = fadeData.Instance.Volume + volumeIncrement;
-
-                if (volumeIncrement <= 0 && newVolume < fadeData.FinalVolume)
+                else
                 {
-                    newVolume = fadeData.FinalVolume;
-                }
-
-                if (volumeIncrement > 0 && newVolume > fadeData.FinalVolume)
-                {
-                    newVolume = fadeData.FinalVolume;
-                }
-
-                fadeData.Instance.Volume = newVolume;
-                fadeData.FadeRemainingTime -= timeElapsed;
-            }
-        }
-
-        private void RemoveFadeInstance(SoundEffectInstance instance)
-        {
-            FadeSoundData toRemove = null;
-            foreach (var fadeData in m_FadeSoundInstanceList)
-            {
-                if (fadeData.Instance == instance)
-                {
-                    toRemove = fadeData;
-                    break;
-                }
-            }
-
-            if (toRemove != null)
-            {
-                m_FadeSoundInstanceList.Remove(toRemove);
-            }
-        }
-
-        private void PauseFadeInstance(SoundEffectInstance instance)
-        {
-            foreach (var fadeData in m_FadeSoundInstanceList)
-            {
-                if (fadeData.Instance == instance)
-                {
-                    fadeData.Paused = true;
-                    return;
-                }
-            }
-        }
-
-        private void ResumeFadeInstance(SoundEffectInstance instance)
-        {
-            foreach (var fadeData in m_FadeSoundInstanceList)
-            {
-                if (fadeData.Instance == instance)
-                {
-                    fadeData.Paused = false;
-                    return;
+                    if (s.Instance.State == SoundState.Stopped)
+                    {
+                        StopSound(s); //this removes the sound from the manager
+                    }
                 }
             }
         }

@@ -18,6 +18,14 @@ namespace Caravel.Core.Resource
                     return 0;
                 }
             }
+
+            ~Cv_SoundData()
+            {
+                if (Sound != null)
+                {
+                    Sound.Dispose();
+                }
+            }
         }
 
         public string File { get; set; }

@@ -155,7 +155,11 @@ namespace Caravel.Core.Resource
 
         public void RemoveResourceBundle(string bundleID)
         {
-            m_ResourceBundles.Remove(bundleID);
+            if (m_ResourceBundles.ContainsKey(bundleID))
+            {
+                m_ResourceBundles[bundleID].Dispose();
+                m_ResourceBundles.Remove(bundleID);
+            }
         }
 
         public void RefreshResourceBundle(string bundleID)
@@ -171,6 +175,14 @@ namespace Caravel.Core.Resource
             m_ResourceData = new Dictionary<string, Cv_ResourceData>();
             m_ResourceBundles = new Dictionary<string, Cv_ResourceBundle>();
             Instance = this;
+        }
+
+        ~Cv_ResourceManager()
+        {
+            foreach (var bundle in m_ResourceBundles)
+            {
+                bundle.Value.Dispose();
+            }
         }
 
         internal bool Initialize(XmlElement bundleInfo, bool useDevDirectories = false)

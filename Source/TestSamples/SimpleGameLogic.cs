@@ -3,6 +3,7 @@ using Caravel.Core;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using static Caravel.Core.Entity.Cv_Entity;
 
@@ -15,13 +16,25 @@ namespace Caravel.TestSamples
 
 		public SimpleGameLogic(SimpleGame app) : base(app)
 		{
+            Caravel.SoundManager.DistanceFallOff = 0.5f;
 			simpleGame = app;
 			Caravel.EventManager.AddListener<Cv_Event_NewCollision>(OnCollision);
 		}
 
 		private void OnCollision(Cv_Event eventData)
 		{
-			Caravel.SoundManager.PlaySound("hit2.wav", "Default");
+            var newCollisionEvt = (Cv_Event_NewCollision) eventData;
+            var camTransf = simpleGame.CameraEntity.GetComponent<Cv_TransformComponent>();
+            var collisionEntity = newCollisionEvt.ShapeA.Owner;
+            var entityTransf = collisionEntity.GetComponent<Cv_TransformComponent>();
+
+            var emitter = Vector2.Zero;
+
+            if (entityTransf != null)
+            {
+                emitter = new Vector2(entityTransf.Position.X, entityTransf.Position.Y);
+            }
+			Caravel.SoundManager.PlaySound2D("hit.wav", "Default", new Vector2(camTransf.Position.X, camTransf.Position.Y), emitter);
 		}
 
 		protected override void VGameOnUpdate(float time, float timeElapsed)
@@ -66,6 +79,7 @@ namespace Caravel.TestSamples
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
+                var instance = Caravel.SoundManager.FadeInSound("hit.wav", "Default", 20000, true);
                 var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
                 var anim = guybrushSprite.CurrentAnimation == "running" ? "walking" : "running";
                 guybrushSprite.SetAnimation(anim);
@@ -73,6 +87,7 @@ namespace Caravel.TestSamples
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
             {
+                Caravel.SoundManager.FadeOutSound("hit.wav", 20000);
                 var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
                 guybrushSprite.Paused = !guybrushSprite.Paused;
             }
