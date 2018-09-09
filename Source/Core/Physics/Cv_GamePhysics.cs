@@ -36,7 +36,7 @@ namespace Caravel.Core.Physics
         // Initialiazation and Maintenance of the Physics World
         public abstract bool VInitialize();
         public abstract void VSyncVisibleScene();
-        public abstract void VOnUpdate( float timeElapsed ); 
+        public abstract void VOnUpdate( float elapsedTime ); 
 
         // Initialization of Physics Objects
         public abstract Cv_CollisionShape VAddCircle(Cv_Entity gameEntity, Cv_ShapeData data);

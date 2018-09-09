@@ -32,7 +32,7 @@ namespace Caravel.Core.Draw
 				angle,     //angle of line (calulated above)
 				new Vector2(0, 0), // point in line about which to rotate
 				SpriteEffects.None,
-				(float)z / 255f);
+				(float)z / Cv_Renderer.MaxLayers);
 		}
 
 		public static void DrawRectangle(Cv_Renderer r, Rectangle rectangleToDraw, int thickness, Color color)

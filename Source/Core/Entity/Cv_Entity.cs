@@ -53,10 +53,19 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
+        public Cv_Entity[] Children
+        {
+            get
+            {
+                return m_Children.ToArray();
+            }
+        }
+
         private Dictionary<Cv_ComponentID, Cv_EntityComponent> m_ComponentMap;
         private List<Cv_EntityComponent> m_ComponentList;
         private List<Cv_EntityComponent> m_ComponentsToAdd;
         private List<Cv_EntityComponent> m_ComponentsToRemove;
+        private List<Cv_Entity> m_Children;
 
         public XmlElement ToXML()
         {
@@ -146,6 +155,7 @@ namespace Caravel.Core.Entity
 			ResourceBundle = resourceBundle;
             DestroyRequested = false;
             Visible = true;
+            m_Children = new List<Cv_Entity>();
         }
 
         ~Cv_Entity()
@@ -176,6 +186,13 @@ namespace Caravel.Core.Entity
 
         internal void PostInitialize()
         {
+            var parent = CaravelApp.Instance.Logic.GetEntity(Parent);
+
+            if (parent != null)
+            {
+                parent.AddChild(this);
+            }
+
             foreach(var component in m_ComponentMap)
             {
                 component.Value.VPostInitialize();
@@ -190,7 +207,7 @@ namespace Caravel.Core.Entity
             }
         }
 
-        internal void OnUpdate(float timeElapsed)
+        internal void OnUpdate(float elapsedTime)
         {
             if (DestroyRequested)
             {
@@ -211,7 +228,7 @@ namespace Caravel.Core.Entity
 
             foreach (var component in m_ComponentList)
             {
-                component.VOnUpdate(timeElapsed);
+                component.VOnUpdate(elapsedTime);
             }
         }
 
@@ -265,6 +282,12 @@ namespace Caravel.Core.Entity
                 component.VOnDestroy();
                 component.Owner = null;
             }
+        }
+
+        internal void AddChild(Cv_Entity entity)
+        {
+            m_Children.Add(entity);
+            entity.Parent = ID;
         }
 
         private Cv_EntityComponent GetComponent(Type componentType)

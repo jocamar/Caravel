@@ -1,6 +1,7 @@
 ﻿using Caravel.Core;
 using Caravel.Core.Draw;
 using Caravel.Core.Events;
+using Caravel.Core.Input;
 using Caravel.Core.Physics;
 using Caravel.Core.Resource;
 using Caravel.Core.Sound;
@@ -99,7 +100,11 @@ namespace Caravel
             get; private set;
         }
 
-        private Cv_Debug m_Debug;
+        public string ControlBindingsLocation
+        {
+            get; private set;
+        }
+        
         private XmlElement m_BundleInfo;
 
 #region Managers
@@ -129,6 +134,11 @@ namespace Caravel
         }
 
         public Cv_SoundManager SoundManager
+        {
+            get; private set;
+        }
+
+        public Cv_InputManager InputManager
         {
             get; private set;
         }
@@ -229,6 +239,14 @@ namespace Caravel
                 return;
             }
 
+            InputManager = new Cv_InputManager();
+            if (!InputManager.Initialize())
+            {
+                Cv_Debug.Error("Unable to initialize input manager.");
+                Exit();
+                return;
+            }
+
             //TODO(JM): init the process manager here
             //ProcessManager = new Cv_ProcessManager();
             //if (!ProcessManager.Initialize())
@@ -288,6 +306,8 @@ namespace Caravel
 
 			EventManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             SoundManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+            InputManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+
             Logic.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
 
             base.Update(gameTime);
@@ -368,6 +388,14 @@ namespace Caravel
         ReadProjectFile();
         MaterialsLocation = Path.Combine(editorWorkingLocation, MaterialsLocation);
         Logic.GamePhysics.VInitialize();
+    }
+
+    public void EditorReadControls(string editorWorkingLocation)
+    {
+        EditorWorkingDirectory = editorWorkingLocation;
+        ReadProjectFile();
+        ControlBindingsLocation = Path.Combine(editorWorkingLocation, ControlBindingsLocation);
+        InputManager.Initialize(); 
     }
 #endregion
 
@@ -484,6 +512,12 @@ namespace Caravel
                 MaterialsLocation = materialsNode.Attributes["materialsFile"].Value;
             }
 
+            var controlsNode = root.SelectSingleNode("Controls");
+
+            if (controlsNode != null)
+            {
+                ControlBindingsLocation = controlsNode.Attributes["bindingsFile"].Value;
+            }
         }
 #endregion
     }

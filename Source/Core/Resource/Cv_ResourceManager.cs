@@ -40,23 +40,31 @@ namespace Caravel.Core.Resource
                     return default(Resource);
                 }
 
-                using (var resStream = resBundle.GetResourceStream(resourceFile))
-                {
-                    if (!resource.VLoad(resStream, out size, resBundle))
-                    {
-                        Cv_Debug.Error("Unable to load resource: " + resourceFile);
-                        return default(Resource);
-                    }
-                }
-
                 if (isOwnedByResManager)
                 {
+                    using (var resStream = resBundle.GetResourceStream(resourceFile))
+                    {
+                        if (!resource.VLoad(resourceFile, resStream, out size, resBundle))
+                        {
+                            Cv_Debug.Error("Unable to load resource: " + resourceFile);
+                            return default(Resource);
+                        }
+                    }
+
                     if (m_ResourceData.ContainsKey(resourceFile))
                     {
                         m_ResourceData.Remove(resourceFile);
                     }
                     
                     m_ResourceData.Add(resourceFile, resource.ResourceData);
+                }
+                else
+                {
+                    if (!resource.VLoad(resourceFile, null, out size, resBundle))
+                    {
+                        Cv_Debug.Error("Unable to load resource: " + resourceFile);
+                        return default(Resource);
+                    }
                 }
             }
             

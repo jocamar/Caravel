@@ -198,11 +198,11 @@ namespace Caravel.Core.Draw
             Properties.Radius = value;
         }
 
-        public virtual void VOnUpdate(float time, float timeElapsed)
+        public virtual void VOnUpdate(float time, float elapsedTime)
         {
             foreach (var child in m_Children)
             {
-                child.VOnUpdate(time, timeElapsed);
+                child.VOnUpdate(time, elapsedTime);
             }
         }
 

@@ -7,7 +7,7 @@ namespace Caravel.Core.Physics
 
         }
 
-        public override void VOnUpdate(float timeElapsed)
+        public override void VOnUpdate(float elapsedTime)
         {
             SyncBodiesToEntities();
         }

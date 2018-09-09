@@ -458,7 +458,7 @@ namespace Caravel.Core.Sound
             return true;
         }
 
-        internal void OnUpdate(float time, float timeElapsed)
+        internal void OnUpdate(float time, float elapsedTime)
         {
             m_SoundInstancesListCopy.Clear();
             m_SoundInstancesListCopy.AddRange(m_SoundInstancesList);
@@ -488,7 +488,7 @@ namespace Caravel.Core.Sound
                     }
 
                     var volumeIncrement = volumeDiff / s.FadeRemainingTime;
-                    volumeIncrement *= timeElapsed;
+                    volumeIncrement *= elapsedTime;
                     var newVolume = s.Instance.Volume + volumeIncrement;
 
                     if (volumeIncrement <= 0 && newVolume < s.FinalVolume)
@@ -502,7 +502,7 @@ namespace Caravel.Core.Sound
                     }
 
                     s.Instance.Volume = newVolume;
-                    s.FadeRemainingTime -= timeElapsed;
+                    s.FadeRemainingTime -= elapsedTime;
                 }
                 else
                 {

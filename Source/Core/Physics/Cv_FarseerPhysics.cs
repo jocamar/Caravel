@@ -377,10 +377,10 @@ namespace Caravel.Core.Physics
             return true;
         }
 
-        public override void VOnUpdate(float timeElapsed)
+        public override void VOnUpdate(float elapsedTime)
         {
             SyncBodiesToEntities();
-            m_World.Step(Math.Min(timeElapsed * 0.001f, (1f / 30f)));
+            m_World.Step(Math.Min(elapsedTime * 0.001f, (1f / 30f)));
         }
 
         public override void VRemoveEntity(Cv_EntityID id)
@@ -826,7 +826,7 @@ namespace Caravel.Core.Physics
 						                                ToScreenCoord(point1),
                                                         ToScreenCoord(point2),
 						                                thickness,
-                                                        255,
+                                                        Cv_Renderer.MaxLayers,
 						                                c);
 				}
 			}
@@ -847,7 +847,7 @@ namespace Caravel.Core.Physics
 
             var root = doc.FirstChild;
 
-            var materials = root.SelectNodes("//Materials").Item(0);
+            var materials = root.SelectNodes("Materials").Item(0);
 
             foreach(XmlElement material in materials.ChildNodes)
             {

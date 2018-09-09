@@ -6,6 +6,8 @@ namespace Caravel.Core.Draw
 {
     public class Cv_Renderer
     {
+        public static readonly int MaxLayers = 255;
+
 		public enum Cv_BlendState
 		{
 			Additive,
@@ -184,6 +186,9 @@ namespace Caravel.Core.Draw
         private float m_fRatioX;
         private float m_fRatioY;
 
+        private readonly int NUM_SUBLAYERS = 10000;
+        private float m_iCurrSubLayer = 0;
+
         private SpriteBatch m_SpriteBatch;
         private Vector2 m_VirtualMousePosition = new Vector2();
         private static Cv_Transform m_ScaleTransform;
@@ -213,6 +218,11 @@ namespace Caravel.Core.Draw
             m_bDirtyTransform = true;
         }
 
+        public void DrawText(SpriteFont font, string text, Vector2 position, Color color)
+        {
+            m_SpriteBatch.DrawString(font, text, position, color);
+        }
+
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Color color)
         {
             m_SpriteBatch.Draw(texture, destinationRectangle, color);
@@ -231,18 +241,22 @@ namespace Caravel.Core.Draw
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle,
                             Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth)
         {
+            var currSubLayer = m_iCurrSubLayer / (MaxLayers * NUM_SUBLAYERS);
             m_SpriteBatch.Draw(texture, destinationRectangle,
                                         sourceRectangle,
                                         color,
                                         rotation,
                                         origin,
                                         effects,
-                                        layerDepth);
+                                        layerDepth + currSubLayer);
+
+            m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
         }
 
         public void Draw(Texture2D texture, Vector3 position, Rectangle? sourceRectangle, Color color,
                                             float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects)
         {
+            var currSubLayer = m_iCurrSubLayer / (MaxLayers * NUM_SUBLAYERS);
             m_SpriteBatch.Draw(texture, new Vector2(position.X, position.Y),
                                         sourceRectangle,
                                         color,
@@ -250,12 +264,15 @@ namespace Caravel.Core.Draw
                                         origin,
                                         scale,
                                         effects,
-                                        position.Z);
+                                        (position.Z / MaxLayers) + currSubLayer);
+            
+            m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
         }
 
         public void Draw(Texture2D texture, Vector2? position, int z, Rectangle? destinationRectangle, Rectangle? sourceRectangle,
                                             Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects)
         {
+            var currSubLayer = m_iCurrSubLayer / (MaxLayers * NUM_SUBLAYERS);
             m_SpriteBatch.Draw(texture, position,
                                         destinationRectangle,
                                         sourceRectangle,
@@ -264,7 +281,8 @@ namespace Caravel.Core.Draw
                                         scale,
                                         color,
                                         effects,
-                                        z);
+                                        ((float) z / MaxLayers) + currSubLayer);
+            m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
         }
 
         public Vector2 ScaleMouseToScreenCoordinates(Vector2 screenPosition)
@@ -297,6 +315,8 @@ namespace Caravel.Core.Draw
                 m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, m_BlendState, m_SamplerState,
                                         DepthStencilState.None, RasterizerState.CullNone, null, CamMatrix);
             }
+
+            m_iCurrSubLayer = 0;
         }
 
         internal void EndDraw()

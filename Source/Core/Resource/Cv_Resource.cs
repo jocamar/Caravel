@@ -16,7 +16,7 @@ namespace Caravel.Core.Resource
             get; set;
         }
 
-        bool VLoad(Stream resourceStream, out int size, Cv_ResourceBundle bundle);
+        bool VLoad(string resourceFile, Stream resourceStream, out int size, Cv_ResourceBundle bundle);
         bool VIsManuallyManaged();
     }
 }

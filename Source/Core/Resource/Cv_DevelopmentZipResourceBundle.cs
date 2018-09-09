@@ -43,6 +43,7 @@ namespace Caravel.Core.Resource
             currDir += Path.DirectorySeparatorChar;
             currDir += Path.GetFileNameWithoutExtension(fileName);
             m_AssetsDir = currDir;
+            RootDirectory = m_AssetsDir;
 
             m_FileInfo = new Dictionary<string, FileInfo>();
 
@@ -115,6 +116,7 @@ namespace Caravel.Core.Resource
 
                 fileStream.CopyTo(memoryStream);
                 fileStream.Dispose();
+                memoryStream.Position = 0;
                 return memoryStream;
             }
 

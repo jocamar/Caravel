@@ -37,7 +37,7 @@ namespace Caravel.Core.Resource
             return true;
         }
 
-        public bool VLoad(Stream resourceStream, out int size, Cv_ResourceBundle bundle)
+        public bool VLoad(string resourceFile, Stream resourceStream, out int size, Cv_ResourceBundle bundle)
         {
             if ( resourceStream == null )
             {
@@ -62,7 +62,7 @@ namespace Caravel.Core.Resource
 			}
 			catch (Exception e)
 			{
-				Cv_Debug.Error("Error loading sound stream.");
+				Cv_Debug.Error("Error loading sound stream.\n" + e.ToString());
 				size = 0;
 				return false;
 			}

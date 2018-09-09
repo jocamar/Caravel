@@ -208,7 +208,7 @@ namespace Caravel.Core.Events
             return success;
         }
 
-        internal bool OnUpdate(float time, float timeElapsed)
+        internal bool OnUpdate(float time, float elapsedTime)
         {
             long currentMs = 0;
 

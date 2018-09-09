@@ -11,8 +11,6 @@ namespace Caravel.Core.Draw
 {
     public class Cv_SpriteNode : Cv_SceneNode
     {
-		private readonly float MaxLayers = 255;
-
         public Cv_SpriteNode(Cv_Entity.Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform? from = null) : base(entityID, renderComponent, to, from)
         {
         }
@@ -67,7 +65,7 @@ namespace Caravel.Core.Draw
                                                         point1,
                                                         point2,
                                                         thickness,
-                                                        255,
+                                                        Cv_Renderer.MaxLayers,
                                                         Color.Yellow);
                 }
             }
@@ -86,6 +84,9 @@ namespace Caravel.Core.Draw
 			var x = (spriteComponent.CurrentFrame % spriteComponent.FrameX) * frameW;
 			var y = (spriteComponent.CurrentFrame / spriteComponent.FrameX) * frameH;
 
+            var layerDepth = (int) pos.Z;
+            layerDepth = layerDepth % Cv_Renderer.MaxLayers;
+
             renderer.Draw(tex, new Rectangle((int) pos.X,
                                                     (int)pos.Y,
                                                     (int)(spriteComponent.Width * scale.X),
@@ -95,7 +96,7 @@ namespace Caravel.Core.Draw
                                     rot,
                                     new Vector2(frameW * scene.Transform.Origin.X, frameH * scene.Transform.Origin.Y),
                                     SpriteEffects.None,
-                                    pos.Z / MaxLayers);
+                                    layerDepth / (float) Cv_Renderer.MaxLayers);
         }
 
         public override float GetRadius(Cv_Renderer renderer)

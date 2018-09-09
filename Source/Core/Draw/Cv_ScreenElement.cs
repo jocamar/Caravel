@@ -12,8 +12,8 @@ namespace Caravel.Core.Draw
             get; set;
         }
 
-        public abstract void VOnRender(float time, float timeElapsed, Cv_Renderer renderer);
+        public abstract void VOnRender(float time, float elapsedTime, Cv_Renderer renderer);
         public abstract void VOnPostRender(Cv_Renderer renderer);
-        public abstract void VOnUpdate(float time, float timeElapsed);
+        public abstract void VOnUpdate(float time, float elapsedTime);
     }
 }

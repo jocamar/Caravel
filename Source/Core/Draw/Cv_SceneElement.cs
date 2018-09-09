@@ -18,6 +18,8 @@ namespace Caravel.Core.Draw
 			get; set;
 		}
 
+
+
 		public Cv_CameraNode Camera
 		{
 			get; set;
@@ -70,7 +72,7 @@ namespace Caravel.Core.Draw
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
 		}
 
-        public override void VOnRender(float time, float timeElapsed, Cv_Renderer renderer)
+        public override void VOnRender(float time, float elapsedTime, Cv_Renderer renderer)
         {
 			if (m_Root != null && Camera != null)
 			{
@@ -91,9 +93,9 @@ namespace Caravel.Core.Draw
 			}
 		}
 
-        public override void VOnUpdate(float time, float timeElapsed)
+        public override void VOnUpdate(float time, float elapsedTime)
         {
-			m_Root.VOnUpdate(time, timeElapsed);
+			m_Root.VOnUpdate(time, elapsedTime);
         }
 
 		public Cv_SceneNode[] GetEntityNodes(Cv_EntityID entityID)

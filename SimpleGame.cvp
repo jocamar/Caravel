@@ -3,4 +3,5 @@
         <Bundle name="Default" file="Assets.zip"/>
     </ResourceBundles>
     <Materials materialsFile="Config/physics.xml"/>
+    <Controls bindingsFile="Config/controls.xml"/>
 </CaravelProject>

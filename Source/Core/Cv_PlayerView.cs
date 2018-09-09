@@ -109,6 +109,11 @@ namespace Caravel.Core
             }
         }
 
+        public bool DebugDrawFPS
+        {
+            get; set;
+        }
+
         public bool SoundsPaused
         {
             get
@@ -290,7 +295,7 @@ namespace Caravel.Core
             EntityID = entityId;
         }
 
-        protected internal override void VOnRender(float time, float timeElapsed)
+        protected internal override void VOnRender(float time, float elapsedTime)
         {
             if (RunFullSpeed && Caravel.IsFixedTimeStep)
             {
@@ -305,10 +310,8 @@ namespace Caravel.Core
                 Caravel.Graphics.ApplyChanges();
             }
 
-            var sortedElements = ScreenElements.OrderBy(e => e).ToList();
-
             Renderer.SetupViewport();
-            foreach (var se in sortedElements)
+            foreach (var se in ScreenElements)
             {
                 if (se.IsVisible)
                 {
@@ -317,7 +320,7 @@ namespace Caravel.Core
                         Scene.Camera = Camera;
                     }
 
-                    se.VOnRender(time, timeElapsed, Renderer);
+                    se.VOnRender(time, elapsedTime, Renderer);
                 }
             }
 
@@ -339,13 +342,13 @@ namespace Caravel.Core
             Scene.VOnPostRender(Renderer);
         }
 
-        protected internal override void VOnUpdate(float time, float timeElapsed)
+        protected internal override void VOnUpdate(float time, float elapsedTime)
         {
-            //m_Console.OnUpdate(time, timeElapsed);
+            //m_Console.OnUpdate(time, elapsedTime);
 
             foreach (var se in ScreenElements)
             {
-                se.VOnUpdate(time, timeElapsed);
+                se.VOnUpdate(time, elapsedTime);
             }
         }
 
@@ -353,6 +356,13 @@ namespace Caravel.Core
         {
             if (!ScreenElements.Contains(Scene)) {
                 PushScreenElement(Scene);
+                
+                if (DebugDrawFPS)
+                {
+                    var framerateCounter = new Cv_FramerateCounterElement();
+                    framerateCounter.IsVisible = true;
+                    PushScreenElement(framerateCounter);
+                }
             }
 
             Scene.IsVisible = true;

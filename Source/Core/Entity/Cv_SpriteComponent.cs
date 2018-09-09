@@ -146,6 +146,9 @@ namespace Caravel.Core.Entity
         private Cv_SpriteSubAnimation? m_CurrAnim;
         private int m_ActualStartFrame, m_ActualEndFrame, m_ActualSpeed;
         private int m_iWidth, m_iHeight;
+        private bool m_bFading;
+        private int m_iFinalFadeAlpha;
+        private float m_fRemainingFadeTime;
 
         public Cv_SpriteComponent()
         {
@@ -211,6 +214,13 @@ namespace Caravel.Core.Entity
         public void RemoveAnimation(string id)
         {
             m_SubAnimations.Remove(id);
+        }
+
+        public void FadeTo(int alpha, float interval)
+        {
+            m_bFading = true;
+            m_fRemainingFadeTime = interval;
+            m_iFinalFadeAlpha = alpha;
         }
 
         protected internal override bool VInheritedInit(XmlElement componentData)
@@ -353,6 +363,40 @@ namespace Caravel.Core.Entity
                     timeSinceLastUpdate += (long) elapsedTime;
                 }
 			}
+
+            if (m_bFading)
+            {
+                 var alphaDiff = m_iFinalFadeAlpha - this.Color.A;
+
+                if (alphaDiff == 0 || m_fRemainingFadeTime <= 0)
+                {
+                    if (m_iFinalFadeAlpha <= 0)
+                    {
+                        this.Color = new Color(this.Color, 0);
+                    }
+
+                    m_bFading = false;
+                }
+                else
+                {
+                    var alphaIncrement = alphaDiff / m_fRemainingFadeTime;
+                    alphaIncrement *= elapsedTime;
+                    var newAlpha = this.Color.A + alphaIncrement;
+
+                    if (alphaIncrement <= 0 && newAlpha < m_iFinalFadeAlpha)
+                    {
+                        newAlpha = m_iFinalFadeAlpha;
+                    }
+
+                    if (alphaIncrement > 0 && newAlpha > m_iFinalFadeAlpha)
+                    {
+                        newAlpha = m_iFinalFadeAlpha;
+                    }
+                    
+                    this.Color = new Color(this.Color, (int) newAlpha);
+                    m_fRemainingFadeTime -= elapsedTime;
+                }
+            }
         }
 
         protected override Cv_SceneNode VCreateSceneNode()

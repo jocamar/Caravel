@@ -180,7 +180,7 @@ namespace Caravel.Core.Draw
                                                             point1,
                                                             point2,
                                                             thickness,
-                                                            255,
+                                                            Cv_Renderer.MaxLayers,
                                                             Color.Yellow);
                     }
                 }

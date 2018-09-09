@@ -34,32 +34,33 @@ namespace Caravel.TestSamples
             }
 		}
 
-		protected override void VGameOnUpdate(float time, float timeElapsed)
+		protected override void VGameOnUpdate(float time, float elapsedTime)
 		{
             var guntlerTransf = simpleGame.guntler.GetComponent<Cv_TransformComponent>();
-            guntlerTransf.SetRotation(guntlerTransf.Rotation + (timeElapsed / 1000));
+            guntlerTransf.SetRotation(guntlerTransf.Rotation + (elapsedTime / 1000));
 
             var camTransf = simpleGame.CameraEntity.GetComponent<Cv_TransformComponent>();
             var camSettings = simpleGame.CameraEntity.GetComponent<Cv_CameraComponent>();
 
             var profileTransf = simpleGame.profile.GetComponent<Cv_TransformComponent>();
             var profileRigidBody = simpleGame.profile.GetComponent<Cv_RigidBodyComponent>();
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            var profileSprite = simpleGame.profile.GetComponent<Cv_SpriteComponent>();
+            if (Caravel.InputManager.CommandActive("moveLeft", PlayerIndex.One))
             {
                 camTransf.SetPosition(camTransf.Position + new Vector3(-5,0,0));
             }
             
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            if (Caravel.InputManager.CommandActive("moveRight", PlayerIndex.One))
             {
                 camTransf.SetPosition(camTransf.Position + new Vector3(5, 0, 0));
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
+            if (Caravel.InputManager.CommandActive("jump", PlayerIndex.One))
             {
                 camTransf.SetPosition(camTransf.Position + new Vector3(0,-5, 0));
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            if (Caravel.InputManager.CommandActive("duck", PlayerIndex.One))
             {
                 camTransf.SetPosition(camTransf.Position + new Vector3(0, 5, 0));
             }
@@ -114,14 +115,26 @@ namespace Caravel.TestSamples
                 //profileTransf.Position += new Vector3(5,0,0);
             }
 
+            if (Caravel.InputManager.CommandActivated("fire", PlayerIndex.One))
+            {
+                if (profileSprite.Color.A <= 0)
+                {
+                    profileSprite.FadeTo(255, 1000);
+                }
+                else
+                {
+                    profileSprite.FadeTo(0, 1000);
+                }
+            }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                profileTransf.SetRotation(profileTransf.Rotation + (timeElapsed / 1000));
+                profileTransf.SetRotation(profileTransf.Rotation + (elapsedTime / 1000));
             }
             
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                profileTransf.SetRotation(profileTransf.Rotation - (timeElapsed / 1000));
+                profileTransf.SetRotation(profileTransf.Rotation - (elapsedTime / 1000));
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.R))

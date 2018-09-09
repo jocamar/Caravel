@@ -1,0 +1,10 @@
+<Controls>
+  <Bindings player="1">
+    <Command id="moveLeft" inputType="keyboard" bindedTo="A" />
+    <Command id="moveRight" inputType="keyboard" bindedTo="D" />
+    <Command id="jump" inputType="keyboard" bindedTo="W" />
+    <Command id="duck" inputType="keyboard" bindedTo="S" />
+    <Command id="look" inputType="mouse" bindedTo="MouseMove" />
+    <Command id="fire" inputType="mouse" bindedTo="Left" />
+  </Bindings>
+</Controls>

@@ -133,6 +133,9 @@
     <Compile Include="..\Source\Core\Draw\Cv_SceneElement.cs">
       <Link>Cv_SceneElement.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Draw\Cv_FramerateCounterElement.cs">
+      <Link>Cv_FramerateCounterElement.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Draw\Cv_SceneNode.cs">
       <Link>Cv_SceneNode.cs</Link>
     </Compile>
@@ -144,6 +147,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Sound\Cv_SoundManager.cs">
       <Link>Cv_SoundManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Input\Cv_InputManager.cs">
+      <Link>Cv_InputManager.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_CameraComponent.cs">
       <Link>Cv_CameraComponent.cs</Link>
@@ -294,6 +300,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_SoundResource.cs">
       <Link>Cv_SoundResource.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Resource\Cv_SpriteFontResource.cs">
+      <Link>Cv_SpriteFontResource.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_XmlResource.cs">
       <Link>Cv_XmlResource.cs</Link>

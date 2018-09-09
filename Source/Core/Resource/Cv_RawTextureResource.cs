@@ -34,7 +34,7 @@ namespace Caravel.Core.Resource
 
         public Cv_ResourceData ResourceData { get; set; }
 
-        public bool VLoad(Stream resourceStream, out int size, Cv_ResourceBundle bundle)
+        public bool VLoad(string resourceFile, Stream resourceStream, out int size, Cv_ResourceBundle bundle)
         {
             if ( resourceStream == null )
             {

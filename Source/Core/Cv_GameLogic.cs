@@ -500,7 +500,7 @@ namespace Caravel.Core
             string preLoadScript = null;
             string postLoadScript = null;
 
-            var scriptElement = root.SelectNodes("//Script").Item(0);
+            var scriptElement = root.SelectNodes("Script").Item(0);
 
             if (scriptElement != null)
             {
@@ -575,7 +575,7 @@ namespace Caravel.Core
 
             string unloadScript = null;
 
-            var scriptElement = root.SelectNodes("//Script").Item(0);
+            var scriptElement = root.SelectNodes("Script").Item(0);
 
             if (scriptElement != null)
             {
@@ -667,7 +667,7 @@ namespace Caravel.Core
         }
 
 #region Virtual methods that can be overriden by game logic class
-        protected virtual void VGameOnUpdate(float time, float timeElapsed)
+        protected virtual void VGameOnUpdate(float time, float elapsedTime)
         {
         }
 
@@ -709,7 +709,7 @@ namespace Caravel.Core
         }
 #endregion
 
-        internal void OnUpdate(float time, float timeElapsed)
+        internal void OnUpdate(float time, float elapsedTime)
         {
             switch (State)
             {
@@ -747,7 +747,7 @@ namespace Caravel.Core
 
                     if (GamePhysics != null && !IsProxy)
                     {
-                        GamePhysics.VOnUpdate(timeElapsed);
+                        GamePhysics.VOnUpdate(elapsedTime);
                         GamePhysics.VSyncVisibleScene();
                     }
                     break;
@@ -758,12 +758,12 @@ namespace Caravel.Core
             
             foreach (var gv in GameViews)
             {
-                gv.VOnUpdate(time, timeElapsed);
+                gv.VOnUpdate(time, elapsedTime);
             }
 
             foreach (var e in m_EntityList)
             {
-                e.OnUpdate(timeElapsed);
+                e.OnUpdate(elapsedTime);
             }
 
             foreach (var e in m_EntitiesToDestroy)
@@ -779,7 +779,7 @@ namespace Caravel.Core
             }
             m_EntitiesToAdd.Clear();
 
-            VGameOnUpdate(time, timeElapsed);
+            VGameOnUpdate(time, elapsedTime);
         }
 
 #region Event callbacks
