@@ -3,6 +3,7 @@ using Caravel.Core.Draw;
 using Caravel.Core.Events;
 using Caravel.Core.Input;
 using Caravel.Core.Physics;
+using Caravel.Core.Process;
 using Caravel.Core.Resource;
 using Caravel.Core.Sound;
 using Caravel.Debugging;
@@ -247,14 +248,13 @@ namespace Caravel
                 return;
             }
 
-            //TODO(JM): init the process manager here
-            //ProcessManager = new Cv_ProcessManager();
-            //if (!ProcessManager.Initialize())
-            //{
-            //    Cv_Debug.Error("Unable to initialize process manager.");
-            //    Exit();
-            //    return;
-            //}
+            ProcessManager = new Cv_ProcessManager();
+            if (!ProcessManager.Initialize())
+            {
+                Cv_Debug.Error("Unable to initialize process manager.");
+                Exit();
+                return;
+            }
 
             Window.Title = VGetGameTitle();
             SaveGameDirectory = GetSaveGameDirectory(VGetGameAppDirectoryName());
@@ -307,6 +307,7 @@ namespace Caravel
 			EventManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             SoundManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             InputManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+            ProcessManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
 
             Logic.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
 

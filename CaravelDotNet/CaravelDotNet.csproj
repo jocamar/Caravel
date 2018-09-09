@@ -100,10 +100,10 @@
     <Compile Include="..\Source\Core\Cv_PlayerView.cs">
       <Link>Cv_PlayerView.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_Process.cs">
+    <Compile Include="..\Source\Core\Process\Cv_Process.cs">
       <Link>Cv_Process.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_ProcessManager.cs">
+    <Compile Include="..\Source\Core\Process\Cv_ProcessManager.cs">
       <Link>Cv_ProcessManager.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_SceneController.cs">

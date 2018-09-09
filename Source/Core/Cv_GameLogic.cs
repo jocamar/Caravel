@@ -661,11 +661,6 @@ namespace Caravel.Core
             GamePhysics.VRenderDiagnostics(camera, renderer);
         }
 
-        public void AttachProcess(Cv_Process process)
-        {
-            
-        }
-
 #region Virtual methods that can be overriden by game logic class
         protected virtual void VGameOnUpdate(float time, float elapsedTime)
         {
@@ -743,8 +738,6 @@ namespace Caravel.Core
                     }
                     break;
                 case Cv_GameState.Running:
-                    //m_pProcessManager->UpdateProcesses(deltaMilliseconds);
-
                     if (GamePhysics != null && !IsProxy)
                     {
                         GamePhysics.VOnUpdate(elapsedTime);

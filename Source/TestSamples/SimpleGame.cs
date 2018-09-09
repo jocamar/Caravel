@@ -10,12 +10,6 @@ using static Caravel.Core.Cv_GameLogic;
 
 namespace Caravel.TestSamples
 {
-	//TODO(JM):
-	//Remove unused usings
-	//Add collision categories to shapes
-	//InputManager
-	//ProcessManager
-	//more... (see commented code)
     public class SimpleGame : CaravelApp
     {
         public Cv_Entity CameraEntity;
