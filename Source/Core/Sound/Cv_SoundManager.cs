@@ -62,7 +62,14 @@ namespace Caravel.Core.Sound
             var playSoundData = GetNewSoundInstance(soundResource, entity, volume, pan, pitch, looping);
             AddSoundToManager(playSoundData);
 
-            playSoundData.Instance.Play();
+			try
+			{
+            	playSoundData.Instance.Play();
+			}
+			catch (Exception e)
+			{
+				Cv_Debug.Error("Unable to play sound: " + soundResource + "\n" + e.ToString());
+			}
             return playSoundData;
         }
 
@@ -83,10 +90,18 @@ namespace Caravel.Core.Sound
             m_Listener.Up = new Vector3(0,1,0);
             m_Listener.Position = new Vector3(listener, 0) * DistanceFallOff;
 
-            playSoundData.Instance.Apply3D(m_Listener, m_Emitter);
-            playSoundData.Instance.Play();
-            playSoundData.Instance.Apply3D(m_Listener, m_Emitter);  // This is necessary due to a bug in monogame where 3D sounds do
-                                                                    //not work correctly unless Apply3D is called both before and after Play
+			try
+			{
+				playSoundData.Instance.Apply3D(m_Listener, m_Emitter);
+				playSoundData.Instance.Play();
+				playSoundData.Instance.Apply3D(m_Listener, m_Emitter);  // This is necessary due to a bug in monogame where 3D sounds do
+																		//not work correctly unless Apply3D is called both before and after Play
+			}
+			catch (Exception e)
+			{
+				Cv_Debug.Error("Unable to play sound: " + soundResource + "\n" + e.ToString());
+			}
+
             return playSoundData;
         }
 

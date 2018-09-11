@@ -39,7 +39,7 @@
         <Pitch value="0" />
         <Looping value="False" />
         <IsPositional value="True" />
-        <AutoPlay value="True" />
+        <AutoPlay value="False" />
       </Cv_SoundEmitterComponent>
       <Entity name="camera" type="entity_types/camera.cve" visible="True" />
     </Entity>

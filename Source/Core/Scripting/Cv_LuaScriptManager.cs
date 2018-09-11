@@ -1,11 +1,11 @@
 using System.IO;
+using System;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Core.Process;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Platforms;
+using NLua;
 using static Caravel.Core.Cv_GameLogic;
 using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
@@ -20,67 +20,43 @@ namespace Caravel.Core.Scripting
         {
             get
             {
-                return m_ScriptState.DebuggerEnabled;
+				return false;
             }
 
             set
             {
-                m_ScriptState.DebuggerEnabled = value;
             }
         }
 
-        private Script m_ScriptState;
+		private Lua m_ScriptState;
+		private Cv_LuaScriptBindings m_ScriptBindings;
         private string m_sLastError;
 
         internal Cv_LuaScriptManager()
         {
             Instance = this;
-            Script.GlobalOptions.Platform = new LimitedPlatformAccessor();
-            m_ScriptState = new Script(CoreModules.Preset_SoftSandbox);
+			m_ScriptState = new Lua();
+			m_ScriptBindings = new Cv_LuaScriptBindings();
         }
+
+		~Cv_LuaScriptManager()
+		{
+			m_ScriptState.Dispose();
+		}
 
         internal override bool VInitialize()
         {
-            m_ScriptState.Options.DebugPrint = LuaPrint;
+			m_ScriptState.DoString(@"-- make environment
+									env = {} -- add functions you know are safe here
 
-            //Register basic types
-            UserData.RegisterType<Vector2>();
-            UserData.RegisterType<Vector3>();
-            UserData.RegisterType<Matrix>();
-            UserData.RegisterType<Color>();
-            UserData.RegisterType<Cv_Transform>();
-            UserData.RegisterType<Cv_BodyType>();
-            UserData.RegisterType<Cv_EntityID>();
-            UserData.RegisterType<Cv_GameViewID>();
-            UserData.RegisterType<Cv_ComponentID>();
-            UserData.RegisterType<Cv_GameState>();
-            UserData.RegisterType<object>();
-
-            //Register main Caravel types
-            UserData.RegisterType<CaravelApp>();
-            UserData.RegisterType<Cv_GameLogic>();
-            UserData.RegisterType<Cv_ProcessManager>();
-            UserData.RegisterType<Cv_PlayerView>();
-            UserData.RegisterType<Cv_GameView>();
-            UserData.RegisterType<Cv_Entity>();
-
-            //Register processes
-            UserData.RegisterType<Cv_Process>();
-            UserData.RegisterType<Cv_TimerProcess>();
-
-            //Register components
-            UserData.RegisterType<Cv_EntityComponent>();
-            UserData.RegisterType<Cv_SpriteComponent>();
-            UserData.RegisterType<Cv_TransformComponent>();
-            UserData.RegisterType<Cv_RigidBodyComponent>();
-            UserData.RegisterType<Cv_TransformComponent>();
-            UserData.RegisterType<Cv_SoundListenerComponent>();
-            UserData.RegisterType<Cv_SoundEmitterComponent>();
-            UserData.RegisterType<Cv_CameraComponent>();
-
-            DynValue caravel = UserData.Create(CaravelApp.Instance);
-
-            m_ScriptState.Globals.Set("caravel", caravel);
+									-- run code under environment [Lua 5.2]
+									function run(untrusted_code)
+										local untrusted_function, message = load(untrusted_code, nil, 't', env)
+										if not untrusted_function then return nil, message end
+										return pcall(untrusted_function)
+									end");
+			m_ScriptState["caravel"] = CaravelApp.Instance;
+			m_ScriptState["new"] = m_ScriptBindings;
             
             return true;
         }
@@ -89,11 +65,11 @@ namespace Caravel.Core.Scripting
         {
             try
             {
-                m_ScriptState.DoFile(resource);
+                //m_ScriptState.DoFile(resource);
             }
-            catch (InterpreterException e)
+			catch (Exception e)
             {
-                Cv_Debug.Error("Error executing Lua script:\n" + e.DecoratedMessage);
+				Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
             }
         }
 
@@ -101,11 +77,11 @@ namespace Caravel.Core.Scripting
         {
             try
             {
-                m_ScriptState.DoString(str);
+                m_ScriptState.DoString("run [[" + str + "]]");
             }
-            catch (InterpreterException e)
+            catch (Exception e)
             {
-                Cv_Debug.Error("Error executing Lua script:\n" + e.DecoratedMessage);
+				Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
             }
         }
 
@@ -113,11 +89,16 @@ namespace Caravel.Core.Scripting
         {
             try
             {
-                m_ScriptState.DoStream(stream);
+				using (StreamReader reader = new StreamReader(stream))
+				{
+					stream.Position = 0;
+					var code = "run (" + reader.ReadToEnd() + ")";
+					m_ScriptState.DoString(code);
+				}
             }
-            catch (InterpreterException e)
+            catch (Exception e)
             {
-                Cv_Debug.Error("Error executing Lua script:\n" + e.DecoratedMessage);
+				Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
             }
         }
 

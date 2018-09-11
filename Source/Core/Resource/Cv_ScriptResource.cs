@@ -1,7 +1,6 @@
 using System.IO;
 using System.Xml;
 using Caravel.Core.Scripting;
-using MoonSharp.Interpreter;
 
 namespace Caravel.Core.Resource
 {

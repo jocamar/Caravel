@@ -104,6 +104,10 @@ namespace Caravel.Core.Process
 
                     m_ProcessList.Remove(currProcess);
                 }
+				else
+				{
+					i++;
+				}
             }
 
             return new Tuple<int,int>(successCount, failCount);
