@@ -62,9 +62,16 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
+        public bool AutoPlay
+        {
+            get; set;
+        }
+
         private float m_fVolume;
         private float m_fPan;
         private float m_fPitch;
+
+        private bool m_bPlayed = false;
 
         public override XmlElement VToXML()
         {
@@ -76,6 +83,7 @@ namespace Caravel.Core.Entity
             var pitch = componentDoc.CreateElement("Pitch");
             var looping = componentDoc.CreateElement("Looping");
             var positional = componentDoc.CreateElement("IsPositional");
+            var autoPlay = componentDoc.CreateElement("AutoPlay");
 
             sound.SetAttribute("resource", SoundResource);
             volume.SetAttribute("value", Volume.ToString(CultureInfo.InvariantCulture));
@@ -83,6 +91,7 @@ namespace Caravel.Core.Entity
             pitch.SetAttribute("value", Pitch.ToString(CultureInfo.InvariantCulture));
             looping.SetAttribute("value", Looping.ToString(CultureInfo.InvariantCulture));
             positional.SetAttribute("value", IsPositional.ToString(CultureInfo.InvariantCulture));
+            autoPlay.SetAttribute("value", AutoPlay.ToString(CultureInfo.InvariantCulture));
 
             componentData.AppendChild(sound);
             componentData.AppendChild(volume);
@@ -90,6 +99,7 @@ namespace Caravel.Core.Entity
             componentData.AppendChild(pitch);
             componentData.AppendChild(looping);
             componentData.AppendChild(positional);
+            componentData.AppendChild(autoPlay);
             
             return componentData;
         }
@@ -279,6 +289,12 @@ namespace Caravel.Core.Entity
                 IsPositional = bool.Parse(positionalNode.Attributes["value"].Value);
             }
 
+            var autoPlayNode = componentData.SelectNodes("AutoPlay").Item(0);
+            if (autoPlayNode != null)
+            {
+                AutoPlay = bool.Parse(autoPlayNode.Attributes["value"].Value);
+            }
+
             return true;
         }
 
@@ -292,6 +308,11 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnUpdate(float deltaTime)
         {
+            if (!m_bPlayed && AutoPlay && !CaravelApp.Instance.EditorRunning)
+            {
+                m_bPlayed = true;
+                PlaySound();
+            }
         }
 
         protected internal override bool VPostInitialize()

@@ -103,14 +103,20 @@
     <Compile Include="..\Source\Core\Process\Cv_Process.cs">
       <Link>Cv_Process.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Process\Cv_TimerProcess.cs">
+      <Link>Cv_TimerProcess.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Process\Cv_ProcessManager.cs">
       <Link>Cv_ProcessManager.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_SceneController.cs">
       <Link>Cv_SceneController.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_ScriptManager.cs">
+    <Compile Include="..\Source\Core\Scripting\Cv_ScriptManager.cs">
       <Link>Cv_ScriptManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Scripting\Cv_LuaScriptManager.cs">
+      <Link>Cv_LuaScriptManager.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_Transform.cs">
       <Link>Cv_Transform.cs</Link>

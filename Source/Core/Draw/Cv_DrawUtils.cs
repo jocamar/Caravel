@@ -20,6 +20,7 @@ namespace Caravel.Core.Draw
 			Vector2 edge = end - start;
 			// calculate angle to rotate line
 			float angle = (float) Math.Atan2(edge.Y , edge.X);
+            float layer = (float)z / Cv_Renderer.MaxLayers;
 
 			r.Draw(m_DrawPixel,
 				new Rectangle(// rectangle defines shape of line and position of start of line
@@ -32,7 +33,7 @@ namespace Caravel.Core.Draw
 				angle,     //angle of line (calulated above)
 				new Vector2(0, 0), // point in line about which to rotate
 				SpriteEffects.None,
-				(float)z / Cv_Renderer.MaxLayers);
+                layer);
 		}
 
 		public static void DrawRectangle(Cv_Renderer r, Rectangle rectangleToDraw, int thickness, Color color)

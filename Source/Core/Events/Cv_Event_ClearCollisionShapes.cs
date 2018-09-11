@@ -15,7 +15,7 @@ namespace Caravel.Core.Events
             }
         }
         
-        public Cv_Event_ClearCollisionShapes(Cv_EntityID entityId, float timeStamp = 0) : base(entityId, timeStamp)
+        public Cv_Event_ClearCollisionShapes(Cv_EntityID entityId, object sender,  float timeStamp = 0) : base(entityId, sender, timeStamp)
         {
         }
 

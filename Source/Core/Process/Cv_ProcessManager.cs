@@ -6,6 +6,11 @@ namespace Caravel.Core.Process
 {
     public class Cv_ProcessManager
     {
+        public static Cv_ProcessManager Instance
+        {
+            get; private set;
+        }
+
         public int ProcessCount
         { 
             get
@@ -15,11 +20,6 @@ namespace Caravel.Core.Process
         }
 
         private List<Cv_Process> m_ProcessList;
-
-        public Cv_ProcessManager()
-        {
-            m_ProcessList = new List<Cv_Process>();
-        }
 
         public void AttachProcess(Cv_Process process)
         {
@@ -44,6 +44,12 @@ namespace Caravel.Core.Process
 
                 i++;
             }
+        }
+
+        internal Cv_ProcessManager()
+        {
+            m_ProcessList = new List<Cv_Process>();
+            Instance = this;
         }
 
         internal bool Initialize()

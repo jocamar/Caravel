@@ -12,7 +12,7 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_LeaveTrigger(Cv_EntityID entityId, Cv_CollisionShape trigger, float timeStamp = 0) : base(entityId, timeStamp)
+        public Cv_Event_LeaveTrigger(Cv_EntityID entityId, Cv_CollisionShape trigger, object sender, float timeStamp = 0) : base(entityId, sender, timeStamp)
         {
             Trigger = trigger;
         }

@@ -53,7 +53,7 @@ namespace Caravel.Core.Draw
             {
                 if (!m_bCalculatingVisibilityFirstTime && m_bPreviousVisibility == true)
                 {
-                    var visibilityChangedEvt = new Cv_Event_EntityVisibilityChanged(Properties.EntityID, false);
+                    var visibilityChangedEvt = new Cv_Event_EntityVisibilityChanged(Properties.EntityID, false, this);
                     Cv_EventManager.Instance.QueueEvent(visibilityChangedEvt);
                 }
 
@@ -79,7 +79,7 @@ namespace Caravel.Core.Draw
 
             if (!m_bCalculatingVisibilityFirstTime && m_bPreviousVisibility != visibility)
             {
-                var visibilityChangedEvt = new Cv_Event_EntityVisibilityChanged(Properties.EntityID, visibility);
+                var visibilityChangedEvt = new Cv_Event_EntityVisibilityChanged(Properties.EntityID, visibility, this);
                 Cv_EventManager.Instance.QueueEvent(visibilityChangedEvt);
             }
 

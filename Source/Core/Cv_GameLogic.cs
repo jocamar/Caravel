@@ -187,14 +187,6 @@ namespace Caravel.Core
             Cv_EventManager.Instance.RemoveListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntity);
         }
 
-        internal void Initialize()
-        {
-            m_EntityFactory = VCreateEntityFactory();
-           // m_SceneController.Initialize(Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml"));
-            Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntity);
-            GamePhysics.VInitialize();
-        }
-
 #region Entity methods
         public Cv_Entity GetEntity(Cv_EntityID entityId)
         {
@@ -508,7 +500,7 @@ namespace Caravel.Core
                 postLoadScript = scriptElement.Attributes["postLoad"].Value;
             }
 
-            if (preLoadScript != null)
+            if (preLoadScript != null && preLoadScript != "")
             {
                 Cv_ScriptResource preLoadRes;
 				preLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(preLoadScript, resourceBundle);
@@ -532,7 +524,7 @@ namespace Caravel.Core
                 return false;
             }
 
-            if (postLoadScript != null)
+            if (postLoadScript != null && postLoadScript != "")
             {
 				Cv_ScriptResource postLoadRes;
 				postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript, resourceBundle);
@@ -647,7 +639,7 @@ namespace Caravel.Core
                 }*/
             }
 
-            var changedStateEvt = new Cv_Event_ChangeState(State, newState);
+            var changedStateEvt = new Cv_Event_ChangeState(State, newState, this);
 
             State = newState;
             VGameOnChangeState(newState);
@@ -659,6 +651,14 @@ namespace Caravel.Core
         public void VRenderDiagnostics(Cv_CameraNode camera, Cv_Renderer renderer)
         {
             GamePhysics.VRenderDiagnostics(camera, renderer);
+        }
+
+        internal void Initialize()
+        {
+            m_EntityFactory = VCreateEntityFactory();
+           // m_SceneController.Initialize(Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml"));
+            Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntity);
+            GamePhysics.VInitialize();
         }
 
 #region Virtual methods that can be overriden by game logic class

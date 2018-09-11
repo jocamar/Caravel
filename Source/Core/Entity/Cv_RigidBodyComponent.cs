@@ -12,9 +12,9 @@ namespace Caravel.Core.Entity
 {
     public class Cv_RigidBodyComponent : Cv_EntityComponent
     {
-        public enum BodyType { Static, Dynamic, Kinematic };
+        public enum Cv_BodyType { Static, Dynamic, Kinematic };
 
-        public BodyType RigidBodyType
+        public Cv_BodyType RigidBodyType
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Caravel.Core.Entity
         internal bool IsDirty { get; set; }
 
         #region Private physics members
-        private BodyType m_RigidBodyType;
+        private Cv_BodyType m_RigidBodyType;
         private float m_fLinearDamping;
         private float m_fAngularDamping;
         private float m_fGravityScale;
@@ -144,10 +144,10 @@ namespace Caravel.Core.Entity
 
             switch (m_RigidBodyType)
             {
-                case BodyType.Static:
+                case Cv_BodyType.Static:
                     bodyTypeStr = "static";
                     break;
-                case BodyType.Dynamic:
+                case Cv_BodyType.Dynamic:
                     bodyTypeStr = "dynamic";
                     break;
                 default:
@@ -263,13 +263,13 @@ namespace Caravel.Core.Entity
                 switch (bodyType)
                 {
                     case "static":
-                        m_RigidBodyType = BodyType.Static;
+                        m_RigidBodyType = Cv_BodyType.Static;
                         break;
                     case "kinematic":
-                        m_RigidBodyType = BodyType.Kinematic;
+                        m_RigidBodyType = Cv_BodyType.Kinematic;
                         break;
                     case "dynamic":
-                        m_RigidBodyType = BodyType.Dynamic;
+                        m_RigidBodyType = Cv_BodyType.Dynamic;
                         break;
                     default:
                         Cv_Debug.Error("Invalid body type. Unable to build component.");
@@ -375,12 +375,12 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnChanged()
         {
-            Cv_Event newEvt = new Cv_Event_ClearCollisionShapes(Owner.ID);
+            Cv_Event newEvt = new Cv_Event_ClearCollisionShapes(Owner.ID, this);
             Cv_EventManager.Instance.QueueEvent(newEvt);
 
             foreach (var s in m_Shapes)
             {
-                newEvt = new Cv_Event_NewCollisionShape(Owner.ID, s);
+                newEvt = new Cv_Event_NewCollisionShape(Owner.ID, s, this);
                 Cv_EventManager.Instance.QueueEvent(newEvt);
             }
         }

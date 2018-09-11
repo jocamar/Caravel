@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
   <PropertyGroup>
@@ -39,6 +39,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MoonSharp.Interpreter, Version=2.0.0.0, Culture=neutral, PublicKeyToken=921e73ce94aa17f8, processorArchitecture=MSIL">
+      <HintPath>packages\MoonSharp.2.0.0.0\lib\net40-client\MoonSharp.Interpreter.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -99,14 +103,20 @@
     <Compile Include="..\Source\Core\Process\Cv_Process.cs">
       <Link>Source\Core\Process\Cv_Process.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Process\Cv_TimerProcess.cs">
+      <Link>Source\Core\Process\Cv_TimerProcess.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Process\Cv_ProcessManager.cs">
       <Link>Source\Core\Process\Cv_ProcessManager.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_SceneController.cs">
       <Link>Source\Core\Cv_SceneController.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_ScriptManager.cs">
-      <Link>Source\Core\Cv_ScriptManager.cs</Link>
+    <Compile Include="..\Source\Core\Scripting\Cv_ScriptManager.cs">
+      <Link>Source\Core\Script\Cv_ScriptManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Scripting\Cv_LuaScriptManager.cs">
+      <Link>Source\Core\Script\Cv_LuaScriptManager.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_Transform.cs">
       <Link>Source\Core\Cv_Transform.cs</Link>

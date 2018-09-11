@@ -1,0 +1,1 @@
+caravel.Logic.CreateEntity("entity_types/camera.cve", "script_entity", "Default", true, caravel.Logic.GetEntity("guntler").ID)

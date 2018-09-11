@@ -38,4 +38,5 @@
       </Cv_CameraComponent>
     </Entity>
   </StaticEntities>
+  <Script preLoad="" postLoad="scripts/test.lua" />
 </Scene>

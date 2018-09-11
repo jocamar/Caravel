@@ -4,4 +4,5 @@
     </ResourceBundles>
     <Materials materialsFile="Config/physics.xml"/>
     <Controls bindingsFile="Config/controls.xml"/>
+    <Scripts preInitScript="scripts/preInit.lua" preInitScriptBundle="Default" />
 </CaravelProject>

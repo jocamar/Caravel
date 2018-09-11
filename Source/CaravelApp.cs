@@ -5,6 +5,7 @@ using Caravel.Core.Input;
 using Caravel.Core.Physics;
 using Caravel.Core.Process;
 using Caravel.Core.Resource;
+using Caravel.Core.Scripting;
 using Caravel.Core.Sound;
 using Caravel.Debugging;
 using Caravel.Editor;
@@ -19,9 +20,6 @@ using static Caravel.Core.Cv_GameView;
 
 namespace Caravel
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
     public abstract class CaravelApp : Game
     {
 #region Properties
@@ -102,6 +100,16 @@ namespace Caravel
         }
 
         public string ControlBindingsLocation
+        {
+            get; private set;
+        }
+
+        public string InitScriptLocation
+        {
+            get; private set;
+        }
+
+        public string InitScriptBundle
         {
             get; private set;
         }
@@ -215,14 +223,27 @@ namespace Caravel
                 return;
             }
 
-            //TODO(JM): init the script manager here
-            //ScriptManager = new Cv_ScriptManager("Scripts/PreInit.lua");
-            //if (!ScriptManager.Initialize())
-            //{
-            //    Cv_Debug.Error("Unable to initialize script manager.");
-            //    Exit();
-            //    return;
-            //}
+            ProcessManager = new Cv_ProcessManager();
+            if (!ProcessManager.Initialize())
+            {
+                Cv_Debug.Error("Unable to initialize process manager.");
+                Exit();
+                return;
+            }
+
+            ScriptManager = new Cv_LuaScriptManager();
+            if (!ScriptManager.VInitialize())
+            {
+                Cv_Debug.Error("Unable to initialize script manager.");
+                Exit();
+                return;
+            }
+
+            //This loads the preInit Lua script if there's one
+            if (InitScriptLocation != null && InitScriptLocation != "" && InitScriptBundle != null && InitScriptBundle != "")
+            {    
+                Cv_ScriptResource initScript = ResourceManager.GetResource<Cv_ScriptResource>(InitScriptLocation, InitScriptBundle);
+            }
 
             EventManager = new Cv_EventManager(true);
             if (!EventManager.Initialize())
@@ -244,14 +265,6 @@ namespace Caravel
             if (!InputManager.Initialize())
             {
                 Cv_Debug.Error("Unable to initialize input manager.");
-                Exit();
-                return;
-            }
-
-            ProcessManager = new Cv_ProcessManager();
-            if (!ProcessManager.Initialize())
-            {
-                Cv_Debug.Error("Unable to initialize process manager.");
                 Exit();
                 return;
             }
@@ -518,6 +531,14 @@ namespace Caravel
             if (controlsNode != null)
             {
                 ControlBindingsLocation = controlsNode.Attributes["bindingsFile"].Value;
+            }
+
+            var scriptsNode = root.SelectSingleNode("Scripts");
+
+            if (scriptsNode != null)
+            {
+                InitScriptLocation = scriptsNode.Attributes["preInitScript"].Value;
+                InitScriptBundle = scriptsNode.Attributes["preInitScriptBundle"].Value;
             }
         }
 #endregion

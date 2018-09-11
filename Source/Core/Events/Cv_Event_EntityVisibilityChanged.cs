@@ -20,7 +20,7 @@ namespace Caravel.Core.Events
             }
         }
     
-        public Cv_Event_EntityVisibilityChanged(Cv_EntityID entityId, bool visibility, float timeStamp = 0) : base(entityId, timeStamp)
+        public Cv_Event_EntityVisibilityChanged(Cv_EntityID entityId, bool visibility, object sender, float timeStamp = 0) : base(entityId, sender, timeStamp)
         {
             NewVisibility = visibility;
         }

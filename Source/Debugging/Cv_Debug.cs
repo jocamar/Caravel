@@ -71,7 +71,7 @@ namespace Caravel.Debugging
                 var tagsDoc = new XmlDocument();
                 tagsDoc.Load(logTagsFile);
 
-                var xmlNodes = tagsDoc.SelectNodes("Tag");
+                var xmlNodes = tagsDoc.DocumentElement.SelectNodes("Tag");
                 
                 foreach(XmlNode node in xmlNodes)
                 {

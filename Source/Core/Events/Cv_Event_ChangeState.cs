@@ -17,7 +17,7 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
-        public Cv_Event_ChangeState(Cv_GameState prev, Cv_GameState next, float timeStamp = 0) : base(Cv_EntityID.INVALID_ENTITY, timeStamp)
+        public Cv_Event_ChangeState(Cv_GameState prev, Cv_GameState next, object sender, float timeStamp = 0) : base(Cv_EntityID.INVALID_ENTITY, sender, timeStamp)
         {
             PreviousState = prev;
             NewState = next;

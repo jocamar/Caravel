@@ -57,7 +57,7 @@ namespace Caravel.Core.Process
             get; private set;
         }
 
-        Cv_Process()
+        public Cv_Process()
         {
             State = Cv_ProcessState.Uninitialized;
             Child = null;

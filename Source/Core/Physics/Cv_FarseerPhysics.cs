@@ -772,9 +772,9 @@ namespace Caravel.Core.Physics
 
             var rigidBodyComponent = entity.GetComponent<Cv_RigidBodyComponent>();
 
-            if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Kinematic)
+            if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.Cv_BodyType.Kinematic)
                 body.BodyType = BodyType.Kinematic;
-            else if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.BodyType.Static)
+            else if (rigidBodyComponent.RigidBodyType == Cv_RigidBodyComponent.Cv_BodyType.Static)
                 body.BodyType = BodyType.Static;
             else
                 body.BodyType = BodyType.Dynamic;
@@ -826,7 +826,7 @@ namespace Caravel.Core.Physics
 						                                ToScreenCoord(point1),
                                                         ToScreenCoord(point2),
 						                                thickness,
-                                                        Cv_Renderer.MaxLayers,
+                                                        Cv_Renderer.MaxLayers-1,
 						                                c);
 				}
 			}
@@ -942,7 +942,7 @@ namespace Caravel.Core.Physics
                     entity = collidedShape.Owner;
                 }
 
-                var newEvent = new Cv_Event_EnterTrigger(entity.ID, trigger);
+                var newEvent = new Cv_Event_EnterTrigger(entity.ID, trigger, this);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
             else
@@ -995,7 +995,7 @@ namespace Caravel.Core.Physics
                     entity = collisionShapeA.Owner;
                 }
 
-                var newEvent = new Cv_Event_LeaveTrigger(entity.ID, trigger);
+                var newEvent = new Cv_Event_LeaveTrigger(entity.ID, trigger, this);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
             else

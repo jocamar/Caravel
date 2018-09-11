@@ -26,7 +26,7 @@
       <Cv_RigidBodyComponent>
         <Physics fixedRotation="True" gravityScale="1" maxVelocity="100" maxAngVelocity="100" />
         <CollisionShapes>
-          <Box material="Rock" anchorX="0" anchorY="0" isBullet="False" dimensionsX="150" dimensionsY="150">
+          <Box material="Rock" anchorX="0" anchorY="-50" isBullet="False" dimensionsX="150" dimensionsY="150">
             <CollisionCategory id="0" />
             <CollidesWith id="1" directions="All" />
           </Box>
@@ -39,6 +39,7 @@
         <Pitch value="0" />
         <Looping value="False" />
         <IsPositional value="True" />
+        <AutoPlay value="True" />
       </Cv_SoundEmitterComponent>
       <Entity name="camera" type="entity_types/camera.cve" visible="True" />
     </Entity>
@@ -88,18 +89,18 @@
     <Entity name="Entity_7" type="entity_types/earth.cve" visible="True" />
     <Entity name="Entity_8" type="entity_types/collider.cve" visible="True">
       <Cv_TransformComponent>
-        <Position x="0" y="100" z="0" />
+        <Position x="0" y="103" z="0" />
       </Cv_TransformComponent>
     </Entity>
     <Entity name="Entity_9" type="entity_types/collider.cve" visible="True">
       <Cv_TransformComponent>
-        <Position x="144" y="135" z="0" />
+        <Position x="147" y="137" z="0" />
         <Rotation radians="0.45" />
       </Cv_TransformComponent>
     </Entity>
     <Entity name="Entity_10" type="entity_types/collider.cve" visible="True">
       <Cv_TransformComponent>
-        <Position x="295" y="230" z="0" />
+        <Position x="297" y="230" z="0" />
         <Rotation radians="0.66" />
       </Cv_TransformComponent>
     </Entity>
@@ -117,4 +118,5 @@
       </Cv_RigidBodyComponent>
     </Entity>
   </StaticEntities>
+  <Script preLoad="" postLoad="scripts/test.lua" />
 </Scene>
