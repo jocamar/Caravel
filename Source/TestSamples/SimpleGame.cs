@@ -1,11 +1,7 @@
-using System.IO;
 using Caravel.Core;
-using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Core.Physics;
-using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using static Caravel.Core.Cv_GameLogic;
 
 namespace Caravel.TestSamples

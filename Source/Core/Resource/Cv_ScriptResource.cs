@@ -1,5 +1,4 @@
 using System.IO;
-using System.Xml;
 using Caravel.Core.Scripting;
 
 namespace Caravel.Core.Resource

@@ -15,40 +15,57 @@ namespace Caravel.Core.Process
         { 
             get
             {
-                return m_ProcessList.Count;
+                return m_ProcessLists[m_iCurrentProcessList].Count;
             }
         }
 
-        private List<Cv_Process> m_ProcessList;
+        private readonly int NUM_LISTS = 2;
+        private List<Cv_Process>[] m_ProcessLists;
+        private int m_iCurrentProcessList = 0;
 
         public void AttachProcess(Cv_Process process)
         {
-            m_ProcessList.Add(process);
+            lock (m_ProcessLists[m_iCurrentProcessList])
+            {
+                m_ProcessLists[m_iCurrentProcessList].Add(process);
+            }
         }
 
         public void AbortAllProcesses(bool immediate)
         {
-            for (var i = 0; i < m_ProcessList.Count;)
+            foreach (var list in m_ProcessLists)
             {
-                var process = m_ProcessList[i];
-                if (process.IsAlive)
+                lock (list)
                 {
-                    process.State = Cv_ProcessState.Aborted;
-                    if (immediate)
+                    for (var i = 0; i < list.Count;)
                     {
-                        process.VOnAbort();
-                        m_ProcessList.Remove(process);
-                        continue;
+                        var process = list[i];
+                        if (process.IsAlive)
+                        {
+                            process.State = Cv_ProcessState.Aborted;
+                            if (immediate)
+                            {
+                                process.VOnAbort();
+                                list.Remove(process);
+                                continue;
+                            }
+                        }
+
+                        i++;
                     }
                 }
-
-                i++;
             }
         }
 
         internal Cv_ProcessManager()
         {
-            m_ProcessList = new List<Cv_Process>();
+            m_ProcessLists = new List<Cv_Process>[NUM_LISTS];
+
+            for (var i = 0; i < NUM_LISTS; i++)
+            {
+                m_ProcessLists[i] = new List<Cv_Process>();
+            }
+
             Instance = this;
         }
 
@@ -62,52 +79,58 @@ namespace Caravel.Core.Process
             int successCount = 0;
             int failCount = 0;
 
-            for (var i = 0; i < m_ProcessList.Count;)
+            var currUpdatingList = m_iCurrentProcessList;
+            m_iCurrentProcessList = ++m_iCurrentProcessList % NUM_LISTS;
+
+            lock (m_ProcessLists[currUpdatingList])
             {
-                Cv_Process currProcess = m_ProcessList[i];
-
-                if (currProcess.State == Cv_ProcessState.Uninitialized)
+                for (var i = 0; i < m_ProcessLists[currUpdatingList].Count;)
                 {
-                    currProcess.VOnInit();
-                }
+                    Cv_Process currProcess = m_ProcessLists[currUpdatingList][i];
 
-                if (currProcess.State == Cv_ProcessState.Running)
-                {
-                    currProcess.VOnUpdate(elapsedTime);
-                }
-
-                if (currProcess.IsDead)
-                {
-                    switch (currProcess.State)
+                    if (currProcess.State == Cv_ProcessState.Uninitialized)
                     {
-                        case Cv_ProcessState.Succeeded:
-                            currProcess.VOnSuccess();
-                            Cv_Process child = currProcess.RemoveChild();
-                            if (child != null)
-                            {
-                                AttachProcess(child);
-                            }
-                            else
-                            {
-                                ++successCount;  // only counts if the whole chain completed
-                            }
-                            break;
-                        case Cv_ProcessState.Failed:
-                            currProcess.VOnFail();
-                            ++failCount;
-                            break;
-                        case Cv_ProcessState.Aborted:
-                            currProcess.VOnAbort();
-                            ++failCount;
-                            break;
+                        currProcess.VOnInit();
                     }
 
-                    m_ProcessList.Remove(currProcess);
+                    if (currProcess.State == Cv_ProcessState.Running)
+                    {
+                        currProcess.VOnUpdate(elapsedTime);
+                    }
+
+                    if (currProcess.IsDead)
+                    {
+                        switch (currProcess.State)
+                        {
+                            case Cv_ProcessState.Succeeded:
+                                currProcess.VOnSuccess();
+                                Cv_Process child = currProcess.RemoveChild();
+                                if (child != null)
+                                {
+                                    AttachProcess(child);
+                                }
+                                else
+                                {
+                                    ++successCount;  // only counts if the whole chain completed
+                                }
+                                break;
+                            case Cv_ProcessState.Failed:
+                                currProcess.VOnFail();
+                                ++failCount;
+                                break;
+                            case Cv_ProcessState.Aborted:
+                                currProcess.VOnAbort();
+                                ++failCount;
+                                break;
+                        }
+
+                        m_ProcessLists[currUpdatingList].Remove(currProcess);
+                    }
+                    else
+                    {
+                        i++;
+                    }
                 }
-				else
-				{
-					i++;
-				}
             }
 
             return new Tuple<int,int>(successCount, failCount);

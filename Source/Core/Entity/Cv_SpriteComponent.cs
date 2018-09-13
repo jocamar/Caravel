@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using System.Xml;
 using Caravel.Core.Draw;
-using Caravel.Core.Events;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 

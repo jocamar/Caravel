@@ -1,4 +1,3 @@
-using System;
 using System.Xml;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
@@ -25,6 +24,7 @@ namespace Caravel.Core.Entity
             ComponentFactory.Register<Cv_RigidBodyComponent>(Cv_EntityComponent.GetID<Cv_RigidBodyComponent>());
             ComponentFactory.Register<Cv_SoundEmitterComponent>(Cv_EntityComponent.GetID<Cv_SoundEmitterComponent>());
             ComponentFactory.Register<Cv_SoundListenerComponent>(Cv_EntityComponent.GetID<Cv_SoundListenerComponent>());
+            ComponentFactory.Register<Cv_ScriptComponent>(Cv_EntityComponent.GetID<Cv_ScriptComponent>());
         }
 
         protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,

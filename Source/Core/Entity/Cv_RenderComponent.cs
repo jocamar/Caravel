@@ -2,7 +2,6 @@ using System.Xml;
 using Caravel.Core.Draw;
 using Caravel.Core.Events;
 using Microsoft.Xna.Framework;
-using static Caravel.Core.Entity.Cv_Entity;
 using System.Globalization;
 
 namespace Caravel.Core.Entity

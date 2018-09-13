@@ -6,7 +6,6 @@ using System.Xml;
 using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
-using Caravel.Core.Resource;
 using Caravel.Debugging;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Common;

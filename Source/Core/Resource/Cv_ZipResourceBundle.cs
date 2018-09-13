@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Caravel.Debugging;
 using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Xna.Framework;
 
 namespace Caravel.Core.Resource
 {
-	public class Cv_ZipResourceBundle : Cv_ResourceBundle
+    public class Cv_ZipResourceBundle : Cv_ResourceBundle
 	{
 		private ZipFile m_ZipFile;
 

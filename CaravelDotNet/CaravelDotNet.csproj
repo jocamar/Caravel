@@ -118,7 +118,7 @@
     <Compile Include="..\Source\Core\Scripting\Cv_LuaScriptManager.cs">
       <Link>Cv_LuaScriptManager.cs</Link>
     </Compile>
-	  <Compile Include="..\Source\Core\Scripting\Cv_LuaScriptBindings.cs">
+    <Compile Include="..\Source\Core\Scripting\Cv_LuaScriptBindings.cs">
       <Link>Cv_LuaScriptBindings.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Scripting\Cv_LuaLogger.cs">
@@ -180,6 +180,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_RigidBodyComponent.cs">
       <Link>Cv_RigidBodyComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_ScriptComponent.cs">
+      <Link>Cv_ScriptComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_SpriteComponent.cs">
       <Link>Cv_SpriteComponent.cs</Link>
@@ -352,6 +355,14 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="KopiLua, Version=1.3.5449.31722, Culture=neutral, PublicKeyToken=e25f4af1e4f7b31c, processorArchitecture=MSIL">
+      <HintPath>packages\NLua_Safe.1.3.2.1\lib\net45\KopiLua.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLua, Version=1.3.2.0, Culture=neutral, PublicKeyToken=8df2ab518030ea95, processorArchitecture=MSIL">
+      <HintPath>packages\NLua_Safe.1.3.2.1\lib\net45\NLua.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="OpenTK">

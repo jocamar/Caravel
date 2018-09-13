@@ -1,6 +1,4 @@
 using System.Runtime.Serialization;
-using Caravel.Core.Entity;
-using Caravel.Core.Physics;
 using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Events

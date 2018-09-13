@@ -183,6 +183,9 @@
     <Compile Include="..\Source\Core\Entity\Cv_RigidBodyComponent.cs">
       <Link>Source\Core\Entity\Cv_RigidBodyComponent.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_ScriptComponent.cs">
+      <Link>Source\Core\Entity\Cv_ScriptComponent.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_SpriteComponent.cs">
       <Link>Source\Core\Entity\Cv_SpriteComponent.cs</Link>
     </Compile>

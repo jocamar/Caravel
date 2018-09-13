@@ -3,13 +3,12 @@ using Caravel.Core;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.TestSamples
 {
-	public class SimpleGameLogic : Cv_GameLogic
+    public class SimpleGameLogic : Cv_GameLogic
 	{
 		private SimpleGame simpleGame;
         int entities = 0;

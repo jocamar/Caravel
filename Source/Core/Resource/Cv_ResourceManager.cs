@@ -2,11 +2,10 @@
 using System.Text.RegularExpressions;
 using System.Xml;
 using Caravel.Debugging;
-using static Caravel.Core.Resource.Cv_Resource;
 
 namespace Caravel.Core.Resource
 {
-	public class Cv_ResourceManager
+    public class Cv_ResourceManager
     {
         public static Cv_ResourceManager Instance
         {

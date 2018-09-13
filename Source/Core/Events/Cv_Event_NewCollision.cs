@@ -1,5 +1,4 @@
 using System.Runtime.Serialization;
-using Caravel.Core.Entity;
 using Caravel.Core.Physics;
 using Microsoft.Xna.Framework;
 

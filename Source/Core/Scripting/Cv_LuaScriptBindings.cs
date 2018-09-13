@@ -1,4 +1,3 @@
-using Caravel.Core;
 using Caravel.Core.Process;
 using Microsoft.Xna.Framework;
 

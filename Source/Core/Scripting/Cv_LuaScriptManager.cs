@@ -1,16 +1,10 @@
 using System.IO;
 using System;
 using Caravel.Core.Entity;
-using Caravel.Core.Events;
-using Caravel.Core.Process;
 using Caravel.Debugging;
-using Microsoft.Xna.Framework;
 using NLua;
-using static Caravel.Core.Cv_GameLogic;
-using static Caravel.Core.Cv_GameView;
-using static Caravel.Core.Entity.Cv_Entity;
-using static Caravel.Core.Entity.Cv_EntityComponent;
-using static Caravel.Core.Entity.Cv_RigidBodyComponent;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Caravel.Core.Scripting
 {
@@ -28,10 +22,26 @@ namespace Caravel.Core.Scripting
             }
         }
 
+        private struct Cv_ScriptExecutionRequest
+        {
+            public string Code;
+            public Cv_Entity Entity;
+            public string Resource;
+        }
+
+        private readonly int NUM_QUEUES = 2;
+
 		private Lua m_ScriptState;
 		private Cv_LuaScriptBindings m_ScriptBindings;
         private Cv_LuaLogger m_ScriptLogger;
         private string m_sLastError;
+        private LinkedList<Cv_ScriptExecutionRequest>[] m_QueuedScriptLists;
+        private int m_iActiveQueue = 0;
+
+        public override void AddGameBindings(string scriptObject, object exposedClass)
+        {
+            m_ScriptState["env." + scriptObject] = exposedClass;
+        }
 
         internal Cv_LuaScriptManager()
         {
@@ -39,6 +49,14 @@ namespace Caravel.Core.Scripting
 			m_ScriptState = new Lua();
 			m_ScriptBindings = new Cv_LuaScriptBindings();
             m_ScriptLogger = new Cv_LuaLogger();
+            m_QueuedScriptLists = new LinkedList<Cv_ScriptExecutionRequest>[NUM_QUEUES];
+
+            for (int i = 0; i < NUM_QUEUES; i++)
+            {
+                m_QueuedScriptLists[i] = new LinkedList<Cv_ScriptExecutionRequest>();
+            }
+
+            MaxProcessTimeMillis = long.MaxValue;
         }
 
 		~Cv_LuaScriptManager()
@@ -94,6 +112,57 @@ namespace Caravel.Core.Scripting
             return true;
         }
 
+        internal override void OnUpdate(float time, float elapsedTime)
+        {
+            var queueToProcess = m_iActiveQueue;
+            m_iActiveQueue = (m_iActiveQueue + 1) % NUM_QUEUES;
+            m_QueuedScriptLists[m_iActiveQueue].Clear();
+
+            long currentMs = 0;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            lock (m_QueuedScriptLists[queueToProcess])
+            {
+                while (m_QueuedScriptLists[queueToProcess].Count > 0)
+                {
+                    var script = m_QueuedScriptLists[queueToProcess].First.Value;
+                    m_QueuedScriptLists[queueToProcess].RemoveFirst();
+
+                    if (!CaravelApp.Instance.EditorRunning)
+                    {
+                        try
+                        {
+                            m_ScriptState["env.currentEntity"] = script.Entity;
+                            m_ScriptState.DoString("run [[" + script.Code + "]]", script.Resource);
+                        }
+                        catch (Exception e)
+                        {
+                            Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
+                        }
+                    }
+
+                    currentMs = stopwatch.ElapsedMilliseconds;
+
+                    if (MaxProcessTimeMillis != long.MaxValue)
+                    {
+                        if (currentMs >= MaxProcessTimeMillis)
+                        {
+                            Cv_Debug.Error("ScriptManager processing time exceeded. Aborting.");
+                            stopwatch.Stop();
+                            break;
+                        }
+                    }
+                }
+
+                while (m_QueuedScriptLists[queueToProcess].Count > 0)
+                {
+                    m_QueuedScriptLists[m_iActiveQueue].AddBefore(m_QueuedScriptLists[m_iActiveQueue].First, m_QueuedScriptLists[queueToProcess].Last);
+                    m_QueuedScriptLists[queueToProcess].RemoveLast();
+                }
+            }
+        }
+
         internal override void VExecuteFile(string resource, Cv_Entity runningEntity = null)
         {
             try
@@ -108,34 +177,56 @@ namespace Caravel.Core.Scripting
 
         internal override void VExecuteString(string resource, string str, Cv_Entity runningEntity = null)
         {
-            try
+            Cv_Debug.Assert( (m_iActiveQueue >= 0 && m_iActiveQueue < NUM_QUEUES), "ScriptManager must have an active script queue.");
+
+            if (str == null)
             {
-                m_ScriptState["env.currentEntity"] = runningEntity;
-                m_ScriptState.DoString("run [[" + str + "]]", resource);
+                Cv_Debug.Error("Invalid script in VExecuteString.");
+                return;
             }
-            catch (Exception e)
+
+            Cv_ScriptExecutionRequest request = new Cv_ScriptExecutionRequest();
+            request.Code = str;
+            request.Resource = resource;
+            request.Entity = runningEntity;
+
+            lock (m_QueuedScriptLists[m_iActiveQueue])
             {
-				Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
+                m_QueuedScriptLists[m_iActiveQueue].AddLast(request);
             }
+
+            Cv_Debug.Log("LuaScript", "Queued script " + resource + " for entity " + (runningEntity != null ? runningEntity.EntityName : "[null]"));
         }
 
         internal override void VExecuteStream(string resource, Stream stream, Cv_Entity runningEntity = null)
         {
-            try
-            {
-				using (StreamReader reader = new StreamReader(stream))
-				{
-					stream.Position = 0;
-					var code = "run([[" + reader.ReadToEnd() + "]])";
+            Cv_Debug.Assert( (m_iActiveQueue >= 0 && m_iActiveQueue < NUM_QUEUES), "ScriptManager must have an active script queue.");
 
-                    m_ScriptState["env.currentEntity"] = runningEntity;
-					m_ScriptState.DoString(code, resource);
-				}
-            }
-            catch (Exception e)
+            if (stream == null)
             {
-				Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
+                Cv_Debug.Error("Invalid stream in VExecuteStream.");
+                return;
             }
+
+            string code;
+
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                stream.Position = 0;
+                code = reader.ReadToEnd();
+            }
+
+            Cv_ScriptExecutionRequest request = new Cv_ScriptExecutionRequest();
+            request.Code = code;
+            request.Resource = resource;
+            request.Entity = runningEntity;
+
+            lock (m_QueuedScriptLists[m_iActiveQueue])
+            {
+                m_QueuedScriptLists[m_iActiveQueue].AddLast(request);
+            }
+
+            Cv_Debug.Log("LuaScript", "Queued script " + resource + " for entity " + (runningEntity != null ? runningEntity.EntityName : "[null]"));
         }
     }
 }

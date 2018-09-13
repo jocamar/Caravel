@@ -51,11 +51,6 @@ namespace Caravel.Core.Events
             }
         }
 
-        public bool Initialize()
-        {
-            return true;
-        }
-
         public bool AddListener<EventType>(NewEventDelegate callback) where EventType : Cv_Event
         {
             Cv_Debug.Log("Events", "Attempting to add listener for event type " + typeof(EventType).Name);
@@ -206,6 +201,11 @@ namespace Caravel.Core.Events
             }
 
             return success;
+        }
+
+        internal bool Initialize()
+        {
+            return true;
         }
 
         internal bool OnUpdate(float time, float elapsedTime)

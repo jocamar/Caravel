@@ -8,7 +8,6 @@ using Caravel.Core.Events;
 using Caravel.Core.Physics;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
-using Microsoft.Xna.Framework;
 using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;

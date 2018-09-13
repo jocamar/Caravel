@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Microsoft.Xna.Framework.Content;
-using static Caravel.Core.Resource.Cv_ResourceManager;
 
 namespace Caravel.Core.Resource
 {

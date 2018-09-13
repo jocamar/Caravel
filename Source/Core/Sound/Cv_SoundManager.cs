@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Caravel.Core.Entity;
-using Caravel.Core.Events;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;

@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Xml;
 using Caravel.Core.Events;
 using Caravel.Debugging;
-using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Physics.Cv_CollisionShape;
 using static Caravel.Core.Physics.Cv_GamePhysics;

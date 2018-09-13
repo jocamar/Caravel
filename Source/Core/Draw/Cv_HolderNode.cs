@@ -1,6 +1,4 @@
 using System;
-using Caravel.Core;
-using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Microsoft.Xna.Framework;

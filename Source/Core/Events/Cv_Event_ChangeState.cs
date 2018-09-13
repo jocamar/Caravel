@@ -1,5 +1,4 @@
 using System.Runtime.Serialization;
-using Caravel.Core.Entity;
 using static Caravel.Core.Cv_GameLogic;
 using static Caravel.Core.Entity.Cv_Entity;
 

@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
-using Caravel.Core.Resource;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using static Caravel.Core.Cv_GameLogic;
 using static Caravel.Core.Entity.Cv_Entity;
 
