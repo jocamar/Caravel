@@ -162,6 +162,11 @@ namespace Caravel
             get; private set;
         }
 
+        public readonly PlayerIndex PlayerOne = PlayerIndex.One;
+        public readonly PlayerIndex PlayerTwo = PlayerIndex.Two;
+        public readonly PlayerIndex PlayerThree = PlayerIndex.Three;
+        public readonly PlayerIndex PlayerFour = PlayerIndex.Four;
+
         private Dictionary<string, string>  m_TextResource;
 #endregion
         
@@ -243,6 +248,7 @@ namespace Caravel
             if (InitScriptLocation != null && InitScriptLocation != "" && InitScriptBundle != null && InitScriptBundle != "")
             {    
                 Cv_ScriptResource initScript = ResourceManager.GetResource<Cv_ScriptResource>(InitScriptLocation, InitScriptBundle);
+                initScript.RunScript();
             }
 
             EventManager = new Cv_EventManager(true);

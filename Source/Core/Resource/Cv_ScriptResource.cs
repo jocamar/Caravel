@@ -6,6 +6,19 @@ namespace Caravel.Core.Resource
 {
     public class Cv_ScriptResource : Cv_Resource
     {
+        public class Cv_ScriptData : Cv_ResourceData
+        {
+            public string Code;
+
+            public long Size
+            {
+                get
+                {
+                    return 0;
+                }
+            }
+        }
+
         public string File{ get; set; }
 
         public Cv_ResourceData ResourceData { get; set; }
@@ -14,7 +27,14 @@ namespace Caravel.Core.Resource
         {
             size = 0;
 
-            Cv_ScriptManager.Instance.VExecuteStream(resourceStream);
+            using (StreamReader reader = new StreamReader(resourceStream))
+            {
+                resourceStream.Position = 0;
+                var code = reader.ReadToEnd();
+                var resData = new Cv_ScriptData();
+				resData.Code = code;
+				ResourceData = resData;
+            }
 
             return true;
         }
@@ -22,6 +42,11 @@ namespace Caravel.Core.Resource
         public bool VIsManuallyManaged()
         {
             return true;
+        }
+
+        public void RunScript()
+        {
+            Cv_ScriptManager.Instance.VExecuteString(File, ((Cv_ScriptData)ResourceData).Code);
         }
     }
 }

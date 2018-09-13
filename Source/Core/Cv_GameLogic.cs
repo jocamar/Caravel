@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Xml;
 using Caravel.Core.Draw;
@@ -152,8 +153,8 @@ namespace Caravel.Core
         private List<Cv_GameView> m_GameViews;
         private Cv_EntityFactory m_EntityFactory;
         private Cv_SceneController m_SceneController;
-        private List<Cv_Entity> m_EntitiesToDestroy;
-        private List<Cv_Entity> m_EntitiesToAdd;
+        private ConcurrentQueue<Cv_Entity> m_EntitiesToDestroy;
+        private ConcurrentQueue<Cv_Entity> m_EntitiesToAdd;
         private List<Cv_Entity> m_EntityList;
 
         public Cv_GameLogic(CaravelApp app)
@@ -175,8 +176,8 @@ namespace Caravel.Core
             State = Cv_GameState.Initializing;
             Entities = new Dictionary<Cv_EntityID, Cv_Entity>();
 			EntitiesByName = new Dictionary<string, Cv_Entity>();
-            m_EntitiesToDestroy = new List<Cv_Entity>();
-            m_EntitiesToAdd = new List<Cv_Entity>();
+            m_EntitiesToDestroy = new ConcurrentQueue<Cv_Entity>();
+            m_EntitiesToAdd = new ConcurrentQueue<Cv_Entity>();
             m_EntityList = new List<Cv_Entity>();
             OnDestroyEntity = RequestDestroyEntityCallback;
             OnRequestNewEntity = RequestNewEntityCallback;
@@ -191,7 +192,10 @@ namespace Caravel.Core
         public Cv_Entity GetEntity(Cv_EntityID entityId)
         {
             Cv_Entity ent = null;
-            Entities.TryGetValue(entityId, out ent);
+            lock(Entities)
+            {
+                Entities.TryGetValue(entityId, out ent);
+            }
 
             return ent;
         }
@@ -199,7 +203,10 @@ namespace Caravel.Core
 		public Cv_Entity GetEntity(string entityName)
         {
             Cv_Entity ent = null;
-            EntitiesByName.TryGetValue(entityName, out ent);
+            lock(Entities)
+            {
+                EntitiesByName.TryGetValue(entityName, out ent);
+            }
 
             return ent;
         }
@@ -230,9 +237,13 @@ namespace Caravel.Core
             {
 				entity.EntityName = name;
                 entity.Visible = visible;
-                m_EntitiesToAdd.Add(entity);
-                Entities.Add(entity.ID, entity);
-				EntitiesByName.Add(entity.EntityName, entity);
+                m_EntitiesToAdd.Enqueue(entity);
+
+                lock(Entities)
+                {
+                    Entities.Add(entity.ID, entity);
+                    EntitiesByName.Add(entity.EntityName, entity);
+                }
 
                 entity.PostInitialize();
 
@@ -276,9 +287,13 @@ namespace Caravel.Core
             {
 				entity.EntityName = name;
                 entity.Visible = visible;
-                m_EntitiesToAdd.Add(entity);
-                Entities.Add(entity.ID, entity);
-				EntitiesByName.Add(entity.EntityName, entity);
+                m_EntitiesToAdd.Enqueue(entity);
+                
+                lock(Entities)
+                {
+                    Entities.Add(entity.ID, entity);
+                    EntitiesByName.Add(entity.EntityName, entity);
+                }
 
                 entity.PostInitialize();
 
@@ -298,26 +313,36 @@ namespace Caravel.Core
 
         public void DestroyEntity(Cv_EntityID entityId)
         {
-			Cv_Entity entity;
-			if (Entities.TryGetValue(entityId, out entity))
-			{
-                foreach (var e in m_EntityList) //TODO(JM): this might get really slow with tons of entities. Optimize if it becomes a problem
+            lock(m_EntityList)
+            lock(Entities)
+            {
+                Cv_Entity entity;
+                var entityExists = false;
+                
+                entityExists = Entities.TryGetValue(entityId, out entity);
+
+                if (entityExists)
                 {
-                    if (e.ID != entityId && e.Parent == entityId)
+                    foreach (var e in m_EntityList) //TODO(JM): this might get really slow with tons of entities. Optimize if it becomes a problem
                     {
-                        DestroyEntity(e.ID);
+                        if (e.ID != entityId && e.Parent == entityId)
+                        {
+                            DestroyEntity(e.ID);
+                        }
                     }
+
+                    m_EntitiesToDestroy.Enqueue(entity);
+
+                    var destroyEntityEvent = new Cv_Event_DestroyEntity(entityId, this);
+                    Cv_EventManager.Instance.TriggerEvent(destroyEntityEvent);
+
+                    Entities.Remove(entityId);
+                    EntitiesByName.Remove(entity.EntityName);
+
+                    entity.OnDestroy();
+                    entity.DestroyRequested = true;
                 }
-
-                m_EntitiesToDestroy.Add(entity);
-
-                var destroyEntityEvent = new Cv_Event_DestroyEntity(entityId, this);
-                Cv_EventManager.Instance.TriggerEvent(destroyEntityEvent);
-                Entities.Remove(entityId);
-                EntitiesByName.Remove(entity.EntityName);
-                entity.OnDestroy();
-                entity.DestroyRequested = true;
-			}
+            }
         }
 
         public void ModifyEntity(Cv_EntityID entityId, XmlNodeList overrides)
@@ -330,7 +355,11 @@ namespace Caravel.Core
             }
 
             Cv_Entity ent = null;
-            Entities.TryGetValue(entityId, out ent);
+            
+            lock(Entities)
+            {
+                Entities.TryGetValue(entityId, out ent);
+            }
 
             if (ent != null)
             {
@@ -442,11 +471,14 @@ namespace Caravel.Core
         {
             var entity = GetEntity(entityId);
 
-            if (entity != null && !EntitiesByName.ContainsKey(newName))
+            lock(Entities)
             {
-                EntitiesByName.Remove(entity.EntityName);
-                entity.EntityName = newName;
-                EntitiesByName.Add(newName, entity);
+                if (entity != null && !EntitiesByName.ContainsKey(newName))
+                {
+                    EntitiesByName.Remove(entity.EntityName);
+                    entity.EntityName = newName;
+                    EntitiesByName.Add(newName, entity);
+                }
             }
         }
         
@@ -458,14 +490,23 @@ namespace Caravel.Core
             Cv_GameViewID gvID = (Cv_GameViewID) m_GameViews.Count+1;
 
             view.Initialize(Caravel);
-            m_GameViews.Add(view);
+
+            lock(m_GameViews)
+            {
+                m_GameViews.Add(view);
+            }
+
             view.VOnAttach(gvID, entityId);
             VGameOnAddView(view, entityId);
         }
 
         public void RemoveView(Cv_GameView view)
         {
-            m_GameViews.Remove(view);
+            lock(m_GameViews)
+            {
+                m_GameViews.Remove(view);
+            }
+
             VGameOnRemoveView(view);
         }
 #endregion
@@ -502,20 +543,23 @@ namespace Caravel.Core
 
             if (preLoadScript != null && preLoadScript != "")
             {
-                Cv_ScriptResource preLoadRes;
-				preLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(preLoadScript, resourceBundle);
+                Cv_ScriptResource preLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(preLoadScript, resourceBundle);
+                preLoadRes.RunScript();
             }
 
             var entitiesNodes = root.SelectNodes("StaticEntities/Entity");
 
             CreateNestedEntities(entitiesNodes, Cv_EntityID.INVALID_ENTITY, resourceBundle);
 
-            foreach(var gv in m_GameViews)
+            lock(m_GameViews)
             {
-                if (gv.Type == Cv_GameViewType.Player)
+                foreach(var gv in m_GameViews)
                 {
-                    var playerView = (Cv_PlayerView) gv;
-                    playerView.LoadGame(root);
+                    if (gv.Type == Cv_GameViewType.Player)
+                    {
+                        var playerView = (Cv_PlayerView) gv;
+                        playerView.LoadGame(root);
+                    }
                 }
             }
 
@@ -526,9 +570,8 @@ namespace Caravel.Core
 
             if (postLoadScript != null && postLoadScript != "")
             {
-				Cv_ScriptResource postLoadRes;
-				postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript, resourceBundle);
-				
+				Cv_ScriptResource postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript, resourceBundle);
+				postLoadRes.RunScript();
             }
 
 			foreach (var e in Entities)
@@ -576,8 +619,8 @@ namespace Caravel.Core
 
             if (unloadScript != null)
             {
-                Cv_ScriptResource unLoadRes;
-				unLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(unloadScript, resourceBundle);
+                Cv_ScriptResource unLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(unloadScript, resourceBundle);
+                unLoadRes.RunScript();
             }
 
             var entitiesNodes = root.SelectNodes("StaticEntities/Entity");
@@ -759,18 +802,24 @@ namespace Caravel.Core
                 e.OnUpdate(elapsedTime);
             }
 
-            foreach (var e in m_EntitiesToDestroy)
+            Cv_Entity toRemove = null;
+            while (m_EntitiesToDestroy.TryDequeue(out toRemove))
             {
-                m_EntityList.Remove(e);
-                e.OnRemove();
+                lock(m_EntityList)
+                {
+                    m_EntityList.Remove(toRemove);
+                }
+                toRemove.OnRemove();
             }
-            m_EntitiesToDestroy.Clear();
 
-            foreach (var e in m_EntitiesToAdd)
+            Cv_Entity toAdd = null;
+            while (m_EntitiesToAdd.TryDequeue(out toAdd))
             {
-                m_EntityList.Add(e);
+                lock(m_EntityList)
+                {
+                    m_EntityList.Add(toAdd);
+                }
             }
-            m_EntitiesToAdd.Clear();
 
             VGameOnUpdate(time, elapsedTime);
         }

@@ -118,8 +118,11 @@
     <Compile Include="..\Source\Core\Scripting\Cv_LuaScriptManager.cs">
       <Link>Cv_LuaScriptManager.cs</Link>
     </Compile>
-	<Compile Include="..\Source\Core\Scripting\Cv_LuaScriptBindings.cs">
+	  <Compile Include="..\Source\Core\Scripting\Cv_LuaScriptBindings.cs">
       <Link>Cv_LuaScriptBindings.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Scripting\Cv_LuaLogger.cs">
+      <Link>Cv_LuaLogger.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_Transform.cs">
       <Link>Cv_Transform.cs</Link>

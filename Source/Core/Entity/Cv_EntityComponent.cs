@@ -34,14 +34,17 @@ namespace Caravel.Core.Entity
 
         public static Cv_ComponentID GetID<ComponentType>() where ComponentType : Cv_EntityComponent
         {
-            Cv_ComponentID componentID;
-            if (!m_ComponentIds.TryGetValue(typeof(ComponentType), out componentID))
+            lock(m_ComponentIds)
             {
-                componentID = (Cv_ComponentID) typeof(ComponentType).Name.GetHashCode();
-                m_ComponentIds.Add(typeof(ComponentType), componentID);
-            }
+                Cv_ComponentID componentID;
+                if (!m_ComponentIds.TryGetValue(typeof(ComponentType), out componentID))
+                {
+                    componentID = (Cv_ComponentID) typeof(ComponentType).Name.GetHashCode();
+                    m_ComponentIds.Add(typeof(ComponentType), componentID);
+                }
 
-            return componentID;
+                return componentID;
+            }
         }
 
         public static string GetComponentName<ComponentType>() where ComponentType : Cv_EntityComponent
@@ -75,14 +78,17 @@ namespace Caravel.Core.Entity
 
         internal static Cv_ComponentID GetID(Type componentType)
         {
-            Cv_ComponentID componentID;
-            if (!m_ComponentIds.TryGetValue(componentType, out componentID))
+            lock(m_ComponentIds)
             {
-                componentID = (Cv_ComponentID) componentType.Name.GetHashCode();
-                m_ComponentIds.Add(componentType, componentID);
-            }
+                Cv_ComponentID componentID;
+                if (!m_ComponentIds.TryGetValue(componentType, out componentID))
+                {
+                    componentID = (Cv_ComponentID) componentType.Name.GetHashCode();
+                    m_ComponentIds.Add(componentType, componentID);
+                }
 
-            return componentID;
+                return componentID;
+            }
         }
     }
 }

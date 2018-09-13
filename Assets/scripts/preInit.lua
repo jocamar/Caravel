@@ -1,1 +1,1 @@
-print("hello from lua")
+log:Info("hello from lua")

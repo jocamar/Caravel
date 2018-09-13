@@ -66,6 +66,7 @@ namespace Caravel.Core.Entity
         private List<Cv_EntityComponent> m_ComponentsToAdd;
         private List<Cv_EntityComponent> m_ComponentsToRemove;
         private List<Cv_Entity> m_Children;
+        private bool m_bInitialized = false;
 
         public XmlElement ToXML()
         {
@@ -76,12 +77,15 @@ namespace Caravel.Core.Entity
             entityElement.SetAttribute("visible", Visible.ToString());
 
             // components
-            foreach (var component in m_ComponentMap.Values)
+            lock(m_ComponentMap)
             {
-                var componentElement = component.VToXML();
+                foreach (var component in m_ComponentMap.Values)
+                {
+                    var componentElement = component.VToXML();
 
-                var importedComponentNode = doc.ImportNode(componentElement, true);
-                entityElement.AppendChild(importedComponentNode);
+                    var importedComponentNode = doc.ImportNode(componentElement, true);
+                    entityElement.AppendChild(importedComponentNode);
+                }
             }
 
             doc.AppendChild(entityElement);
@@ -94,9 +98,12 @@ namespace Caravel.Core.Entity
             Cv_EntityComponent component;
             Cv_ComponentID componentID = Cv_EntityComponent.GetID<Component>();
 
-            if (m_ComponentMap.TryGetValue(componentID, out component))
+            lock(m_ComponentMap)
             {
-                return (Component) component;
+                if (m_ComponentMap.TryGetValue(componentID, out component))
+                {
+                    return (Component) component;
+                }
             }
 
             return null;
@@ -107,9 +114,12 @@ namespace Caravel.Core.Entity
             Cv_EntityComponent component;
             Cv_ComponentID componentID = Cv_EntityComponent.GetID(componentName);
 
-            if (m_ComponentMap.TryGetValue(componentID, out component))
+            lock(m_ComponentMap)
             {
-                return component;
+                if (m_ComponentMap.TryGetValue(componentID, out component))
+                {
+                    return component;
+                }
             }
 
             return null;
@@ -119,9 +129,12 @@ namespace Caravel.Core.Entity
         {
             Cv_EntityComponent component;
 
-            if (m_ComponentMap.TryGetValue(componentID, out component))
+            lock(m_ComponentMap)
             {
-                return component;
+                if (m_ComponentMap.TryGetValue(componentID, out component))
+                {
+                    return component;
+                }
             }
 
             return null;
@@ -193,10 +206,15 @@ namespace Caravel.Core.Entity
                 parent.AddChild(this);
             }
 
-            foreach(var component in m_ComponentMap)
+            lock(m_ComponentMap)
             {
-                component.Value.VPostInitialize();
+                foreach(var component in m_ComponentMap)
+                {
+                    component.Value.VPostInitialize();
+                }
             }
+
+            m_bInitialized = true;
         }
 
 		internal void PostLoad()
@@ -209,65 +227,81 @@ namespace Caravel.Core.Entity
 
         internal void OnUpdate(float elapsedTime)
         {
-            if (DestroyRequested)
+            if (DestroyRequested || !m_bInitialized)
             {
                 return;
             }
 
-            foreach (var component in m_ComponentsToAdd)
+            lock(m_ComponentMap)
             {
-                m_ComponentList.Add(component);
-            }
-            m_ComponentsToAdd.Clear();
+                foreach (var component in m_ComponentsToAdd)
+                {
+                    m_ComponentList.Add(component);
+                }
+                m_ComponentsToAdd.Clear();
 
-            foreach (var component in m_ComponentsToRemove)
-            {
-                m_ComponentList.Remove(component);
-            }
-            m_ComponentsToRemove.Clear();
+                foreach (var component in m_ComponentsToRemove)
+                {
+                    m_ComponentList.Remove(component);
+                }
+                m_ComponentsToRemove.Clear();
 
-            foreach (var component in m_ComponentList)
-            {
-                component.VOnUpdate(elapsedTime);
+                foreach (var component in m_ComponentList)
+                {
+                    component.VOnUpdate(elapsedTime);
+                }
             }
         }
 
         internal void OnDestroy()
         {
-            foreach (var component in m_ComponentList)
+            lock(m_ComponentMap)
             {
-                component.VOnDestroy();
-                component.Owner = null;
+                foreach (var component in m_ComponentList)
+                {
+                    component.VOnDestroy();
+                    component.Owner = null;
+                }
             }
         }
 
         internal void OnRemove()
         {
-            m_ComponentList.Clear();
-            m_ComponentMap.Clear();
-            m_ComponentsToAdd.Clear();
-            m_ComponentsToRemove.Clear();
+            lock(m_ComponentMap)
+            {
+                m_ComponentList.Clear();
+                m_ComponentMap.Clear();
+                m_ComponentsToAdd.Clear();
+                m_ComponentsToRemove.Clear();
+            }
         }
 
         internal void AddComponent(Cv_EntityComponent component)
         {
             RemoveComponent(component.GetType());
 
-            m_ComponentMap.Add(component.ID, component);
-            m_ComponentsToAdd.Add(component);
-            component.Owner = this;
+            lock(m_ComponentMap)
+            {
+                m_ComponentMap.Add(component.ID, component);
+                m_ComponentsToAdd.Add(component);
+                component.Owner = this;
+            }
         }
 
         internal void RemoveComponent<Component>() where Component : Cv_EntityComponent
         {
+            
             var component = GetComponent<Component>();
 
             if (component != null)
             {
-                m_ComponentsToRemove.Add(component);
-                m_ComponentMap.Remove(Cv_EntityComponent.GetID<Component>());
-                component.VOnDestroy();
-                component.Owner = null;
+                lock(m_ComponentMap)
+                {
+                    m_ComponentsToRemove.Add(component);
+                    m_ComponentMap.Remove(Cv_EntityComponent.GetID<Component>());
+                    component.VOnDestroy();
+                    component.Owner = null;
+                }
             }
         }
 
@@ -277,10 +311,13 @@ namespace Caravel.Core.Entity
 
             if (component != null)
             {
-                m_ComponentsToRemove.Add(component);
-                m_ComponentMap.Remove(Cv_EntityComponent.GetID(componentType));
-                component.VOnDestroy();
-                component.Owner = null;
+                lock(m_ComponentMap)
+                {
+                    m_ComponentsToRemove.Add(component);
+                    m_ComponentMap.Remove(Cv_EntityComponent.GetID(componentType));
+                    component.VOnDestroy();
+                    component.Owner = null;
+                }
             }
         }
 
@@ -292,10 +329,13 @@ namespace Caravel.Core.Entity
 
         private Cv_EntityComponent GetComponent(Type componentType)
         {
-            Cv_EntityComponent component;
-            if (m_ComponentMap.TryGetValue(Cv_EntityComponent.GetID(componentType), out component))
+            lock(m_ComponentMap)
             {
-                return component;
+                Cv_EntityComponent component;
+                if (m_ComponentMap.TryGetValue(Cv_EntityComponent.GetID(componentType), out component))
+                {
+                    return component;
+                }
             }
 
             return null;
@@ -307,10 +347,13 @@ namespace Caravel.Core.Entity
 
             if (component != null)
             {
-                m_ComponentsToRemove.Add(component);
-                m_ComponentMap.Remove(Cv_EntityComponent.GetID(componentType));
-                component.VOnDestroy();
-                component.Owner = null;
+                lock(m_ComponentMap)
+                {
+                    m_ComponentsToRemove.Add(component);
+                    m_ComponentMap.Remove(Cv_EntityComponent.GetID(componentType));
+                    component.VOnDestroy();
+                    component.Owner = null;
+                }
             }
         }
     }

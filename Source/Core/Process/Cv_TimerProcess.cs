@@ -44,7 +44,7 @@ namespace Caravel.Core.Process
             {
                 if (m_sOnEndScript != null)
                 {
-                    Cv_ScriptManager.Instance.VExecuteString(m_sOnEndScript);
+                    Cv_ScriptManager.Instance.VExecuteString("Cv_TimerProcess", m_sOnEndScript);
                 }
                 else
                 {

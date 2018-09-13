@@ -12,9 +12,11 @@ namespace Caravel.Core.Entity
         protected GenericObjectFactory<Cv_EntityComponent, Cv_ComponentID> ComponentFactory;
 
         private Cv_EntityID m_lastEntityID = Cv_EntityID.INVALID_ENTITY;
+        private object m_Mutex;
 
         protected internal Cv_EntityFactory()
         {
+            m_Mutex = new object();
             ComponentFactory = new GenericObjectFactory<Cv_EntityComponent, Cv_ComponentID>();
 
             ComponentFactory.Register<Cv_TransformComponent>(Cv_EntityComponent.GetID<Cv_TransformComponent>());
@@ -43,7 +45,10 @@ namespace Caravel.Core.Entity
             Cv_EntityID entityId = serverEntityID;
             if (entityId == Cv_EntityID.INVALID_ENTITY)
             {
-                entityId = GetNextEntityID();
+                lock(m_Mutex)
+                {
+                    entityId = GetNextEntityID();
+                }
             }
 
             var entity = new Cv_Entity(entityId, resourceBundle);
@@ -92,7 +97,10 @@ namespace Caravel.Core.Entity
             Cv_EntityID entityId = serverEntityID;
             if (entityId == Cv_EntityID.INVALID_ENTITY)
             {
-                entityId = GetNextEntityID();
+                lock(m_Mutex)
+                {
+                    entityId = GetNextEntityID();
+                }
             }
 
             var entity = new Cv_Entity(entityId, resourceBundle);

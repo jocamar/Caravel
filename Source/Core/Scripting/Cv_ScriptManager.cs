@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Caravel.Core.Entity;
 
 namespace Caravel.Core.Scripting
 {
@@ -14,9 +15,9 @@ namespace Caravel.Core.Scripting
             get; set;
         }
 
-        internal abstract void VExecuteFile(string resource);
-        internal abstract void VExecuteString(string str);
-        internal abstract void VExecuteStream(Stream stream);
+        internal abstract void VExecuteFile(string resource, Cv_Entity runningEntity = null);
+        internal abstract void VExecuteString(string resource, string str, Cv_Entity runningEntity = null);
+        internal abstract void VExecuteStream(string resource, Stream stream, Cv_Entity runningEntity = null);
         internal abstract bool VInitialize();
     }
 }
