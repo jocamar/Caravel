@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Caravel.Core.Entity;
@@ -52,19 +53,23 @@ namespace Caravel.Core.Draw
 
 			Cv_EventManager.Instance.AddListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
+			Cv_EventManager.Instance.AddListener<Cv_Event_NewClickableComponent>(OnNewClickableComponent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
 			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyCameraComponent>(OnDestroyCameraComponent);
+			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyClickableComponent>(OnDestroyClickableComponent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRenderComponent>(OnDestroyRenderComponent);
 			Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
 			Cv_EventManager.Instance.AddListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
         }
 
-		~Cv_SceneElement()
+        ~Cv_SceneElement()
 		{
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
+			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewClickableComponent>(OnNewClickableComponent);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyCameraComponent>(OnDestroyCameraComponent);
+			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyClickableComponent>(OnDestroyClickableComponent);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyRenderComponent>(OnDestroyRenderComponent);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnMoveEntity);
 			Cv_EventManager.Instance.RemoveListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
@@ -74,6 +79,7 @@ namespace Caravel.Core.Draw
         {
 			if (m_Root != null && Camera != null)
 			{
+				m_TransformStack.Clear();
 				renderer.BeginDraw(Camera);
 					m_Root.VPreRender(renderer);
 					m_Root.VRender(renderer);
@@ -285,6 +291,17 @@ namespace Caravel.Core.Draw
 			AddNodeAsChild(parentId, entityId, cameraNode);
 		}
 
+		
+        private void OnNewClickableComponent(Cv_Event eventData)
+        {
+            var castEventData = (Cv_Event_NewClickableComponent) eventData;
+			var entityId = castEventData.EntityID;
+			var clickAreaNode = castEventData.ClickAreaNode;
+			var parentId = castEventData.ParentID;
+
+			AddNodeAsChild(parentId, entityId, clickAreaNode);
+        }
+
 		public void OnModifiedRenderComponent(Cv_Event eventData)
 		{
 			var castEventData = (Cv_Event_ModifiedRenderComponent) eventData;
@@ -331,6 +348,12 @@ namespace Caravel.Core.Draw
 			RemoveNode(destroyCamera.CameraNode);
 		}
 
+		public void OnDestroyClickableComponent(Cv_Event eventData)
+		{
+			Cv_Event_DestroyClickableComponent destroyCamera = (Cv_Event_DestroyClickableComponent) eventData;
+			RemoveNode(destroyCamera.ClickAreaNode);
+		}
+
 		public void OnDestroyRenderComponent(Cv_Event eventData)
 		{
 			Cv_Event_DestroyRenderComponent destroyRender = (Cv_Event_DestroyRenderComponent) eventData;
@@ -350,11 +373,7 @@ namespace Caravel.Core.Draw
 		{
 			Cv_Transform currTransform = Cv_Transform.Identity;
 
-			if (m_TransformStack.Count <= 0)
-			{
-				currTransform = Cv_Transform.Identity;
-			}
-			else
+			if (m_TransformStack.Count > 0)
 			{
 				currTransform = m_TransformStack[m_TransformStack.Count-1];
 			}
@@ -367,7 +386,13 @@ namespace Caravel.Core.Draw
 			m_TransformStack.RemoveAt(m_TransformStack.Count-1);
 		}
 
-		public bool Pick(Vector2 mousePosition, out Cv_EntityID[] entities, Cv_Renderer renderer) {
+		public void PrintTree()
+		{
+			m_Root.PrintTree(0);
+		}
+
+		internal bool Pick(Vector2 mousePosition, out Cv_EntityID[] entities, Cv_Renderer renderer)
+		{
 			var entityList = new List<Cv_EntityID>();
 			var screenPosition = renderer.ScaleMouseToScreenCoordinates(mousePosition);
 			var result = false;
@@ -375,6 +400,7 @@ namespace Caravel.Core.Draw
 			if (screenPosition.X >= 0 && screenPosition.X <= renderer.Viewport.Width
 					&& screenPosition.Y >= 0 && screenPosition.Y <= renderer.Viewport.Height)
 			{
+				m_TransformStack.Clear();
 				result = m_Root.VPick(renderer, screenPosition, entityList);
 			}
 			entities = entityList.ToArray();
@@ -384,10 +410,24 @@ namespace Caravel.Core.Draw
             return result;
         }
 
-		public void PrintTree()
+		internal bool Pick<NodeType>(Vector2 mousePosition, out Cv_EntityID[] entities, Cv_Renderer renderer) where NodeType : Cv_SceneNode
 		{
-			m_Root.PrintTree(0);
-		}
+			var entityList = new List<Cv_EntityID>();
+			var screenPosition = renderer.ScaleMouseToScreenCoordinates(mousePosition);
+			var result = false;
+			
+			if (screenPosition.X >= 0 && screenPosition.X <= renderer.Viewport.Width
+					&& screenPosition.Y >= 0 && screenPosition.Y <= renderer.Viewport.Height)
+			{
+				m_TransformStack.Clear();
+				result = m_Root.Pick<NodeType>(renderer, screenPosition, entityList);
+			}
+			entities = entityList.ToArray();
+			entities = entities.OrderBy(e => Caravel.Logic.GetEntity(e).GetComponent<Cv_TransformComponent>() != null ? 1 : 2)
+					.ThenByDescending(e => Caravel.Logic.GetEntity(e).GetComponent<Cv_TransformComponent>() != null ?
+											Caravel.Logic.GetEntity(e).GetComponent<Cv_TransformComponent>().Position.Z : 0).ToArray();
+            return result;
+        }
 
 		private bool RemoveNode(Cv_SceneNode node)
 		{

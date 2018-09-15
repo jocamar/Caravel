@@ -1,0 +1,4 @@
+﻿<Scene vWidth="320" vHeight="320">
+  <StaticEntities />
+  <Script preLoad="" postLoad="scripts/preInit.lua" />
+</Scene>

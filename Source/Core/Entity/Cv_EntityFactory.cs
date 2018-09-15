@@ -25,6 +25,7 @@ namespace Caravel.Core.Entity
             ComponentFactory.Register<Cv_SoundEmitterComponent>(Cv_EntityComponent.GetID<Cv_SoundEmitterComponent>());
             ComponentFactory.Register<Cv_SoundListenerComponent>(Cv_EntityComponent.GetID<Cv_SoundListenerComponent>());
             ComponentFactory.Register<Cv_ScriptComponent>(Cv_EntityComponent.GetID<Cv_ScriptComponent>());
+            ComponentFactory.Register<Cv_ClickableComponent>(Cv_EntityComponent.GetID<Cv_ClickableComponent>());
         }
 
         protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Caravel.Debugging;
 using ICSharpCode.SharpZipLib.Zip;
 

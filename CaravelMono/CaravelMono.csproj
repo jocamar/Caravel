@@ -132,6 +132,9 @@
     <Compile Include="..\Source\Core\Draw\Cv_CameraNode.cs">
       <Link>Source\Core\Draw\Cv_CameraNode.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Draw\Cv_ClickAreaNode.cs">
+      <Link>Source\Core\Draw\Cv_ClickAreaNode.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Draw\Cv_DrawUtils.cs">
       <Link>Source\Core\Draw\Cv_DrawUtils.cs</Link>
     </Compile>
@@ -167,6 +170,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_CameraComponent.cs">
       <Link>Source\Core\Entity\Cv_CameraComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_ClickableComponent.cs">
+      <Link>Source\Core\Entity\Cv_ClickableComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_Entity.cs">
       <Link>Source\Core\Entity\Cv_Entity.cs</Link>
@@ -219,8 +225,14 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_ModifiedRenderComponent.cs">
       <Link>Source\Core\Events\Cv_Event_ModifiedRenderComponent.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_NewClickableComponent.cs">
+      <Link>Source\Core\Events\Cv_Event_NewClickableComponent.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_NewCameraComponent.cs">
       <Link>Source\Core\Events\Cv_Event_NewCameraComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_DestroyClickableComponent.cs">
+      <Link>Source\Core\Events\Cv_Event_DestroyClickableComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_DestroyCameraComponent.cs">
       <Link>Source\Core\Events\Cv_Event_DestroyCameraComponent.cs</Link>

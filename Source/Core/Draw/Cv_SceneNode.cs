@@ -22,8 +22,13 @@ namespace Caravel.Core.Draw
             get; private set;
         }
 
+        public Cv_SceneNode Parent
+        {
+            get; private set;
+        }
+
         //Updated on the OnMoveEntity callback in the scene element
-        public virtual Cv_Transform Transform
+        internal virtual Cv_Transform Transform
         {
             get
             {
@@ -44,7 +49,7 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public virtual Cv_Transform WorldTransform
+        internal virtual Cv_Transform WorldTransform
         {
             get
             {
@@ -59,7 +64,7 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public virtual Vector3 Position
+        internal virtual Vector3 Position
         {
             get
             {
@@ -76,7 +81,7 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public virtual Vector3 WorldPosition
+        internal virtual Vector3 WorldPosition
         {
             get
             {
@@ -86,7 +91,7 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public virtual Vector2 Scale
+        internal virtual Vector2 Scale
         {
             get
             {
@@ -103,7 +108,7 @@ namespace Caravel.Core.Draw
             }
         }
 
-		public virtual Vector2 Origin
+		internal virtual Vector2 Origin
         {
             get
             {
@@ -120,7 +125,7 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public virtual float Rotation
+        internal virtual float Rotation
         {
             get
             {
@@ -137,12 +142,12 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public bool TransformChanged
+        internal bool TransformChanged
         {
-            get; protected set;
+            get; set;
         }
 
-        public bool WorldTransformChanged
+        internal bool WorldTransformChanged
         {
             get
             {
@@ -157,25 +162,34 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public Cv_SceneNode Parent
-        {
-            get; private set;
-        }
-
-        protected List<Cv_SceneNode> m_Children;
-        protected Cv_EntityComponent m_Component;
+        protected List<Cv_SceneNode> Children;
+        protected Cv_EntityComponent Component;
 
         private string Name
         {
             get
             {
-                 var entity = CaravelApp.Instance.Logic.GetEntity(Properties.EntityID);
-                 var name = (entity != null ? entity.EntityName : "root") + "_" + this.GetType().Name;
-                 return name;
+                var entity = CaravelApp.Instance.Logic.GetEntity(Properties.EntityID);
+                var name = (entity != null ? entity.EntityName : "root") + "_" + this.GetType().Name;
+                return name;
             }
         }
 
-        public Cv_SceneNode(Cv_EntityID entityID, Cv_EntityComponent renderComponent, Cv_Transform to, Cv_Transform? from = null)
+        
+        public void PrintTree(int level)
+        {
+            Console.WriteLine(Name);
+            foreach(var n in Children)
+            {
+                for (var i = 0; i <= level; i++)
+                {
+                    Console.Write("\t");
+                }
+                n.PrintTree(level + 1);
+            }
+        }
+
+        internal Cv_SceneNode(Cv_EntityID entityID, Cv_EntityComponent renderComponent, Cv_Transform to, Cv_Transform? from = null)
         {
             Properties = new Cv_NodeProperties();
             Properties.EntityID = entityID;
@@ -184,31 +198,31 @@ namespace Caravel.Core.Draw
             Properties.Name = renderComponent != null ? renderComponent.GetType().Name : "SceneNode";
             Properties.Radius = -1;
             TransformChanged = true;
-            m_Component = renderComponent;
-            m_Children = new List<Cv_SceneNode>();
+            Component = renderComponent;
+            Children = new List<Cv_SceneNode>();
         }
 
-        public virtual float GetRadius(Cv_Renderer renderer)
+        internal virtual float GetRadius(Cv_Renderer renderer)
         {
             return Properties.Radius;
         }
 
-        public virtual void SetRadius(float value)
+        internal virtual void SetRadius(float value)
         {
             Properties.Radius = value;
         }
 
-        public virtual void VOnUpdate(float time, float elapsedTime)
+        internal virtual void VOnUpdate(float time, float elapsedTime)
         {
-            foreach (var child in m_Children)
+            foreach (var child in Children)
             {
                 child.VOnUpdate(time, elapsedTime);
             }
         }
 
-        public virtual bool VOnChanged()
+        internal virtual bool VOnChanged()
         {
-            foreach (var child in m_Children)
+            foreach (var child in Children)
             {
                 child.VOnChanged();
             }
@@ -216,27 +230,27 @@ namespace Caravel.Core.Draw
             return true;
         }
 
-        public abstract void VPreRender(Cv_Renderer renderer);
+        internal abstract void VPreRender(Cv_Renderer renderer);
 
-        public abstract bool VIsVisible(Cv_Renderer renderer);
+        internal abstract bool VIsVisible(Cv_Renderer renderer);
 
-        public abstract void VRender(Cv_Renderer renderer);
+        internal abstract void VRender(Cv_Renderer renderer);
 
-        public abstract void VPostRender(Cv_Renderer renderer);
+        internal abstract void VPostRender(Cv_Renderer renderer);
 
-        public virtual void VFinishedRender(Cv_Renderer renderer)
+        internal virtual void VFinishedRender(Cv_Renderer renderer)
         {
             TransformChanged = false;
 
-            foreach (var child in m_Children)
+            foreach (var child in Children)
             {
                 child.VFinishedRender(renderer);
             }
         }
 
-        public virtual void VRenderChildren(Cv_Renderer renderer)
+        internal virtual void VRenderChildren(Cv_Renderer renderer)
         {
-            foreach (var child in m_Children)
+            foreach (var child in Children)
             {
                 child.VPreRender(renderer);
 
@@ -250,11 +264,11 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public virtual bool AddChild(Cv_SceneNode child)
+        internal virtual bool AddChild(Cv_SceneNode child)
         {
             if (child != null)
             {
-                m_Children.Add(child);
+                Children.Add(child);
                 child.Parent = this;
 
                 return true;
@@ -263,10 +277,10 @@ namespace Caravel.Core.Draw
             return false;
         }
 
-        public virtual bool RemoveChild(Cv_EntityID entityId)
+        internal virtual bool RemoveChild(Cv_EntityID entityId)
         {
             Cv_SceneNode toErase = null;
-            foreach (var c in m_Children)
+            foreach (var c in Children)
             {
                 if (c.Properties.EntityID != Cv_EntityID.INVALID_ENTITY && c.Properties.EntityID == entityId)
                 {
@@ -277,13 +291,13 @@ namespace Caravel.Core.Draw
 
             if (toErase != null)
             {
-                m_Children.Remove(toErase);
+                Children.Remove(toErase);
                 return true;
             }
 
             var removed = false;
 
-            foreach (var c in m_Children)
+            foreach (var c in Children)
             {
                 if (c.RemoveChild(entityId))
                 {
@@ -295,10 +309,10 @@ namespace Caravel.Core.Draw
             return removed;
         }
 
-        public virtual bool RemoveChild(Cv_SceneNode node)
+        internal virtual bool RemoveChild(Cv_SceneNode node)
         {
             Cv_SceneNode toErase = null;
-            foreach (var c in m_Children)
+            foreach (var c in Children)
             {
                 if (c == node)
                 {
@@ -309,13 +323,13 @@ namespace Caravel.Core.Draw
 
             if (toErase != null)
             {
-                m_Children.Remove(toErase);
+                Children.Remove(toErase);
                 return true;
             }
 
             var removed = false;
 
-            foreach (var c in m_Children)
+            foreach (var c in Children)
             {
                 if (c.RemoveChild(node))
                 {
@@ -327,10 +341,10 @@ namespace Caravel.Core.Draw
             return removed;
         }
 
-        public virtual bool VPick(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
+        internal virtual bool VPick(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
         {
             var success = false;
-            foreach (var child in m_Children)
+            foreach (var child in Children)
             {
                 if (child.VPick(renderer, screenPosition, entities))
                 {
@@ -341,17 +355,32 @@ namespace Caravel.Core.Draw
             return success;
         }
 
-        public void PrintTree(int level)
+        internal bool Pick<NodeType>(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities) where NodeType : Cv_SceneNode
         {
-            Console.WriteLine(Name);
-            foreach(var n in m_Children)
+            if (this is Cv_HolderNode)
             {
-                for (var i = 0; i <= level; i++)
-                {
-                    Console.Write("\t");
-                }
-                n.PrintTree(level + 1);
+                CaravelApp.Instance.Scene.PushAndSetTransform(Transform);
             }
+
+            var success = false;
+            foreach (var child in Children)
+            {
+                if (child is Cv_HolderNode && child.Pick<NodeType>(renderer, screenPosition, entities))
+                {
+                    success = true;
+                }
+                else if (child is NodeType && child.VPick(renderer, screenPosition, entities))
+                {
+                    success = true;
+                }
+            }
+
+            if (this is Cv_HolderNode)
+            {
+                CaravelApp.Instance.Scene.PopTransform();
+            }
+
+            return success;
         }
     }
 }

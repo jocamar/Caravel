@@ -10,7 +10,7 @@ namespace Caravel.Core.Draw
     {
         public float Zoom
         {
-            get { return ((Cv_CameraComponent) m_Component).Zoom; }
+            get { return ((Cv_CameraComponent) Component).Zoom; }
         }
 
         public bool IsDebugCamera
@@ -39,9 +39,9 @@ namespace Caravel.Core.Draw
             Position += new Vector3(amount, 0);
         }
 
-        public override float GetRadius(Cv_Renderer renderer)
+        internal override float GetRadius(Cv_Renderer renderer)
         {
-            if (Properties.Radius < 0 || ((Cv_CameraComponent) m_Component).ZoomChanged)
+            if (Properties.Radius < 0 || ((Cv_CameraComponent) Component).ZoomChanged)
             {
                 var transf = Parent.Transform;
                 var originFactorX = Math.Abs(transf.Origin.X - 0.5) + 0.5;
@@ -58,7 +58,7 @@ namespace Caravel.Core.Draw
             return Properties.Radius;
         }
 
-        public Cv_Transform GetViewTransform(int virtualWidth, int virtualHeight, Cv_Transform rendererTransform)
+        internal Cv_Transform GetViewTransform(int virtualWidth, int virtualHeight, Cv_Transform rendererTransform)
         {
             if ((virtualWidth > 0 && virtualWidth != m_iPreviousVirtualWidth)
                 || (virtualHeight > 0 && virtualHeight != m_iPreviousVirtualHeight))
@@ -66,17 +66,17 @@ namespace Caravel.Core.Draw
                 IsViewTransformDirty = true;
             }
 
-            if (WorldTransformChanged || ((Cv_CameraComponent) m_Component).ZoomChanged)
+            if (WorldTransformChanged || ((Cv_CameraComponent) Component).ZoomChanged)
             {
                 IsViewTransformDirty = true;
             }
 
             if (IsViewTransformDirty)
             {
-                var zoom = ((Cv_CameraComponent) m_Component).Zoom;
+                var zoom = ((Cv_CameraComponent) Component).Zoom;
                 var worldTransform = WorldTransform;
                 var transform = Parent.Transform;
-                var parentOrigin = m_Component.Owner.GetComponent<Cv_TransformComponent>().Origin;
+                var parentOrigin = Component.Owner.GetComponent<Cv_TransformComponent>().Origin;
                 var parentWorldTranform = Cv_Transform.Identity;
 
                 if (Parent.Parent != null)
@@ -106,17 +106,17 @@ namespace Caravel.Core.Draw
             return m_Transform;
         }
 
-        public void RecalculateTransformationMatrices()
+        internal void RecalculateTransformationMatrices()
         {
             IsViewTransformDirty = true;
         }
 
-        public override void VRender(Cv_Renderer renderer)
+        internal override void VRender(Cv_Renderer renderer)
         {
             var scene = CaravelApp.Instance.Scene;
             if (scene.Caravel.EditorRunning && renderer.DebugDrawCameras)
             {
-                var zoom = ((Cv_CameraComponent) m_Component).Zoom;
+                var zoom = ((Cv_CameraComponent) Component).Zoom;
                 var rot = scene.Transform.Rotation;
                 var pos = scene.Transform.Position;
                 var rotMatrixZ = Matrix.CreateRotationZ(rot);
@@ -187,21 +187,21 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public override void VPreRender(Cv_Renderer renderer)
+        internal override void VPreRender(Cv_Renderer renderer)
         {
         }
 
-        public override void VPostRender(Cv_Renderer renderer)
+        internal override void VPostRender(Cv_Renderer renderer)
         {
         }
 
-        public override void VFinishedRender(Cv_Renderer renderer)
+        internal override void VFinishedRender(Cv_Renderer renderer)
         {
             base.VFinishedRender(renderer);
-            ((Cv_CameraComponent) m_Component).ZoomChanged = false;
+            ((Cv_CameraComponent) Component).ZoomChanged = false;
         }
 
-        public override bool VIsVisible(Cv_Renderer renderer)
+        internal override bool VIsVisible(Cv_Renderer renderer)
         {
             return true;
         }

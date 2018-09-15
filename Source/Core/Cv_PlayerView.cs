@@ -105,6 +105,19 @@ namespace Caravel.Core
             }
         }
 
+        public bool DebugDrawClickableAreas
+        {
+            get
+            {
+                return Renderer.DebugDrawClickAreas;
+            }
+            
+            set
+            {
+                Renderer.DebugDrawClickAreas = value;
+            }
+        }
+
         public bool DebugDrawFPS
         {
             get; set;
@@ -276,6 +289,10 @@ namespace Caravel.Core
             return Scene.Pick(mousePos, out entities, Renderer);
         }
 
+        public bool Pick<NodeType>(Vector2 mousePos, out Cv_EntityID[] entities) where NodeType : Cv_SceneNode
+        {
+            return Scene.Pick<NodeType>(mousePos, out entities, Renderer);
+        }
 
         protected internal virtual void VRenderText()
         {

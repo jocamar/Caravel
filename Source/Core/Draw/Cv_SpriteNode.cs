@@ -14,9 +14,9 @@ namespace Caravel.Core.Draw
         {
         }
 
-        public override void VRender(Cv_Renderer renderer)
+        internal override void VRender(Cv_Renderer renderer)
         {
-            var spriteComponent = (Cv_SpriteComponent) m_Component;
+            var spriteComponent = (Cv_SpriteComponent) Component;
             var scene = CaravelApp.Instance.Scene;
 
             var pos = scene.Transform.Position;
@@ -98,7 +98,7 @@ namespace Caravel.Core.Draw
                                     layerDepth / (float) Cv_Renderer.MaxLayers);
         }
 
-        public override float GetRadius(Cv_Renderer renderer)
+        internal override float GetRadius(Cv_Renderer renderer)
         {
             if (Properties.Radius < 0)
             {
@@ -107,7 +107,7 @@ namespace Caravel.Core.Draw
                 var originFactorY = Math.Abs(transf.Origin.Y - 0.5) + 0.5;
                 var originFactor = (float) Math.Max(originFactorX, originFactorY);
 
-                var comp = ((Cv_SpriteComponent) m_Component);
+                var comp = ((Cv_SpriteComponent) Component);
                 Properties.Radius = (float) Math.Sqrt(comp.Width*comp.Width + comp.Height*comp.Height) * originFactor;
                 Properties.Radius *= Math.Max(transf.Scale.X, transf.Scale.Y);
             }
@@ -115,31 +115,35 @@ namespace Caravel.Core.Draw
             return Properties.Radius;
         }
 
-        public override bool VOnChanged()
+        internal override bool VOnChanged()
         {
-            var comp = ((Cv_SpriteComponent) m_Component);
+            var comp = ((Cv_SpriteComponent) Component);
             SetRadius(-1);
             return true;
         }
 
-        public override void VPreRender(Cv_Renderer renderer)
+        internal override void VPreRender(Cv_Renderer renderer)
         {
         }
 
-        public override bool VIsVisible(Cv_Renderer renderer)
+        internal override bool VIsVisible(Cv_Renderer renderer)
         {
             return true;
         }
 
-        public override bool VPick(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
+        internal override void VPostRender(Cv_Renderer renderer)
+        {
+        }
+
+        internal override bool VPick(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
         {
             var camMatrix = renderer.CamMatrix;
-            var worldTransform = Parent.WorldTransform;
+            var worldTransform = CaravelApp.Instance.Scene.Transform;
             var pos = new Vector2(worldTransform.Position.X, worldTransform.Position.Y);
             var rot = worldTransform.Rotation;
             var scale = worldTransform.Scale;
 
-            var spriteComponent = (Cv_SpriteComponent) m_Component;
+            var spriteComponent = (Cv_SpriteComponent) Component;
             
             var transformedVertices = new List<Vector2>();
             var point1 = new Vector2(-(worldTransform.Origin.X * spriteComponent.Width * scale.X),
@@ -181,10 +185,6 @@ namespace Caravel.Core.Draw
             {
                 return false;
             }
-        }
-
-        public override void VPostRender(Cv_Renderer renderer)
-        {
         }
     }
 }

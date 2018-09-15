@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Draw
 {
@@ -18,7 +20,7 @@ namespace Caravel.Core.Draw
             m_Entity = CaravelApp.Instance.Logic.GetEntity(entityID);
         }
 
-        public override void VPreRender(Cv_Renderer renderer)
+        internal override void VPreRender(Cv_Renderer renderer)
         {
             CaravelApp.Instance.Scene.PushAndSetTransform(Transform);
 
@@ -28,10 +30,10 @@ namespace Caravel.Core.Draw
             }
         }
 
-        public override float GetRadius(Cv_Renderer renderer)
+        internal override float GetRadius(Cv_Renderer renderer)
         {
             Properties.Radius = 0;
-            foreach (var child in m_Children)
+            foreach (var child in Children)
             {
                 var childPos = child.Position;
                 var radius = childPos.Length() + child.GetRadius(renderer);
@@ -45,7 +47,7 @@ namespace Caravel.Core.Draw
             return Properties.Radius;
         }
 
-        public override bool VIsVisible(Cv_Renderer renderer)
+        internal override bool VIsVisible(Cv_Renderer renderer)
         {
             if (!m_Entity.Visible)
             {
@@ -85,12 +87,12 @@ namespace Caravel.Core.Draw
             return visibility;
         }
 
-        public override void VPostRender(Cv_Renderer renderer)
+        internal override void VPostRender(Cv_Renderer renderer)
         {
             CaravelApp.Instance.Scene.PopTransform();
         }
 
-        public override void VRender(Cv_Renderer renderer)
+        internal override void VRender(Cv_Renderer renderer)
         {
             if (renderer.DebugDrawRadius && GetRadius(renderer) > 0 && m_DebugCircleTex != null)
             {
@@ -103,6 +105,14 @@ namespace Caravel.Core.Draw
                                                 (int)(radius * 2));
                 renderer.Draw(m_DebugCircleTex, r2, Color.Blue);
             }
+        }
+
+        internal override bool VPick(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
+        {
+            CaravelApp.Instance.Scene.PushAndSetTransform(Transform);
+            var rtrnVal = base.VPick(renderer, screenPosition, entities);
+            CaravelApp.Instance.Scene.PopTransform();
+            return rtrnVal;
         }
     }
 }

@@ -163,6 +163,11 @@ namespace Caravel.Core.Draw
             get; set;
         }
 
+        public bool DebugDrawClickAreas
+        {
+            get; set;
+        }
+
         public double Scale
         {
             get; private set;

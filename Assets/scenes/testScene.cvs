@@ -1,4 +1,4 @@
-﻿<Scene vWidth="720" vHeight="720">
+﻿<Scene vWidth="1280" vHeight="720">
   <StaticEntities>
     <Entity name="guybrush" type="entity_types/zombie.cve" visible="True">
       <Cv_RigidBodyComponent>
@@ -118,5 +118,5 @@
       </Cv_RigidBodyComponent>
     </Entity>
   </StaticEntities>
-  <Script preLoad="" postLoad="scripts/test.lua" />
+  <Script preLoad="scripts/preInit.lua" postLoad="scripts/test.lua" />
 </Scene>
