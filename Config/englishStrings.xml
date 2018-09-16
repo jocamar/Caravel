@@ -1,0 +1,5 @@
+<Strings>
+    <Text id="Play" value="Play" />
+    <Text id="GameOver" value="Game Over" />
+    <Text id="Exit" value="Exit Game" />
+</Strings>

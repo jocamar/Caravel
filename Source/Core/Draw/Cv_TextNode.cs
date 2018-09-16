@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Caravel.Core.Entity;
 using Caravel.Core.Resource;
 using Microsoft.Xna.Framework;
@@ -8,20 +9,37 @@ using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Draw
 {
-    public class Cv_SpriteNode : Cv_SceneNode
+    public class Cv_TextNode : Cv_SceneNode
     {
-        public Cv_SpriteNode(Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform? from = null) : base(entityID, renderComponent, to, from)
+        public Cv_TextNode(Cv_EntityID entityID, Cv_RenderComponent renderComponent, Cv_Transform to, Cv_Transform? from = null) : base(entityID, renderComponent, to, from)
         {
         }
 
+        internal override bool VIsVisible(Cv_Renderer renderer)
+        {
+            return true;
+        }
+
+        internal override void VPostRender(Cv_Renderer renderer)
+        {
+        }
+
+        internal override void VPreRender(Cv_Renderer renderer)
+        {
+        }
+
+        //TODO(JM): Maybe change rendering to draw text into a texture and then reuse texture
         internal override void VRender(Cv_Renderer renderer)
         {
-            var spriteComponent = (Cv_SpriteComponent) Component;
+            var textComponent = (Cv_TextComponent) Component;
             var scene = CaravelApp.Instance.Scene;
 
             var pos = scene.Transform.Position;
             var rot = scene.Transform.Rotation;
             var scale = scene.Transform.Scale;
+
+            var width = textComponent.Width * scale.X;
+            var height = textComponent.Height * scale.Y;
 
             //Draws the yellow contour when an entity is selected in the editor
             if (scene.Caravel.EditorRunning && scene.EditorSelectedEntity == Properties.EntityID)
@@ -31,12 +49,11 @@ namespace Caravel.Core.Draw
                 Vector2 point1;
                 Vector2 point2;
                 List<Vector2> points = new List<Vector2>();
-                var width = spriteComponent.Width * scale.X;
-                var height = spriteComponent.Height * scale.Y;
                 points.Add(new Vector2(0, 0));
                 points.Add(new Vector2(width, 0));
                 points.Add(new Vector2(width, height));
                 points.Add(new Vector2(0, height));
+
                 for (int i = 0, j = 1; i < points.Count; i++, j++)
                 {
                     if (j >= points.Count)
@@ -69,31 +86,28 @@ namespace Caravel.Core.Draw
                 }
             }
 
-            if (!spriteComponent.Visible || spriteComponent.Texture == null || spriteComponent.Texture == "")
+            if (!textComponent.Visible || textComponent.Text == null || textComponent.Text == "" || textComponent.FontResource == null || textComponent.FontResource == "")
             {
                 return;
             }
 
-            Cv_RawTextureResource resource = Cv_ResourceManager.Instance.GetResource<Cv_RawTextureResource>(spriteComponent.Texture, spriteComponent.Owner.ResourceBundle);
+            Cv_SpriteFontResource resource = Cv_ResourceManager.Instance.GetResource<Cv_SpriteFontResource>(textComponent.FontResource, textComponent.Owner.ResourceBundle);
 			
-            var tex = resource.GetTexture().Texture;
+            var font = resource.GetFontData().Font;
 
-            var frameW = tex.Width / spriteComponent.FrameX;
-			var frameH = tex.Height / spriteComponent.FrameY;
-			var x = (spriteComponent.CurrentFrame % spriteComponent.FrameX) * frameW;
-			var y = (spriteComponent.CurrentFrame / spriteComponent.FrameX) * frameH;
+            var text = WrapText(CaravelApp.Instance.GetString(textComponent.Text), font, (int)width, (int)height);
 
             var layerDepth = (int) pos.Z;
             layerDepth = layerDepth % Cv_Renderer.MaxLayers;
 
-            renderer.Draw(tex, new Rectangle((int) pos.X,
-                                                (int)pos.Y,
-                                                (int)(spriteComponent.Width * scale.X),
-                                                (int)(spriteComponent.Height * scale.Y)),
-                                    new Rectangle(x,y, frameW, frameH),
-                                    spriteComponent.Color,
+            var bounds = new Rectangle((int) (pos.X - (width * scene.Transform.Origin.X)),
+                                        (int) (pos.Y - (height * scene.Transform.Origin.Y)),
+                                        (int) width,
+                                        (int) height);
+
+            renderer.DrawText(font, text, bounds, textComponent.HorizontalAlignment, textComponent.VerticalAlignment, textComponent.Color, 
                                     rot,
-                                    new Vector2(frameW * scene.Transform.Origin.X, frameH * scene.Transform.Origin.Y),
+                                    Math.Min(scene.Transform.Scale.X, scene.Transform.Scale.Y),
                                     SpriteEffects.None,
                                     layerDepth / (float) Cv_Renderer.MaxLayers);
         }
@@ -107,25 +121,12 @@ namespace Caravel.Core.Draw
                 var originFactorY = Math.Abs(transf.Origin.Y - 0.5) + 0.5;
                 var originFactor = (float) Math.Max(originFactorX, originFactorY);
 
-                var comp = ((Cv_SpriteComponent) Component);
+                var comp = ((Cv_TextComponent) Component);
                 Properties.Radius = (float) Math.Sqrt(comp.Width*comp.Width + comp.Height*comp.Height) * originFactor;
                 Properties.Radius *= Math.Max(transf.Scale.X, transf.Scale.Y);
             }
 
             return Properties.Radius;
-        }
-
-        internal override void VPreRender(Cv_Renderer renderer)
-        {
-        }
-
-        internal override bool VIsVisible(Cv_Renderer renderer)
-        {
-            return true;
-        }
-
-        internal override void VPostRender(Cv_Renderer renderer)
-        {
         }
 
         internal override bool VPick(Cv_Renderer renderer, Vector2 screenPosition, List<Cv_EntityID> entities)
@@ -136,17 +137,17 @@ namespace Caravel.Core.Draw
             var rot = worldTransform.Rotation;
             var scale = worldTransform.Scale;
 
-            var spriteComponent = (Cv_SpriteComponent) Component;
+            var textComponent = (Cv_TextComponent) Component;
             
             var transformedVertices = new List<Vector2>();
-            var point1 = new Vector2(-(worldTransform.Origin.X * spriteComponent.Width * scale.X),
-                                     -(worldTransform.Origin.Y * spriteComponent.Height * scale.Y));
+            var point1 = new Vector2(-(worldTransform.Origin.X * textComponent.Width * scale.X),
+                                     -(worldTransform.Origin.Y * textComponent.Height * scale.Y));
 
-            var point2 = new Vector2(point1.X + (spriteComponent.Width * scale.X),
+            var point2 = new Vector2(point1.X + (textComponent.Width * scale.X),
                                      point1.Y);
 
             var point3 = new Vector2(point2.X,
-                                     point1.Y + (spriteComponent.Height * scale.Y));
+                                     point1.Y + (textComponent.Height * scale.Y));
 
             var point4 = new Vector2(point1.X,
                                      point3.Y);
@@ -178,6 +179,34 @@ namespace Caravel.Core.Draw
             {
                 return false;
             }
+        }
+
+        private string WrapText(string text, SpriteFont font, int width, int height)
+        {
+            if(font.MeasureString(text).X < width) {
+                return text;
+            }
+
+            string[] words = text.Split(' ');
+            StringBuilder wrappedText = new StringBuilder();
+            float linewidth = 0f;
+            float textHeight = 0f;
+            float spaceWidth = font.MeasureString(" ").X;
+            for(int i = 0; i < words.Length; ++i) {
+
+                Vector2 size = font.MeasureString(words[i]);
+                if(linewidth + size.X < width) {
+                    linewidth += size.X + spaceWidth;
+                } else {
+                    wrappedText.Append("\n");
+                    linewidth = size.X + spaceWidth;
+                }
+
+                wrappedText.Append(words[i]);
+                wrappedText.Append(" ");
+            }
+
+            return wrappedText.ToString();
         }
     }
 }

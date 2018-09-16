@@ -306,7 +306,7 @@ namespace Caravel.Core.Entity
         {
         }
 
-        protected internal override void VOnUpdate(float deltaTime)
+        protected internal override void VOnUpdate(float elapsedTime)
         {
             if (!m_bPlayed && AutoPlay && !CaravelApp.Instance.EditorRunning)
             {

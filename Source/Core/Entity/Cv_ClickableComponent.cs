@@ -141,7 +141,7 @@ namespace Caravel.Core.Entity
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
-        protected internal override void VOnUpdate(float deltaTime)
+        protected internal override void VOnUpdate(float elapsedTime)
         {
             if (!Active)
             {

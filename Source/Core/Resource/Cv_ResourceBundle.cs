@@ -30,11 +30,11 @@ namespace Caravel.Core.Resource
 
 		public Stream GetResourceStream(string resourceFile)
 		{
-			return OpenStream(resourceFile);
+			return GetStream(resourceFile);
 		}
 
 		public abstract long VGetResourceSize(string resourceFile);
 		public abstract void Refresh();
-		protected abstract override Stream OpenStream(string assetName);
+		protected abstract Stream GetStream(string assetName);
     }
 }

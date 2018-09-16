@@ -108,7 +108,7 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override void VOnUpdate(float deltaTime)
+        protected internal override void VOnUpdate(float elapsedTime)
         {
         }
 

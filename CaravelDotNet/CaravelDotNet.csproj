@@ -160,6 +160,9 @@
     <Compile Include="..\Source\Core\Draw\Cv_SpriteNode.cs">
       <Link>Cv_SpriteNode.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Draw\Cv_TextNode.cs">
+      <Link>Cv_TextNode.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Sound\Cv_SoundManager.cs">
       <Link>Cv_SoundManager.cs</Link>
     </Compile>
@@ -201,6 +204,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_TransformComponent.cs">
       <Link>Cv_TransformComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_TextComponent.cs">
+      <Link>Cv_TextComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event.cs">
       <Link>Cv_Event.cs</Link>
@@ -304,8 +310,8 @@
     <Compile Include="..\Source\Core\Physics\Cv_NullPhysics.cs">
       <Link>Cv_NullPhysics.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Resource\Cv_DevelopmentZipResourceBundle.cs">
-      <Link>Cv_DevelopmentZipResourceBundle.cs</Link>
+    <Compile Include="..\Source\Core\Resource\Cv_DevelopmentResourceBundle.cs">
+      <Link>Cv_DevelopmentResourceBundle.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_RawTextureResource.cs">
       <Link>Cv_RawTextureResource.cs</Link>

@@ -162,6 +162,9 @@
     <Compile Include="..\Source\Core\Draw\Cv_SpriteNode.cs">
       <Link>Source\Core\Draw\Cv_SpriteNode.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Draw\Cv_TextNode.cs">
+      <Link>Source\Core\Draw\Cv_TextNode.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Sound\Cv_SoundManager.cs">
       <Link>Source\Core\Sound\Cv_SoundManager.cs</Link>
     </Compile>
@@ -203,6 +206,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_TransformComponent.cs">
       <Link>Source\Core\Entity\Cv_TransformComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_TextComponent.cs">
+      <Link>Source\Core\Entity\Cv_TextComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event.cs">
       <Link>Source\Core\Events\Cv_Event.cs</Link>
@@ -324,8 +330,8 @@
     <Compile Include="..\Source\Core\Resource\Cv_ZipResourceBundle.cs">
       <Link>Source\Core\Resource\Cv_ZipResourceBundle.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Resource\Cv_DevelopmentZipResourceBundle.cs">
-      <Link>Source\Core\Resource\Cv_DevelopmentZipResourceBundle.cs</Link>
+    <Compile Include="..\Source\Core\Resource\Cv_DevelopmentResourceBundle.cs">
+      <Link>Source\Core\Resource\Cv_DevelopmentResourceBundle.cs</Link>
     </Compile>
     <Compile Include="..\Source\Debugging\Cv_Debug.cs">
       <Link>Source\Debugging\Cv_Debug.cs</Link>

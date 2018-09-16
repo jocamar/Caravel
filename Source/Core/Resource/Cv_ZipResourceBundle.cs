@@ -103,15 +103,18 @@ namespace Caravel.Core.Resource
 		public override long VGetResourceSize(string resourceFile)
 		{
 			return m_ZipFile.GetEntry(resourceFile).Size;
-		}
-
-		
+		}		
 
         public override void Refresh()
         {
         }
 
 		protected override Stream OpenStream(string assetName)
+		{
+			return GetStream(assetName);
+		}
+
+		protected override Stream GetStream(string assetName)
 		{
 			int entry = m_ZipFile.FindEntry(assetName, true);
 			Stream zipStream  = null;

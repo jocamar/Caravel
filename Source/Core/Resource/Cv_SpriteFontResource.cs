@@ -31,7 +31,8 @@ namespace Caravel.Core.Resource
         public bool VLoad(string resourceFile, Stream resourceStream, out int size, Cv_ResourceBundle bundle)
         {
 			try {
-                var font = bundle.Load<SpriteFont>(resourceFile);
+                var resource = Path.GetFileNameWithoutExtension(resourceFile);
+                var font = bundle.Load<SpriteFont>(resource);
 
 				var resData = new Cv_SpriteFontData();
 				resData.Font = font;

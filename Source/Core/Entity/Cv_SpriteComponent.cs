@@ -145,9 +145,6 @@ namespace Caravel.Core.Entity
         private Cv_SpriteSubAnimation? m_CurrAnim;
         private int m_ActualStartFrame, m_ActualEndFrame, m_ActualSpeed;
         private int m_iWidth, m_iHeight;
-        private bool m_bFading;
-        private int m_iFinalFadeAlpha;
-        private float m_fRemainingFadeTime;
 
         public Cv_SpriteComponent()
         {
@@ -165,8 +162,6 @@ namespace Caravel.Core.Entity
             m_CurrAnim = null;
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
             m_sDefaultAnim = "";
-
-            //Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
         }
 
         public Cv_SpriteComponent(string resource, int width, int height, Color color,
@@ -189,8 +184,6 @@ namespace Caravel.Core.Entity
             m_CurrAnim = null;
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
             m_sDefaultAnim = "";
-
-            //Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
         }
 
 
@@ -215,14 +208,76 @@ namespace Caravel.Core.Entity
             m_SubAnimations.Remove(id);
         }
 
-        public void FadeTo(int alpha, float interval)
+        protected internal override void VOnUpdate(float elapsedTime)
         {
-            m_bFading = true;
-            m_fRemainingFadeTime = interval;
-            m_iFinalFadeAlpha = alpha;
+            SceneNode.SetRadius(-1);
+            m_ActualEndFrame = m_CurrAnim != null ? m_CurrAnim.Value.EndFrame : 0;
+            if (EndFrame != null)
+            {
+                m_ActualEndFrame = EndFrame.Value;
+            }
+
+            m_ActualStartFrame = m_CurrAnim != null ? m_CurrAnim.Value.StartFrame : 0;
+            if (StartFrame != null)
+            {
+                m_ActualStartFrame = StartFrame.Value;
+            }
+
+            m_ActualSpeed = m_CurrAnim != null ? m_CurrAnim.Value.Speed : 0;
+            if (Speed != null)
+            {
+                m_ActualSpeed = Speed.Value;
+            }
+
+			if (m_ActualSpeed > 0 && !Paused)
+			{
+				var frameIntervalMillis = 1000 / m_ActualSpeed;
+
+				if (timeSinceLastUpdate > frameIntervalMillis)
+                {
+                    var framesToSkip = timeSinceLastUpdate / frameIntervalMillis;
+                    timeSinceLastUpdate = 0;
+
+                    while (framesToSkip > 0)
+                    {
+                        if (CurrentFrame + 1 > m_ActualEndFrame)
+                        {
+                            if (Looping)
+                            {
+                                CurrentFrame = m_ActualStartFrame;
+                            }
+                            else 
+                            {
+                                Ended = true;
+                                OnEnd?.Invoke();
+                                break;
+                            };
+                        }
+                        else
+                            CurrentFrame++;
+
+                        framesToSkip--;
+                    }
+                }
+                else
+                {
+                    timeSinceLastUpdate += (long) elapsedTime;
+                }
+			}
+
+            base.VOnUpdate(elapsedTime);
         }
 
-        protected internal override bool VInheritedInit(XmlElement componentData)
+        protected internal override void VPostLoad()
+		{
+		}
+
+        protected override Cv_SceneNode VCreateSceneNode()
+        {
+            return new Cv_SpriteNode(Owner.ID, this, Cv_Transform.Identity);
+        }
+
+        protected override bool VInheritedInit(XmlElement componentData)
         {
             Cv_Debug.Assert(componentData != null, "Must have valid component data.");
 
@@ -306,103 +361,6 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override void VOnUpdate(float elapsedTime)
-        {
-            SceneNode.SetRadius(-1);
-            m_ActualEndFrame = m_CurrAnim != null ? m_CurrAnim.Value.EndFrame : 0;
-            if (EndFrame != null)
-            {
-                m_ActualEndFrame = EndFrame.Value;
-            }
-
-            m_ActualStartFrame = m_CurrAnim != null ? m_CurrAnim.Value.StartFrame : 0;
-            if (StartFrame != null)
-            {
-                m_ActualStartFrame = StartFrame.Value;
-            }
-
-            m_ActualSpeed = m_CurrAnim != null ? m_CurrAnim.Value.Speed : 0;
-            if (Speed != null)
-            {
-                m_ActualSpeed = Speed.Value;
-            }
-
-			if (m_ActualSpeed > 0 && !Paused)
-			{
-				var frameIntervalMillis = 1000 / m_ActualSpeed;
-
-				if (timeSinceLastUpdate > frameIntervalMillis)
-                {
-                    var framesToSkip = timeSinceLastUpdate / frameIntervalMillis;
-                    timeSinceLastUpdate = 0;
-
-                    while (framesToSkip > 0)
-                    {
-                        if (CurrentFrame + 1 > m_ActualEndFrame)
-                        {
-                            if (Looping)
-                            {
-                                CurrentFrame = m_ActualStartFrame;
-                            }
-                            else 
-                            {
-                                Ended = true;
-                                OnEnd?.Invoke();
-                                break;
-                            };
-                        }
-                        else
-                            CurrentFrame++;
-
-                        framesToSkip--;
-                    }
-                }
-                else
-                {
-                    timeSinceLastUpdate += (long) elapsedTime;
-                }
-			}
-
-            if (m_bFading)
-            {
-                 var alphaDiff = m_iFinalFadeAlpha - this.Color.A;
-
-                if (alphaDiff == 0 || m_fRemainingFadeTime <= 0)
-                {
-                    if (m_iFinalFadeAlpha <= 0)
-                    {
-                        this.Color = new Color(this.Color, 0);
-                    }
-
-                    m_bFading = false;
-                }
-                else
-                {
-                    var alphaIncrement = alphaDiff / m_fRemainingFadeTime;
-                    alphaIncrement *= elapsedTime;
-                    var newAlpha = this.Color.A + alphaIncrement;
-
-                    if (alphaIncrement <= 0 && newAlpha < m_iFinalFadeAlpha)
-                    {
-                        newAlpha = m_iFinalFadeAlpha;
-                    }
-
-                    if (alphaIncrement > 0 && newAlpha > m_iFinalFadeAlpha)
-                    {
-                        newAlpha = m_iFinalFadeAlpha;
-                    }
-                    
-                    this.Color = new Color(this.Color, (int) newAlpha);
-                    m_fRemainingFadeTime -= elapsedTime;
-                }
-            }
-        }
-
-        protected override Cv_SceneNode VCreateSceneNode()
-        {
-            return new Cv_SpriteNode(Owner.ID, this, Cv_Transform.Identity);
-        }
-
         protected override XmlElement VCreateInheritedElement(XmlElement baseElement)
         {
             var textureElement = baseElement.OwnerDocument.CreateElement("Texture");
@@ -452,15 +410,6 @@ namespace Caravel.Core.Entity
 
             baseElement.AppendChild(animationElement);
             return baseElement;
-        }
-
-		protected internal override void VPostLoad()
-		{
-		}
-
-        protected internal override void VOnDestroy()
-        {
-            base.VOnDestroy();
         }
 	}
 }

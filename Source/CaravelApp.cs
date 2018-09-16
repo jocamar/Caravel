@@ -167,7 +167,8 @@ namespace Caravel
         public readonly PlayerIndex PlayerThree = PlayerIndex.Three;
         public readonly PlayerIndex PlayerFour = PlayerIndex.Four;
 
-        private Dictionary<string, string>  m_TextResource;
+        private Dictionary<string, string> m_TextResource;
+        private Dictionary<string, string> m_TextResourceLocations;
 #endregion
         
 #endregion
@@ -184,6 +185,9 @@ namespace Caravel
         	Window.ClientSizeChanged += OnResize;
 			UseDevelopmentDirectories = false;
 			EditorWorkingDirectory = Directory.GetCurrentDirectory();
+
+            m_TextResource = new Dictionary<string, string>();
+            m_TextResourceLocations = new Dictionary<string, string>();
         }
 
 #region MonoGame Functions
@@ -221,7 +225,7 @@ namespace Caravel
                 return;
             }
 
-            if (!LoadStrings("English"))
+            if (!EditorRunning && !LoadStrings("English"))
             {
                 Cv_Debug.Error("Unable to load strings.");
                 Exit();
@@ -285,8 +289,6 @@ namespace Caravel
                 return;
             }
 
-            RegisterEngineScriptEvents();
-
             Scene = new Cv_SceneElement(this);
             var gvs = VCreateGameViews();
             foreach (var gv in gvs)
@@ -305,12 +307,10 @@ namespace Caravel
         
         protected sealed override void LoadContent()
         {
-            //TODO(JM): use this.Content to load game content here
         }
         
         protected sealed override void UnloadContent()
         {
-            //TODO(JM): Unload any non ContentManager content here
         }
         
         protected sealed override void Update(GameTime gameTime)
@@ -395,7 +395,7 @@ namespace Caravel
 	public void EditorLoadResourceBundle(string bundleId, string editorWorkingLocation, string bundleFile)
 	{
 		EditorWorkingDirectory = editorWorkingLocation;
-		Cv_ResourceManager.Instance.AddResourceBundle(bundleId, new Cv_DevelopmentZipResourceBundle(bundleFile));
+		Cv_ResourceManager.Instance.AddResourceBundle(bundleId, new Cv_DevelopmentResourceBundle(bundleFile));
 	}
 
 	public void EditorUnloadResourceBundle(string bundleId)
@@ -417,6 +417,13 @@ namespace Caravel
         ReadProjectFile();
         ControlBindingsLocation = Path.Combine(editorWorkingLocation, ControlBindingsLocation);
         InputManager.Initialize(); 
+    }
+
+    public void EditorReadStrings(string editorWorkingLocation)
+    {
+        EditorWorkingDirectory = editorWorkingLocation;
+        ReadProjectFile();
+        LoadStrings("English");
     }
 #endregion
 
@@ -440,12 +447,51 @@ namespace Caravel
 
         public bool LoadStrings(string language)
         {
-            return true;
+            string languageFile;
+            if (m_TextResourceLocations.TryGetValue(language, out languageFile))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(Path.Combine(GetGameWorkingDirectory(), languageFile));
+                var root = doc.DocumentElement;
+
+                if (root == null)
+                {
+                    Cv_Debug.Error("Error - Strings are missing.");
+                    return false;
+                }
+
+                foreach (XmlElement elem in root.ChildNodes)
+                {
+                    string key = elem.Attributes["id"].Value;
+                    string text = elem.Attributes["value"].Value;
+
+                    if (key != null && text != null) 
+                    {
+                        m_TextResource.Add(key, text);
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                Cv_Debug.Error("Error - Could not find strings file for language: " + language);
+                return false;
+            }
         }
 
         public string GetString(string stringID)
         {
-            return "";
+            string localizedString;
+            
+            if (m_TextResource.TryGetValue(stringID, out localizedString))
+            {
+                return localizedString;
+            }
+            else
+            {
+                Cv_Debug.Error("Error - String not found!");
+                return "";
+            }
         }
 
         public Cv_PlayerView GetPlayerView(PlayerIndex player)
@@ -491,11 +537,6 @@ namespace Caravel
             }
 		}
 
-        private void RegisterEngineScriptEvents()
-        {
-
-        }
-
         private bool CheckEngineSystemResources()
         {
             //TODO(JM): Add any checks necessary for bare minimum resources here
@@ -528,6 +569,7 @@ namespace Caravel
 
             var materialsNode = root.SelectSingleNode("Materials");
 
+            MaterialsLocation = "";
             if (materialsNode != null)
             {
                 MaterialsLocation = materialsNode.Attributes["materialsFile"].Value;
@@ -535,6 +577,7 @@ namespace Caravel
 
             var controlsNode = root.SelectSingleNode("Controls");
 
+            ControlBindingsLocation = "";
             if (controlsNode != null)
             {
                 ControlBindingsLocation = controlsNode.Attributes["bindingsFile"].Value;
@@ -542,10 +585,28 @@ namespace Caravel
 
             var scriptsNode = root.SelectSingleNode("Scripts");
 
+            InitScriptLocation = "";
+            InitScriptBundle = "";
             if (scriptsNode != null)
             {
                 InitScriptLocation = scriptsNode.Attributes["preInitScript"].Value;
                 InitScriptBundle = scriptsNode.Attributes["preInitScriptBundle"].Value;
+            }
+
+            var stringsNode = root.SelectSingleNode("Strings");
+
+            m_TextResourceLocations.Clear();
+            if (stringsNode != null)
+            {
+                var languageNodes = stringsNode.SelectNodes("Language");
+
+                foreach (XmlElement languageNode in languageNodes)
+                {
+                    var language = languageNode.Attributes["id"].Value;
+                    var file = languageNode.Attributes["stringsFile"].Value;
+
+                    m_TextResourceLocations.Add(language, file);
+                }
             }
         }
 #endregion

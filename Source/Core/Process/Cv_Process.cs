@@ -131,12 +131,12 @@ namespace Caravel.Core.Process
             return null;
         }
 
-	    internal protected abstract void VOnUpdate(float elapsedTime);
-	    internal protected abstract void VOnSuccess();
-	    internal protected abstract void VOnFail();
-	    internal protected abstract void VOnAbort();
+	    protected internal abstract void VOnUpdate(float elapsedTime);
+	    protected internal abstract void VOnSuccess();
+	    protected internal abstract void VOnFail();
+	    protected internal abstract void VOnAbort();
 
-        internal protected virtual void VOnInit()
+        protected internal virtual void VOnInit()
         {
              State = Cv_ProcessState.Running;
         }

@@ -833,7 +833,7 @@ namespace Caravel.Core.Physics
 
         private void LoadXML()
         {
-            if (Caravel.MaterialsLocation == null)
+            if (Caravel.MaterialsLocation == null || Caravel.MaterialsLocation == "")
             {
                 Cv_Debug.Log("Physics", "No materials to load.");
                 return;

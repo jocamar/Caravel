@@ -5,7 +5,7 @@ using Caravel.Debugging;
 
 namespace Caravel.Core.Resource
 {
-    public class Cv_DevelopmentZipResourceBundle : Cv_ZipResourceBundle
+    public class Cv_DevelopmentResourceBundle : Cv_ResourceBundle
     {
         public override bool VIsUsingDevDirectories
         {
@@ -35,7 +35,7 @@ namespace Caravel.Core.Resource
         private Dictionary<string, FileInfo> m_FileInfo;
         private string[] m_DirContents;
 
-        public Cv_DevelopmentZipResourceBundle(string fileName) : base(fileName)
+        public Cv_DevelopmentResourceBundle(string fileName) : base(CaravelApp.Instance.Services, fileName)
         {
             var currDir = CaravelApp.Instance.GetGameWorkingDirectory();
 
@@ -83,7 +83,7 @@ namespace Caravel.Core.Resource
             }
         }
 
-        protected override Stream OpenStream(string assetName)
+        protected override Stream GetStream(string assetName)
         {
             FileInfo fi;
             Stream fileStream = null;
@@ -121,6 +121,11 @@ namespace Caravel.Core.Resource
 
             Cv_Debug.Error("Unable to open stream.");
 			return null;
+        }
+
+        public override long VGetResourceSize(string resourceFile)
+        {
+            return 0;
         }
     }
 }

@@ -349,7 +349,7 @@ namespace Caravel.Core.Input
 
         private void LoadXML()
         {
-            if (CaravelApp.Instance.ControlBindingsLocation == null)
+            if (CaravelApp.Instance.ControlBindingsLocation == null || CaravelApp.Instance.ControlBindingsLocation == "")
             {
                 Cv_Debug.Log("Input", "No control bindings to load.");
                 return;

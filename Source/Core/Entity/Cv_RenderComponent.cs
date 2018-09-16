@@ -38,6 +38,10 @@ namespace Caravel.Core.Entity
 
         private Cv_SceneNode m_SceneNode;
 
+        private bool m_bFading;
+        private int m_iFinalFadeAlpha;
+        private float m_fRemainingFadeTime;
+
         public override XmlElement VToXML()
         {
             XmlDocument doc = new XmlDocument();
@@ -60,6 +64,13 @@ namespace Caravel.Core.Entity
             VCreateInheritedElement(baseElement);
 
             return baseElement;
+        }
+
+        public void FadeTo(int alpha, float interval)
+        {
+            m_bFading = true;
+            m_fRemainingFadeTime = interval;
+            m_iFinalFadeAlpha = alpha;
         }
 
         protected internal override bool VInitialize(XmlElement componentData)
@@ -97,16 +108,48 @@ namespace Caravel.Core.Entity
             return VInheritedInit(componentData);
         }
 
-        protected internal virtual bool VInheritedInit(XmlElement componentData)
+        protected internal override void VOnUpdate(float elapsedTime)
         {
-            return true;
+            if (m_bFading)
+            {
+                 var alphaDiff = m_iFinalFadeAlpha - this.Color.A;
+
+                if (alphaDiff == 0 || m_fRemainingFadeTime <= 0)
+                {
+                    if (m_iFinalFadeAlpha <= 0)
+                    {
+                        this.Color = new Color(this.Color, 0);
+                    }
+
+                    m_bFading = false;
+                }
+                else
+                {
+                    var alphaIncrement = alphaDiff / m_fRemainingFadeTime;
+                    alphaIncrement *= elapsedTime;
+                    var newAlpha = this.Color.A + alphaIncrement;
+
+                    if (alphaIncrement <= 0 && newAlpha < m_iFinalFadeAlpha)
+                    {
+                        newAlpha = m_iFinalFadeAlpha;
+                    }
+
+                    if (alphaIncrement > 0 && newAlpha > m_iFinalFadeAlpha)
+                    {
+                        newAlpha = m_iFinalFadeAlpha;
+                    }
+                    
+                    this.Color = new Color(this.Color, (int) newAlpha);
+                    m_fRemainingFadeTime -= elapsedTime;
+                }
+            }
         }
 
         protected internal override bool VPostInitialize()
         {
             Cv_SceneNode sceneNode = SceneNode;
             Cv_Event newEvent = new Cv_Event_NewRenderComponent(Owner.ID, Owner.Parent, sceneNode, this);
-            Cv_EventManager.Instance.TriggerEvent(newEvent);
+            Cv_EventManager.Instance.QueueEvent(newEvent);
             return true;
         }
 
@@ -124,6 +167,8 @@ namespace Caravel.Core.Entity
         }
 
         protected abstract Cv_SceneNode VCreateSceneNode();
+
+        protected abstract bool VInheritedInit(XmlElement componentData);
 
         protected abstract XmlElement VCreateInheritedElement(XmlElement baseElement);
 
