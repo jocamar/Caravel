@@ -2,4 +2,5 @@
     <Text id="Play" value="Play" />
     <Text id="GameOver" value="Game Over" />
     <Text id="Exit" value="Exit Game" />
+    <Text id="Test" value="This is a test to see how long strings of text work within the text boxes in game. For that reason I am writing this extremely long text string." />
 </Strings>

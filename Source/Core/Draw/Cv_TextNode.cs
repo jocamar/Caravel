@@ -95,15 +95,15 @@ namespace Caravel.Core.Draw
 			
             var font = resource.GetFontData().Font;
 
-            var text = WrapText(CaravelApp.Instance.GetString(textComponent.Text), font, (int)width, (int)height);
+            var text = WrapText(CaravelApp.Instance.GetString(textComponent.Text), font, textComponent.Width, textComponent.Height);
 
             var layerDepth = (int) pos.Z;
             layerDepth = layerDepth % Cv_Renderer.MaxLayers;
 
-            var bounds = new Rectangle((int) (pos.X - (width * scene.Transform.Origin.X)),
-                                        (int) (pos.Y - (height * scene.Transform.Origin.Y)),
-                                        (int) width,
-                                        (int) height);
+            var bounds = new Rectangle((int) (pos.X - (textComponent.Width * scene.Transform.Origin.X)),
+                                        (int) (pos.Y - (textComponent.Width * scene.Transform.Origin.Y)),
+                                        (int) textComponent.Width,
+                                        (int) textComponent.Width);
 
             renderer.DrawText(font, text, bounds, textComponent.HorizontalAlignment, textComponent.VerticalAlignment, textComponent.Color, 
                                     rot,
@@ -181,10 +181,10 @@ namespace Caravel.Core.Draw
             }
         }
 
-        private string WrapText(string text, SpriteFont font, int width, int height)
+        private string[] WrapText(string text, SpriteFont font, int width, int height)
         {
             if(font.MeasureString(text).X < width) {
-                return text;
+                return new string[] { text };
             }
 
             string[] words = text.Split(' ');
@@ -192,13 +192,16 @@ namespace Caravel.Core.Draw
             float linewidth = 0f;
             float textHeight = 0f;
             float spaceWidth = font.MeasureString(" ").X;
+
+            List<string> lines = new List<string>();
             for(int i = 0; i < words.Length; ++i) {
 
                 Vector2 size = font.MeasureString(words[i]);
                 if(linewidth + size.X < width) {
                     linewidth += size.X + spaceWidth;
                 } else {
-                    wrappedText.Append("\n");
+                    lines.Add(wrappedText.ToString());
+                    wrappedText.Clear();
                     linewidth = size.X + spaceWidth;
                 }
 
@@ -206,7 +209,9 @@ namespace Caravel.Core.Draw
                 wrappedText.Append(" ");
             }
 
-            return wrappedText.ToString();
+            lines.Add(wrappedText.ToString());
+
+            return lines.ToArray();
         }
     }
 }

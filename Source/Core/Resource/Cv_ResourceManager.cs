@@ -214,7 +214,7 @@ namespace Caravel.Core.Resource
                     }
                     else
                     {
-                        AddResourceBundle(bundleName, new Cv_DevelopmentResourceBundle(bundleFile));
+                        AddResourceBundle(bundleName, new Cv_DevelopmentResourceBundle(bundleFile, CaravelApp.Instance.Services));
                     }
                 }
             

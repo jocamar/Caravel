@@ -156,7 +156,7 @@ namespace Caravel.Core.Entity
         protected internal override void VOnChanged()
         {
             var newEvent = new Cv_Event_ModifiedRenderComponent(Owner.ID, this);
-            Cv_EventManager.Instance.TriggerEvent(newEvent);
+            Cv_EventManager.Instance.QueueEvent(newEvent);
         }
 
         protected internal override void VOnDestroy()

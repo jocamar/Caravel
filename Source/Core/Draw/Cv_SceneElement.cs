@@ -17,8 +17,6 @@ namespace Caravel.Core.Draw
 			get; set;
 		}
 
-
-
 		public Cv_CameraNode Camera
 		{
 			get; set;
@@ -141,9 +139,9 @@ namespace Caravel.Core.Draw
 					holderNode = new Cv_HolderNode(entityID);
 					m_Root.AddChild(holderNode);
 					m_HolderNodes.Add(entityID, holderNode);
-
-					SetNodeTransform(holderNode);
 				}
+
+				SetNodeTransform(holderNode);
 
 				return holderNode.AddChild(node);
 			}

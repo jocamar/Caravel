@@ -392,10 +392,10 @@ namespace Caravel
         UnloadContent();
     }
 
-	public void EditorLoadResourceBundle(string bundleId, string editorWorkingLocation, string bundleFile)
+	public void EditorLoadResourceBundle(string bundleId, string editorWorkingLocation, string bundleFile, IServiceProvider services)
 	{
 		EditorWorkingDirectory = editorWorkingLocation;
-		Cv_ResourceManager.Instance.AddResourceBundle(bundleId, new Cv_DevelopmentResourceBundle(bundleFile));
+		Cv_ResourceManager.Instance.AddResourceBundle(bundleId, new Cv_DevelopmentResourceBundle(bundleFile, services));
 	}
 
 	public void EditorUnloadResourceBundle(string bundleId)

@@ -35,14 +35,14 @@ namespace Caravel.Core.Resource
         private Dictionary<string, FileInfo> m_FileInfo;
         private string[] m_DirContents;
 
-        public Cv_DevelopmentResourceBundle(string fileName) : base(CaravelApp.Instance.Services, fileName)
+        public Cv_DevelopmentResourceBundle(string fileName, IServiceProvider services) : base(services, fileName)
         {
             var currDir = CaravelApp.Instance.GetGameWorkingDirectory();
 
             currDir += Path.DirectorySeparatorChar;
             currDir += Path.GetFileNameWithoutExtension(fileName);
             m_AssetsDir = currDir;
-            RootDirectory = m_AssetsDir;
+            RootDirectory = currDir;
 
             m_FileInfo = new Dictionary<string, FileInfo>();
 
@@ -52,6 +52,11 @@ namespace Caravel.Core.Resource
         public override void Refresh()
         {
             ReadAssetsDirectory(m_AssetsDir);
+        }
+
+        public override long VGetResourceSize(string resourceFile)
+        {
+            return 0;
         }
 
         protected void ReadAssetsDirectory(string fileDir)
@@ -121,11 +126,6 @@ namespace Caravel.Core.Resource
 
             Cv_Debug.Error("Unable to open stream.");
 			return null;
-        }
-
-        public override long VGetResourceSize(string resourceFile)
-        {
-            return 0;
         }
     }
 }

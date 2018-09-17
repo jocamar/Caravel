@@ -46,8 +46,8 @@
         <Color r="255" g="255" b="255" />
         <Font resource="FramerateCounterFont" />
         <Size width="100" height="100" />
-        <Text text="GameOver" />
-        <HorizontalAlignment value="Center" />
+        <Text text="Test" />
+        <HorizontalAlignment value="Left" />
         <VerticalAlignment value="Center" />
       </Cv_TextComponent>
       <Entity name="camera" type="entity_types/camera.cve" visible="True" />

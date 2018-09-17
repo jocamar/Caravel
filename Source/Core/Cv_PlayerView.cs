@@ -350,7 +350,10 @@ namespace Caravel.Core
 
         protected internal override void VOnPostRender()
         {
-            Camera.IsViewTransformDirty = false;
+            if (Camera != null)
+            {
+                Camera.IsViewTransformDirty = false;
+            }
 
             Scene.VOnPostRender(Renderer);
         }

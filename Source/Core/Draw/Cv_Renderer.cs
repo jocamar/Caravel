@@ -237,36 +237,50 @@ namespace Caravel.Core.Draw
             m_SpriteBatch.DrawString(font, text, position, color);
         }
 
-        public void DrawText(SpriteFont font, string text, Rectangle bounds, Cv_TextAlign horizontalAlign,
+        public void DrawText(SpriteFont font, string[] text, Rectangle bounds, Cv_TextAlign horizontalAlign,
                                 Cv_TextAlign verticalAlign, Color color, float rotation, float scale, SpriteEffects effects, float layerDepth)
         {
-            Vector2 size = font.MeasureString(text);
-            Vector2 pos = new Vector2(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
-            Vector2 origin = size * 0.5f;
+            float totalY = 0f;
+
+            foreach (var line in text)
+            {
+                totalY +=  font.MeasureString(line).Y;
+            }
 
             var currSubLayer = m_iCurrSubLayer / (MaxLayers * NUM_SUBLAYERS);
 
-            if (horizontalAlign == Cv_TextAlign.Left)
+            var currY = -totalY/2;
+            foreach (var line in text)
             {
-                origin.X += bounds.Width/2 - size.X/2;
-            }
+                Vector2 size = font.MeasureString(line);
+                Vector2 pos = new Vector2(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
+                Vector2 origin = new Vector2(size.X * 0.5f, 0);
 
-            if (horizontalAlign == Cv_TextAlign.Right)
-            {
-                origin.X -= bounds.Width/2 - size.X/2;
-            }
+                if (horizontalAlign == Cv_TextAlign.Left)
+                {
+                    origin.X += bounds.Width/2 - size.X/2;
+                }
 
-            if (verticalAlign == Cv_TextAlign.Top)
-            {
-                origin.Y += bounds.Height/2 - size.Y/2;
-            }
+                if (horizontalAlign == Cv_TextAlign.Right)
+                {
+                    origin.X -= bounds.Width/2 - size.X/2;
+                }
 
-            if (verticalAlign == Cv_TextAlign.Bottom)
-            {
-                origin.Y -= bounds.Height/2 - size.Y/2;
-            }
+                if (verticalAlign == Cv_TextAlign.Top)
+                {
+                    origin.Y += bounds.Height/2 - totalY/2;
+                }
 
-            m_SpriteBatch.DrawString(font, text, pos, color, rotation, origin, scale, SpriteEffects.None, layerDepth + currSubLayer);
+                if (verticalAlign == Cv_TextAlign.Bottom)
+                {
+                    origin.Y -= bounds.Height/2 - totalY/2;
+                }
+
+                origin.Y -= currY;
+                currY += size.Y;
+
+                m_SpriteBatch.DrawString(font, line, pos, color, rotation, origin, scale, SpriteEffects.None, layerDepth + currSubLayer);
+            }
 
             m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
         }

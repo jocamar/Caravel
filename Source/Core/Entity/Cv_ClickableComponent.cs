@@ -138,7 +138,7 @@ namespace Caravel.Core.Entity
         {
             Cv_ClickAreaNode clickAreaNode = this.ClickAreaNode;
             Cv_Event newEvent = new Cv_Event_DestroyClickableComponent(Owner.ID, clickAreaNode, this);
-            Cv_EventManager.Instance.TriggerEvent(newEvent);
+            Cv_EventManager.Instance.QueueEvent(newEvent);
         }
 
         protected internal override void VOnUpdate(float elapsedTime)

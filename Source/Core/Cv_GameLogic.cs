@@ -692,6 +692,11 @@ namespace Caravel.Core
 
         public void VRenderDiagnostics(Cv_CameraNode camera, Cv_Renderer renderer)
         {
+            if (camera == null)
+            {
+                return;
+            }
+            
             GamePhysics.VRenderDiagnostics(camera, renderer);
         }
 
