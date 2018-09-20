@@ -18,6 +18,11 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
+		public bool IsFading
+		{
+			get; private set;
+		}
+
         public Cv_SceneNode SceneNode
         {
             get
@@ -38,7 +43,6 @@ namespace Caravel.Core.Entity
 
         private Cv_SceneNode m_SceneNode;
 
-        private bool m_bFading;
         private int m_iFinalFadeAlpha;
         private float m_fRemainingFadeTime;
 
@@ -68,7 +72,7 @@ namespace Caravel.Core.Entity
 
         public void FadeTo(int alpha, float interval)
         {
-            m_bFading = true;
+            IsFading = true;
             m_fRemainingFadeTime = interval;
             m_iFinalFadeAlpha = alpha;
         }
@@ -110,7 +114,7 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnUpdate(float elapsedTime)
         {
-            if (m_bFading)
+            if (IsFading)
             {
                  var alphaDiff = m_iFinalFadeAlpha - this.Color.A;
 
@@ -121,7 +125,7 @@ namespace Caravel.Core.Entity
                         this.Color = new Color(this.Color, 0);
                     }
 
-                    m_bFading = false;
+                    IsFading = false;
                 }
                 else
                 {
@@ -149,14 +153,14 @@ namespace Caravel.Core.Entity
         {
             Cv_SceneNode sceneNode = SceneNode;
             Cv_Event newEvent = new Cv_Event_NewRenderComponent(Owner.ID, Owner.Parent, sceneNode, this);
-            Cv_EventManager.Instance.QueueEvent(newEvent);
+            Cv_EventManager.Instance.QueueEvent(newEvent, true);
             return true;
         }
 
         protected internal override void VOnChanged()
         {
             var newEvent = new Cv_Event_ModifiedRenderComponent(Owner.ID, this);
-            Cv_EventManager.Instance.QueueEvent(newEvent);
+            Cv_EventManager.Instance.QueueEvent(newEvent, true);
         }
 
         protected internal override void VOnDestroy()

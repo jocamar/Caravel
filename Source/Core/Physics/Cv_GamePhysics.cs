@@ -25,6 +25,20 @@ namespace Caravel.Core.Physics
 			public Dictionary<int, string> CollisionDirections;
         }
 
+		public struct Cv_PhysicsMaterial
+        {
+            public float Friction;
+            public float Restitution;
+            public float Density;
+
+            public Cv_PhysicsMaterial(float friction, float restitution, float density)
+            {
+                Friction = friction;
+                Restitution = restitution;
+                Density = density;
+            }
+        }
+
         public enum Cv_CollisionDirection
         {
             Right,
@@ -33,10 +47,18 @@ namespace Caravel.Core.Physics
             Bottom
         }
 
+		public enum Cv_RayCastType
+		{
+			Closest,
+			ClosestSolid,
+			All,
+			AllSolid,
+		}
+
         // Initialiazation and Maintenance of the Physics World
         public abstract bool VInitialize();
         public abstract void VSyncVisibleScene();
-        public abstract void VOnUpdate( float elapsedTime ); 
+        public abstract void VOnUpdate(float elapsedTime); 
 
         // Initialization of Physics Objects
         public abstract Cv_CollisionShape VAddCircle(Cv_Entity gameEntity, Cv_ShapeData data);
@@ -60,6 +82,8 @@ namespace Caravel.Core.Physics
         public abstract void VSetAngularVelocity(Cv_EntityID entityId, float vel);
         public abstract void VApplyForce(Vector2 dir, float newtons, Cv_EntityID entityId);
         public abstract void VApplyTorque(float newtons, Cv_EntityID entityId);
+		public abstract Cv_Entity[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type);
+		public abstract Cv_PhysicsMaterial GetMaterial(string material);
 
         public static Cv_GamePhysics CreateNullPhysics(CaravelApp app)
         {

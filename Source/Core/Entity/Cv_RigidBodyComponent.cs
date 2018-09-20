@@ -375,12 +375,12 @@ namespace Caravel.Core.Entity
         protected internal override void VOnChanged()
         {
             Cv_Event newEvt = new Cv_Event_ClearCollisionShapes(Owner.ID, this);
-            Cv_EventManager.Instance.QueueEvent(newEvt);
+            Cv_EventManager.Instance.QueueEvent(newEvt, true);
 
             foreach (var s in m_Shapes)
             {
                 newEvt = new Cv_Event_NewCollisionShape(Owner.ID, s, this);
-                Cv_EventManager.Instance.QueueEvent(newEvt);
+                Cv_EventManager.Instance.QueueEvent(newEvt, true);
             }
         }
 

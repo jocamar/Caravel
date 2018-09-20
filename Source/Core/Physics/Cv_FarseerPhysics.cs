@@ -27,20 +27,6 @@ namespace Caravel.Core.Physics
             public Cv_Transform PrevWorldTransform;
         }
 
-        public struct Cv_PhysicsMaterial
-        {
-            public float Friction;
-            public float Restitution;
-            public float Density;
-
-            public Cv_PhysicsMaterial(float friction, float restitution, float density)
-            {
-                Friction = friction;
-                Restitution = restitution;
-                Density = density;
-            }
-        }
-
         public Vector2 Gravity
         {
             get
@@ -68,6 +54,8 @@ namespace Caravel.Core.Physics
         private List<Cv_PhysicsEntity> m_PhysicsEntitiesList;
         private List<Cv_PhysicsEntity> m_PhysicsEntitiesToUpdate;
         private Dictionary<string, Cv_PhysicsMaterial> m_MaterialsTable;
+		private List<Cv_Entity> m_RaycastEntities;
+		private Cv_RayCastType m_RaycastType;
 
         private readonly World m_World;
 
@@ -81,6 +69,7 @@ namespace Caravel.Core.Physics
             m_PhysicsEntitiesList = new List<Cv_PhysicsEntity>();
             m_PhysicsEntitiesToUpdate = new List<Cv_PhysicsEntity>();
             m_MaterialsTable = new Dictionary<string, Cv_PhysicsMaterial>();
+			m_RaycastEntities = new List<Cv_Entity>();
 
             Cv_EventManager.Instance.AddListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
             Cv_EventManager.Instance.AddListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
@@ -502,133 +491,20 @@ namespace Caravel.Core.Physics
             }
         }
 
-        public Cv_PhysicsMaterial GetMaterial(string material)
+        public override Cv_PhysicsMaterial GetMaterial(string material)
         {
             return m_MaterialsTable[material];
         }
 
-        public void OnNewCollisionShape(Cv_Event eventData)
-        {
-            var newCollisionEvt = (Cv_Event_NewCollisionShape) eventData;
-            var shapeData = newCollisionEvt.ShapeData;
-            var entity = Caravel.Logic.GetEntity(newCollisionEvt.EntityID);
+		public override Cv_Entity[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type)
+		{
+			m_RaycastEntities.Clear();
+			m_RaycastType = type;
 
-            switch (shapeData.Type)
-            {
-                case ShapeType.Circle:
-                    VAddCircle(entity, shapeData);
-                    break;
-                case ShapeType.Box:
-                    VAddBox(entity, shapeData);
-                    break;
-                case ShapeType.Trigger:
-                    VAddTrigger(entity, shapeData);
-                    break;
-                default:
-                    var points = new List<Vector2>(shapeData.Points);
-                    VAddPointShape(entity, shapeData);
-                    break;
-            }
-        }
+			m_World.RayCast(OnRayCastIntersection, startingPoint, endingPoint);
 
-        public void OnClearCollisionShapes(Cv_Event eventData)
-        {
-            if (m_PhysicsEntities.ContainsKey(eventData.EntityID))
-            {
-                var collisionShapes = m_PhysicsEntities[eventData.EntityID].Shapes.Keys.ToArray();
-
-                foreach (var shape in collisionShapes)
-                {
-                    RemoveCollisionObject(shape);
-                }
-            }
-        }
-
-        public void OnDestroyEntity(Cv_Event eventData)
-        {
-            VRemoveEntity(eventData.EntityID);
-        }
-
-        public void OnMoveEntity(Cv_Event eventData)
-        {
-            if (eventData.Sender == this)
-            {
-                return;
-            }
-
-            GetChildEntitiesToUpdate(eventData.EntityID);
-
-            if (m_PhysicsEntities.ContainsKey(eventData.EntityID))
-            {
-                var pe = m_PhysicsEntities[eventData.EntityID];
-                m_PhysicsEntitiesToUpdate.Add(pe);
-            }
-
-            foreach (var pe in m_PhysicsEntitiesToUpdate)
-            {
-                if (pe.Entity.GetComponent<Cv_TransformComponent>() == null)
-                {
-                    continue;
-                }
-
-                var worldTransform = pe.Entity.GetComponent<Cv_TransformComponent>().WorldTransform;
-                if (pe.PrevWorldTransform.Scale != worldTransform.Scale)
-                {
-                    var oldScale = pe.PrevWorldTransform.Scale;
-                    foreach (var f in pe.Shapes)
-                    {
-                        if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
-                        {
-                            PolygonShape polygon = (PolygonShape) f.Value.Shape;
-
-                            var oldVerts = polygon.Vertices;
-                            var newVerts = new Vertices();
-
-                            foreach (var v in oldVerts)
-                            {
-                                var newVert = ToWorldCoord( (ToScreenCoord(v) / oldScale) * worldTransform.Scale );
-                                newVerts.Add(newVert);
-                            }
-
-                            polygon.Vertices = newVerts;
-                        }
-                        else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Circle)
-                        {
-                            CircleShape circle = (CircleShape) f.Value.Shape;
-
-                            circle.Radius = ToWorldCoord((ToScreenCoord(circle.Radius) / Math.Max(oldScale.X, oldScale.Y))
-                                                            * Math.Max(worldTransform.Scale.X, worldTransform.Scale.Y));
-                        }
-
-                        var colShape = f.Key;
-                        var newPoints = new List<Vector2>();
-                        foreach (var p in colShape.Points)
-                        {
-                            var newPoint = (p / oldScale) * worldTransform.Scale;
-                            newPoints.Add(newPoint);
-                        }
-
-                        colShape.Points = newPoints;
-                    }
-                }
-
-                if (Math.Floor(worldTransform.Position.X) != Math.Floor(pe.PrevWorldTransform.Position.X)
-                    || Math.Floor(worldTransform.Position.Y) != Math.Floor(pe.PrevWorldTransform.Position.Y))
-                {
-                    pe.Body.Position = ToPhysicsVector(worldTransform.Position);
-                }
-
-                if (worldTransform.Rotation != pe.PrevWorldTransform.Rotation)
-                {
-                    if(pe.Entity.GetComponent<Cv_RigidBodyComponent>().UseEntityRotation)
-                    {
-                        pe.Body.Rotation = worldTransform.Rotation;
-                    }
-                }
-
-                pe.PrevWorldTransform = worldTransform;
-            }
-        }
+			return m_RaycastEntities.ToArray();
+		}
 
         protected void SyncBodiesToEntities()
         {
@@ -1001,6 +877,148 @@ namespace Caravel.Core.Physics
             {
                 var newEvent = new Cv_Event_NewSeparation(collisionShapeA, collisionShapeB);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
+            }
+        }
+
+		private float OnRayCastIntersection(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
+		{
+			if (fixture.IsSensor && (m_RaycastType == Cv_RayCastType.AllSolid || m_RaycastType == Cv_RayCastType.ClosestSolid))
+			{
+				return -1;
+			}
+
+			m_RaycastEntities.Add(((Cv_CollisionShape) fixture.UserData).Owner);
+
+			if (m_RaycastType == Cv_RayCastType.Closest || m_RaycastType == Cv_RayCastType.ClosestSolid)
+			{
+				return 0;
+			}
+			else
+			{
+				return 1;
+			}
+		}
+
+		private void OnNewCollisionShape(Cv_Event eventData)
+        {
+            var newCollisionEvt = (Cv_Event_NewCollisionShape) eventData;
+            var shapeData = newCollisionEvt.ShapeData;
+            var entity = Caravel.Logic.GetEntity(newCollisionEvt.EntityID);
+
+            switch (shapeData.Type)
+            {
+                case ShapeType.Circle:
+                    VAddCircle(entity, shapeData);
+                    break;
+                case ShapeType.Box:
+                    VAddBox(entity, shapeData);
+                    break;
+                case ShapeType.Trigger:
+                    VAddTrigger(entity, shapeData);
+                    break;
+                default:
+                    var points = new List<Vector2>(shapeData.Points);
+                    VAddPointShape(entity, shapeData);
+                    break;
+            }
+        }
+
+        private void OnClearCollisionShapes(Cv_Event eventData)
+        {
+            if (m_PhysicsEntities.ContainsKey(eventData.EntityID))
+            {
+                var collisionShapes = m_PhysicsEntities[eventData.EntityID].Shapes.Keys.ToArray();
+
+                foreach (var shape in collisionShapes)
+                {
+                    RemoveCollisionObject(shape);
+                }
+            }
+        }
+
+        private void OnDestroyEntity(Cv_Event eventData)
+        {
+            VRemoveEntity(eventData.EntityID);
+        }
+
+        private void OnMoveEntity(Cv_Event eventData)
+        {
+            if (eventData.Sender == this)
+            {
+                return;
+            }
+
+            GetChildEntitiesToUpdate(eventData.EntityID);
+
+            if (m_PhysicsEntities.ContainsKey(eventData.EntityID))
+            {
+                var pe = m_PhysicsEntities[eventData.EntityID];
+                m_PhysicsEntitiesToUpdate.Add(pe);
+            }
+
+            foreach (var pe in m_PhysicsEntitiesToUpdate)
+            {
+                if (pe.Entity.GetComponent<Cv_TransformComponent>() == null)
+                {
+                    continue;
+                }
+
+                var worldTransform = pe.Entity.GetComponent<Cv_TransformComponent>().WorldTransform;
+                if (pe.PrevWorldTransform.Scale != worldTransform.Scale)
+                {
+                    var oldScale = pe.PrevWorldTransform.Scale;
+                    foreach (var f in pe.Shapes)
+                    {
+                        if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
+                        {
+                            PolygonShape polygon = (PolygonShape) f.Value.Shape;
+
+                            var oldVerts = polygon.Vertices;
+                            var newVerts = new Vertices();
+
+                            foreach (var v in oldVerts)
+                            {
+                                var newVert = ToWorldCoord( (ToScreenCoord(v) / oldScale) * worldTransform.Scale );
+                                newVerts.Add(newVert);
+                            }
+
+                            polygon.Vertices = newVerts;
+                        }
+                        else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Circle)
+                        {
+                            CircleShape circle = (CircleShape) f.Value.Shape;
+
+                            circle.Radius = ToWorldCoord((ToScreenCoord(circle.Radius) / Math.Max(oldScale.X, oldScale.Y))
+                                                            * Math.Max(worldTransform.Scale.X, worldTransform.Scale.Y));
+                        }
+
+                        var colShape = f.Key;
+                        var newPoints = new List<Vector2>();
+                        foreach (var p in colShape.Points)
+                        {
+                            var newPoint = (p / oldScale) * worldTransform.Scale;
+                            newPoints.Add(newPoint);
+                        }
+
+                        colShape.Points = newPoints;
+                    }
+                }
+
+                if (Math.Floor(worldTransform.Position.X) != Math.Floor(pe.PrevWorldTransform.Position.X)
+                    || Math.Floor(worldTransform.Position.Y) != Math.Floor(pe.PrevWorldTransform.Position.Y))
+                {
+                    pe.Body.Position = ToPhysicsVector(worldTransform.Position);
+                }
+
+                if (worldTransform.Rotation != pe.PrevWorldTransform.Rotation)
+                {
+                    if(pe.Entity.GetComponent<Cv_RigidBodyComponent>().UseEntityRotation)
+                    {
+                        pe.Body.Rotation = worldTransform.Rotation;
+                    }
+                }
+
+                pe.PrevWorldTransform = worldTransform;
             }
         }
 

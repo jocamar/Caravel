@@ -31,7 +31,6 @@ namespace Caravel.Core.Entity
                     var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, m_Transform.Position, m_Transform.Scale, m_Transform.Origin, m_Transform.Rotation, this);
                     Cv_EventManager.Instance.TriggerEvent(newEvent);
                 }
-                
             }
         }
 
@@ -230,7 +229,7 @@ namespace Caravel.Core.Entity
         protected internal override void VOnChanged()
         {
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation, this);
-			Cv_EventManager.Instance.QueueEvent(newEvent);
+			Cv_EventManager.Instance.QueueEvent(newEvent, true);
         }
 
         protected internal override void VOnDestroy()

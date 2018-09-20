@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
 using Caravel.Core.Draw;
+using Caravel.Core.Scripting;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 
@@ -29,8 +31,6 @@ namespace Caravel.Core.Entity
                 get; set;
             }
         }
-
-        public delegate void OnEndDelegate();
 
         public string Texture
         {
@@ -118,10 +118,15 @@ namespace Caravel.Core.Entity
             get; private set;
         }
 
-        public OnEndDelegate OnEnd
+        public Action OnEnd
         {
             get; set;
         }
+
+		public string OnEndScript
+		{
+			get; set;
+		}
 
         public string[] Animations
         {
@@ -187,7 +192,7 @@ namespace Caravel.Core.Entity
         }
 
 
-        public void SetAnimation(string animationId, OnEndDelegate onEnd = null)
+        public void SetAnimation(string animationId, Action onEnd = null)
         {
             Cv_SpriteSubAnimation anim;
 
@@ -195,6 +200,19 @@ namespace Caravel.Core.Entity
             {
                 m_CurrAnim = anim;
                 OnEnd = onEnd;
+				OnEndScript = null;
+            }
+        }
+
+		public void SetAnimation(string animationId, string onEndScript)
+        {
+            Cv_SpriteSubAnimation anim;
+
+            if (m_SubAnimations.TryGetValue(animationId, out anim))
+            {
+                m_CurrAnim = anim;
+                OnEndScript = onEndScript;
+				OnEnd = null;
             }
         }
 
@@ -250,6 +268,12 @@ namespace Caravel.Core.Entity
                             {
                                 Ended = true;
                                 OnEnd?.Invoke();
+
+								if (OnEndScript != null)
+								{
+									Cv_ScriptManager.Instance.VExecuteString(m_CurrAnim.Value.ID + "_OnEnd", OnEndScript, Owner);
+								}
+
                                 break;
                             };
                         }

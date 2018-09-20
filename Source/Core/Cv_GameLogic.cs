@@ -8,9 +8,12 @@ using Caravel.Core.Events;
 using Caravel.Core.Physics;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
+using Microsoft.Xna.Framework;
 using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;
+using static Caravel.Core.Physics.Cv_FarseerPhysics;
+using static Caravel.Core.Physics.Cv_GamePhysics;
 
 namespace Caravel.Core
 {
@@ -50,7 +53,7 @@ namespace Caravel.Core
 
                 if (m_bIsProxy)
                 {
-                    Cv_EventManager.Instance.AddListener<Cv_Event_RequestNewEntity>(OnRequestNewEntity);
+                    Cv_EventManager.Instance.AddListener<Cv_Event_RequestNewEntity>(RequestNewEntityCallback);
                     GamePhysics = Cv_GamePhysics.CreateNullPhysics(Caravel);
                 }
             }
@@ -130,22 +133,12 @@ namespace Caravel.Core
         {
             get; private set;
         }
-#endregion
 
-        protected internal Cv_GameView[] GameViews
+		protected internal Cv_GameView[] GameViews
         {
             get { return m_GameViews.ToArray(); }
         }
-
-        protected NewEventDelegate OnRequestNewEntity
-        {
-            get; private set;
-        }
-
-        protected NewEventDelegate OnDestroyEntity
-        {
-            get; private set;
-        }
+#endregion
 
         private Random m_random;
         private bool m_bIsProxy;
@@ -178,13 +171,11 @@ namespace Caravel.Core
             m_EntitiesToDestroy = new ConcurrentQueue<Cv_Entity>();
             m_EntitiesToAdd = new ConcurrentQueue<Cv_Entity>();
             m_EntityList = new List<Cv_Entity>();
-            OnDestroyEntity = RequestDestroyEntityCallback;
-            OnRequestNewEntity = RequestNewEntityCallback;
         }
 
         ~Cv_GameLogic()
         {
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntity);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_RequestDestroyEntity>(RequestDestroyEntityCallback);
         }
 
 #region Entity methods
@@ -649,10 +640,22 @@ namespace Caravel.Core
         }
 #endregion
 
+#region Physics methods
         public void AddGamePhysics(Cv_GamePhysics physics)
         {
             GamePhysics = physics;
         }
+
+		public Cv_Entity[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type)
+		{
+			if (GamePhysics != null)
+			{
+				return GamePhysics.RayCast(startingPoint, endingPoint, type);
+			}
+
+			return new Cv_Entity[0];
+		}
+#endregion
 
         public bool ChangeState(Cv_GameState newState)
         {
@@ -688,24 +691,6 @@ namespace Caravel.Core
             Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
 
             return true;
-        }
-
-        public void VRenderDiagnostics(Cv_CameraNode camera, Cv_Renderer renderer)
-        {
-            if (camera == null)
-            {
-                return;
-            }
-            
-            GamePhysics.VRenderDiagnostics(camera, renderer);
-        }
-
-        internal void Initialize()
-        {
-            m_EntityFactory = VCreateEntityFactory();
-           // m_SceneController.Initialize(Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml"));
-            Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntity);
-            GamePhysics.VInitialize();
         }
 
 #region Virtual methods that can be overriden by game logic class
@@ -751,7 +736,25 @@ namespace Caravel.Core
         }
 #endregion
 
-        internal void OnUpdate(float time, float elapsedTime)
+		internal void VRenderDiagnostics(Cv_CameraNode camera, Cv_Renderer renderer)
+        {
+            if (camera == null)
+            {
+                return;
+            }
+            
+            GamePhysics.VRenderDiagnostics(camera, renderer);
+        }
+
+        internal void Initialize()
+        {
+            m_EntityFactory = VCreateEntityFactory();
+           // m_SceneController.Initialize(Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml"));
+            Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(RequestDestroyEntityCallback);
+            GamePhysics.VInitialize();
+        }
+
+		internal void OnUpdate(float time, float elapsedTime)
         {
             switch (State)
             {

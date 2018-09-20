@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
@@ -22,10 +23,20 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
+		public Action OnMouseUp
+		{
+			get; set;
+		}
+
         public string OnMouseUpScript
         {
             get; set;
         }
+
+		public Action OnMouseDown
+		{
+			get; set;
+		}
 
         public string OnMouseDownScript
         {
@@ -138,7 +149,7 @@ namespace Caravel.Core.Entity
         {
             Cv_ClickAreaNode clickAreaNode = this.ClickAreaNode;
             Cv_Event newEvent = new Cv_Event_DestroyClickableComponent(Owner.ID, clickAreaNode, this);
-            Cv_EventManager.Instance.QueueEvent(newEvent);
+            Cv_EventManager.Instance.QueueEvent(newEvent, true);
         }
 
         protected internal override void VOnUpdate(float elapsedTime)
@@ -164,6 +175,11 @@ namespace Caravel.Core.Entity
                         scriptRes.RunScript();
                     }
 
+					if (OnMouseDown != null)
+					{
+						OnMouseDown();
+					}
+
                     m_bWasInArea = true;
                 }
 
@@ -171,10 +187,18 @@ namespace Caravel.Core.Entity
             }
             else if (mouseState.LeftButton == ButtonState.Released && m_bWasClicking)
             {
-                if (m_bWasInArea && OnMouseUpScript != null && OnMouseUpScript != "")
+                if (m_bWasInArea)
                 {
-                    var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnMouseUpScript, Owner.ResourceBundle);
-                    scriptRes.RunScript();
+					if (OnMouseUpScript != null && OnMouseUpScript != "")
+					{
+						var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnMouseUpScript, Owner.ResourceBundle);
+						scriptRes.RunScript();
+					}
+
+					if (OnMouseUp != null)
+					{
+						OnMouseUp();
+					}
                 }
 
                 m_bWasInArea = false;

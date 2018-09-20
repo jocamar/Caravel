@@ -57,23 +57,26 @@ namespace Caravel.Core.Events
 
             Cv_EventType eType = Cv_Event.GetType<EventType>();
 
-            if (!m_EventListeners.ContainsKey(eType))
-            {
-                m_EventListeners[eType] = new List<NewEventDelegate>();
-            }
+			lock (m_EventListeners)
+			{
+				if (!m_EventListeners.ContainsKey(eType))
+				{
+					m_EventListeners[eType] = new List<NewEventDelegate>();
+				}
 
-            var listeners = m_EventListeners[eType];
+				var listeners = m_EventListeners[eType];
 
-            foreach (var l in listeners)
-            {
-                if (l == callback)
-                {
-                    Cv_Debug.Warning("Attempting to double register a listener.");
-                    return false;
-                }
-            }
+				foreach (var l in listeners)
+				{
+					if (l == callback)
+					{
+						Cv_Debug.Warning("Attempting to double register a listener.");
+						return false;
+					}
+				}
 
-            listeners.Add(callback);
+				listeners.Add(callback);
+			}
 
             Cv_Debug.Log("Events", "Successfully added listener for event type " + typeof(EventType).Name);
 
@@ -86,12 +89,15 @@ namespace Caravel.Core.Events
             var success = false;
             Cv_EventType eType = Cv_Event.GetType<EventType>();
 
-            if (m_EventListeners.ContainsKey(eType))
-            {
-                var listeners = m_EventListeners[eType];
+			lock (m_EventListeners)
+			{
+				if (m_EventListeners.ContainsKey(eType))
+				{
+					var listeners = m_EventListeners[eType];
 
-                success = listeners.Remove(callback);
-            }
+					success = listeners.Remove(callback);
+				}
+			}
 
             if (success)
             {
@@ -111,19 +117,23 @@ namespace Caravel.Core.Events
             var processed = false;
 
             List<NewEventDelegate> listeners;
-            if (m_EventListeners.TryGetValue(newEvent.Type, out listeners))
-            {
-                foreach (var l in listeners)
-                {
-                    if (newEvent.WriteToLog)
-                    {
-                        Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
-                    }
 
-                    l(newEvent);
-                    processed = true;
-                }
-            }
+			lock (m_EventListeners)
+			{
+				if (m_EventListeners.TryGetValue(newEvent.Type, out listeners))
+				{
+					foreach (var l in listeners)
+					{
+						if (newEvent.WriteToLog)
+						{
+							Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
+						}
+
+						l(newEvent);
+						processed = true;
+					}
+				}
+			}
         
             return processed;
         }
@@ -145,20 +155,23 @@ namespace Caravel.Core.Events
                     Cv_Debug.Log("Events", "Attempting to queue event " + newEvent.VGetName() + " for entity " + newEvent.EntityID);
                 }
 
-                if (m_EventListeners.ContainsKey(newEvent.Type))
-                {
-                    m_EventQueues[m_iActiveQueue].AddLast(newEvent);
-                    if (newEvent.WriteToLog)
-                    {
-                        Cv_Debug.Log("Events", "Successfully queued event " + newEvent.VGetName());
-                    }
-                    return true;
-                }
-                else
-                {
-                    Cv_Debug.Log("Events", "Skipping event " + newEvent.VGetName() + " since there are no listeners for it.");
-                    return false;
-                }
+				lock (m_EventListeners)
+				{
+					if (m_EventListeners.ContainsKey(newEvent.Type))
+					{
+						m_EventQueues[m_iActiveQueue].AddLast(newEvent);
+						if (newEvent.WriteToLog)
+						{
+							Cv_Debug.Log("Events", "Successfully queued event " + newEvent.VGetName());
+						}
+						return true;
+					}
+					else
+					{
+						Cv_Debug.Log("Events", "Skipping event " + newEvent.VGetName() + " since there are no listeners for it.");
+						return false;
+					}
+				}
             }
             else
             {
@@ -176,24 +189,27 @@ namespace Caravel.Core.Events
 
             Cv_Debug.Log("Events", "Attempting to abort event type " + typeof(EventType).Name);
 
-            if (m_EventListeners.ContainsKey(eType))
-            {
-                var queue = m_EventQueues[m_iActiveQueue];
+			lock (m_EventListeners)
+			{
+				if (m_EventListeners.ContainsKey(eType))
+				{
+					var queue = m_EventQueues[m_iActiveQueue];
 
-                if (allOfType)
-                {
-                    if ( queue.Remove(queue.First( e => e.Type == eType )) )
-                    {
-                        success = true;
-                    }
-                }
-                else {
-                    while ( queue.Remove(queue.First( e => e.Type == eType )) )
-                    {
-                        success = true;
-                    }
-                }
-            }
+					if (allOfType)
+					{
+						if ( queue.Remove(queue.First( e => e.Type == eType )) )
+						{
+							success = true;
+						}
+					}
+					else {
+						while ( queue.Remove(queue.First( e => e.Type == eType )) )
+						{
+							success = true;
+						}
+					}
+				}
+			}
 
             if (success)
             {
@@ -243,18 +259,22 @@ namespace Caravel.Core.Events
                 m_EventQueues[queueToProcess].RemoveFirst();
 
                 List<NewEventDelegate> listeners;
-                if (m_EventListeners.TryGetValue(e.Type, out listeners))
-                {
-                    foreach (var l in listeners)
-                    {
-                        if (e.WriteToLog)
-                        {
-                            Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
-                        }
-                        
-                        l(e);
-                    }
-                }
+
+				lock (m_EventListeners)
+				{
+					if (m_EventListeners.TryGetValue(e.Type, out listeners))
+					{
+						foreach (var l in listeners)
+						{
+							if (e.WriteToLog)
+							{
+								Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
+							}
+							
+							l(e);
+						}
+					}
+				}
 
                 currentMs = stopwatch.ElapsedMilliseconds;
 
