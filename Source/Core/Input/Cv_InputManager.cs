@@ -33,6 +33,11 @@ namespace Caravel.Core.Input
             public float LeftTrigger;
         }
 
+		public static Cv_InputManager Instance
+        {
+            get; private set;
+        }
+
         //Declare Dictionary Variables
         private Dictionary<string, Keys>[] m_BindedKeys = new [] {
 			new Dictionary<string, Keys>(),
@@ -66,25 +71,6 @@ namespace Caravel.Core.Input
 		//Declare GamePad variables
 		private GamePadState[] m_GamePadStates;        //Stores an array of the current game pad states
 		private GamePadState[] m_LastGamePadStates;    //Stores an array of the previous game pad states
-
-		public Cv_InputManager()
-		{
-			//Setup the current keyboard state
-			m_KeyboardState = Keyboard.GetState();
-
-			//Setup the current mouse state
-			m_MouseState = Mouse.GetState();
-
-			//Setup game pad states array
-			m_GamePadStates = new GamePadState[Enum.GetValues(typeof(PlayerIndex)).Length];
-
-			//Loop through each player
-			foreach (PlayerIndex index in Enum.GetValues(typeof(PlayerIndex)))
-			{
-				//Get the current player's game pad state
-				m_GamePadStates[(int)index] = GamePad.GetState(index);
-			}
-		}
 
         public Cv_MouseValues GetMouseValues()
 		{
@@ -199,12 +185,6 @@ namespace Caravel.Core.Input
 				//return true (no need to check game pad)
 				return true;
 			}
-				
-			if (m_BindedMouseActions[(int) player].ContainsKey(command)
-				&& MouseButtonDown(m_BindedMouseActions[(int) player][command]))
-			{
-				return true;
-			}
 
 			if (m_BindedMouseActions[(int) player].ContainsKey(command)
 				&& m_BindedMouseActions[(int) player][command] == Cv_MouseAction.MouseWheelDown && MouseWheelDown())
@@ -223,6 +203,12 @@ namespace Caravel.Core.Input
 			{
 				return true;
 			}
+				
+			if (m_BindedMouseActions[(int) player].ContainsKey(command)
+				&& MouseButtonDown(m_BindedMouseActions[(int) player][command]))
+			{
+				return true;
+			}
 
 			//Determine if the active player's game pad input is held down
 			if (m_BindedButtons[(int) player].ContainsKey(command)
@@ -233,6 +219,27 @@ namespace Caravel.Core.Input
 
 			//otherwise return false
 			return false;
+		}
+
+		internal Cv_InputManager()
+		{
+			Instance = this;
+
+			//Setup the current keyboard state
+			m_KeyboardState = Keyboard.GetState();
+
+			//Setup the current mouse state
+			m_MouseState = Mouse.GetState();
+
+			//Setup game pad states array
+			m_GamePadStates = new GamePadState[Enum.GetValues(typeof(PlayerIndex)).Length];
+
+			//Loop through each player
+			foreach (PlayerIndex index in Enum.GetValues(typeof(PlayerIndex)))
+			{
+				//Get the current player's game pad state
+				m_GamePadStates[(int)index] = GamePad.GetState(index);
+			}
 		}
 
 		internal bool Initialize()
@@ -343,7 +350,7 @@ namespace Caravel.Core.Input
 			case Cv_MouseAction.X2:
 				return state.XButton2;
 			default:
-				throw new ArgumentException ("Provided mouse action does not have a button."); //TODO add checks for this
+				return ButtonState.Released;
 			}
 		}
 

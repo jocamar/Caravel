@@ -24,45 +24,49 @@ namespace Caravel.Core.Resource
 
             var isOwnedByResManager = resource.VIsManuallyManaged();
             Cv_ResourceData resData;
-            if (!reload && isOwnedByResManager && m_ResourceData.TryGetValue(resourceFile, out resData))
-            {
-                resource.ResourceData = resData;
-            }
-            else
-            {
-                var size = 0;
-                Cv_ResourceBundle resBundle;
 
-                if (!m_ResourceBundles.TryGetValue(bundle, out resBundle))
+            lock (m_ResourceData)
+            {
+                if (!reload && isOwnedByResManager && m_ResourceData.TryGetValue(resourceFile, out resData))
                 {
-                    Cv_Debug.Error("Could not find requested resource bundle: " + bundle);
-                    return default(Resource);
+                    resource.ResourceData = resData;
                 }
-
-                if (isOwnedByResManager)
+                else
                 {
-                    using (var resStream = resBundle.GetResourceStream(resourceFile))
+                    var size = 0;
+                    Cv_ResourceBundle resBundle;
+
+                    if (!m_ResourceBundles.TryGetValue(bundle, out resBundle))
                     {
-                        if (!resource.VLoad(resourceFile, resStream, out size, resBundle))
+                        Cv_Debug.Error("Could not find requested resource bundle: " + bundle);
+                        return default(Resource);
+                    }
+
+                    if (isOwnedByResManager)
+                    {
+                        using (var resStream = resBundle.GetResourceStream(resourceFile))
+                        {
+                            if (!resource.VLoad(resourceFile, resStream, out size, resBundle))
+                            {
+                                Cv_Debug.Error("Unable to load resource: " + resourceFile);
+                                return default(Resource);
+                            }
+                        }
+
+                        if (m_ResourceData.ContainsKey(resourceFile))
+                        {
+                            m_ResourceData.Remove(resourceFile);
+                        }
+                        
+                        m_ResourceData.Add(resourceFile, resource.ResourceData);
+                    }
+                    else
+                    {
+                        if (!resource.VLoad(resourceFile, null, out size, resBundle))
                         {
                             Cv_Debug.Error("Unable to load resource: " + resourceFile);
                             return default(Resource);
                         }
-                    }
-
-                    if (m_ResourceData.ContainsKey(resourceFile))
-                    {
-                        m_ResourceData.Remove(resourceFile);
-                    }
-                    
-                    m_ResourceData.Add(resourceFile, resource.ResourceData);
-                }
-                else
-                {
-                    if (!resource.VLoad(resourceFile, null, out size, resBundle))
-                    {
-                        Cv_Debug.Error("Unable to load resource: " + resourceFile);
-                        return default(Resource);
                     }
                 }
             }
@@ -140,18 +144,21 @@ namespace Caravel.Core.Resource
         {
             Regex mask = new Regex(pattern.Replace(".", "[.]").Replace("*", ".*").Replace("?", "."));
 
-            List<string> toRemove = new List<string>();
-            foreach (var r in m_ResourceData)
+            lock (m_ResourceData)
             {
-                if (mask.IsMatch(r.Key))
+                List<string> toRemove = new List<string>();
+                foreach (var r in m_ResourceData)
                 {
-                    toRemove.Add(r.Key);
+                    if (mask.IsMatch(r.Key))
+                    {
+                        toRemove.Add(r.Key);
+                    }
                 }
-            }
 
-            foreach (var r in toRemove)
-            {
-                m_ResourceData.Remove(r);
+                foreach (var r in toRemove)
+                {
+                    m_ResourceData.Remove(r);
+                }
             }
         }
 

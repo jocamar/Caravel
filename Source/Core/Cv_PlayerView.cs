@@ -294,6 +294,24 @@ namespace Caravel.Core
             return Scene.Pick<NodeType>(mousePos, out entities, Renderer);
         }
 
+        public Vector2? GetWorldCoords(Vector2 screenPoint)
+        {
+            var screenPosition = Renderer.ScaleMouseToScreenCoordinates(screenPoint);
+			
+			if (screenPosition.X >= 0 && screenPosition.X <= Renderer.Viewport.Width
+					&& screenPosition.Y >= 0 && screenPosition.Y <= Renderer.Viewport.Height)
+			{
+				var camMatrix = Renderer.CamMatrix;
+
+                var invertedTransform = Matrix.Invert(camMatrix);
+                var worldPoint = Vector2.Transform(screenPosition, invertedTransform);
+
+                return worldPoint;
+			}
+
+            return null;
+        }
+
         protected internal virtual void VRenderText()
         {
         }

@@ -1233,7 +1233,7 @@ namespace Caravel.Core.Physics
             var currEntity = entity1;
             while (currEntity.Parent != Cv_EntityID.INVALID_ENTITY)
             {
-                if (entity1.Parent == entity2)
+                if (currEntity.Parent == entity2)
                 {
                     return true;
                 }
