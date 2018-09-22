@@ -136,7 +136,7 @@ namespace Caravel.Core.Process
 	    protected internal abstract void VOnFail();
 	    protected internal abstract void VOnAbort();
 
-        protected internal virtual void VOnInit()
+        protected internal virtual void VOnInitialize()
         {
              State = Cv_ProcessState.Running;
         }

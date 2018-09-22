@@ -14,6 +14,7 @@ using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;
 using static Caravel.Core.Physics.Cv_FarseerPhysics;
 using static Caravel.Core.Physics.Cv_GamePhysics;
+using static Caravel.Core.Resource.Cv_XmlResource;
 
 namespace Caravel.Core
 {
@@ -53,7 +54,7 @@ namespace Caravel.Core
 
                 if (m_bIsProxy)
                 {
-                    Cv_EventManager.Instance.AddListener<Cv_Event_RequestNewEntity>(RequestNewEntityCallback);
+                    Cv_EventManager.Instance.AddListener<Cv_Event_RequestNewEntity>(OnNewEntityRequest);
                     GamePhysics = Cv_GamePhysics.CreateNullPhysics(Caravel);
                 }
             }
@@ -175,7 +176,9 @@ namespace Caravel.Core
 
         ~Cv_GameLogic()
         {
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_RequestDestroyEntity>(RequestDestroyEntityCallback);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntityRequest);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_SceneLoaded>(OnSceneLoaded);
+            Cv_EventManager.Instance.RemoveListener<Cv_Event_RemoteSceneLoaded>(OnSceneLoaded);
         }
 
 #region Entity methods
@@ -507,7 +510,7 @@ namespace Caravel.Core
             Cv_XmlResource resource;
 			resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource, resourceBundle, Caravel.EditorRunning);
 			
-            var root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
+            var root = ((Cv_XmlData) resource.ResourceData).RootNode;
 
             if (root == null)
             {
@@ -571,13 +574,13 @@ namespace Caravel.Core
 
             if (IsProxy)
             {
-                //var remoteSceneLoadedEvent = new Cv_Event_RemoteSceneLoaded();
-                //Cv_EventManager.Instance.TriggerEvent(remoteSceneLoadedEvent);
+                var remoteSceneLoadedEvent = new Cv_Event_RemoteSceneLoaded(sceneResource, resourceBundle, this);
+                Cv_EventManager.Instance.TriggerEvent(remoteSceneLoadedEvent);
             }
             else
             {
-                //var sceneLoadedEvent = new Cv_Event_SceneLoaded();
-                //Cv_EventManager.Instance.TriggerEvent(sceneLoadedEvent);
+                var sceneLoadedEvent = new Cv_Event_SceneLoaded(sceneResource, resourceBundle, this);
+                Cv_EventManager.Instance.TriggerEvent(sceneLoadedEvent);
             }
 
             return true;
@@ -629,13 +632,13 @@ namespace Caravel.Core
 
             if (IsProxy)
             {
-                //var remoteSceneUnloadedEvent = new Cv_Event_RemoteSceneUnloaded();
-                //Cv_EventManager.Instance.TriggerEvent(remoteSceneUnloadedEvent);
+                var remoteSceneUnloadedEvent = new Cv_Event_RemoteSceneUnloaded(sceneResource, resourceBundle, this);
+                Cv_EventManager.Instance.TriggerEvent(remoteSceneUnloadedEvent);
             }
             else
             {
-                //var sceneUnloadedEvent = new Cv_Event_SceneUnloaded();
-                //Cv_EventManager.Instance.TriggerEvent(sceneUnloadedEvent);
+                var sceneUnloadedEvent = new Cv_Event_SceneUnloaded(sceneResource, resourceBundle, this);
+                Cv_EventManager.Instance.TriggerEvent(sceneUnloadedEvent);
             }
         }
 #endregion
@@ -689,6 +692,20 @@ namespace Caravel.Core
             State = newState;
             VGameOnChangeState(newState);
             Cv_EventManager.Instance.TriggerEvent(changedStateEvt);
+
+            if (newState == Cv_GameState.WaitingForPlayersToLoadScene)
+            {
+                HumanPlayersLoaded++; //TODO(JM): In future maybe change this to event handler (to handle remote players too)
+            }
+            
+            if (newState == Cv_GameState.LoadingScene)
+            {
+                if (!Caravel.VLoadGame()) //TODO(JM): Maybe change this to automatically load the scene set in the options instead of being overriden by subclass
+                {
+                    Cv_Debug.Error("Error - Unable to load scene.");
+                    Caravel.AbortGame();
+                }
+            }
 
             return true;
         }
@@ -750,7 +767,9 @@ namespace Caravel.Core
         {
             m_EntityFactory = VCreateEntityFactory();
            // m_SceneController.Initialize(Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml"));
-            Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(RequestDestroyEntityCallback);
+            Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntityRequest);
+            Cv_EventManager.Instance.AddListener<Cv_Event_SceneLoaded>(OnSceneLoaded);
+            Cv_EventManager.Instance.AddListener<Cv_Event_RemoteSceneLoaded>(OnSceneLoaded);
             GamePhysics.VInitialize();
         }
 
@@ -770,16 +789,6 @@ namespace Caravel.Core
                     }
                     break;
                 case Cv_GameState.LoadingScene:
-                    if (!Caravel.VLoadGame()) //TODO(JM): Maybe change this to automatically load the scene set in the options instead of being overriden by subclass
-                    {
-                        Cv_Debug.Error("Error loading scene.");
-                        Caravel.AbortGame();
-                    }
-                    else
-                    {
-                        HumanPlayersLoaded++; //TODO(JM): In future maybe change this to event handler (to handle remote players too)
-                        ChangeState(Cv_GameState.WaitingForPlayersToLoadScene);
-                    }
                     break;
                 case Cv_GameState.WaitingForPlayersToLoadScene:
                     if (ExpectedPlayers + ExpectedRemotePlayers <= HumanPlayersLoaded)
@@ -833,7 +842,7 @@ namespace Caravel.Core
 
 #region Event callbacks
 
-        private void RequestNewEntityCallback(Cv_Event eventData)
+        private void OnNewEntityRequest(Cv_Event eventData)
         {
             Cv_Debug.Assert(IsProxy, "Should only enter RequestNewEntityCallback when game logic is a proxy.");
             if (!IsProxy)
@@ -860,10 +869,18 @@ namespace Caravel.Core
             }
         }
 
-        private void RequestDestroyEntityCallback(Cv_Event eventData)
+        private void OnDestroyEntityRequest(Cv_Event eventData)
         {
             Cv_Event_RequestDestroyEntity data = (Cv_Event_RequestDestroyEntity) eventData;
             DestroyEntity(data.EntityID);
+        }
+
+        private void OnSceneLoaded(Cv_Event eventData)
+        {
+            if (State == Cv_GameState.LoadingScene)
+            {
+                ChangeState(Cv_GameState.WaitingForPlayersToLoadScene);
+            }
         }
 #endregion
 

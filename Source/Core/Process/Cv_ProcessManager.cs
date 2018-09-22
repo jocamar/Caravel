@@ -90,7 +90,7 @@ namespace Caravel.Core.Process
 
                     if (currProcess.State == Cv_ProcessState.Uninitialized)
                     {
-                        currProcess.VOnInit();
+                        currProcess.VOnInitialize();
                     }
 
                     if (currProcess.State == Cv_ProcessState.Running)

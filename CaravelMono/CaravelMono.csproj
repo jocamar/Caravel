@@ -105,6 +105,18 @@
     <Compile Include="..\Source\Core\Process\Cv_Process.cs">
       <Link>Source\Core\Process\Cv_Process.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Process\Cv_ParallelProcess.cs">
+      <Link>Source\Core\Process\Cv_ParallelProcess.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Process\Cv_PreloadAssetsProcess.cs">
+      <Link>Source\Core\Process\Cv_PreloadAssetsProcess.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Process\Cv_LoadSceneProcess.cs">
+      <Link>Source\Core\Process\Cv_LoadSceneProcess.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Process\Cv_UnloadSceneProcess.cs">
+      <Link>Source\Core\Process\Cv_UnloadSceneProcess.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Process\Cv_TimerProcess.cs">
       <Link>Source\Core\Process\Cv_TimerProcess.cs</Link>
     </Compile>
@@ -299,6 +311,18 @@
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_ResumeAllSounds.cs">
       <Link>Source\Core\Events\Cv_Event_ResumeAllSounds.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_SceneLoaded.cs">
+      <Link>Source\Core\Events\Cv_Event_SceneLoaded.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_RemoteSceneLoaded.cs">
+      <Link>Source\Core\Events\Cv_Event_RemoteSceneLoaded.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_SceneUnloaded.cs">
+      <Link>Source\Core\Events\Cv_Event_SceneUnloaded.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_RemoteSceneUnloaded.cs">
+      <Link>Source\Core\Events\Cv_Event_RemoteSceneUnloaded.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Resource\Cv_RawTextureResource.cs">
       <Link>Source\Core\Resource\Cv_RawTextureResource.cs</Link>

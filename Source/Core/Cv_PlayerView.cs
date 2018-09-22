@@ -432,7 +432,11 @@ namespace Caravel.Core
 			Renderer.ScreenHeight = (int) (newHeight * Renderer.ScreenSizePercent.Y);
             Renderer.StartX = (int) (newWidth * Renderer.ScreenOriginPercent.X);
             Renderer.StartY = (int) (newHeight * Renderer.ScreenOriginPercent.Y);
-			Camera.RecalculateTransformationMatrices();
+
+            if (Camera != null)
+            {
+			    Camera.RecalculateTransformationMatrices();
+            }
 		}
 
         private void RegisterEventListeners()

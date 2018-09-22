@@ -1,0 +1,20 @@
+﻿<EntityType type="fortress" resource="entity_types\fortress_tile.cve">
+  <Cv_TransformComponent>
+    <Position x="0" y="0" z="0" />
+    <Rotation radians="0" />
+    <Scale x="1" y="1" />
+    <Origin x="0.5" y="0.5" />
+  </Cv_TransformComponent>
+  <Cv_SpriteComponent>
+    <Color r="255" g="255" b="255" a="255" />
+    <Visible status="True" />
+    <Texture resource="Tiles.png" />
+    <Size width="80" height="80" />
+    <Animation fx="14" fy="12" loop="False" defaultAnim="fortress_red">
+      <SubAnimation startFrame="0" endFrame="0" speed="0" id="fortress_red" />
+      <SubAnimation startFrame="14" endFrame="14" speed="0" id="fortress_blue" />
+      <SubAnimation startFrame="28" endFrame="28" speed="0" id="fortress_green" />
+      <SubAnimation startFrame="42" endFrame="42" speed="0" id="fortress_yellow" />
+    </Animation>
+  </Cv_SpriteComponent>
+</EntityType>

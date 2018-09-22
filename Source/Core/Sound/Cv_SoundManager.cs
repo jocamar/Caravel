@@ -109,7 +109,7 @@ namespace Caravel.Core.Sound
         {
             if (soundResource == null || soundResource == "" || entity == null)
             {
-                Cv_Debug.Error("Error - No sound orentity defined when trying to play sound.");
+                Cv_Debug.Error("Error - No sound or entity defined when trying to play sound.");
                 return null;
             }
 
