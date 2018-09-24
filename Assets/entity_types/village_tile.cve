@@ -16,5 +16,7 @@
       <SubAnimation startFrame="29" endFrame="32" speed="8" id="village_green" />
       <SubAnimation startFrame="43" endFrame="46" speed="8" id="village_yellow" />
     </Animation>
+    <Mirrored status="False" />
+    <OnEndScript resource="" />
   </Cv_SpriteComponent>
 </EntityType>

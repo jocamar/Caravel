@@ -13,5 +13,7 @@
     <Animation fx="14" fy="12" loop="False" defaultAnim="grass">
       <SubAnimation startFrame="93" endFrame="93" speed="0" id="grass" />
     </Animation>
+    <Mirrored status="False" />
+    <OnEndScript resource="" />
   </Cv_SpriteComponent>
 </EntityType>

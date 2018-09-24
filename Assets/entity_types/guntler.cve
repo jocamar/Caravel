@@ -11,6 +11,8 @@
     <Texture resource="sky.jpg" />
     <Size width="250" height="250" />
     <Animation fx="1" fy="1" loop="True" />
+    <Mirrored status="False" />
+    <OnEndScript resource="" />
   </Cv_SpriteComponent>
   <Cv_RigidBodyComponent>
     <Material material="Wood" />

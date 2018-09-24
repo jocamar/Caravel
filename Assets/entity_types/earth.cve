@@ -11,5 +11,7 @@
     <Texture resource="ground.png" />
     <Size width="200" height="600" />
     <Animation fx="1" fy="1" loop="False" />
+    <Mirrored status="False" />
+    <OnEndScript resource="" />
   </Cv_SpriteComponent>
 </EntityType>

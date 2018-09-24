@@ -16,5 +16,7 @@
       <SubAnimation startFrame="28" endFrame="28" speed="0" id="fortress_green" />
       <SubAnimation startFrame="42" endFrame="42" speed="0" id="fortress_yellow" />
     </Animation>
+    <Mirrored status="False" />
+    <OnEndScript resource="" />
   </Cv_SpriteComponent>
 </EntityType>

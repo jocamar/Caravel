@@ -19,5 +19,7 @@
     <Texture resource="profile.png" />
     <Size width="250" height="250" />
     <Animation fx="1" fy="1" loop="False" />
+    <Mirrored status="False" />
+    <OnEndScript resource="" />
   </Cv_SpriteComponent>
 </EntityType>

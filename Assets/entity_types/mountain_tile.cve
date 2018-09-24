@@ -13,5 +13,7 @@
     <Animation fx="14" fy="12" loop="False" defaultAnim="mountain_short">
       <SubAnimation startFrame="34" endFrame="34" speed="0" id="mountain_short" />
     </Animation>
+    <Mirrored status="False" />
+    <OnEndScript resource="" />
   </Cv_SpriteComponent>
 </EntityType>
