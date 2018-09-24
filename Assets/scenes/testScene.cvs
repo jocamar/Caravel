@@ -37,9 +37,9 @@
         <Volume value="1" />
         <Pan value="0" />
         <Pitch value="0" />
-        <Looping value="False" />
-        <IsPositional value="True" />
-        <AutoPlay value="False" />
+        <Looping status="False" />
+        <IsPositional status="True" />
+        <AutoPlay status="False" />
       </Cv_SoundEmitterComponent>
       <Cv_TextComponent>
         <Visible status="true" />

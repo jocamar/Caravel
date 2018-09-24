@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Xml;
 using Caravel.Core.Events;
@@ -198,6 +199,9 @@ namespace Caravel.Core.Entity
                 x = float.Parse(scaleNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
                 y = float.Parse(scaleNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
 
+                x = Math.Max(0, x);
+                y = Math.Max(0, y);
+
                 var scale = new Vector2(x,y);
                 Scale = scale;
             }
@@ -210,6 +214,8 @@ namespace Caravel.Core.Entity
                 x = (float) double.Parse(originNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
                 y = (float) double.Parse(originNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
 
+                x = Math.Max(0, Math.Min(1, x));
+                y = Math.Max(0, Math.Min(1, y));
                 var origin = new Vector2(x,y);
                 Origin = origin;
             }

@@ -217,6 +217,9 @@
     <Compile Include="..\Source\Core\Entity\Cv_TransformComponent.cs">
       <Link>Cv_TransformComponent.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_TransformAnimationComponent.cs">
+      <Link>Cv_TransformAnimationComponent.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_TextComponent.cs">
       <Link>Cv_TextComponent.cs</Link>
     </Compile>

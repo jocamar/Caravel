@@ -89,9 +89,9 @@ namespace Caravel.Core.Entity
             volume.SetAttribute("value", Volume.ToString(CultureInfo.InvariantCulture));
             pan.SetAttribute("value", Pan.ToString(CultureInfo.InvariantCulture));
             pitch.SetAttribute("value", Pitch.ToString(CultureInfo.InvariantCulture));
-            looping.SetAttribute("value", Looping.ToString(CultureInfo.InvariantCulture));
-            positional.SetAttribute("value", IsPositional.ToString(CultureInfo.InvariantCulture));
-            autoPlay.SetAttribute("value", AutoPlay.ToString(CultureInfo.InvariantCulture));
+            looping.SetAttribute("status", Looping.ToString(CultureInfo.InvariantCulture));
+            positional.SetAttribute("status", IsPositional.ToString(CultureInfo.InvariantCulture));
+            autoPlay.SetAttribute("status", AutoPlay.ToString(CultureInfo.InvariantCulture));
 
             componentData.AppendChild(sound);
             componentData.AppendChild(volume);
@@ -280,19 +280,19 @@ namespace Caravel.Core.Entity
             var loopingNode = componentData.SelectNodes("Looping").Item(0);
             if (loopingNode != null)
             {
-                Looping = bool.Parse(loopingNode.Attributes["value"].Value);
+                Looping = bool.Parse(loopingNode.Attributes["status"].Value);
             }
 
             var positionalNode = componentData.SelectNodes("IsPositional").Item(0);
             if (positionalNode != null)
             {
-                IsPositional = bool.Parse(positionalNode.Attributes["value"].Value);
+                IsPositional = bool.Parse(positionalNode.Attributes["status"].Value);
             }
 
             var autoPlayNode = componentData.SelectNodes("AutoPlay").Item(0);
             if (autoPlayNode != null)
             {
-                AutoPlay = bool.Parse(autoPlayNode.Attributes["value"].Value);
+                AutoPlay = bool.Parse(autoPlayNode.Attributes["status"].Value);
             }
 
             return true;

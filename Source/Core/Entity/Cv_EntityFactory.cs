@@ -27,6 +27,7 @@ namespace Caravel.Core.Entity
             ComponentFactory.Register<Cv_ScriptComponent>(Cv_EntityComponent.GetID<Cv_ScriptComponent>());
             ComponentFactory.Register<Cv_ClickableComponent>(Cv_EntityComponent.GetID<Cv_ClickableComponent>());
             ComponentFactory.Register<Cv_TextComponent>(Cv_EntityComponent.GetID<Cv_TextComponent>());
+            ComponentFactory.Register<Cv_TransformAnimationComponent>(Cv_EntityComponent.GetID<Cv_TransformAnimationComponent>());
         }
 
         protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,
@@ -78,17 +79,6 @@ namespace Caravel.Core.Entity
                     return null;
                 }
             }
-
-            if (overrides != null)
-            {
-                ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity)]"));
-            }
-
-            var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
-            if (tranformComponent != null && initialTransform != null)
-            {
-                tranformComponent.Transform = (initialTransform != null ? initialTransform.Value : Cv_Transform.Identity);
-            }
             
             return entity;
         }
@@ -111,17 +101,6 @@ namespace Caravel.Core.Entity
             {
                 Cv_Debug.Error("Failed to initialize empty entity.");
                 return null;
-            }
-
-            if (overrides != null)
-            {
-                ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity)]"));
-            }
-
-            var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
-            if (tranformComponent != null && initialTransform != null)
-            {
-                tranformComponent.Transform = (initialTransform != null ? initialTransform.Value : Cv_Transform.Identity);
             }
             
             return entity;

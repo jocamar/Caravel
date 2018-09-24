@@ -86,6 +86,13 @@ namespace Caravel.Core.Draw
             var layerDepth = (int) pos.Z;
             layerDepth = layerDepth % Cv_Renderer.MaxLayers;
 
+            var spriteEffect = SpriteEffects.None;
+
+            if (spriteComponent.Mirrored)
+            {
+                spriteEffect = SpriteEffects.FlipHorizontally;
+            }
+
             renderer.Draw(tex, new Rectangle((int) pos.X,
                                                 (int)pos.Y,
                                                 (int)(spriteComponent.Width * scale.X),
@@ -94,7 +101,7 @@ namespace Caravel.Core.Draw
                                     spriteComponent.Color,
                                     rot,
                                     new Vector2(frameW * scene.Transform.Origin.X, frameH * scene.Transform.Origin.Y),
-                                    SpriteEffects.None,
+                                    spriteEffect,
                                     layerDepth / (float) Cv_Renderer.MaxLayers);
         }
 

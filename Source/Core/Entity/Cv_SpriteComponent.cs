@@ -113,9 +113,14 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
-		public bool Ended
+		public bool Finished
         {
             get; private set;
+        }
+
+        public bool Mirrored
+        {
+            get; set;
         }
 
         public Action OnEnd
@@ -162,7 +167,9 @@ namespace Caravel.Core.Entity
 			Looping = false;
 			CurrentFrame = 0;
 			Paused = false;
-			Ended = false;
+			Finished = false;
+            Visible = true;
+            Mirrored = false;
 			timeSinceLastUpdate = 0;
             m_CurrAnim = null;
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
@@ -184,7 +191,9 @@ namespace Caravel.Core.Entity
 			EndFrame = endFrame;
 			CurrentFrame = StartFrame != null ? StartFrame.Value : 0;
 			Paused = false;
-			Ended = false;
+			Finished = false;
+            Visible = true;
+            Mirrored = false;
 			timeSinceLastUpdate = 0;
             m_CurrAnim = null;
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
@@ -200,19 +209,7 @@ namespace Caravel.Core.Entity
             {
                 m_CurrAnim = anim;
                 OnEnd = onEnd;
-				OnEndScript = null;
-            }
-        }
-
-		public void SetAnimation(string animationId, string onEndScript)
-        {
-            Cv_SpriteSubAnimation anim;
-
-            if (m_SubAnimations.TryGetValue(animationId, out anim))
-            {
-                m_CurrAnim = anim;
-                OnEndScript = onEndScript;
-				OnEnd = null;
+                CurrentFrame = anim.StartFrame;
             }
         }
 
@@ -229,23 +226,8 @@ namespace Caravel.Core.Entity
         protected internal override void VOnUpdate(float elapsedTime)
         {
             SceneNode.SetRadius(-1);
-            m_ActualEndFrame = m_CurrAnim != null ? m_CurrAnim.Value.EndFrame : 0;
-            if (EndFrame != null)
-            {
-                m_ActualEndFrame = EndFrame.Value;
-            }
-
-            m_ActualStartFrame = m_CurrAnim != null ? m_CurrAnim.Value.StartFrame : 0;
-            if (StartFrame != null)
-            {
-                m_ActualStartFrame = StartFrame.Value;
-            }
-
-            m_ActualSpeed = m_CurrAnim != null ? m_CurrAnim.Value.Speed : 0;
-            if (Speed != null)
-            {
-                m_ActualSpeed = Speed.Value;
-            }
+            
+            GetAnimationInfo();
 
 			if (m_ActualSpeed > 0 && !Paused)
 			{
@@ -260,22 +242,10 @@ namespace Caravel.Core.Entity
                     {
                         if (CurrentFrame + 1 > m_ActualEndFrame)
                         {
-                            if (Looping)
+                            if (CheckAnimationFinished())
                             {
-                                CurrentFrame = m_ActualStartFrame;
-                            }
-                            else 
-                            {
-                                Ended = true;
-                                OnEnd?.Invoke();
-
-								if (OnEndScript != null)
-								{
-									Cv_ScriptManager.Instance.VExecuteString(m_CurrAnim.Value.ID + "_OnEnd", OnEndScript, Owner);
-								}
-
                                 break;
-                            };
+                            }
                         }
                         else
                             CurrentFrame++;
@@ -381,6 +351,18 @@ namespace Caravel.Core.Entity
                     CurrentFrame = StartFrame.Value;
                 }
             }
+
+            var mirroredNode = componentData.SelectNodes("Mirrored").Item(0);
+            if (mirroredNode != null)
+            {
+                Mirrored = bool.Parse(mirroredNode.Attributes["status"].Value);
+            }
+
+            var scriptNode = componentData.SelectNodes("OnEndScript").Item(0);
+            if (scriptNode != null)
+            {
+                OnEndScript = scriptNode.Attributes["resource"].Value;
+            }
             
             return true;
         }
@@ -433,7 +415,61 @@ namespace Caravel.Core.Entity
             }
 
             baseElement.AppendChild(animationElement);
+
+            var mirroredElement = baseElement.OwnerDocument.CreateElement("Mirrored");
+            mirroredElement.SetAttribute("status", Mirrored.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(mirroredElement);
+
+            var scriptElement = baseElement.OwnerDocument.CreateElement("OnEndScript");
+            scriptElement.SetAttribute("resource", OnEndScript);
+            baseElement.AppendChild(scriptElement);
             return baseElement;
+        }
+
+        private bool CheckAnimationFinished()
+        {
+            if (OnEnd != null)
+            {
+                OnEnd();
+            }
+
+            if (OnEndScript != null && OnEndScript != "")
+            {
+                Cv_ScriptManager.Instance.VExecuteFile(OnEndScript, Owner);
+            }
+
+            if (Looping)
+            {
+                Finished = false;
+                CurrentFrame = m_ActualStartFrame;
+                return false;
+            }
+            else 
+            {
+                Finished = true;
+                return true;
+            }
+        }
+
+        private void GetAnimationInfo()
+        {
+            m_ActualEndFrame = m_CurrAnim != null ? m_CurrAnim.Value.EndFrame : 0;
+            if (EndFrame != null)
+            {
+                m_ActualEndFrame = EndFrame.Value;
+            }
+
+            m_ActualStartFrame = m_CurrAnim != null ? m_CurrAnim.Value.StartFrame : 0;
+            if (StartFrame != null)
+            {
+                m_ActualStartFrame = StartFrame.Value;
+            }
+
+            m_ActualSpeed = m_CurrAnim != null ? m_CurrAnim.Value.Speed : 0;
+            if (Speed != null)
+            {
+                m_ActualSpeed = Speed.Value;
+            }
         }
 	}
 }

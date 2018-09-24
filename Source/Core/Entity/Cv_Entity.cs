@@ -144,7 +144,7 @@ namespace Caravel.Core.Entity
         {
             ID = Cv_EntityID.INVALID_ENTITY;
             EntityType = "Unknown";
-            EntityTypeResource = "Unknown";
+            EntityTypeResource = "";
 			EntityName = "Unknown_" + ID;
             m_ComponentMap = new Dictionary<Cv_ComponentID, Cv_EntityComponent>();
             m_ComponentList = new List<Cv_EntityComponent>();
@@ -159,7 +159,7 @@ namespace Caravel.Core.Entity
         {
             ID = entityId;
             EntityType = "Unknown";
-            EntityTypeResource = "Unknown";
+            EntityTypeResource = "";
 			EntityName = "Unknown_" + ID;
             m_ComponentMap = new Dictionary<Cv_ComponentID, Cv_EntityComponent>();
             m_ComponentList = new List<Cv_EntityComponent>();

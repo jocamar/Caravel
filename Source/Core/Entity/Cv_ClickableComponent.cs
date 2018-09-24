@@ -92,7 +92,7 @@ namespace Caravel.Core.Entity
             size.SetAttribute("height", Height.ToString(CultureInfo.InvariantCulture));
             anchor.SetAttribute("x", ((int) AnchorPoint.X).ToString(CultureInfo.InvariantCulture));
             anchor.SetAttribute("y", ((int) AnchorPoint.Y).ToString(CultureInfo.InvariantCulture));
-            active.SetAttribute("value", Active.ToString(CultureInfo.InvariantCulture));
+            active.SetAttribute("status", Active.ToString(CultureInfo.InvariantCulture));
 
             componentData.AppendChild(mouseUpScript);
             componentData.AppendChild(mouseDownScript);
@@ -135,7 +135,7 @@ namespace Caravel.Core.Entity
             var activeNode = componentData.SelectNodes("Active").Item(0);
             if (activeNode != null)
             {
-                Active = bool.Parse(activeNode.Attributes["value"].Value);
+                Active = bool.Parse(activeNode.Attributes["status"].Value);
             }
 
             return true;

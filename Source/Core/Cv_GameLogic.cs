@@ -239,6 +239,17 @@ namespace Caravel.Core
                 }
 
                 entity.PostInitialize();
+                
+                if (overrides != null)
+                {
+                    m_EntityFactory.ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity)]"));
+                }
+
+                var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
+                if (tranformComponent != null && transform != null)
+                {
+                    tranformComponent.Transform = transform.Value;
+                }
 
                 if (!IsProxy && State == Cv_GameState.Running)
                 {
@@ -289,6 +300,17 @@ namespace Caravel.Core
                 }
 
                 entity.PostInitialize();
+
+                if (overrides != null)
+                {
+                    m_EntityFactory.ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity)]"));
+                }
+
+                var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
+                if (tranformComponent != null && transform != null)
+                {
+                    tranformComponent.Transform = transform.Value;
+                }
 
                 if (!IsProxy && State == Cv_GameState.Running)
                 {
@@ -448,7 +470,7 @@ namespace Caravel.Core
         public void ChangeType(Cv_EntityID entityId, string type, string typeResource)
         {
             XmlDocument doc = new XmlDocument();
-            XmlElement typeNode = doc.CreateElement("Entity");
+            XmlElement typeNode = doc.CreateElement("EntityType");
 
             typeNode.SetAttribute("type", type);
             
@@ -899,7 +921,15 @@ namespace Caravel.Core
                         visible = bool.Parse(e.Attributes["visible"].Value);
                     }
 
-                    var entity = CreateEntity(entityTypeResource, name, resourceBundle, visible, parentId, (XmlElement) e);
+                    Cv_Entity entity;
+                    if (entityTypeResource != "")
+                    {
+                        entity = CreateEntity(entityTypeResource, name, resourceBundle, visible, parentId, (XmlElement) e);
+                    }
+                    else
+                    {
+                        entity = CreateEmptyEntity(name, resourceBundle, visible, parentId, (XmlElement) e);
+                    }
 
                     if (entity != null)
                     {

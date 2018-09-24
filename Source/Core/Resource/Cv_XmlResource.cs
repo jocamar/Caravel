@@ -58,5 +58,10 @@ namespace Caravel.Core.Resource
         {
             return true;
         }
+
+        public Cv_XmlData GetXmlData()
+        {
+            return (Cv_XmlData) ResourceData;
+        }
     }
 }

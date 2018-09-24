@@ -48,8 +48,8 @@ namespace Caravel.Core.Entity
             initScript.SetAttribute("resource", InitScriptResource);
             script.SetAttribute("resource", ScriptResource);
             interval.SetAttribute("value", Interval.ToString(CultureInfo.InvariantCulture));
-            executeOnce.SetAttribute("value", ExecuteOnce.ToString(CultureInfo.InvariantCulture));
-            paused.SetAttribute("value", PauseExecution.ToString(CultureInfo.InvariantCulture));
+            executeOnce.SetAttribute("status", ExecuteOnce.ToString(CultureInfo.InvariantCulture));
+            paused.SetAttribute("status", PauseExecution.ToString(CultureInfo.InvariantCulture));
 
             componentData.AppendChild(initScript);
             componentData.AppendChild(script);
@@ -89,13 +89,13 @@ namespace Caravel.Core.Entity
             var executeOnceNode = componentData.SelectNodes("ExecuteOnce").Item(0);
             if (executeOnceNode != null)
             {
-                ExecuteOnce = bool.Parse(executeOnceNode.Attributes["value"].Value);
+                ExecuteOnce = bool.Parse(executeOnceNode.Attributes["status"].Value);
             }
 
             var pausedNode = componentData.SelectNodes("Paused").Item(0);
             if (pausedNode != null)
             {
-                PauseExecution = bool.Parse(pausedNode.Attributes["value"].Value);
+                PauseExecution = bool.Parse(pausedNode.Attributes["status"].Value);
             }
 
             return true;

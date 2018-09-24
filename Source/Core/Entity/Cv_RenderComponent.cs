@@ -10,7 +10,7 @@ namespace Caravel.Core.Entity
     {
         public Color Color
         {
-            get; protected set;
+            get; set;
         }
 
         public bool Visible
