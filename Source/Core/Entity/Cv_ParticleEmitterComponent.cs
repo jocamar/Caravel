@@ -82,6 +82,11 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
+        public int MaxParticles
+        {
+            get; set;
+        }
+
         public Cv_ParticleEmitterComponent()
         {
             InitialColor = Color.White;

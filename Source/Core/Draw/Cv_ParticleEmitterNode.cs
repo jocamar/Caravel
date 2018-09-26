@@ -69,10 +69,11 @@ namespace Caravel.Core.Draw
 
         internal override void VOnUpdate(float time, float elapsedTime)
         {
-
+            var component = (Cv_ParticleEmitterComponent) Component;
+            var totalParticles = (float) Math.Round((Math.Max(RandomBiasedPow(0, 3, 100, (elapsedTime*component.ParticlesPerSecond/900f)), 0) - 0.4f)*1.4f);
         }
 
-        private static double RandomBiasedPow(double min, double max, int tightness, double peak)
+        private double RandomBiasedPow(double min, double max, int tightness, double peak)
         {
             // Calculate skewed normal distribution, skewed by Math.Pow(...), specifiying where in the range the peak is
             // NOTE: This peak will yield unreliable results in the top 20% and bottom 20% of the range.
@@ -93,14 +94,14 @@ namespace Caravel.Core.Draw
             return ((total / tightness) * (max - min)) + min;
         }
 
-        private static double GetExp(double peak)
+        private double GetExp(double peak)
         {
             // Get the exponent necessary for BiasPow(...) to result in the desired peak 
             // Based on empirical trials, and curve fit to a cubic equation, using WolframAlpha
             return -11.7588 * Math.Pow(peak, 3) + 27.3205 * Math.Pow(peak, 2) - 21.2365 * peak + 6.31735;
         }
 
-        private static double BiasPow(double input, double exp)
+        private double BiasPow(double input, double exp)
         {
             return Math.Pow(input, exp);
         }
