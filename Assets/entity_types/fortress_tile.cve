@@ -8,8 +8,8 @@
   <Cv_SpriteComponent>
     <Color r="255" g="255" b="255" a="255" />
     <Visible status="True" />
-    <Texture resource="Tiles.png" />
     <Size width="80" height="80" />
+    <Texture resource="Tiles.png" />
     <Animation fx="14" fy="12" loop="False" defaultAnim="fortress_red">
       <SubAnimation startFrame="0" endFrame="0" speed="0" id="fortress_red" />
       <SubAnimation startFrame="14" endFrame="14" speed="0" id="fortress_blue" />

@@ -37,42 +37,6 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
-        public int Width
-        {
-            get
-            {
-                return m_iWidth;
-            }
-
-            set
-            {
-                m_iWidth = value;
-
-                if (SceneNode != null)
-                {
-                    SceneNode.SetRadius(-1);
-                }
-            }
-        }
-
-        public int Height
-        {
-            get
-            {
-                return m_iHeight;
-            }
-
-            set
-            {
-                m_iHeight = value;
-                
-                if (SceneNode != null)
-                {
-                    SceneNode.SetRadius(-1);
-                }
-            }
-        }
-
 		public int? Speed
         {
             get; set;
@@ -154,7 +118,6 @@ namespace Caravel.Core.Entity
         private Dictionary<string, Cv_SpriteSubAnimation> m_SubAnimations;
         private Cv_SpriteSubAnimation? m_CurrAnim;
         private int m_ActualStartFrame, m_ActualEndFrame, m_ActualSpeed;
-        private int m_iWidth, m_iHeight;
 
         public Cv_SpriteComponent()
         {
@@ -175,31 +138,6 @@ namespace Caravel.Core.Entity
             m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
             m_sDefaultAnim = "";
         }
-
-        public Cv_SpriteComponent(string resource, int width, int height, Color color,
-										int fx = 1, int fy = 1, bool loop = false, int? speed = null, int? startFrame = null, int? endFrame = null)
-        {
-            Texture = resource;
-            Width = width;
-            Height = height;
-            Color = color;
-			Speed = speed;
-			FrameX = fx;
-			FrameY = fy;
-			Looping = loop;
-			StartFrame = startFrame;
-			EndFrame = endFrame;
-			CurrentFrame = StartFrame != null ? StartFrame.Value : 0;
-			Paused = false;
-			Finished = false;
-            Visible = true;
-            Mirrored = false;
-			timeSinceLastUpdate = 0;
-            m_CurrAnim = null;
-            m_SubAnimations = new Dictionary<string, Cv_SpriteSubAnimation>();
-            m_sDefaultAnim = "";
-        }
-
 
         public void SetAnimation(string animationId, Action onEnd = null)
         {
@@ -279,13 +217,6 @@ namespace Caravel.Core.Entity
             if (textureNode != null)
             {
                 Texture = textureNode.Attributes["resource"].Value;
-            }
-
-            var sizeNode = componentData.SelectNodes("Size").Item(0);
-            if (sizeNode != null)
-            {
-                Width = int.Parse(sizeNode.Attributes["width"].Value);
-                Height = int.Parse(sizeNode.Attributes["height"].Value);
             }
 
 			var animationNode = componentData.SelectNodes("Animation").Item(0);
@@ -372,11 +303,6 @@ namespace Caravel.Core.Entity
             var textureElement = baseElement.OwnerDocument.CreateElement("Texture");
             textureElement.SetAttribute("resource", Texture);
             baseElement.AppendChild(textureElement);
-
-            var sizeElement = baseElement.OwnerDocument.CreateElement("Size");
-            sizeElement.SetAttribute("width", Width.ToString(CultureInfo.InvariantCulture));
-            sizeElement.SetAttribute("height", Height.ToString(CultureInfo.InvariantCulture));
-            baseElement.AppendChild(sizeElement);
 
             var animationElement = baseElement.OwnerDocument.CreateElement("Animation");
             animationElement.SetAttribute("fx", FrameX.ToString(CultureInfo.InvariantCulture));

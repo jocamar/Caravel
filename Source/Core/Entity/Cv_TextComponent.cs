@@ -19,42 +19,6 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
-        public int Width
-        {
-            get
-            {
-                return m_iWidth;
-            }
-
-            set
-            {
-                m_iWidth = value;
-
-                if (SceneNode != null)
-                {
-                    SceneNode.SetRadius(-1);
-                }
-            }
-        }
-
-        public int Height
-        {
-            get
-            {
-                return m_iHeight;
-            }
-
-            set
-            {
-                m_iHeight = value;
-                
-                if (SceneNode != null)
-                {
-                    SceneNode.SetRadius(-1);
-                }
-            }
-        }
-
         public Cv_TextAlign HorizontalAlignment
         {
             get; set;
@@ -72,11 +36,6 @@ namespace Caravel.Core.Entity
             var fontElement = baseElement.OwnerDocument.CreateElement("Font");
             fontElement.SetAttribute("resource", FontResource);
             baseElement.AppendChild(fontElement);
-
-            var sizeElement = baseElement.OwnerDocument.CreateElement("Size");
-            sizeElement.SetAttribute("width", Width.ToString(CultureInfo.InvariantCulture));
-            sizeElement.SetAttribute("height", Height.ToString(CultureInfo.InvariantCulture));
-            baseElement.AppendChild(sizeElement);
 
             var textElement = baseElement.OwnerDocument.CreateElement("Text");
             textElement.SetAttribute("text", Text);
@@ -102,13 +61,6 @@ namespace Caravel.Core.Entity
             if (fontNode != null)
             {
                 FontResource = fontNode.Attributes["resource"].Value;
-            }
-
-            var sizeNode = componentData.SelectNodes("Size").Item(0);
-            if (sizeNode != null)
-            {
-                Width = int.Parse(sizeNode.Attributes["width"].Value);
-                Height = int.Parse(sizeNode.Attributes["height"].Value);
             }
 
             var textNode = componentData.SelectNodes("Text").Item(0);

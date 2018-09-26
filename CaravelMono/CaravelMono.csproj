@@ -153,6 +153,9 @@
     <Compile Include="..\Source\Core\Draw\Cv_HolderNode.cs">
       <Link>Source\Core\Draw\Cv_HolderNode.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Draw\Cv_ParticleEmitterNode.cs">
+      <Link>Source\Core\Draw\Cv_ParticleEmitterNode.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Draw\Cv_LineBatch.cs">
       <Link>Source\Core\Draw\Cv_LineBatch.cs</Link>
     </Compile>
@@ -224,6 +227,9 @@
     </Compile>
     <Compile Include="..\Source\Core\Entity\Cv_TextComponent.cs">
       <Link>Source\Core\Entity\Cv_TextComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Entity\Cv_ParticleEmitterComponent.cs">
+      <Link>Source\Core\Entity\Cv_ParticleEmitterComponent.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event.cs">
       <Link>Source\Core\Events\Cv_Event.cs</Link>

@@ -8,8 +8,8 @@
   <Cv_SpriteComponent>
     <Color r="255" g="255" b="255" a="255" />
     <Visible status="True" />
-    <Texture resource="Tiles.png" />
     <Size width="80" height="80" />
+    <Texture resource="Tiles.png" />
     <Animation fx="14" fy="12" loop="True" defaultAnim="village_red">
       <SubAnimation startFrame="1" endFrame="4" speed="8" id="village_red" />
       <SubAnimation startFrame="15" endFrame="18" speed="8" id="village_blue" />

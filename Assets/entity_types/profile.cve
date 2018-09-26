@@ -16,8 +16,8 @@
   <Cv_SpriteComponent>
     <Color r="255" g="255" b="255" a="255" />
     <Visible status="True" />
-    <Texture resource="profile.png" />
     <Size width="250" height="250" />
+    <Texture resource="profile.png" />
     <Animation fx="1" fy="1" loop="False" />
     <Mirrored status="False" />
     <OnEndScript resource="" />

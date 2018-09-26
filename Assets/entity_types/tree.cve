@@ -7,9 +7,9 @@
   </Cv_TransformComponent>
   <Cv_SpriteComponent>
     <Color r="255" g="255" b="255" a="255" />
+    <Size width="200" height="200" />
     <Visible status="True" />
     <Texture resource="tree.png" />
-    <Size width="200" height="200" />
     <Animation fx="1" fy="1" loop="False" />
     <Mirrored status="False" />
     <OnEndScript resource="" />

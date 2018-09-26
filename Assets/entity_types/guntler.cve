@@ -8,8 +8,8 @@
   <Cv_SpriteComponent>
     <Color r="255" g="255" b="255" a="255" />
     <Visible status="True" />
-    <Texture resource="sky.jpg" />
     <Size width="250" height="250" />
+    <Texture resource="sky.jpg" />
     <Animation fx="1" fy="1" loop="True" />
     <Mirrored status="False" />
     <OnEndScript resource="" />

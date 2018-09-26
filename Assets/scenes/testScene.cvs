@@ -42,10 +42,10 @@
         <AutoPlay status="False" />
       </Cv_SoundEmitterComponent>
       <Cv_TextComponent>
-        <Visible status="true" />
         <Color r="255" g="255" b="255" />
-        <Font resource="FramerateCounterFont" />
+        <Visible status="true" />
         <Size width="100" height="100" />
+        <Font resource="FramerateCounterFont" />
         <Text text="Test" />
         <HorizontalAlignment value="Left" />
         <VerticalAlignment value="Center" />

@@ -8,8 +8,8 @@
   <Cv_SpriteComponent>
     <Color r="255" g="255" b="255" a="170" />
     <Visible status="True" />
-    <Texture resource="zombie.png" />
     <Size width="102" height="148" />
+    <Texture resource="zombie.png" />
     <Animation fx="6" fy="1" loop="True" defaultAnim="walking">
       <SubAnimation id="walking" speed="15" startFrame="0" endFrame="5" />
       <SubAnimation id="running" speed="30" startFrame="0" endFrame="5" />

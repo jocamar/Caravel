@@ -815,8 +815,8 @@
       <Cv_SpriteComponent>
         <Color r="255" g="255" b="255" a="255" />
         <Visible status="True" />
-        <Texture resource="FootTrooper.png" />
         <Size width="80" height="80" />
+        <Texture resource="FootTrooper.png" />
         <Animation fx="16" fy="9" loop="True" defaultAnim="Run_Side">
           <SubAnimation id="Idle" speed="5" startFrame="0" endFrame="3" />
           <SubAnimation id="Run_Side" speed="20" startFrame="16" endFrame="19" />
@@ -826,7 +826,7 @@
       </Cv_SpriteComponent>
       <Cv_TransformAnimationComponent>
         <TransformAnimation resource="transformAnim.xml" />
-        <OnEndScript resource="transformAnim.xml" />
+        <OnEndScript resource="" />
         <Paused status="False" />
         <Looping status="True" />
         <ResetOnEnd status="False" />
