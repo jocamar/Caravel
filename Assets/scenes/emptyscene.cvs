@@ -827,7 +827,7 @@
       <Cv_TransformAnimationComponent>
         <TransformAnimation resource="transformAnim.xml" />
         <OnEndScript resource="" />
-        <Paused status="True" />
+        <Paused status="False" />
         <Looping status="True" />
         <ResetOnEnd status="False" />
       </Cv_TransformAnimationComponent>
@@ -840,8 +840,8 @@
         <EmitterVariation x="0" y="50" />
         <Gravity x="0" y="-100" />
         <ParticlesPerSecond value="100" />
-        <ParticleLifetime value="1000" />
-        <MaxParticles value="100" />
+        <ParticleLifetime value="3000" />
+        <MaxParticles value="1000" />
         <FinalColor r="127" g="127" b="127" a="0" />
         <ColorEaseBias value="0.5" />
         <InitialParticleScale x="0.1" y="0.1" />

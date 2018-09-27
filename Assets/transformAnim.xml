@@ -1,5 +1,5 @@
 <TransformAnim>
-    <KeyFrame x="80" y="0" scaleX="1" scaleY="2" rotation="2" alpha="0.5" time="500" />
-    <KeyFrame x="80" y="-80" scaleX="2" scaleY="1" rotation="0" alpha="1" time="500" />
-    <KeyFrame x="0" y="0" scaleX="1" scaleY="1" rotation="6.28" alpha="1" time="1000" />
+    <KeyFrame x="80" y="0" scaleX="1" scaleY="2" rotation="2" alpha="0.5" time="5000" />
+    <KeyFrame x="80" y="-80" scaleX="2" scaleY="1" rotation="0" alpha="1" time="5000" />
+    <KeyFrame x="0" y="0" scaleX="1" scaleY="1" rotation="6.28" alpha="1" time="10000" />
 </TransformAnim>

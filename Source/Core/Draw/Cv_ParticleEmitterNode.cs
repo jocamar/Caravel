@@ -194,6 +194,9 @@ namespace Caravel.Core.Draw
                 var variation_y = m_Random.Next((int) -particleComponent.EmitterVariation.Y, (int) particleComponent.EmitterVariation.Y);
                 particle.Velocity = (particleComponent.EmitterVelocity + new Vector2(variation_x, variation_y)) * worldTransform.Scale;
 
+				Matrix rot = Matrix.CreateRotationZ(worldTransform.Rotation);
+				particle.Velocity = Vector2.Transform(particle.Velocity, rot);
+
                 particle.IsAlive = true;
 
                 var pos_x = worldTransform.Position.X + m_Random.Next(0, (int)(particleComponent.Width*worldTransform.Scale.X));
