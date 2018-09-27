@@ -259,12 +259,18 @@ namespace Caravel.Core
 
         public void PushScreenElement(Cv_ScreenElement element)
         {
-            ScreenElements.Add(element);
+            lock (ScreenElements)
+            {
+                ScreenElements.Add(element);
+            }
         }
 
         public void RemoveScreenElement(Cv_ScreenElement element)
         {
-            ScreenElements.Remove(element);
+            lock (ScreenElements)
+            {
+                ScreenElements.Remove(element);
+            }
         }
 
         public void OnNewCameraComponent(Cv_Event eventData)
@@ -380,9 +386,12 @@ namespace Caravel.Core
         {
             //m_Console.OnUpdate(time, elapsedTime);
 
-            foreach (var se in ScreenElements)
+            lock (ScreenElements)
             {
-                se.VOnUpdate(time, elapsedTime);
+                foreach (var se in ScreenElements)
+                {
+                    se.VOnUpdate(time, elapsedTime);
+                }
             }
         }
 

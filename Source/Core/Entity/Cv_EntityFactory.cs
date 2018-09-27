@@ -28,6 +28,7 @@ namespace Caravel.Core.Entity
             ComponentFactory.Register<Cv_ClickableComponent>(Cv_EntityComponent.GetID<Cv_ClickableComponent>());
             ComponentFactory.Register<Cv_TextComponent>(Cv_EntityComponent.GetID<Cv_TextComponent>());
             ComponentFactory.Register<Cv_TransformAnimationComponent>(Cv_EntityComponent.GetID<Cv_TransformAnimationComponent>());
+            ComponentFactory.Register<Cv_ParticleEmitterComponent>(Cv_EntityComponent.GetID<Cv_ParticleEmitterComponent>());
         }
 
         protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,

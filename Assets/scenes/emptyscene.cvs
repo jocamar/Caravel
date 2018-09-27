@@ -827,10 +827,30 @@
       <Cv_TransformAnimationComponent>
         <TransformAnimation resource="transformAnim.xml" />
         <OnEndScript resource="" />
-        <Paused status="False" />
+        <Paused status="True" />
         <Looping status="True" />
         <ResetOnEnd status="False" />
       </Cv_TransformAnimationComponent>
+      <Cv_ParticleEmitterComponent>
+        <Color r="255" g="255" b="255" a="255" />
+        <Visible status="True" />
+        <Size width="80" height="80" />
+        <Texture resource="smoke.png" />
+        <EmitterVelocity x="-200" y="0" />
+        <EmitterVariation x="0" y="50" />
+        <Gravity x="0" y="-100" />
+        <ParticlesPerSecond value="100" />
+        <ParticleLifetime value="1000" />
+        <MaxParticles value="100" />
+        <FinalColor r="127" g="127" b="127" a="0" />
+        <ColorEaseBias value="0.5" />
+        <InitialParticleScale x="0.1" y="0.1" />
+        <FinalParticleScale x="0.5" y="0.5" />
+        <ScaleEaseBias value="0.5" />
+        <InitialParticleRotation value="0" />
+        <FinalParticleRotation value="3.14" />
+        <RotationEaseBias value="0.5" />
+      </Cv_ParticleEmitterComponent>
     </Entity>
   </StaticEntities>
   <Script preLoad="" postLoad="" />
