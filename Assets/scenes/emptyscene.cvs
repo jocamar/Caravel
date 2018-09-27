@@ -808,7 +808,7 @@
     <Entity name="soldier" type="" visible="True">
       <Cv_TransformComponent>
         <Position x="-40" y="-40" z="1" />
-        <Rotation radians="0" />
+        <Rotation radians="5.586333" />
         <Scale x="1" y="1" />
         <Origin x="0.5" y="0.5" />
       </Cv_TransformComponent>
@@ -832,20 +832,20 @@
         <ResetOnEnd status="False" />
       </Cv_TransformAnimationComponent>
       <Cv_ParticleEmitterComponent>
-        <Color r="255" g="255" b="255" a="255" />
+        <Color r="238" g="74" b="51" a="255" />
         <Visible status="True" />
-        <Size width="80" height="80" />
+        <Size width="40" height="40" />
         <Texture resource="smoke.png" />
         <EmitterVelocity x="-200" y="0" />
         <EmitterVariation x="0" y="50" />
-        <Gravity x="0" y="-100" />
+        <Gravity x="0" y="-200" />
         <ParticlesPerSecond value="100" />
-        <ParticleLifetime value="3000" />
+        <ParticleLifetime value="2000" />
         <MaxParticles value="1000" />
-        <FinalColor r="127" g="127" b="127" a="0" />
-        <ColorEaseBias value="0.5" />
+        <FinalColor r="255" g="128" b="64" a="0" />
+        <ColorEaseBias value="0.7" />
         <InitialParticleScale x="0.1" y="0.1" />
-        <FinalParticleScale x="0.5" y="0.5" />
+        <FinalParticleScale x="0.3" y="0.3" />
         <ScaleEaseBias value="0.5" />
         <InitialParticleRotation value="0" />
         <FinalParticleRotation value="3.14" />

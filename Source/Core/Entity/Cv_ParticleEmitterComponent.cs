@@ -237,7 +237,75 @@ namespace Caravel.Core.Entity
 
         protected override XmlElement VCreateInheritedElement(XmlElement baseElement)
         {
-            throw new System.NotImplementedException();
+            var textureElement = baseElement.OwnerDocument.CreateElement("Texture");
+            textureElement.SetAttribute("resource", Texture);
+            baseElement.AppendChild(textureElement);
+
+            var velocityElement = baseElement.OwnerDocument.CreateElement("EmitterVelocity");
+            velocityElement.SetAttribute("x", EmitterVelocity.X.ToString(CultureInfo.InvariantCulture));
+            velocityElement.SetAttribute("y", EmitterVelocity.Y.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(velocityElement);
+
+            var variationElement = baseElement.OwnerDocument.CreateElement("EmitterVariation");
+            variationElement.SetAttribute("x", EmitterVariation.X.ToString(CultureInfo.InvariantCulture));
+            variationElement.SetAttribute("y", EmitterVariation.Y.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(variationElement);
+
+            var gravityElement = baseElement.OwnerDocument.CreateElement("Gravity");
+            gravityElement.SetAttribute("x", Gravity.X.ToString(CultureInfo.InvariantCulture));
+            gravityElement.SetAttribute("y", Gravity.Y.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(gravityElement);
+
+            var particlesPerSecondElement = baseElement.OwnerDocument.CreateElement("ParticlesPerSecond");
+            particlesPerSecondElement.SetAttribute("value", ParticlesPerSecond.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(particlesPerSecondElement);
+
+            var particlesLifetimeElement = baseElement.OwnerDocument.CreateElement("ParticleLifetime");
+            particlesLifetimeElement.SetAttribute("value", ParticleLifeTime.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(particlesLifetimeElement);
+
+            var maxParticlesElement = baseElement.OwnerDocument.CreateElement("MaxParticles");
+            maxParticlesElement.SetAttribute("value", MaxParticles.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(maxParticlesElement);
+
+            XmlElement finalColorElement = baseElement.OwnerDocument.CreateElement("FinalColor");
+            finalColorElement.SetAttribute("r", FinalColor.R.ToString(CultureInfo.InvariantCulture));
+            finalColorElement.SetAttribute("g", FinalColor.G.ToString(CultureInfo.InvariantCulture));
+            finalColorElement.SetAttribute("b", FinalColor.B.ToString(CultureInfo.InvariantCulture));
+            finalColorElement.SetAttribute("a", FinalColor.A.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(finalColorElement);
+
+            var colorEaseBiasElement = baseElement.OwnerDocument.CreateElement("ColorEaseBias");
+            colorEaseBiasElement.SetAttribute("value", ColorChangePoint.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(colorEaseBiasElement);
+
+            var initialScaleElement = baseElement.OwnerDocument.CreateElement("InitialParticleScale");
+            initialScaleElement.SetAttribute("x", InitialScale.X.ToString(CultureInfo.InvariantCulture));
+            initialScaleElement.SetAttribute("y", InitialScale.Y.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(initialScaleElement);
+
+            var finalScaleElement = baseElement.OwnerDocument.CreateElement("FinalParticleScale");
+            finalScaleElement.SetAttribute("x", FinalScale.X.ToString(CultureInfo.InvariantCulture));
+            finalScaleElement.SetAttribute("y", FinalScale.Y.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(finalScaleElement);
+
+            var scaleEaseBiasElement = baseElement.OwnerDocument.CreateElement("ScaleEaseBias");
+            scaleEaseBiasElement.SetAttribute("value", ScaleChangePoint.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(scaleEaseBiasElement);
+
+            var initialRotationElement = baseElement.OwnerDocument.CreateElement("InitialParticleRotation");
+            initialRotationElement.SetAttribute("value", InitialRotation.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(initialRotationElement);
+
+            var finalRotationElement = baseElement.OwnerDocument.CreateElement("FinalParticleRotation");
+            finalRotationElement.SetAttribute("value", FinalRotation.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(finalRotationElement);
+
+            var rotationEaseBiasElement = baseElement.OwnerDocument.CreateElement("RotationEaseBias");
+            rotationEaseBiasElement.SetAttribute("value", RotationChangePoint.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(rotationEaseBiasElement);
+
+            return baseElement;
         }
 
         protected internal override void VPostLoad()
