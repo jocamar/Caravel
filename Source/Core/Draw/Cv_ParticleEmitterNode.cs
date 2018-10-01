@@ -35,7 +35,7 @@ namespace Caravel.Core.Draw
             m_Particles = new LinkedList<Cv_Particle>();
 
             var particleComponent = (Cv_ParticleEmitterComponent) Component;
-            for (var i = 0; i < particleComponent.MaxParticles && i < MAX_PARTICLES; i++)
+            for (var i = 0; i < MAX_PARTICLES; i++)
             {
                 m_Particles.AddFirst(new Cv_Particle());
             }
@@ -55,11 +55,12 @@ namespace Caravel.Core.Draw
                 var originFactor = (float) Math.Max(originFactorX, originFactorY);
 
                 var particleComponent = (Cv_ParticleEmitterComponent) Component;
-                var particleMaxTravel = ((particleComponent.EmitterVelocity + particleComponent.Gravity*particleComponent.ParticleLifeTime) * particleComponent.ParticleLifeTime);
+                var particleMaxTravel = ((particleComponent.EmitterVelocity.Length() + particleComponent.Gravity.Length()*particleComponent.ParticleLifeTime/1000) * particleComponent.ParticleLifeTime/1000);
+                particleMaxTravel *= 1.5f;
 
                 var comp = ((Cv_ParticleEmitterComponent) Component);
 
-                Properties.Radius = (float) Math.Sqrt((comp.Width+particleMaxTravel.Length())*(comp.Width+particleMaxTravel.Length()) + comp.Height*comp.Height) * originFactor;
+                Properties.Radius = (float) Math.Sqrt((comp.Width+particleMaxTravel)*(comp.Width+particleMaxTravel) + comp.Height*comp.Height) * originFactor;
                 Properties.Radius *= Math.Max(transf.Scale.X, transf.Scale.Y);
             }
 
@@ -214,43 +215,21 @@ namespace Caravel.Core.Draw
             }
         }
 
-        private double RandomBiasedPow(double min, double max, int tightness, double peak)
+        private float RandomGaussian(float mean, float stdDev)
         {
-            // Calculate skewed normal distribution, skewed by Math.Pow(...), specifiying where in the range the peak is
-            // NOTE: This peak will yield unreliable results in the top 20% and bottom 20% of the range.
-            //       To peak at extreme ends of the range, consider using a different bias function
-
-            double total = 0.0;
-            double scaledPeak = peak / (max - min) + min;
-
-            double exp = GetExp(scaledPeak);
-
-            for (int i = 1; i <= tightness; i++)
-            {
-                // Bias the random number to one side or another, but keep in the range of 0 - 1
-                // The exp parameter controls how far to bias the peak from normal distribution
-                total += BiasPow(m_Random.NextDouble(), exp);
-            }
-
-            return ((total / tightness) * (max - min)) + min;
-        }
-
-        private double GetExp(double peak)
-        {
-            // Get the exponent necessary for BiasPow(...) to result in the desired peak 
-            // Based on empirical trials, and curve fit to a cubic equation, using WolframAlpha
-            return -11.7588 * Math.Pow(peak, 3) + 27.3205 * Math.Pow(peak, 2) - 21.2365 * peak + 6.31735;
-        }
-
-        private double BiasPow(double input, double exp)
-        {
-            return Math.Pow(input, exp);
+            double u1 = 1.0-m_Random.NextDouble(); //uniform(0,1] random doubles
+            double u2 = 1.0-m_Random.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                         Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+            double randNormal =
+                         mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
+            return (float) randNormal;
         }
 
         private int GetNumParticlesToGenerate(float elapsedTime)
         {
             var component = (Cv_ParticleEmitterComponent) Component;
-            var totalParticles = (int) Math.Round((Math.Max(RandomBiasedPow(0, 3, 100, (elapsedTime*component.ParticlesPerSecond/900f)), 0) - 0.4f)*1.4f);
+            var totalParticles = (int) Math.Max(Math.Round(RandomGaussian(component.ParticlesPerSecond * elapsedTime / 1000f, 0.25f)), 0);
 
             return totalParticles;
         }

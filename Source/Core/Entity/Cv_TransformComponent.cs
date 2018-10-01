@@ -108,6 +108,14 @@ namespace Caravel.Core.Entity
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
+        public void ApplyVelocity(Vector2 velocity, object caller = null)
+        {
+            m_OldTransform = Transform;
+            Position = Position + new Vector3(velocity, 0);
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Position, Transform.Scale, Transform.Origin, Transform.Rotation, (caller != null ? caller : this));
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+        }
+
         public void SetScale(Vector2 value, object caller = null)
         {
             m_OldTransform = Transform;
@@ -116,11 +124,27 @@ namespace Caravel.Core.Entity
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
+        public void ApplyScale(Vector2 scale, object caller = null)
+        {
+            m_OldTransform = Transform;
+            Scale = Scale * scale;
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Scale, Transform.Origin, Transform.Rotation, (caller != null ? caller : this));
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+        }
+
         public void SetRotation(float value, object caller = null)
         {
             m_OldTransform = Transform;
             Rotation = value;
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, value, (caller != null ? caller : this));
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+        }
+
+        public void ApplyRotation(float rotation, object caller = null)
+        {
+            m_OldTransform = Transform;
+            Rotation += rotation;
+            var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, Rotation, (caller != null ? caller : this));
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 

@@ -331,22 +331,6 @@ namespace Caravel.Core.Draw
             m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
         }
 
-        public void Draw(Texture2D texture, Vector2? position, int z, Rectangle? destinationRectangle, Rectangle? sourceRectangle,
-                                            Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects)
-        {
-            var currSubLayer = m_iCurrSubLayer / (MaxLayers * NUM_SUBLAYERS);
-            m_SpriteBatch.Draw(texture, position,
-                                        destinationRectangle,
-                                        sourceRectangle,
-                                        origin,
-                                        rotation,
-                                        scale,
-                                        color,
-                                        effects,
-                                        ((float) z / MaxLayers) + currSubLayer);
-            m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
-        }
-
         public Vector2 ScaleMouseToScreenCoordinates(Vector2 screenPosition)
         {
             var realX = screenPosition.X - Viewport.X;

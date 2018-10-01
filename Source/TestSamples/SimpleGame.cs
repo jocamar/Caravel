@@ -48,7 +48,7 @@ namespace Caravel.TestSamples
             pv.DebugDrawFPS = true;
 
             //pv2 = (Cv_PlayerView) gvs[1];
-            //pv2.DebugDrawPhysicsShapes = false;
+            pv.DebugDrawPhysicsShapes = true;
 
             return gvs;
         }
@@ -76,14 +76,10 @@ namespace Caravel.TestSamples
 
         protected internal override bool VLoadGame()
         {
-            var loadProcess = new Cv_LoadSceneProcess("scenes/emptyscene.cvs", "Default");
+            var loadProcess = new Cv_LoadSceneProcess("scenes/testScene.cvs", "Default");
             ProcessManager.AttachProcess(loadProcess);
 
-           /* guntler = Logic.GetEntity("guntler");
-            guybrush = Logic.GetEntity("guybrush");
-            profile = Logic.GetEntity("profile");
-
-            pv2.Camera = Logic.GetEntity("camera2").GetComponent<Cv_CameraComponent>().CameraNode;
+            /*pv2.Camera = Logic.GetEntity("camera2").GetComponent<Cv_CameraComponent>().CameraNode;
 
             pv.PrintScene();
             pv2.PrintScene();*/
@@ -93,6 +89,10 @@ namespace Caravel.TestSamples
         private void OnSceneLoaded(Cv_Event evtData)
         {
             CameraEntity = Logic.GetEntity("camera");
+
+            guntler = Logic.GetEntity("guntler");
+            guybrush = Logic.GetEntity("guybrush");
+            profile = Logic.GetEntity("profile");
         }
     }
 }

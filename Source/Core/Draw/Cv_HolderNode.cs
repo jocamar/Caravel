@@ -103,7 +103,7 @@ namespace Caravel.Core.Draw
                                                 (int)(pos.Y - radius), 
                                                 (int)(radius * 2), 
                                                 (int)(radius * 2));
-                renderer.Draw(m_DebugCircleTex, r2, Color.Blue);
+                renderer.Draw(m_DebugCircleTex, r2, null, Color.Blue, 0, Vector2.Zero, SpriteEffects.None, pos.Z);
             }
         }
 

@@ -40,33 +40,76 @@ namespace Caravel.TestSamples
                 return;
             }
             
-           // var guntlerTransf = simpleGame.guntler.GetComponent<Cv_TransformComponent>();
-           // guntlerTransf.SetRotation(guntlerTransf.Rotation + (elapsedTime / 1000));
+           Cv_TransformComponent guntlerTransf = null;
+           if (simpleGame.guntler != null) 
+           {
+                guntlerTransf = simpleGame.guntler.GetComponent<Cv_TransformComponent>();
+                guntlerTransf.ApplyRotation(elapsedTime / 1000);
+           }
 
             var camTransf = simpleGame.CameraEntity.GetComponent<Cv_TransformComponent>();
             var camSettings = simpleGame.CameraEntity.GetComponent<Cv_CameraComponent>();
 
-           // var profileTransf = simpleGame.profile.GetComponent<Cv_TransformComponent>();
-           // var profileRigidBody = simpleGame.profile.GetComponent<Cv_RigidBodyComponent>();
-           // var profileSprite = simpleGame.profile.GetComponent<Cv_SpriteComponent>();
+           Cv_TransformComponent profileTransf = null; 
+           if (simpleGame.profile != null)
+           {
+               profileTransf = simpleGame.profile.GetComponent<Cv_TransformComponent>();
+               var profileRigidBody = simpleGame.profile.GetComponent<Cv_RigidBodyComponent>();
+               var profileSprite = simpleGame.profile.GetComponent<Cv_SpriteComponent>();
+
+               if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                {
+                    profileRigidBody.Impulse = new Vector3(-500,0,0);
+                    //profileTransf.ApplyVelocity(new Vector2(-5,0));
+                }
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                {
+                    profileRigidBody.Impulse += new Vector3(500, 0, 0);
+                    //profileTransf.Position += new Vector3(5,0,0);
+                }
+
+                if (Caravel.InputManager.CommandActivated("fire", PlayerIndex.One))
+                {
+                    if (profileSprite.Color.A <= 0)
+                    {
+                        profileSprite.FadeTo(255, 1000);
+                    }
+                    else
+                    {
+                        profileSprite.FadeTo(0, 1000);
+                    }
+                }
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                {
+                    profileTransf.ApplyRotation(elapsedTime / 1000);
+                }
+                
+                if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                {
+                    profileTransf.ApplyRotation(-(elapsedTime / 1000));
+                }
+           }
+
             if (Caravel.InputManager.CommandActive("moveLeft", PlayerIndex.One))
             {
-                camTransf.SetPosition(camTransf.Position + new Vector3(-5,0,0));
+                camTransf.ApplyVelocity(new Vector2(-5,0));
             }
             
             if (Caravel.InputManager.CommandActive("moveRight", PlayerIndex.One))
             {
-                camTransf.SetPosition(camTransf.Position + new Vector3(5, 0, 0));
+                camTransf.ApplyVelocity(new Vector2(5, 0));
             }
 
             if (Caravel.InputManager.CommandActive("jump", PlayerIndex.One))
             {
-                camTransf.SetPosition(camTransf.Position + new Vector3(0,-5, 0));
+                camTransf.ApplyVelocity(new Vector2(0,-5));
             }
 
             if (Caravel.InputManager.CommandActive("duck", PlayerIndex.One))
             {
-                camTransf.SetPosition(camTransf.Position + new Vector3(0, 5, 0));
+                camTransf.ApplyVelocity(new Vector2(0, 5));
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
@@ -79,66 +122,35 @@ namespace Caravel.TestSamples
                 camSettings.Zoom -= 0.01f;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (simpleGame.guybrush != null)
             {
-               // var instance = Caravel.SoundManager.FadeInSound("hit.wav", simpleGame.guybrush, 20000, true);
-              //  var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
-              //  var anim = guybrushSprite.CurrentAnimation == "running" ? "walking" : "running";
-              //  guybrushSprite.SetAnimation(anim);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.P))
-            {
-                Caravel.SoundManager.FadeOutSound("hit.wav", 20000);
-              //  var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
-              //  guybrushSprite.Paused = !guybrushSprite.Paused;
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.O))
-            {
-              /*  var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
-                if (guybrushSprite.Speed != null)
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
-                    guybrushSprite.Speed = null;
+                    var instance = Caravel.SoundManager.FadeInSound("hit.wav", simpleGame.guybrush, 20000, true);
+                    var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
+                    var anim = guybrushSprite.CurrentAnimation == "running" ? "walking" : "running";
+                    guybrushSprite.SetAnimation(anim);
                 }
-                else
-                {
-                    guybrushSprite.Speed = 0;
-                }*/
-            }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-               // profileRigidBody.Impulse = new Vector3(-500,0,0);
-                //profileTransf.Position += new Vector3(-5,0,0);
-            }
-            
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                //profileRigidBody.Impulse += new Vector3(500, 0, 0);
-                //profileTransf.Position += new Vector3(5,0,0);
-            }
-
-            if (Caravel.InputManager.CommandActivated("fire", PlayerIndex.One))
-            {
-               /* if (profileSprite.Color.A <= 0)
+                if (Keyboard.GetState().IsKeyDown(Keys.P))
                 {
-                    profileSprite.FadeTo(255, 1000);
+                    Caravel.SoundManager.FadeOutSound("hit.wav", 20000);
+                    var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
+                    guybrushSprite.Paused = !guybrushSprite.Paused;
                 }
-                else
-                {
-                    profileSprite.FadeTo(0, 1000);
-                }*/
-            }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
-            {
-                //profileTransf.SetRotation(profileTransf.Rotation + (elapsedTime / 1000));
-            }
-            
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-                //profileTransf.SetRotation(profileTransf.Rotation - (elapsedTime / 1000));
+                if (Keyboard.GetState().IsKeyDown(Keys.O))
+                {
+                    var guybrushSprite = simpleGame.guybrush.GetComponent<Cv_SpriteComponent>();
+                    if (guybrushSprite.Speed != null)
+                    {
+                        guybrushSprite.Speed = null;
+                    }
+                    else
+                    {
+                        guybrushSprite.Speed = 0;
+                    }
+                }
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.R))

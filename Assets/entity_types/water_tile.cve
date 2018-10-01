@@ -1,0 +1,19 @@
+﻿<EntityType type="water" resource="entity_types\water_tile.cve">
+  <Cv_TransformComponent>
+    <Position x="-600" y="360" z="0" />
+    <Rotation radians="0" />
+    <Scale x="1" y="1" />
+    <Origin x="0.5" y="0.5" />
+  </Cv_TransformComponent>
+  <Cv_SpriteComponent>
+    <Color r="255" g="255" b="255" a="255" />
+    <Visible status="True" />
+    <Size width="80" height="80" />
+    <Texture resource="Tiles.png" />
+    <Animation fx="14" fy="12" loop="False" defaultAnim="water">
+      <SubAnimation startFrame="94" endFrame="97" speed="8" id="water" />
+    </Animation>
+    <Mirrored status="False" />
+    <OnEndScript resource="" />
+  </Cv_SpriteComponent>
+</EntityType>

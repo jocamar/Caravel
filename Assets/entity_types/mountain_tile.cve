@@ -16,4 +16,19 @@
     <Mirrored status="False" />
     <OnEndScript resource="" />
   </Cv_SpriteComponent>
+  <Cv_RigidBodyComponent>
+    <Material material="Rock" />
+    <Physics fixedRotation="False" gravityScale="0" maxVelocity="0" maxAngVelocity="0" />
+    <Body linearDamping="0" angularDamping="0" followEntityRotation="False" type="static" />
+    <CollisionShapes>
+      <Circle anchorX="0" anchorY="0" isBullet="False" material="Wood" radius="100" />
+    </CollisionShapes>
+  </Cv_RigidBodyComponent>
+  <Cv_ScriptComponent>
+    <InitScript resource="" />
+    <Script resource="" />
+    <Interval value="0" />
+    <ExecuteOnce status="True" />
+    <Paused status="True" />
+  </Cv_ScriptComponent>
 </EntityType>
