@@ -24,7 +24,7 @@ namespace Caravel.TestSamples
 		{
             var newCollisionEvt = (Cv_Event_NewCollision) eventData;
             var camTransf = simpleGame.CameraEntity.GetComponent<Cv_TransformComponent>();
-            var collisionEntity = newCollisionEvt.ShapeA.Owner;
+            var collisionEntity = newCollisionEvt.CollidingShape.Owner;
             var collisionEntitySnd = collisionEntity.GetComponent<Cv_SoundEmitterComponent>();
 
             if (collisionEntitySnd != null)

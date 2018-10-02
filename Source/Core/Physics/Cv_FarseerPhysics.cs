@@ -56,6 +56,8 @@ namespace Caravel.Core.Physics
         private Dictionary<string, Cv_PhysicsMaterial> m_MaterialsTable;
 		private List<Cv_Entity> m_RaycastEntities;
 		private Cv_RayCastType m_RaycastType;
+        private List<Tuple<Cv_CollisionShape, Cv_CollisionShape>> m_CollisionPairs;
+        private List<Tuple<Cv_CollisionShape, Cv_CollisionShape>> m_SeparationPairs;
 
         private readonly World m_World;
 
@@ -70,6 +72,8 @@ namespace Caravel.Core.Physics
             m_PhysicsEntitiesToUpdate = new List<Cv_PhysicsEntity>();
             m_MaterialsTable = new Dictionary<string, Cv_PhysicsMaterial>();
 			m_RaycastEntities = new List<Cv_Entity>();
+            m_CollisionPairs = new List<Tuple<Cv_CollisionShape, Cv_CollisionShape>>();
+            m_SeparationPairs = new List<Tuple<Cv_CollisionShape, Cv_CollisionShape>>();
 
             Cv_EventManager.Instance.AddListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
             Cv_EventManager.Instance.AddListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
@@ -369,6 +373,8 @@ namespace Caravel.Core.Physics
         {
             SyncBodiesToEntities();
             m_World.Step(Math.Min(elapsedTime * 0.001f, (1f / 30f)));
+            m_CollisionPairs.Clear();
+            m_SeparationPairs.Clear();
         }
 
         public override void VRemoveEntity(Cv_EntityID id)
@@ -750,7 +756,6 @@ namespace Caravel.Core.Physics
 
         private bool OnBeforeCollision(Fixture fixtureA, Fixture fixtureB)
         {
-
             return true;
         }
 
@@ -801,26 +806,15 @@ namespace Caravel.Core.Physics
                 return false;
             }
 
-            if (collidingShape.IsSensor || collidedShape.IsSensor)
+            if (collidedShape.IsSensor)
             {
-                Cv_Entity entity;
-                Cv_CollisionShape trigger;
-
-                if (collidedShape.IsSensor)
-                {
-                    trigger = collidedShape;
-                    entity = collidingShape.Owner;
-                }
-                else
-                {
-                    trigger = collidingShape;
-                    entity = collidedShape.Owner;
-                }
+                var trigger = collidedShape;
+                var entity = collidingShape.Owner;
 
                 var newEvent = new Cv_Event_EnterTrigger(entity.ID, trigger, this);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
-            else
+            else if (!collidingShape.IsSensor)
             {
                 List<Vector2> collisionPoints = new List<Vector2>();
                 Vector2 normalForce = Vector2.Zero;
@@ -839,8 +833,12 @@ namespace Caravel.Core.Physics
                 normalForce += ToOutsideVector(normalForce);
                 frictionForce += contact.Friction;
 
-                var newEvent = new Cv_Event_NewCollision(collidingShape, collidedShape, normalForce, frictionForce, collisionPoints.ToArray());
-                Cv_EventManager.Instance.QueueEvent(newEvent);
+                if (!m_CollisionPairs.Exists(cp => cp.Item1 == collidingShape && cp.Item2 == collidedShape))
+                {
+                    var newEvent = new Cv_Event_NewCollision(collidingShape, collidedShape, normalForce, frictionForce, collisionPoints.ToArray());
+                    Cv_EventManager.Instance.QueueEvent(newEvent);
+                    m_CollisionPairs.Add(new Tuple<Cv_CollisionShape, Cv_CollisionShape>(collidingShape, collidedShape));
+                }
             }
             return true;
         }
@@ -854,29 +852,22 @@ namespace Caravel.Core.Physics
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
 
-            if (collisionShapeA.IsSensor || collisionShapeB.IsSensor)
+            if (collisionShapeA.IsSensor)
             {
-                Cv_Entity entity;
-                Cv_CollisionShape trigger;
-
-                if (collisionShapeA.IsSensor)
-                {
-                    trigger = collisionShapeA;
-                    entity = collisionShapeB.Owner;
-                }
-                else
-                {
-                    trigger = collisionShapeB;
-                    entity = collisionShapeA.Owner;
-                }
+                var trigger = collisionShapeA;
+                var entity = collisionShapeB.Owner;
 
                 var newEvent = new Cv_Event_LeaveTrigger(entity.ID, trigger, this);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
-            else
+            else if (!collisionShapeB.IsSensor)
             {
-                var newEvent = new Cv_Event_NewSeparation(collisionShapeA, collisionShapeB);
-                Cv_EventManager.Instance.QueueEvent(newEvent);
+                if (!m_SeparationPairs.Exists(sp => sp.Item1 == collisionShapeB && sp.Item2 == collisionShapeA))
+                {
+                    var newEvent = new Cv_Event_NewSeparation(collisionShapeA, collisionShapeB);
+                    Cv_EventManager.Instance.QueueEvent(newEvent);
+                    m_SeparationPairs.Add(new Tuple<Cv_CollisionShape, Cv_CollisionShape>(collisionShapeA, collisionShapeB));
+                }
             }
         }
 

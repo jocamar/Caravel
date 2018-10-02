@@ -6,12 +6,12 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_NewCollision : Cv_Event
     {
-        public Cv_CollisionShape ShapeA
+        public Cv_CollisionShape CollidingShape
         {
             get; private set;
         }
 
-        public Cv_CollisionShape ShapeB
+        public Cv_CollisionShape CollidedShape
         {
             get; private set;
         }
@@ -39,11 +39,11 @@ namespace Caravel.Core.Events
             }
         }
 
-        public Cv_Event_NewCollision(Cv_CollisionShape shapeA, Cv_CollisionShape shapeB, Vector2 normalForce,
-                                        float frictionForce, Vector2[] collisionPoints, float timeStamp = 0) : base(shapeA.Owner.ID, timeStamp)
+        public Cv_Event_NewCollision(Cv_CollisionShape collidingShape, Cv_CollisionShape collidedShape, Vector2 normalForce,
+                                        float frictionForce, Vector2[] collisionPoints, float timeStamp = 0) : base(collidingShape.Owner.ID, timeStamp)
         {
-            ShapeA = shapeA;
-            ShapeB = shapeB;
+            CollidingShape = collidingShape;
+            CollidedShape = collidedShape;
             NormalForce = normalForce;
             FrictionForce = frictionForce;
             CollisionPoints = collisionPoints;

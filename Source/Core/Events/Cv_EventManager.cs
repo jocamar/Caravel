@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Caravel.Core.Scripting;
 using Caravel.Debugging;
 using static Caravel.Core.Events.Cv_Event;
 
@@ -23,6 +24,7 @@ namespace Caravel.Core.Events
         }
 
         private Dictionary<Cv_EventType, List<NewEventDelegate>> m_EventListeners;
+        private Dictionary<Cv_EventType, List<string>> m_ScriptEventListeners;
         private LinkedList<Cv_Event>[] m_EventQueues;
         private ConcurrentQueue<Cv_Event> m_RealTimeEventQueue;
         private int m_iActiveQueue = 0;
@@ -43,6 +45,7 @@ namespace Caravel.Core.Events
 
 			m_RealTimeEventQueue = new ConcurrentQueue<Cv_Event>();
             m_EventListeners = new Dictionary<Cv_EventType, List<NewEventDelegate>>();
+            m_ScriptEventListeners = new Dictionary<Cv_EventType, List<string>>();
             
             m_EventQueues = new LinkedList<Cv_Event>[NUM_QUEUES];
             for (int i = 0; i < NUM_QUEUES; i++)
@@ -83,6 +86,38 @@ namespace Caravel.Core.Events
             return true;
         }
 
+        public bool AddListener(string eventName, string onEvent)
+        {
+            Cv_Debug.Log("Events", "Attempting to add listener for event type " + eventName);
+
+            Cv_EventType eType = Cv_Event.GetType(eventName);
+
+			lock (m_ScriptEventListeners)
+			{
+				if (!m_ScriptEventListeners.ContainsKey(eType))
+				{
+					m_ScriptEventListeners[eType] = new List<string>();
+				}
+
+				var listeners = m_ScriptEventListeners[eType];
+
+				foreach (var l in listeners)
+				{
+					if (l == onEvent)
+					{
+						Cv_Debug.Warning("Attempting to double register a listener.");
+						return false;
+					}
+				}
+
+				listeners.Add(onEvent);
+			}
+
+            Cv_Debug.Log("Events", "Successfully added listener for event type " + eventName);
+
+            return true;
+        }
+
         public bool RemoveListener<EventType>(NewEventDelegate callback) where EventType : Cv_Event
         {
             Cv_Debug.Log("Events", "Attempting to remove listener from event type " + typeof(EventType).Name);
@@ -102,6 +137,30 @@ namespace Caravel.Core.Events
             if (success)
             {
                 Cv_Debug.Log("Events", "Successfully removed listener from event type " + typeof(EventType).Name);
+            }
+
+            return success;
+        }
+
+        public bool RemoveListener(string eventName, string onEvent)
+        {
+            Cv_Debug.Log("Events", "Attempting to remove listener from event type " + eventName);
+            var success = false;
+            Cv_EventType eType = Cv_Event.GetType(eventName);
+
+			lock (m_ScriptEventListeners)
+			{
+				if (m_ScriptEventListeners.ContainsKey(eType))
+				{
+					var listeners = m_ScriptEventListeners[eType];
+
+					success = listeners.Remove(onEvent);
+				}
+			}
+
+            if (success)
+            {
+                Cv_Debug.Log("Events", "Successfully removed listener from event type " + eventName);
             }
 
             return success;
@@ -130,6 +189,25 @@ namespace Caravel.Core.Events
 						}
 
 						l(newEvent);
+						processed = true;
+					}
+				}
+			}
+
+            List<string> scriptListeners;
+
+            lock (m_ScriptEventListeners)
+			{
+				if (m_ScriptEventListeners.TryGetValue(newEvent.Type, out scriptListeners))
+				{
+					foreach (var l in scriptListeners)
+					{
+						if (newEvent.WriteToLog)
+						{
+							Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
+						}
+
+						Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l, newEvent);
 						processed = true;
 					}
 				}
@@ -166,12 +244,23 @@ namespace Caravel.Core.Events
 						}
 						return true;
 					}
-					else
+				}
+
+                lock (m_ScriptEventListeners)
+				{
+					if (m_ScriptEventListeners.ContainsKey(newEvent.Type))
 					{
-						Cv_Debug.Log("Events", "Skipping event " + newEvent.VGetName() + " since there are no listeners for it.");
-						return false;
+						m_EventQueues[m_iActiveQueue].AddLast(newEvent);
+						if (newEvent.WriteToLog)
+						{
+							Cv_Debug.Log("Events", "Successfully queued event " + newEvent.VGetName());
+						}
+						return true;
 					}
 				}
+
+                Cv_Debug.Log("Events", "Skipping event " + newEvent.VGetName() + " since there are no listeners for it.");
+				return false;
             }
             else
             {
@@ -189,27 +278,22 @@ namespace Caravel.Core.Events
 
             Cv_Debug.Log("Events", "Attempting to abort event type " + typeof(EventType).Name);
 
-			lock (m_EventListeners)
-			{
-				if (m_EventListeners.ContainsKey(eType))
-				{
-					var queue = m_EventQueues[m_iActiveQueue];
+            var queue = m_EventQueues[m_iActiveQueue];
 
-					if (allOfType)
-					{
-						if ( queue.Remove(queue.First( e => e.Type == eType )) )
-						{
-							success = true;
-						}
-					}
-					else {
-						while ( queue.Remove(queue.First( e => e.Type == eType )) )
-						{
-							success = true;
-						}
-					}
-				}
-			}
+            if (allOfType)
+            {
+                if ( queue.Remove(queue.First( e => e.Type == eType )) )
+                {
+                    success = true;
+                }
+            }
+            else
+            {
+                while ( queue.Remove(queue.First( e => e.Type == eType )) )
+                {
+                    success = true;
+                }
+            }
 
             if (success)
             {
@@ -272,6 +356,24 @@ namespace Caravel.Core.Events
 							}
 							
 							l(e);
+						}
+					}
+				}
+
+                List<string> scriptListeners;
+
+                lock (m_ScriptEventListeners)
+				{
+					if (m_ScriptEventListeners.TryGetValue(e.Type, out scriptListeners))
+					{
+						foreach (var l in scriptListeners)
+						{
+							if (e.WriteToLog)
+							{
+								Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
+							}
+							
+							Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l, e);
 						}
 					}
 				}

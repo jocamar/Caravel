@@ -59,6 +59,11 @@ namespace Caravel.Core.Events
             return (Cv_EventType) typeof(Event).Name.GetHashCode();
         }
 
+        public static Cv_EventType GetType(string eventName)
+        {
+            return (Cv_EventType) eventName.GetHashCode();
+        }
+
         public abstract string VGetName();
         public abstract void GetObjectData(SerializationInfo info, StreamingContext context);
     }
