@@ -22,10 +22,10 @@ namespace Caravel
 {
     public abstract class CaravelApp : Game
     {
-#region Properties
-        public static CaravelApp Instance;
+        #region Properties
+        public static new CaravelApp Instance;
 
-		public Color BackgroundColor
+        public Color BackgroundColor
 		{
 			get; set;
 		}
@@ -169,9 +169,9 @@ namespace Caravel
 
         private Dictionary<string, string> m_TextResource;
         private Dictionary<string, string> m_TextResourceLocations;
-#endregion
-        
-#endregion
+        #endregion
+
+        #endregion
 
         public CaravelApp(int screenWidth, int screenHeight, bool allowWindowResize = false)
         {

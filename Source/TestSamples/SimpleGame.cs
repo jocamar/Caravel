@@ -45,7 +45,7 @@ namespace Caravel.TestSamples
             //gvs[1] = new Cv_PlayerView(PlayerIndex.Two, new Vector2(0.5f, 1), new Vector2(0.5f, 0));
             pv = (Cv_PlayerView) gvs[0];
             pv.DebugDrawRadius = false;
-            pv.DebugDrawFPS = true;
+            pv.DebugDrawFPS = false;
 
             //pv2 = (Cv_PlayerView) gvs[1];
             pv.DebugDrawPhysicsShapes = true;
@@ -76,7 +76,7 @@ namespace Caravel.TestSamples
 
         protected internal override bool VLoadGame()
         {
-            var loadProcess = new Cv_LoadSceneProcess("scenes/testScene.cvs", "Default");
+            var loadProcess = new Cv_LoadSceneProcess("scenes/emptyscene.cvs", "Default");
             ProcessManager.AttachProcess(loadProcess);
 
             /*pv2.Camera = Logic.GetEntity("camera2").GetComponent<Cv_CameraComponent>().CameraNode;

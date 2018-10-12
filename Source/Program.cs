@@ -8,12 +8,18 @@ namespace Caravel
     /// </summary>
     public static class Program
     {
+        static Program()
+        {
+           // AssemblyLoader.Initialize();
+        }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
+            //CaravelApp.InitializeCaravel();
             using (var app = new SimpleGame(1280, 720))
             {
                 app.Run();

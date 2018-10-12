@@ -30,7 +30,7 @@ namespace Caravel.Core.Resource
 
         public bool VLoad(string resourceFile, Stream resourceStream, out int size, Cv_ResourceBundle bundle)
         {
-			try {
+			//try {
                 var resource = Path.GetFileNameWithoutExtension(resourceFile);
                 var font = bundle.Load<SpriteFont>(resource);
 
@@ -41,13 +41,13 @@ namespace Caravel.Core.Resource
 				size = 0;
 				
 				return true;
-			}
-			catch (Exception e)
+			//}
+			/*catch (Exception e)
 			{
 				Cv_Debug.Error("Error loading font stream.\n" + e.ToString());
 				size = 0;
 				return false;
-			}
+			}*/
         }
 
         public Cv_SpriteFontData GetFontData()

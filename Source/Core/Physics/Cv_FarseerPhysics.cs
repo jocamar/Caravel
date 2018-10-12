@@ -7,13 +7,16 @@ using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Debugging;
-using FarseerPhysics.Collision.Shapes;
-using FarseerPhysics.Common;
-using FarseerPhysics.Dynamics;
-using FarseerPhysics.Dynamics.Contacts;
-using FarseerPhysics.Factories;
+using VelcroPhysics.Collision.Shapes;
+using VelcroPhysics.Dynamics;
+using VelcroPhysics.Factories;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Entity.Cv_Entity;
+using VelcroPhysics.Shared;
+using VelcroPhysics.Collision.ContactSystem;
+using VelcroPhysics.Dynamics.Solver;
+using VelcroPhysics.Collision.Filtering;
+using VelcroPhysics.Shared.Optimization;
 
 namespace Caravel.Core.Physics
 {
@@ -759,7 +762,7 @@ namespace Caravel.Core.Physics
             return true;
         }
 
-        private bool OnNewCollisionPair(Fixture fixtureA, Fixture fixtureB, Contact contact)
+        private void OnNewCollisionPair(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
@@ -803,7 +806,7 @@ namespace Caravel.Core.Physics
 
             if (!collidingShape.CollidesWithFromDirection(collidedShape.CollisionCategories, DirectionToString(collisionDirection)))
             {
-                return false;
+                //return false;
             }
 
             if (collidedShape.IsSensor)
@@ -840,14 +843,14 @@ namespace Caravel.Core.Physics
                     m_CollisionPairs.Add(new Tuple<Cv_CollisionShape, Cv_CollisionShape>(collidingShape, collidedShape));
                 }
             }
-            return true;
+            //return true;
         }
 
         private void OnAfterCollision(Fixture fixtureA, Fixture fixtureB, Contact contact, ContactVelocityConstraint impulse)
         {
         }
 
-        private void OnSeparation(Fixture fixtureA, Fixture fixtureB)
+        private void OnSeparation(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
@@ -960,7 +963,7 @@ namespace Caravel.Core.Physics
                     var oldScale = pe.PrevWorldTransform.Scale;
                     foreach (var f in pe.Shapes)
                     {
-                        if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Polygon)
+                        if (f.Value.Shape.ShapeType == VelcroPhysics.Collision.Shapes.ShapeType.Polygon)
                         {
                             PolygonShape polygon = (PolygonShape) f.Value.Shape;
 
@@ -975,7 +978,7 @@ namespace Caravel.Core.Physics
 
                             polygon.Vertices = newVerts;
                         }
-                        else if (f.Value.Shape.ShapeType == FarseerPhysics.Collision.Shapes.ShapeType.Circle)
+                        else if (f.Value.Shape.ShapeType == VelcroPhysics.Collision.Shapes.ShapeType.Circle)
                         {
                             CircleShape circle = (CircleShape) f.Value.Shape;
 
