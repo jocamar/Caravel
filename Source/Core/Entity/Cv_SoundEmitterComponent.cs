@@ -251,7 +251,7 @@ namespace Caravel.Core.Entity
             Cv_EventManager.Instance.QueueEvent(fadeEvent);
         }
 
-        protected internal override bool VInitialize(XmlElement componentData)
+        public override bool VInitialize(XmlElement componentData)
         {
             var soundNode = componentData.SelectNodes("SoundEffect").Item(0);
             if (soundNode != null)
@@ -298,11 +298,20 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override void VOnChanged()
+        public override void VOnChanged()
         {
         }
 
-        protected internal override void VOnDestroy()
+        public override void VOnDestroy()
+        {
+        }
+
+        public override bool VPostInitialize()
+        {
+            return true;
+        }
+
+        public override void VPostLoad()
         {
         }
 
@@ -313,15 +322,6 @@ namespace Caravel.Core.Entity
                 m_bPlayed = true;
                 PlaySound();
             }
-        }
-
-        protected internal override bool VPostInitialize()
-        {
-            return true;
-        }
-
-        protected internal override void VPostLoad()
-        {
         }
     }
 }

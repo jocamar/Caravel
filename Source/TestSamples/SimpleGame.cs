@@ -32,7 +32,7 @@ namespace Caravel.TestSamples
 
         protected override Cv_GamePhysics VCreateGamePhysics()
         {
-            var phys = new Cv_FarseerPhysics(this);
+            var phys = new Cv_VelcroPhysics(this);
             phys.Gravity = new Vector2(0,1);
             return phys;
         }

@@ -31,6 +31,10 @@ namespace Caravel.Core.Entity
 
         private int m_iWidth, m_iHeight;
 
+        public override void VPostLoad()
+        {
+        }
+
         protected override XmlElement VCreateInheritedElement(XmlElement baseElement)
         {
             var fontElement = baseElement.OwnerDocument.CreateElement("Font");
@@ -94,10 +98,6 @@ namespace Caravel.Core.Entity
             SceneNode.SetRadius(-1);
 
             base.VOnUpdate(elapsedTime);
-        }
-
-        protected internal override void VPostLoad()
-        {
         }
     }
 }

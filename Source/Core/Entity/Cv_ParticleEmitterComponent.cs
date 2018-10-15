@@ -107,6 +107,10 @@ namespace Caravel.Core.Entity
             ParticleLifeTime = 0;
         }
 
+        public override void VPostLoad()
+        {
+        }
+
         protected override Cv_SceneNode VCreateSceneNode()
         {
             return new Cv_ParticleEmitterNode(Owner.ID, this, Cv_Transform.Identity);
@@ -306,10 +310,6 @@ namespace Caravel.Core.Entity
             baseElement.AppendChild(rotationEaseBiasElement);
 
             return baseElement;
-        }
-
-        protected internal override void VPostLoad()
-        {
         }
     }
 }

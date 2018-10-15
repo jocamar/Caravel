@@ -13,24 +13,20 @@ namespace Caravel.Core.Entity
             return componentData;
         }
 
-        protected internal override bool VInitialize(XmlElement componentData)
+        public override bool VInitialize(XmlElement componentData)
         {
             return true;
         }
 
-        protected internal override void VOnChanged()
+        public override void VOnChanged()
         {
         }
 
-        protected internal override void VOnDestroy()
+        public override void VOnDestroy()
         {
         }
 
-        protected internal override void VOnUpdate(float elapsedTime)
-        {
-        }
-
-        protected internal override bool VPostInitialize()
+        public override bool VPostInitialize()
         {
             var playerView = CaravelApp.Instance.GetPlayerView(PlayerIndex.One);
 
@@ -38,7 +34,11 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override void VPostLoad()
+        public override void VPostLoad()
+        {
+        }
+
+        protected internal override void VOnUpdate(float elapsedTime)
         {
         }
     }

@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework;
 using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Events.Cv_EventManager;
-using static Caravel.Core.Physics.Cv_FarseerPhysics;
+using static Caravel.Core.Physics.Cv_VelcroPhysics;
 using static Caravel.Core.Physics.Cv_GamePhysics;
 using static Caravel.Core.Resource.Cv_XmlResource;
 
@@ -466,6 +466,25 @@ namespace Caravel.Core
                 component.VPostInitialize();
             }
         }
+
+        //Note(JM): Used for editor
+        #if EDITOR
+        public void AddComponent(string entityName, string componentTypeName, Cv_EntityComponent component)
+        {
+            if (component.Owner != null)
+            {
+                Cv_Debug.Error("Trying to add a component that already has an owner.");
+            }
+            
+            var entity = GetEntity(entityName);
+
+            if (entity != null)
+            {
+                entity.AddComponent(componentTypeName, component);
+                component.VPostInitialize();
+            }
+        }
+        #endif
 
         public void ChangeType(Cv_EntityID entityId, string type, string typeResource)
         {

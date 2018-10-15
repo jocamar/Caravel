@@ -20,7 +20,7 @@ using VelcroPhysics.Shared.Optimization;
 
 namespace Caravel.Core.Physics
 {
-    public class Cv_FarseerPhysics : Cv_GamePhysics
+    public class Cv_VelcroPhysics : Cv_GamePhysics
     {
         private class Cv_PhysicsEntity
         {
@@ -64,7 +64,7 @@ namespace Caravel.Core.Physics
 
         private readonly World m_World;
 
-        public Cv_FarseerPhysics(CaravelApp app)
+        public Cv_VelcroPhysics(CaravelApp app)
         {
             Caravel = app;
             m_World = new World(Vector2.Zero);
@@ -85,7 +85,7 @@ namespace Caravel.Core.Physics
             Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
         }
 
-        ~Cv_FarseerPhysics()
+        ~Cv_VelcroPhysics()
         {
             Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
             Cv_EventManager.Instance.RemoveListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);

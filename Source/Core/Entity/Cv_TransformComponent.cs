@@ -185,7 +185,7 @@ namespace Caravel.Core.Entity
             return componentData;
         }
 
-        protected internal override bool VInitialize(XmlElement componentData)
+        public override bool VInitialize(XmlElement componentData)
         {
             Cv_Debug.Assert(componentData != null, "Must have valid component data.");
 
@@ -247,22 +247,22 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override bool VPostInitialize()
+        public override bool VPostInitialize()
         {
             return true;
         }
 
-		protected internal override void VPostLoad()
+		public override void VPostLoad()
 		{
 		}
 
-        protected internal override void VOnChanged()
+        public override void VOnChanged()
         {
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, Transform.Rotation, this);
 			Cv_EventManager.Instance.QueueEvent(newEvent, true);
         }
 
-        protected internal override void VOnDestroy()
+        public override void VOnDestroy()
         {
         }
 

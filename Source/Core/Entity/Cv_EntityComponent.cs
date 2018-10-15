@@ -47,6 +47,11 @@ namespace Caravel.Core.Entity
             }
         }
 
+        public static Cv_ComponentID GetID(string componentName)
+        {
+            return (Cv_ComponentID) componentName.GetHashCode();
+        }
+
         public static string GetComponentName<ComponentType>() where ComponentType : Cv_EntityComponent
         {
             return typeof(ComponentType).Name;
@@ -59,22 +64,17 @@ namespace Caravel.Core.Entity
 
         public abstract XmlElement VToXML();
 
-        protected internal abstract bool VInitialize(XmlElement componentData);
+        public abstract bool VInitialize(XmlElement componentData);
 
-        protected internal abstract bool VPostInitialize();
+        public abstract bool VPostInitialize();
 
-		protected internal abstract void VPostLoad();
+		public abstract void VPostLoad();
+
+        public abstract void VOnChanged();
+
+        public abstract void VOnDestroy();
 
         protected internal abstract void VOnUpdate(float elapsedTime);
-
-        protected internal abstract void VOnChanged();
-
-        protected internal abstract void VOnDestroy();
-
-        internal static Cv_ComponentID GetID(string componentName)
-        {
-            return (Cv_ComponentID) componentName.GetHashCode();
-        }
 
         internal static Cv_ComponentID GetID(Type componentType)
         {

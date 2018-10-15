@@ -234,7 +234,7 @@ namespace Caravel.Core.Entity
             return rigidBodyElement;
         }
 
-        protected internal override bool VInitialize(XmlElement componentData)
+        public override bool VInitialize(XmlElement componentData)
         {
             XmlElement materialNode = (XmlElement) componentData.SelectSingleNode("Material");
             if (materialNode != null)
@@ -372,7 +372,7 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override void VOnChanged()
+        public override void VOnChanged()
         {
             Cv_Event newEvt = new Cv_Event_ClearCollisionShapes(Owner.ID, this);
             Cv_EventManager.Instance.QueueEvent(newEvt, true);
@@ -384,24 +384,24 @@ namespace Caravel.Core.Entity
             }
         }
 
-        protected internal override void VOnUpdate(float elapsedTime)
-        {
-        }
-
-        protected internal override bool VPostInitialize()
+        public override bool VPostInitialize()
         {
             VOnChanged();
             return true;
         }
 
-        protected internal override void VPostLoad()
+        public override void VPostLoad()
         {
         }
 
-        protected internal override void VOnDestroy()
+        public override void VOnDestroy()
         {
             Cv_Event newEvt = new Cv_Event_DestroyRigidBodyComponent(Owner.ID, this);
             Cv_EventManager.Instance.TriggerEvent(newEvt);
+        }
+
+        protected internal override void VOnUpdate(float elapsedTime)
+        {
         }
     }
 }

@@ -227,7 +227,7 @@ namespace Caravel.Core.Entity
             }
         }
 
-        protected internal override bool VInitialize(XmlElement componentData)
+        public override bool VInitialize(XmlElement componentData)
         {
             Visible = true;
 
@@ -269,6 +269,27 @@ namespace Caravel.Core.Entity
             return VInheritedInit(componentData);
         }
 
+        public override bool VPostInitialize()
+        {
+            Cv_SceneNode sceneNode = SceneNode;
+            Cv_Event newEvent = new Cv_Event_NewRenderComponent(Owner.ID, Owner.Parent, sceneNode, this);
+            Cv_EventManager.Instance.QueueEvent(newEvent, true);
+            return true;
+        }
+
+        public override void VOnChanged()
+        {
+            var newEvent = new Cv_Event_ModifiedRenderComponent(Owner.ID, this);
+            Cv_EventManager.Instance.QueueEvent(newEvent, true);
+        }
+
+        public override void VOnDestroy()
+        {
+            Cv_SceneNode renderNode = this.SceneNode;
+            Cv_Event newEvent = new Cv_Event_DestroyRenderComponent(Owner.ID, renderNode, this);
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+        }
+
         protected internal override void VOnUpdate(float elapsedTime)
         {
             if (IsFading)
@@ -304,27 +325,6 @@ namespace Caravel.Core.Entity
                     m_fRemainingFadeTime -= elapsedTime;
                 }
             }
-        }
-
-        protected internal override bool VPostInitialize()
-        {
-            Cv_SceneNode sceneNode = SceneNode;
-            Cv_Event newEvent = new Cv_Event_NewRenderComponent(Owner.ID, Owner.Parent, sceneNode, this);
-            Cv_EventManager.Instance.QueueEvent(newEvent, true);
-            return true;
-        }
-
-        protected internal override void VOnChanged()
-        {
-            var newEvent = new Cv_Event_ModifiedRenderComponent(Owner.ID, this);
-            Cv_EventManager.Instance.QueueEvent(newEvent, true);
-        }
-
-        protected internal override void VOnDestroy()
-        {
-            Cv_SceneNode renderNode = this.SceneNode;
-            Cv_Event newEvent = new Cv_Event_DestroyRenderComponent(Owner.ID, renderNode, this);
-            Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
         protected abstract Cv_SceneNode VCreateSceneNode();

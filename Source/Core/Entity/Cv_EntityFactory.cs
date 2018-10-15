@@ -31,7 +31,7 @@ namespace Caravel.Core.Entity
             ComponentFactory.Register<Cv_ParticleEmitterComponent>(Cv_EntityComponent.GetID<Cv_ParticleEmitterComponent>());
         }
 
-        protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,
+        virtual protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,
                                                     XmlElement overrides, Cv_Transform? initialTransform,
                                                     Cv_EntityID serverEntityID, string resourceBundle)
         {
@@ -107,7 +107,7 @@ namespace Caravel.Core.Entity
             return entity;
         }
 
-        protected internal void ModifyEntity(Cv_Entity entity, XmlNodeList overrides)
+        virtual protected internal void ModifyEntity(Cv_Entity entity, XmlNodeList overrides)
         {
             foreach (XmlElement componentNode in overrides)
             {
@@ -131,7 +131,7 @@ namespace Caravel.Core.Entity
             }
         }
 
-        protected internal Cv_EntityComponent CreateComponent(string componentName)
+        virtual protected internal Cv_EntityComponent CreateComponent(string componentName)
         {
             var component = ComponentFactory.Create(Cv_EntityComponent.GetID(componentName));
 
@@ -143,7 +143,7 @@ namespace Caravel.Core.Entity
             return component;
         }
 
-        protected internal Component CreateComponent<Component>() where Component : Cv_EntityComponent
+        virtual protected internal Component CreateComponent<Component>() where Component : Cv_EntityComponent
         {
             var component = (Component) ComponentFactory.Create(Cv_EntityComponent.GetID(typeof(Component)));
 
@@ -155,7 +155,7 @@ namespace Caravel.Core.Entity
             return component;
         }
 
-        protected Cv_EntityComponent CreateComponent(XmlElement componentData)
+        virtual protected Cv_EntityComponent CreateComponent(XmlElement componentData)
         {
             var component = ComponentFactory.Create(Cv_EntityComponent.GetID(componentData.Name));
 

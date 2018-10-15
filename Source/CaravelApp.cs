@@ -23,7 +23,7 @@ namespace Caravel
     public abstract class CaravelApp : Game
     {
         #region Properties
-        public static new CaravelApp Instance;
+        public static CaravelApp Instance;
 
         public Color BackgroundColor
 		{
@@ -315,14 +315,6 @@ namespace Caravel
         
         protected sealed override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
-                    || Keyboard.GetState().IsKeyDown(Keys.Escape)
-                    || Quitting)
-            {
-                Cv_Debug.Info("Exiting Game.");
-                Exit();
-            }
-
 			EventManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             SoundManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
             InputManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
@@ -367,64 +359,66 @@ namespace Caravel
 #endregion
 
 #region Functions to be used by editor
-    public void EditorInitialize()
-    {
-        Initialize();
-    }
+    #if EDITOR
+        public void EditorInitialize()
+        {
+            Initialize();
+        }
 
-    public void EditorLoadContent()
-    {
-        LoadContent();
-    }
+        public void EditorLoadContent()
+        {
+            LoadContent();
+        }
 
-    public void EditorUpdate(GameTime time)
-    {
-        Update(time);
-    }
+        public void EditorUpdate(GameTime time)
+        {
+            Update(time);
+        }
 
-    public void EditorDraw(GameTime time)
-    {
-        Draw(time);
-    }
+        public void EditorDraw(GameTime time)
+        {
+            Draw(time);
+        }
 
-    public void EditorUnloadContent()
-    {
-        UnloadContent();
-    }
+        public void EditorUnloadContent()
+        {
+            UnloadContent();
+        }
 
-	public void EditorLoadResourceBundle(string bundleId, string editorWorkingLocation, string bundleFile, IServiceProvider services)
-	{
-		EditorWorkingDirectory = editorWorkingLocation;
-		Cv_ResourceManager.Instance.AddResourceBundle(bundleId, new Cv_DevelopmentResourceBundle(bundleFile, services));
-	}
+        public void EditorLoadResourceBundle(string bundleId, string editorWorkingLocation, string bundleFile, IServiceProvider services)
+        {
+            EditorWorkingDirectory = editorWorkingLocation;
+            Cv_ResourceManager.Instance.AddResourceBundle(bundleId, new Cv_DevelopmentResourceBundle(bundleFile, services));
+        }
 
-	public void EditorUnloadResourceBundle(string bundleId)
-	{
-		Cv_ResourceManager.Instance.RemoveResourceBundle(bundleId);
-	}
+        public void EditorUnloadResourceBundle(string bundleId)
+        {
+            Cv_ResourceManager.Instance.RemoveResourceBundle(bundleId);
+        }
 
-    public void EditorReadMaterials(string editorWorkingLocation)
-    {
-        EditorWorkingDirectory = editorWorkingLocation;
-        ReadProjectFile();
-        MaterialsLocation = Path.Combine(editorWorkingLocation, MaterialsLocation);
-        Logic.GamePhysics.VInitialize();
-    }
+        public void EditorReadMaterials(string editorWorkingLocation)
+        {
+            EditorWorkingDirectory = editorWorkingLocation;
+            ReadProjectFile();
+            MaterialsLocation = Path.Combine(editorWorkingLocation, MaterialsLocation);
+            Logic.GamePhysics.VInitialize();
+        }
 
-    public void EditorReadControls(string editorWorkingLocation)
-    {
-        EditorWorkingDirectory = editorWorkingLocation;
-        ReadProjectFile();
-        ControlBindingsLocation = Path.Combine(editorWorkingLocation, ControlBindingsLocation);
-        InputManager.Initialize(); 
-    }
+        public void EditorReadControls(string editorWorkingLocation)
+        {
+            EditorWorkingDirectory = editorWorkingLocation;
+            ReadProjectFile();
+            ControlBindingsLocation = Path.Combine(editorWorkingLocation, ControlBindingsLocation);
+            InputManager.Initialize(); 
+        }
 
-    public void EditorReadStrings(string editorWorkingLocation)
-    {
-        EditorWorkingDirectory = editorWorkingLocation;
-        ReadProjectFile();
-        LoadStrings("English");
-    }
+        public void EditorReadStrings(string editorWorkingLocation)
+        {
+            EditorWorkingDirectory = editorWorkingLocation;
+            ReadProjectFile();
+            LoadStrings("English");
+        }
+    #endif
 #endregion
 
 #region CaravelApp functions

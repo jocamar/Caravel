@@ -162,7 +162,7 @@ namespace Caravel.Core.Entity
             return componentData;
         }
 
-        protected internal override bool VInitialize(XmlElement componentData)
+        public override bool VInitialize(XmlElement componentData)
         {
             var transformAnimationNode = componentData.SelectNodes("TransformAnimation").Item(0);
             if (transformAnimationNode != null)
@@ -197,11 +197,20 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override void VOnChanged()
+        public override void VOnChanged()
         {
         }
 
-        protected internal override void VOnDestroy()
+        public override void VOnDestroy()
+        {
+        }
+
+        public override bool VPostInitialize()
+        {
+            return true;
+        }
+
+        public override void VPostLoad()
         {
         }
 
@@ -279,15 +288,6 @@ namespace Caravel.Core.Entity
                     }
                 }
             }
-        }
-
-        protected internal override bool VPostInitialize()
-        {
-            return true;
-        }
-
-        protected internal override void VPostLoad()
-        {
         }
 
         private void ReadAnimationInfo()

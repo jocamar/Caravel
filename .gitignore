@@ -2,3 +2,7 @@ Bin/**
 obj/**
 CaravelMono/obj/**
 CaravelDotNet/obj/**
+Libs/**/bin/**
+Libs/**/obj/**
+CaravelDotNet/Libs/**/bin/**
+CaravelDotNet/Libs/**/obj/**

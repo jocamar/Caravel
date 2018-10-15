@@ -98,7 +98,6 @@ namespace Caravel.Core.Draw
             string[] words = text.Split(' ');
             StringBuilder wrappedText = new StringBuilder();
             float linewidth = 0f;
-            float textHeight = 0f;
             float spaceWidth = font.MeasureString(" ").X;
 
             List<string> lines = new List<string>();

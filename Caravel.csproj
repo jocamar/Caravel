@@ -14,7 +14,7 @@
     <!--<DebugType>full</DebugType>-->
     <Optimize>false</Optimize>
     <OutputPath>Bin\$(Configuration)\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;LINUX</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;LINUX;MONOGAME</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -24,7 +24,7 @@
     <!--<DebugType>pdbonly</DebugType>-->
     <Optimize>true</Optimize>
     <OutputPath>Bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;LINUX</DefineConstants>
+    <DefineConstants>TRACE;LINUX;MONOGAME</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,8 +33,12 @@
     <MonoGameContentReference Include="**\*.mgcb" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);CaravelDotNet\Libs\MonoGame.Framework\**;CaravelDotNet\Libs\ThirdParty\**;CaravelMono\**</DefaultItemExcludes>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="FarseerPhysics.MonoGame.Unofficial" Version="3.5.0" />
+   <!--> <PackageReference Include="FarseerPhysics.MonoGame.Unofficial" Version="3.5.0" />-->
     <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.4" />
     <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.7.0.7" />
     <PackageReference Include="NLua_Safe" Version="1.3.2.1" />

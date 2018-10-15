@@ -103,7 +103,7 @@ namespace Caravel.Core.Entity
             return componentData;
         }
 
-        protected internal override bool VInitialize(XmlElement componentData)
+        public override bool VInitialize(XmlElement componentData)
         {
             var onMouseUpNode = componentData.SelectNodes("OnMouseUp").Item(0);
             if (onMouseUpNode != null)
@@ -141,15 +141,28 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override void VOnChanged()
+        public override void VOnChanged()
         {
         }
 
-        protected internal override void VOnDestroy()
+        public override void VOnDestroy()
         {
             Cv_ClickAreaNode clickAreaNode = this.ClickAreaNode;
             Cv_Event newEvent = new Cv_Event_DestroyClickableComponent(Owner.ID, clickAreaNode, this);
             Cv_EventManager.Instance.QueueEvent(newEvent, true);
+        }
+
+        
+        public override bool VPostInitialize()
+        {
+            Cv_ClickAreaNode clickAreaNode = this.ClickAreaNode;
+            Cv_Event newEvent = new Cv_Event_NewClickableComponent(Owner.ID, Owner.Parent, clickAreaNode, Width, Height, AnchorPoint, Active, this);
+            Cv_EventManager.Instance.TriggerEvent(newEvent);
+            return true;
+        }
+
+        public override void VPostLoad()
+        {
         }
 
         protected internal override void VOnUpdate(float elapsedTime)
@@ -204,18 +217,6 @@ namespace Caravel.Core.Entity
                 m_bWasInArea = false;
                 m_bWasClicking = false;
             }
-        }
-
-        protected internal override bool VPostInitialize()
-        {
-            Cv_ClickAreaNode clickAreaNode = this.ClickAreaNode;
-            Cv_Event newEvent = new Cv_Event_NewClickableComponent(Owner.ID, Owner.Parent, clickAreaNode, Width, Height, AnchorPoint, Active, this);
-            Cv_EventManager.Instance.TriggerEvent(newEvent);
-            return true;
-        }
-
-        protected internal override void VPostLoad()
-        {
         }
     }
 }

@@ -66,7 +66,7 @@ namespace Caravel.Core.Entity
             PauseExecution = true;
         }
 
-        protected internal override bool VInitialize(XmlElement componentData)
+        public override bool VInitialize(XmlElement componentData)
         {
             var initScriptNode = componentData.SelectNodes("InitScript").Item(0);
             if (initScriptNode != null)
@@ -101,16 +101,31 @@ namespace Caravel.Core.Entity
             return true;
         }
 
-        protected internal override void VOnChanged()
+        public override void VOnChanged()
         {
         }
 
-        protected internal override void VOnDestroy()
+        public override void VOnDestroy()
         {
             if (m_Timer != null && m_Timer.IsAlive)
             {
                 m_Timer.Fail();
             }
+        }
+
+        public override bool VPostInitialize()
+        {
+            if (InitScriptResource != null && InitScriptResource != "")
+            {
+                Cv_ScriptResource scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(InitScriptResource, Owner.ResourceBundle);
+                scriptRes.RunScript();
+            }
+
+            return true;
+        }
+
+        public override void VPostLoad()
+        {
         }
 
         protected internal override void VOnUpdate(float elapsedTime)
@@ -124,21 +139,6 @@ namespace Caravel.Core.Entity
             {
                 OnExecuteScriptTimeout();
             }
-        }
-
-        protected internal override bool VPostInitialize()
-        {
-            if (InitScriptResource != null && InitScriptResource != "")
-            {
-                Cv_ScriptResource scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(InitScriptResource, Owner.ResourceBundle);
-                scriptRes.RunScript();
-            }
-
-            return true;
-        }
-
-        protected internal override void VPostLoad()
-        {
         }
 
         private void OnExecuteScriptTimeout()

@@ -288,6 +288,21 @@ namespace Caravel.Core.Entity
             }
         }
 
+        //Note(JM): Used for editor
+        #if EDITOR
+        public void AddComponent(string componentTypeName, Cv_EntityComponent component)
+        {
+            RemoveComponent(componentTypeName);
+
+            lock(m_ComponentMap)
+            {
+                m_ComponentMap.Add(Cv_EntityComponent.GetID(componentTypeName), component);
+                m_ComponentsToAdd.Add(component);
+                component.Owner = this;
+            }
+        }
+        #endif
+
         internal void RemoveComponent<Component>() where Component : Cv_EntityComponent
         {
             

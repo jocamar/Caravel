@@ -161,6 +161,10 @@ namespace Caravel.Core.Entity
             m_SubAnimations.Remove(id);
         }
 
+        public override void VPostLoad()
+		{
+		}
+
         protected internal override void VOnUpdate(float elapsedTime)
         {
             SceneNode.SetRadius(-1);
@@ -199,10 +203,6 @@ namespace Caravel.Core.Entity
 
             base.VOnUpdate(elapsedTime);
         }
-
-        protected internal override void VPostLoad()
-		{
-		}
 
         protected override Cv_SceneNode VCreateSceneNode()
         {
