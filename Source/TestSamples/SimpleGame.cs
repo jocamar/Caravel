@@ -76,7 +76,7 @@ namespace Caravel.TestSamples
 
         protected internal override bool VLoadGame()
         {
-            var loadProcess = new Cv_LoadSceneProcess("scenes/emptyscene.cvs", "Default");
+            var loadProcess = new Cv_LoadSceneProcess("scenes/testScene.cvs", "Default");
             ProcessManager.AttachProcess(loadProcess);
 
             /*pv2.Camera = Logic.GetEntity("camera2").GetComponent<Cv_CameraComponent>().CameraNode;

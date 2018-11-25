@@ -2,15 +2,6 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v2.0": {
-      "FarseerPhysics.MonoGame.Unofficial/3.5.0": {
-        "type": "package",
-        "compile": {
-          "lib/FarseerPhysics MonoGame.dll": {}
-        },
-        "runtime": {
-          "lib/FarseerPhysics MonoGame.dll": {}
-        }
-      },
       "Microsoft.NETCore.App/2.0.0": {
         "type": "package",
         "dependencies": {
@@ -310,17 +301,6 @@
     }
   },
   "libraries": {
-    "FarseerPhysics.MonoGame.Unofficial/3.5.0": {
-      "sha512": "r8nJQreecGhsyNLKUYqZja5e1HAaQG/Ld9PK1i8gl4KAFh+Wsn+YaKFav6MxZgiLE14LCUPNU31YoXW6BQumKQ==",
-      "type": "package",
-      "path": "farseerphysics.monogame.unofficial/3.5.0",
-      "files": [
-        "FarseerPhysics.MonoGame.Unofficial.3.5.0.nupkg.sha512",
-        "FarseerPhysics.MonoGame.Unofficial.nuspec",
-        "lib/FarseerPhysics MonoGame.dll",
-        "lib/FarseerPhysics MonoGame.pdb"
-      ]
-    },
     "Microsoft.NETCore.App/2.0.0": {
       "sha512": "/mzXF+UtZef+VpzzN88EpvFq5U6z4rj54ZMq/J968H6pcvyLOmcupmTRpJ3CJm8ILoCGh9WI7qpDdiKtuzswrQ==",
       "type": "package",
@@ -932,7 +912,6 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
-      "FarseerPhysics.MonoGame.Unofficial >= 3.5.0",
       "Microsoft.NETCore.App >= 2.0.0",
       "MonoGame.Content.Builder >= 3.7.0.4",
       "MonoGame.Framework.DesktopGL.Core >= 3.7.0.7",
@@ -980,10 +959,6 @@
     "frameworks": {
       "netcoreapp2.0": {
         "dependencies": {
-          "FarseerPhysics.MonoGame.Unofficial": {
-            "target": "Package",
-            "version": "[3.5.0, )"
-          },
           "Microsoft.NETCore.App": {
             "suppressParent": "All",
             "target": "Package",
@@ -1020,16 +995,6 @@
     }
   },
   "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'FarseerPhysics.MonoGame.Unofficial 3.5.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.",
-      "libraryId": "FarseerPhysics.MonoGame.Unofficial",
-      "targetGraphs": [
-        ".NETCoreApp,Version=v2.0"
-      ]
-    },
     {
       "code": "NU1701",
       "level": "Warning",

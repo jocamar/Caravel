@@ -699,6 +699,16 @@ namespace Caravel.Core
 
 			return new Cv_Entity[0];
 		}
+
+        public Cv_PhysicsMaterial GetMaterial(string materialId)
+        {
+            return GamePhysics.GetMaterial(materialId);
+        }
+
+        public string[] GetMaterials()
+        {
+            return GamePhysics.GetMaterials();
+        }
 #endregion
 
         public bool ChangeState(Cv_GameState newState)

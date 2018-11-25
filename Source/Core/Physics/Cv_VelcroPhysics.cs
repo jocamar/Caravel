@@ -7,16 +7,16 @@ using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Debugging;
+using static Caravel.Core.Entity.Cv_Entity;
 using VelcroPhysics.Collision.Shapes;
 using VelcroPhysics.Dynamics;
 using VelcroPhysics.Factories;
-using Microsoft.Xna.Framework;
-using static Caravel.Core.Entity.Cv_Entity;
 using VelcroPhysics.Shared;
 using VelcroPhysics.Collision.ContactSystem;
 using VelcroPhysics.Dynamics.Solver;
 using VelcroPhysics.Collision.Filtering;
 using VelcroPhysics.Shared.Optimization;
+using Microsoft.Xna.Framework;
 
 namespace Caravel.Core.Physics
 {
@@ -132,7 +132,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(verts, data.Anchor, material.Density, false, data.IsBullet,
+            var shape = new Cv_CollisionShape(data.ShapeID, verts, data.Anchor, material.Density, false, data.IsBullet,
 													data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
@@ -175,7 +175,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(vertices, data.Anchor, material.Density, false, data.IsBullet,
+            var shape = new Cv_CollisionShape(data.ShapeID, vertices, data.Anchor, material.Density, false, data.IsBullet,
 													data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
@@ -212,7 +212,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(Vector2.Zero, data.Radius, data.Anchor, material.Density, false,
+            var shape = new Cv_CollisionShape(data.ShapeID, Vector2.Zero, data.Radius, data.Anchor, material.Density, false,
 												data.IsBullet, data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
@@ -252,7 +252,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(verts, data.Anchor, 0, true, data.IsBullet,
+            var shape = new Cv_CollisionShape(data.ShapeID, verts, data.Anchor, 0, true, data.IsBullet,
 												data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             
@@ -510,7 +510,7 @@ namespace Caravel.Core.Physics
 			m_RaycastEntities.Clear();
 			m_RaycastType = type;
 
-			m_World.RayCast(OnRayCastIntersection, startingPoint, endingPoint);
+			m_World.RayCast(OnRayCastIntersection,  ToWorldCoord(startingPoint), ToWorldCoord(endingPoint));
 
 			return m_RaycastEntities.ToArray();
 		}
@@ -531,6 +531,8 @@ namespace Caravel.Core.Physics
                         if (rigidBodyComponent.IsDirty)
                         {
                             SyncPhysicsSettings(body, rigidBodyComponent);
+                            SyncShapeSettings(e.Value, rigidBodyComponent);
+
                             rigidBodyComponent.IsDirty = false;
                         }
 
@@ -806,44 +808,26 @@ namespace Caravel.Core.Physics
 
             if (!collidingShape.CollidesWithFromDirection(collidedShape.CollisionCategories, DirectionToString(collisionDirection)))
             {
-                //return false;
+                contact.Enabled = false;
+                return;
             }
+
+            var velcroContact = GenerateContact(contact, collidingShape, collidedShape);
 
             if (collidedShape.IsSensor)
             {
-                var trigger = collidedShape;
-                var entity = collidingShape.Owner;
-
-                var newEvent = new Cv_Event_EnterTrigger(entity.ID, trigger, this);
+                var newEvent = new Cv_Event_EnterTrigger(velcroContact, this);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
             else if (!collidingShape.IsSensor)
             {
-                List<Vector2> collisionPoints = new List<Vector2>();
-                Vector2 normalForce = Vector2.Zero;
-                float frictionForce = 0;
-
-                FixedArray2<Vector2> manifoldPoints;
-                contact.GetWorldManifold(out normalForce, out manifoldPoints);
-
-                for (var i = 0; i < contact.Manifold.PointCount; i++)
-                {
-                    var point = manifoldPoints[i];
-
-                    collisionPoints.Add(ToOutsideVector(point));
-                }
-
-                normalForce += ToOutsideVector(normalForce);
-                frictionForce += contact.Friction;
-
                 if (!m_CollisionPairs.Exists(cp => cp.Item1 == collidingShape && cp.Item2 == collidedShape))
                 {
-                    var newEvent = new Cv_Event_NewCollision(collidingShape, collidedShape, normalForce, frictionForce, collisionPoints.ToArray());
+                    var newEvent = new Cv_Event_NewCollision(velcroContact);
                     Cv_EventManager.Instance.QueueEvent(newEvent);
                     m_CollisionPairs.Add(new Tuple<Cv_CollisionShape, Cv_CollisionShape>(collidingShape, collidedShape));
                 }
             }
-            //return true;
         }
 
         private void OnAfterCollision(Fixture fixtureA, Fixture fixtureB, Contact contact, ContactVelocityConstraint impulse)
@@ -855,19 +839,18 @@ namespace Caravel.Core.Physics
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
 
+            var velcroContact = GenerateContact(contact, collisionShapeA, collisionShapeB);
+
             if (collisionShapeA.IsSensor)
             {
-                var trigger = collisionShapeA;
-                var entity = collisionShapeB.Owner;
-
-                var newEvent = new Cv_Event_LeaveTrigger(entity.ID, trigger, this);
+                var newEvent = new Cv_Event_LeaveTrigger(velcroContact, this);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
             else if (!collisionShapeB.IsSensor)
             {
                 if (!m_SeparationPairs.Exists(sp => sp.Item1 == collisionShapeB && sp.Item2 == collisionShapeA))
                 {
-                    var newEvent = new Cv_Event_NewSeparation(collisionShapeA, collisionShapeB);
+                    var newEvent = new Cv_Event_NewSeparation(velcroContact);
                     Cv_EventManager.Instance.QueueEvent(newEvent);
                     m_SeparationPairs.Add(new Tuple<Cv_CollisionShape, Cv_CollisionShape>(collisionShapeA, collisionShapeB));
                 }
@@ -1030,6 +1013,23 @@ namespace Caravel.Core.Physics
             body.AngularDamping = physics.AngularDamping;
             body.FixedRotation = physics.FixedRotation;
             body.GravityScale = physics.GravityScale;
+        }
+
+        private void SyncShapeSettings(Cv_PhysicsEntity e, Cv_RigidBodyComponent physics)
+        {
+            foreach (var ps in e.Shapes.Keys)
+            {
+                var materialID = physics.GetShapeMaterial(ps.ShapeID);
+
+                Cv_PhysicsMaterial material;
+                if (m_MaterialsTable.TryGetValue(materialID, out material))
+                {
+                    e.Shapes[ps].Restitution = material.Restitution;
+                    e.Shapes[ps].Friction = material.Friction;
+                    ps.Friction = material.Friction;
+                    ps.Restitution = material.Restitution;
+                }
+            }
         }
 
         private void SyncMovementData(Body body, Cv_RigidBodyComponent rigidBody)
@@ -1236,6 +1236,32 @@ namespace Caravel.Core.Physics
             }
 
             return false;
+        }
+
+        private Cv_VelcroContact GenerateContact(Contact contact, Cv_CollisionShape collidingShape, Cv_CollisionShape collidedShape)
+        {
+            List<Vector2> collisionPoints = new List<Vector2>();
+            Vector2 normalForce = Vector2.Zero;
+
+            FixedArray2<Vector2> manifoldPoints;
+            contact.GetWorldManifold(out normalForce, out manifoldPoints);
+
+            for (var i = 0; i < contact.Manifold.PointCount; i++)
+            {
+                var point = manifoldPoints[i];
+
+                collisionPoints.Add(ToOutsideVector(point));
+            }
+
+            normalForce += ToOutsideVector(normalForce);
+
+            var velcroContact = new Cv_VelcroContact(contact);
+            velcroContact.CollidedShape = collidedShape;
+            velcroContact.CollidingShape = collidingShape;
+            velcroContact.NormalForce = normalForce;
+            velcroContact.CollisionPoints = collisionPoints.ToArray();
+
+            return velcroContact;
         }
     }
 }

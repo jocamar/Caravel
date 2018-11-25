@@ -65,7 +65,7 @@ namespace Caravel.Core.Physics
 
         public List<Vector2> Points
         {
-            get; set;
+            get; internal set;
         }
 
         public struct ShapeBoundingBox
@@ -83,56 +83,62 @@ namespace Caravel.Core.Physics
 
 		public Vector2 AnchorPoint
         {
-            get; set;
+            get; internal set;
         }
 
         public bool IsSensor
         {
-            get; set;
+            get; internal set;
         }
 
         public bool IsBullet
         {
-            get; set;
+            get; internal set;
         }
 
         public float Density
         {
-            get; set;
+            get; internal set;
         }
 
         public float Friction
         {
-            get; set;
+            get; internal set;
         }
 
         public float Restitution
         {
-            get; set;
+            get; internal set;
         }
 
         public Cv_CollisionCategories CollisionCategories
         {
-            get; set;
+            get; internal set;
         }
 
         public Cv_CollisionCategories CollidesWith
         {
-            get; set;
+            get; internal set;
+        }
+
+        public string ShapeID
+        {
+            get; private set;
         }
 
         public bool IsCircle { get; private set; }
-        public float Radius { get; set; } //TODO(JM): add subclasses (RectShape, CircleShape, PolygonShape) to simplify
+        public float Radius { get; internal set; } //TODO(JM): add subclasses (RectShape, CircleShape, PolygonShape) to simplify
         public Texture2D CircleOutlineTex { get; private set; }
 
-        internal Cv_Entity Owner { get; set; }
+        public Cv_Entity Owner { get; internal set; }
 
 		private Dictionary<int, string> m_CollisionDirections;
 
-        public Cv_CollisionShape(List<Vector2> points, Vector2? anchorPoint, float density, bool isSensor,
+        public Cv_CollisionShape(string shapeID, List<Vector2> points, Vector2? anchorPoint, float density, bool isSensor,
 									bool isBullet, Cv_CollisionCategories categories, Cv_CollisionCategories collidesWith,
 									Dictionary<int, string> directions)
         {
+            ShapeID = shapeID;
             Points = points;
 
             if (anchorPoint == null)
@@ -150,10 +156,11 @@ namespace Caravel.Core.Physics
             Owner = null;
         }
 
-        public Cv_CollisionShape(Vector2 point, float radius, Vector2? anchorPoint, float density, bool isSensor,
+        public Cv_CollisionShape(string shapeID, Vector2 point, float radius, Vector2? anchorPoint, float density, bool isSensor,
 									bool isBullet, Cv_CollisionCategories categories, Cv_CollisionCategories collidesWith,
 									Dictionary<int, string> directions)
         {
+            ShapeID = shapeID;
             Points = new List<Vector2>();
             Points.Add(point);
 

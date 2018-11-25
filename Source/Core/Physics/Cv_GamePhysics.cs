@@ -13,6 +13,7 @@ namespace Caravel.Core.Physics
 
         public struct Cv_ShapeData
         {
+            public string ShapeID;
             public ShapeType Type;
             public Vector2 Anchor;
             public float Radius;
@@ -23,6 +24,21 @@ namespace Caravel.Core.Physics
 			public Cv_CollisionCategories Categories;
 			public Cv_CollisionCategories CollidesWith;
 			public Dictionary<int, string> CollisionDirections;
+
+            public Cv_ShapeData(Cv_ShapeData toCopy)
+            {
+                ShapeID = toCopy.ShapeID;
+                Type = toCopy.Type;
+                Anchor = toCopy.Anchor;
+                Radius = toCopy.Radius;
+                Dimensions = toCopy.Dimensions;
+                Points = toCopy.Points;
+                IsBullet = toCopy.IsBullet;
+                Material = toCopy.Material;
+                Categories = toCopy.Categories;
+                CollidesWith = toCopy.CollidesWith;
+                CollisionDirections = toCopy.CollisionDirections;
+            }
         }
 
 		public struct Cv_PhysicsMaterial

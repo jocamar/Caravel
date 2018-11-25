@@ -118,6 +118,35 @@ namespace Caravel.Core.Entity
 
         private List<Cv_ShapeData> m_Shapes = new List<Cv_ShapeData>();
 
+        public string GetShapeMaterial(string shapeId)
+        {
+            foreach (var s in m_Shapes)
+            {
+                if (s.ShapeID == shapeId)
+                {
+                    return s.Material;
+                }
+            }
+
+            return null;
+        }
+
+        public void SetShapeMaterial(string shapeId, string materialId)
+        {
+            for (var i = 0; i < m_Shapes.Count; i++)
+            {
+                if (m_Shapes[i].ShapeID == shapeId)
+                {
+                    var newShape = new Cv_ShapeData(m_Shapes[i]);
+                    newShape.Material = materialId;
+
+                    m_Shapes[i] = newShape;
+                }
+            }
+
+            IsDirty = true;
+        }
+
         public override XmlElement VToXML()
         {
             var doc = new XmlDocument();
@@ -180,6 +209,7 @@ namespace Caravel.Core.Entity
                 }
 
                 var shapeElement = doc.CreateElement(shapeTypeStr);
+                shapeElement.SetAttribute("id", shape.ShapeID);
                 shapeElement.SetAttribute("material", shape.Material);
                 shapeElement.SetAttribute("anchorX", ((int)shape.Anchor.X).ToString(CultureInfo.InvariantCulture));
                 shapeElement.SetAttribute("anchorY", ((int)shape.Anchor.Y).ToString(CultureInfo.InvariantCulture));
@@ -307,6 +337,7 @@ namespace Caravel.Core.Entity
                             return false;
                     }
 
+                    shapeData.ShapeID = shape.Attributes?["id"].Value;
                     shapeData.Material = shape.Attributes?["material"].Value;
 
                     int x, y;

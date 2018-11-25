@@ -6,27 +6,7 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_NewCollision : Cv_Event
     {
-        public Cv_CollisionShape CollidingShape
-        {
-            get; private set;
-        }
-
-        public Cv_CollisionShape CollidedShape
-        {
-            get; private set;
-        }
-
-        public Vector2 NormalForce
-        {
-            get; private set;
-        }
-
-        public float FrictionForce
-        {
-            get; private set;
-        }
-
-        public Vector2[] CollisionPoints
+        public Cv_Contact CollisionContact
         {
             get; private set;
         }
@@ -39,14 +19,9 @@ namespace Caravel.Core.Events
             }
         }
 
-        public Cv_Event_NewCollision(Cv_CollisionShape collidingShape, Cv_CollisionShape collidedShape, Vector2 normalForce,
-                                        float frictionForce, Vector2[] collisionPoints, float timeStamp = 0) : base(collidingShape.Owner.ID, timeStamp)
+        public Cv_Event_NewCollision(Cv_Contact contact, float timeStamp = 0) : base(contact.CollidingShape.Owner.ID, timeStamp)
         {
-            CollidingShape = collidingShape;
-            CollidedShape = collidedShape;
-            NormalForce = normalForce;
-            FrictionForce = frictionForce;
-            CollisionPoints = collisionPoints;
+            CollisionContact = contact;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

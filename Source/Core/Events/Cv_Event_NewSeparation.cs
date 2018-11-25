@@ -5,12 +5,7 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_NewSeparation : Cv_Event
     {
-        public Cv_CollisionShape ShapeA
-        {
-            get; private set;
-        }
-
-        public Cv_CollisionShape ShapeB
+        public Cv_Contact CollisionContact
         {
             get; private set;
         }
@@ -23,10 +18,9 @@ namespace Caravel.Core.Events
             }
         }
 
-        public Cv_Event_NewSeparation(Cv_CollisionShape shapeA, Cv_CollisionShape shapeB, float timeStamp = 0) : base(shapeA.Owner.ID, timeStamp)
+        public Cv_Event_NewSeparation(Cv_Contact contact, float timeStamp = 0) : base(contact.CollidingShape.Owner.ID, timeStamp)
         {
-            ShapeA = shapeA;
-            ShapeB = shapeB;
+            CollisionContact = contact;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

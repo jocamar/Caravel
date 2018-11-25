@@ -75,8 +75,14 @@
     <Compile Include="..\Source\Core\Physics\Cv_CollisionShape.cs">
       <Link>Source\Core\Physics\Cv_CollisionShape.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Physics\Cv_FarseerPhysics.cs">
-      <Link>Source\Core\Physics\Cv_FarseerPhysics.cs</Link>
+    <Compile Include="..\Source\Core\Physics\Cv_Contact.cs">
+      <Link>Source\Core\Physics\Cv_Contact.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Physics\Cv_VelcroContact.cs">
+      <Link>Source\Core\Physics\Cv_VelcroContact.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Physics\Cv_VelcroPhysics.cs">
+      <Link>Source\Core\Physics\Cv_VelcroPhysics.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Cv_GameLogic.cs">
       <Link>Source\Core\Cv_GameLogic.cs</Link>

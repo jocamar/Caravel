@@ -6,14 +6,14 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_LeaveTrigger : Cv_Event
     {
-        public Cv_CollisionShape Trigger
+        public Cv_Contact CollisionContact
         {
             get; private set;
         }
 
-        public Cv_Event_LeaveTrigger(Cv_EntityID entityId, Cv_CollisionShape trigger, object sender, float timeStamp = 0) : base(entityId, sender, timeStamp)
+        public Cv_Event_LeaveTrigger(Cv_Contact contact, object sender, float timeStamp = 0) : base(contact.CollidedShape.Owner.ID, sender, timeStamp)
         {
-            Trigger = trigger;
+            CollisionContact = contact;
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

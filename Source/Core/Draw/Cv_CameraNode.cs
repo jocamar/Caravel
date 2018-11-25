@@ -60,6 +60,11 @@ namespace Caravel.Core.Draw
 
         internal Cv_Transform GetViewTransform(int virtualWidth, int virtualHeight, Cv_Transform rendererTransform)
         {
+            if (rendererTransform.Scale == Vector2.Zero)
+            {
+                return Cv_Transform.Identity;
+            }
+
             if ((virtualWidth > 0 && virtualWidth != m_iPreviousVirtualWidth)
                 || (virtualHeight > 0 && virtualHeight != m_iPreviousVirtualHeight))
             {
