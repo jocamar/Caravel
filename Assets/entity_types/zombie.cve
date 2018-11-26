@@ -22,7 +22,7 @@
     <Physics fixedRotation="False" gravityScale="1" maxVelocity="200" maxAngVelocity="200" />
     <Body linearDamping="0" angularDamping="0" followEntityRotation="True" type="dynamic" />
     <CollisionShapes>
-      <Box anchorX="0" anchorY="0" isBullet="False" material="Wood" dimensionsX="100" dimensionsY="150">
+      <Box id="" anchorX="0" anchorY="0" isBullet="False" material="Wood" dimensionsX="100" dimensionsY="150">
         <CollisionCategory id="0" />
         <CollidesWith id="1" directions="All" />
         <CollidesWith id="0" directions="All" />

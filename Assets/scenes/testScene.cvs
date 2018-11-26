@@ -3,7 +3,7 @@
     <Entity name="guybrush" type="entity_types/zombie.cve" visible="True">
       <Cv_RigidBodyComponent>
         <CollisionShapes>
-          <Box material="Wood" anchorX="0" anchorY="0" isBullet="False" dimensionsX="100" dimensionsY="150">
+          <Box id="" material="Wood" anchorX="0" anchorY="0" isBullet="False" dimensionsX="100" dimensionsY="150">
             <CollisionCategory id="0" />
             <CollidesWith id="0" directions="All" />
             <CollidesWith id="1" directions="All" />
@@ -26,7 +26,7 @@
       <Cv_RigidBodyComponent>
         <Physics fixedRotation="True" gravityScale="1" maxVelocity="100" maxAngVelocity="100" />
         <CollisionShapes>
-          <Box material="Rock" anchorX="0" anchorY="-50" isBullet="False" dimensionsX="150" dimensionsY="150">
+          <Box id="" material="Rock" anchorX="0" anchorY="-50" isBullet="False" dimensionsX="150" dimensionsY="150">
             <CollisionCategory id="0" />
             <CollidesWith id="1" directions="All" />
           </Box>
@@ -119,7 +119,7 @@
       </Cv_TransformComponent>
       <Cv_RigidBodyComponent>
         <CollisionShapes>
-          <Box material="Wood" anchorX="-200" anchorY="0" isBullet="False" dimensionsX="600" dimensionsY="200">
+          <Box id="" material="Wood" anchorX="-200" anchorY="0" isBullet="False" dimensionsX="600" dimensionsY="200">
             <CollisionCategory id="1" />
             <CollidesWith id="0" directions="All" />
           </Box>

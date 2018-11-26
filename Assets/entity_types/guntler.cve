@@ -19,7 +19,7 @@
     <Physics fixedRotation="False" gravityScale="0" maxVelocity="100" maxAngVelocity="100" />
     <Body linearDamping="0.5" angularDamping="0.5" followEntityRotation="True" type="dynamic" />
     <CollisionShapes>
-      <Polygon material="Wood" anchorX="0" anchorY="0" isBullet="False">
+      <Polygon id="" material="Wood" anchorX="0" anchorY="0" isBullet="False">
         <Point x="0" y="-100" />
         <Point x="50" y="100" />
         <Point x="-50" y="100" />
