@@ -1178,10 +1178,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Libs\ICSharpCode.SharpZipLib.dll" />
-    <Content Include="Libs\KopiLua.dll" />
-    <Content Include="Libs\MonoGame.Framework.dll" />
-    <Content Include="Libs\NLua.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\KopiLua.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\MonoGame.Framework.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\NLua.dll" />
     <Content Include="Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.dll" />
     <Content Include="Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.MediaFoundation.dll" />
     <Content Include="Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.XAudio2.dll" />
