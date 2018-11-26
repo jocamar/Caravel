@@ -1178,6 +1178,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libs\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="Libs\KopiLua.dll" />
+    <Content Include="Libs\MonoGame.Framework.dll" />
+    <Content Include="Libs\NLua.dll" />
     <Content Include="SDL2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
