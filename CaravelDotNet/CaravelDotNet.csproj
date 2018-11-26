@@ -1182,6 +1182,14 @@
     <Content Include="Libs\KopiLua.dll" />
     <Content Include="Libs\MonoGame.Framework.dll" />
     <Content Include="Libs\NLua.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.MediaFoundation.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.XAudio2.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.XInput.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\SharpDX\SharpDX.Direct2D1.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\SharpDX\SharpDX.Direct3D11.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\SharpDX\SharpDX.DXGI.dll" />
+    <Content Include="Libs\ThirdParty\Dependencies\SharpDX\SharpDX.XInput.dll" />
     <Content Include="SDL2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
