@@ -181,7 +181,8 @@ namespace Caravel.Core.Events
 			{
 				if (m_EventListeners.TryGetValue(newEvent.Type, out listeners))
 				{
-					foreach (var l in listeners)
+                    var listenersCopy = new List<NewEventDelegate>(listeners);
+					foreach (var l in listenersCopy)
 					{
 						if (newEvent.WriteToLog)
 						{
@@ -348,7 +349,8 @@ namespace Caravel.Core.Events
 				{
 					if (m_EventListeners.TryGetValue(e.Type, out listeners))
 					{
-						foreach (var l in listeners)
+                        var listenersCopy = new List<NewEventDelegate>(listeners);
+                        foreach (var l in listenersCopy)
 						{
 							if (e.WriteToLog)
 							{

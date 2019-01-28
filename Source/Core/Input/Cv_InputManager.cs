@@ -264,7 +264,14 @@ namespace Caravel.Core.Input
 
             //Get the previous game pad states
             m_LastGamePadStates = (GamePadState[])m_GamePadStates.Clone();
-		}
+
+            //Loop through each player
+            foreach (PlayerIndex index in Enum.GetValues(typeof(PlayerIndex)))
+            {
+                //Get the current player's game pad state
+                m_GamePadStates[(int)index] = GamePad.GetState(index);
+            }
+        }
 
         private bool KeyReleased(Keys key)
 		{

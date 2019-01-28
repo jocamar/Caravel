@@ -208,7 +208,7 @@ namespace Caravel.Core.Draw
                 var rotation = particleComponent.InitialRotation + worldTransform.Rotation;
                 var scale = particleComponent.InitialScale * worldTransform.Scale;
 
-                particle.Transform = new Cv_Transform(new Vector3(pos_x, pos_y, worldTransform.Position.Z), scale, rotation);
+                particle.Transform = new Cv_Transform(new Vector3(pos_x, pos_y, Parent.Position.Z), scale, rotation);
                 particle.InitialScale = worldTransform.Scale;
                 particle.InitialRotation = worldTransform.Rotation;
                 m_Particles.AddFirst(particle);

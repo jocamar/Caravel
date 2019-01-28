@@ -11,8 +11,6 @@ using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Entity.Cv_Entity;
-using static Caravel.Core.Events.Cv_EventManager;
-using static Caravel.Core.Physics.Cv_VelcroPhysics;
 using static Caravel.Core.Physics.Cv_GamePhysics;
 using static Caravel.Core.Resource.Cv_XmlResource;
 
@@ -193,12 +191,20 @@ namespace Caravel.Core
             return ent;
         }
 
-		public Cv_Entity GetEntity(string entityName)
+		public Cv_Entity GetEntity(string entityName, string scenePrefix = "")
         {
             Cv_Entity ent = null;
+
+            var prefix = "";
+
+            if (scenePrefix != null && scenePrefix != "")
+            {
+                prefix = scenePrefix + "_";
+            }
+
             lock(Entities)
             {
-                EntitiesByName.TryGetValue(entityName, out ent);
+                EntitiesByName.TryGetValue(prefix + entityName, out ent);
             }
 
             return ent;
@@ -405,9 +411,9 @@ namespace Caravel.Core
             }
         }
 
-        public void RemoveComponent<Component>(string entityName) where Component : Cv_EntityComponent
+        public void RemoveComponent<Component>(string entityName, string scenePrefix = "") where Component : Cv_EntityComponent
         {
-            var entity = GetEntity(entityName);
+            var entity = GetEntity(entityName, scenePrefix);
 
             if (entity != null)
             {
@@ -451,14 +457,14 @@ namespace Caravel.Core
             }
         }
 
-        public void AddComponent(string entityName, Cv_EntityComponent component)
+        public void AddComponent(string entityName, Cv_EntityComponent component, string scenePrefix = "")
         {
             if (component.Owner != null)
             {
                 Cv_Debug.Error("Trying to add a component that already has an owner.");
             }
             
-            var entity = GetEntity(entityName);
+            var entity = GetEntity(entityName, scenePrefix);
 
             if (entity != null)
             {
@@ -469,14 +475,14 @@ namespace Caravel.Core
 
         //Note(JM): Used for editor
         #if EDITOR
-        public void AddComponent(string entityName, string componentTypeName, Cv_EntityComponent component)
+        public void AddComponent(string entityName, string componentTypeName, Cv_EntityComponent component, string scenePrefix = "")
         {
             if (component.Owner != null)
             {
                 Cv_Debug.Error("Trying to add a component that already has an owner.");
             }
             
-            var entity = GetEntity(entityName);
+            var entity = GetEntity(entityName, scenePrefix);
 
             if (entity != null)
             {
@@ -546,7 +552,7 @@ namespace Caravel.Core
 #endregion
 
 #region Scene methods
-        public bool LoadScene(string sceneResource, string resourceBundle)
+        public bool LoadScene(string sceneResource, string resourceBundle, string scenePrefix = "", Cv_Transform? sceneTransform = null)
         {
             Cv_XmlResource resource;
 			resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource, resourceBundle, Caravel.EditorRunning);
@@ -583,7 +589,7 @@ namespace Caravel.Core
 
             var entitiesNodes = root.SelectNodes("StaticEntities/Entity");
 
-            CreateNestedEntities(entitiesNodes, Cv_EntityID.INVALID_ENTITY, resourceBundle);
+            CreateNestedEntities(entitiesNodes, Cv_EntityID.INVALID_ENTITY, resourceBundle, scenePrefix, sceneTransform);
 
             lock(m_GameViews)
             {
@@ -627,12 +633,12 @@ namespace Caravel.Core
             return true;
         }
 
-        public void UnloadScene(string sceneResource, string resourceBundle)
+        public void UnloadScene(string sceneResource, string resourceBundle, string scenePrefix = "")
         {
             Cv_XmlResource resource;
 			resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource, resourceBundle, Caravel.EditorRunning);
 
-            var root = ((Cv_XmlResource.Cv_XmlData) resource.ResourceData).RootNode;
+            var root = ((Cv_XmlData) resource.ResourceData).RootNode;
 
             if (root == null)
             {
@@ -661,7 +667,7 @@ namespace Caravel.Core
 
             foreach (XmlElement entity in entitiesNodes)
             {
-                var e = GetEntity(entity.Attributes["name"].Value);
+                var e = GetEntity(entity.Attributes["name"].Value, scenePrefix);
 
                 if (e != null)
                 {
@@ -935,9 +941,9 @@ namespace Caravel.Core
         }
 #endregion
 
-        private void CreateNestedEntities(XmlNodeList entities, Cv_EntityID parentId, string resourceBundle = null)
+        private void CreateNestedEntities(XmlNodeList entities, Cv_EntityID parentId, string resourceBundle = null, string scenePrefix = "", Cv_Transform? sceneTransform = null)
         {
-             if (entities != null)
+            if (entities != null)
             {
                 foreach(XmlNode e in entities)
                 {
@@ -950,14 +956,21 @@ namespace Caravel.Core
                         visible = bool.Parse(e.Attributes["visible"].Value);
                     }
 
+                    var prefix = "";
+
+                    if (scenePrefix != null && scenePrefix != "")
+                    {
+                        prefix = scenePrefix + "_";
+                    }
+
                     Cv_Entity entity;
                     if (entityTypeResource != "")
                     {
-                        entity = CreateEntity(entityTypeResource, name, resourceBundle, visible, parentId, (XmlElement) e);
+                        entity = CreateEntity(entityTypeResource, prefix + name, resourceBundle, visible, parentId, (XmlElement) e, sceneTransform);
                     }
                     else
                     {
-                        entity = CreateEmptyEntity(name, resourceBundle, visible, parentId, (XmlElement) e);
+                        entity = CreateEmptyEntity(prefix + name, resourceBundle, visible, parentId, (XmlElement) e, sceneTransform);
                     }
 
                     if (entity != null)
@@ -970,7 +983,7 @@ namespace Caravel.Core
 
                     if (childEntities.Count > 0)
                     {
-                        CreateNestedEntities(childEntities, entity.ID, resourceBundle);
+                        CreateNestedEntities(childEntities, entity.ID, resourceBundle, scenePrefix);
                     }
                 }
             }

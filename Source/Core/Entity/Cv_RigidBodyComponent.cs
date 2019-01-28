@@ -382,6 +382,22 @@ namespace Caravel.Core.Entity
                     foreach (XmlElement category in shapeCollisionCategories)
                     {
                         var id = int.Parse(category.Attributes?["id"].Value, CultureInfo.InvariantCulture);
+
+                        if (shapeData.Categories.HasCategory(id))
+                        {
+                            id = 0;
+
+                            while (shapeData.Categories.HasCategory(id))
+                            {
+                                id++;
+
+                                if (id >= 32)
+                                {
+                                    Cv_Debug.Error("Trying to add a collision category when all have been used already.");
+                                }
+                            }
+                        }
+
                         shapeData.Categories.AddCategory(id);
                     }
 
@@ -391,6 +407,22 @@ namespace Caravel.Core.Entity
                     foreach (XmlElement category in shapeCollidesWith)
                     {
                         var id = int.Parse(category.Attributes?["id"].Value, CultureInfo.InvariantCulture);
+
+                        if (shapeData.CollidesWith.HasCategory(id))
+                        {
+                            id = 0;
+
+                            while (shapeData.CollidesWith.HasCategory(id))
+                            {
+                                id++;
+
+                                if (id >= 32)
+                                {
+                                    Cv_Debug.Error("Trying to add a collision category when all have been used already.");
+                                }
+                            }
+                        }
+
                         shapeData.CollidesWith.AddCategory(id);
                         shapeData.CollisionDirections.Add(id, category.Attributes["directions"].Value);
                     }

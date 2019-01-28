@@ -882,6 +882,11 @@ namespace Caravel.Core.Physics
             var shapeData = newCollisionEvt.ShapeData;
             var entity = Caravel.Logic.GetEntity(newCollisionEvt.EntityID);
 
+            if (entity == null)
+            {
+                return;
+            }
+
             switch (shapeData.Type)
             {
                 case ShapeType.Circle:
@@ -920,14 +925,14 @@ namespace Caravel.Core.Physics
 
         private void OnMoveEntity(Cv_Event eventData)
         {
-            if (eventData.Sender == this)
+            GetChildEntitiesToUpdate(eventData.EntityID);
+
+            if (eventData.Sender == this && m_PhysicsEntitiesToUpdate.Count == 0)
             {
                 return;
             }
 
-            GetChildEntitiesToUpdate(eventData.EntityID);
-
-            if (m_PhysicsEntities.ContainsKey(eventData.EntityID))
+            if (eventData.Sender != this && m_PhysicsEntities.ContainsKey(eventData.EntityID))
             {
                 var pe = m_PhysicsEntities[eventData.EntityID];
                 m_PhysicsEntitiesToUpdate.Add(pe);
@@ -1232,7 +1237,7 @@ namespace Caravel.Core.Physics
                     return true;
                 }
 
-                currEntity = Caravel.Logic.GetEntity(entity1.Parent);
+                currEntity = Caravel.Logic.GetEntity(currEntity.Parent);
             }
 
             return false;

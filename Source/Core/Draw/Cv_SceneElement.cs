@@ -208,6 +208,8 @@ namespace Caravel.Core.Draw
 						}
 
 						ancestorNode = hNode;
+
+                        SetNodeTransform(hNode);
 					}
 				}
 				else
@@ -276,6 +278,11 @@ namespace Caravel.Core.Draw
 			var sceneNode = castEventData.SceneNode;
 			var parentId = castEventData.ParentID;
 
+            if (CaravelApp.Instance.Logic.GetEntity(entityId) == null)
+            {
+                return;
+            }
+
 			AddNodeAsChild(parentId, entityId, sceneNode);
 		}
 
@@ -286,7 +293,12 @@ namespace Caravel.Core.Draw
 			var cameraNode = castEventData.CameraNode;
 			var parentId = castEventData.ParentID;
 
-			AddNodeAsChild(parentId, entityId, cameraNode);
+            if (CaravelApp.Instance.Logic.GetEntity(entityId) == null)
+            {
+                return;
+            }
+
+            AddNodeAsChild(parentId, entityId, cameraNode);
 		}
 
 		
@@ -297,7 +309,12 @@ namespace Caravel.Core.Draw
 			var clickAreaNode = castEventData.ClickAreaNode;
 			var parentId = castEventData.ParentID;
 
-			AddNodeAsChild(parentId, entityId, clickAreaNode);
+            if (CaravelApp.Instance.Logic.GetEntity(entityId) == null)
+            {
+                return;
+            }
+
+            AddNodeAsChild(parentId, entityId, clickAreaNode);
         }
 
 		public void OnModifiedRenderComponent(Cv_Event eventData)
@@ -458,6 +475,7 @@ namespace Caravel.Core.Draw
 			}
 
 			var entity = Caravel.Logic.GetEntity(node.Properties.EntityID);
+
 			var transformComponent = entity.GetComponent<Cv_TransformComponent>();
 			if (transformComponent != null)
 			{

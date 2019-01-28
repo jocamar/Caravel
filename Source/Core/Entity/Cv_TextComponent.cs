@@ -29,6 +29,11 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
+        public bool LiteralText
+        {
+            get; set;
+        }
+
         private int m_iWidth, m_iHeight;
 
         public override void VPostLoad()
@@ -44,6 +49,10 @@ namespace Caravel.Core.Entity
             var textElement = baseElement.OwnerDocument.CreateElement("Text");
             textElement.SetAttribute("text", Text);
             baseElement.AppendChild(textElement);
+
+            var literalTextElement = baseElement.OwnerDocument.CreateElement("LiteralText");
+            literalTextElement.SetAttribute("status", LiteralText.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(literalTextElement);
 
             var hAlignmentElement = baseElement.OwnerDocument.CreateElement("HorizontalAlignment");
             hAlignmentElement.SetAttribute("value", HorizontalAlignment.ToString());
@@ -71,6 +80,12 @@ namespace Caravel.Core.Entity
             if (textNode != null)
             {
                 Text = textNode.Attributes["text"].Value;
+            }
+
+            var literalTextNode = componentData.SelectNodes("LiteralText").Item(0);
+            if (literalTextNode != null)
+            {
+                LiteralText = bool.Parse(literalTextNode.Attributes["status"].Value);
             }
 
             var hAlignNode = componentData.SelectNodes("HorizontalAlignment").Item(0);

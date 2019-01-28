@@ -49,9 +49,20 @@ namespace Caravel.Core.Draw
 			
             var font = resource.GetFontData().Font;
 
-            var text = WrapText(CaravelApp.Instance.GetString(textComponent.Text), font, textComponent.Width, textComponent.Height);
+            var textToDisplay = "";
 
-            var layerDepth = (int) pos.Z;
+            if (textComponent.LiteralText)
+            {
+                textToDisplay = textComponent.Text;
+            }
+            else
+            {
+                textToDisplay = CaravelApp.Instance.GetString(textComponent.Text);
+            }
+
+            var text = WrapText(textToDisplay, font, textComponent.Width, textComponent.Height);
+
+            var layerDepth = (int) Parent.Position.Z;
             layerDepth = layerDepth % Cv_Renderer.MaxLayers;
 
             var bounds = new Rectangle((int) (pos.X - (textComponent.Width * scene.Transform.Origin.X)),

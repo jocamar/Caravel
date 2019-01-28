@@ -1,5 +1,4 @@
 using Caravel.Debugging;
-using static Caravel.Core.Cv_GameLogic;
 
 namespace Caravel.Core.Process
 {
@@ -7,16 +6,20 @@ namespace Caravel.Core.Process
     {
         private string m_sScene;
         private string m_sBundle;
+        private string m_sScenePrefix;
+        private Cv_Transform? m_SceneTransform;
 
-        public Cv_LoadSceneProcess(string scene, string bundle)
+        public Cv_LoadSceneProcess(string scene, string bundle, string scenePrefix = "", Cv_Transform? sceneTransform = null)
         {
             m_sBundle = bundle;
             m_sScene = scene;
+            m_sScenePrefix = scenePrefix;
+            m_SceneTransform = sceneTransform;
         }
 
         protected internal override void VThreadFunction()
         {
-            if (CaravelApp.Instance.Logic.LoadScene(m_sScene, m_sBundle))
+            if (CaravelApp.Instance.Logic.LoadScene(m_sScene, m_sBundle, m_sScenePrefix, m_SceneTransform))
             {
                 Succeed();
             }

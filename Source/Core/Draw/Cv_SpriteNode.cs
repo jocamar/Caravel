@@ -39,7 +39,7 @@ namespace Caravel.Core.Draw
 			var x = (spriteComponent.CurrentFrame % spriteComponent.FrameX) * frameW;
 			var y = (spriteComponent.CurrentFrame / spriteComponent.FrameX) * frameH;
 
-            var layerDepth = (int) pos.Z;
+            var layerDepth = (int) Parent.Position.Z;
             layerDepth = layerDepth % Cv_Renderer.MaxLayers;
 
             var spriteEffect = SpriteEffects.None;
@@ -63,9 +63,10 @@ namespace Caravel.Core.Draw
 
         internal override float GetRadius(Cv_Renderer renderer)
         {
+            Properties.Radius = -1; //Force radius recalculation each time
             if (Properties.Radius < 0)
             {
-                var transf = Parent.Transform;
+                var transf = Parent.WorldTransform;
                 var originFactorX = Math.Abs(transf.Origin.X - 0.5) + 0.5;
                 var originFactorY = Math.Abs(transf.Origin.Y - 0.5) + 0.5;
                 var originFactor = (float) Math.Max(originFactorX, originFactorY);

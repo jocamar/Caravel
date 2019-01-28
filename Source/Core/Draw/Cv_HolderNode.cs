@@ -35,7 +35,7 @@ namespace Caravel.Core.Draw
             Properties.Radius = 0;
             foreach (var child in Children)
             {
-                var childPos = child.Position;
+                var childPos = child.Position * new Vector3(WorldTransform.Scale, 1);
                 var radius = childPos.Length() + child.GetRadius(renderer);
 
                 if (radius > Properties.Radius)
@@ -49,42 +49,7 @@ namespace Caravel.Core.Draw
 
         internal override bool VIsVisible(Cv_Renderer renderer)
         {
-            if (!m_Entity.Visible)
-            {
-                if (!m_bCalculatingVisibilityFirstTime && m_bPreviousVisibility == true)
-                {
-                    var visibilityChangedEvt = new Cv_Event_EntityVisibilityChanged(Properties.EntityID, false, this);
-                    Cv_EventManager.Instance.QueueEvent(visibilityChangedEvt);
-                }
-
-                m_bPreviousVisibility = false;
-                return false;
-            }
-
-            Cv_Transform camTransform = Cv_Transform.FromMatrix(renderer.CamMatrix, new Vector2(0.5f, 0.5f));
-            var worldPos = WorldPosition;
-
-            var fromWorldPos = Vector3.Transform(worldPos, renderer.CamMatrix);
-
-            //See: https://yal.cc/rectangle-circle-intersection-test/
-            var nearestX = Math.Max(0, Math.Min(fromWorldPos.X / renderer.Transform.Scale.X, renderer.VirtualWidth));
-            var nearestY = Math.Max(0, Math.Min(fromWorldPos.Y / renderer.Transform.Scale.Y, renderer.VirtualHeight));
-            
-            var deltaX = (fromWorldPos.X / renderer.Transform.Scale.X) - nearestX;
-            var deltaY = (fromWorldPos.Y / renderer.Transform.Scale.Y) - nearestY;
-
-            var radius = GetRadius(renderer);
-            var scale = camTransform.Scale.X / Math.Max(renderer.Transform.Scale.X,renderer.Transform.Scale.Y);
-            var visibility = (deltaX * deltaX + deltaY * deltaY) < (radius*scale*radius*scale);
-
-            if (!m_bCalculatingVisibilityFirstTime && m_bPreviousVisibility != visibility)
-            {
-                var visibilityChangedEvt = new Cv_Event_EntityVisibilityChanged(Properties.EntityID, visibility, this);
-                Cv_EventManager.Instance.QueueEvent(visibilityChangedEvt);
-            }
-
-            m_bPreviousVisibility = visibility;
-            return visibility;
+            return m_Entity.Visible;
         }
 
         internal override void VPostRender(Cv_Renderer renderer)

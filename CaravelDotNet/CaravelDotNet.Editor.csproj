@@ -648,23 +648,23 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>Libs\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>Libs\ThirdParty\Dependencies\ICSharpCode.SharpZipLib.dll</HintPath>
       <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
     </Reference>
     <Reference Include="KopiLua">
-      <HintPath>Libs\KopiLua.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>Libs\ThirdParty\Dependencies\KopiLua.dll</HintPath>
       <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MonoGame.Framework, Version=3.7.0.1708, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\MonoGame.Framework.dll</HintPath>
+      <HintPath>Libs\ThirdParty\Dependencies\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="NLua">
-      <HintPath>Libs\NLua.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>Libs\ThirdParty\Dependencies\NLua.dll</HintPath>
       <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
