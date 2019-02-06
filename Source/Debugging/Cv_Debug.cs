@@ -25,7 +25,7 @@ namespace Caravel.Debugging
         #endif
 
         private static Cv_Debug instance = null;
-        private readonly string DebugLogFile = "./Logs/error.log";
+        private readonly string DebugLogFile = "./Logs/gameplay.log";
         private object m_TagLock = new object();
         private object m_ErrorMessengerLock = new object();
 

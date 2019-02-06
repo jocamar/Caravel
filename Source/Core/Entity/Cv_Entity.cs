@@ -13,6 +13,10 @@ namespace Caravel.Core.Entity
             INVALID_ENTITY = 0
         }
 
+        public string Scene {
+            get; private set;
+        }
+
 		public string EntityName
 		{
 			get; internal set;
@@ -140,8 +144,9 @@ namespace Caravel.Core.Entity
             return null;
         }
 
-        internal Cv_Entity(string resourceBundle)
+        internal Cv_Entity(string resourceBundle, string sceneID)
         {
+            Scene = sceneID;
             ID = Cv_EntityID.INVALID_ENTITY;
             EntityType = "Unknown";
             EntityTypeResource = "";
@@ -155,8 +160,9 @@ namespace Caravel.Core.Entity
             Visible = true;
         }
 
-        internal Cv_Entity(Cv_EntityID entityId, string resourceBundle)
+        internal Cv_Entity(Cv_EntityID entityId, string resourceBundle, string sceneID)
         {
+            Scene = sceneID;
             ID = entityId;
             EntityType = "Unknown";
             EntityTypeResource = "";

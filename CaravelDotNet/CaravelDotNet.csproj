@@ -130,8 +130,8 @@
     <Compile Include="..\Source\Core\Process\Cv_ProcessManager.cs">
       <Link>Cv_ProcessManager.cs</Link>
     </Compile>
-    <Compile Include="..\Source\Core\Cv_SceneController.cs">
-      <Link>Cv_SceneController.cs</Link>
+    <Compile Include="..\Source\Core\Cv_SceneManager.cs">
+      <Link>Cv_SceneManager.cs</Link>
     </Compile>
     <Compile Include="..\Source\Core\Scripting\Cv_ScriptManager.cs">
       <Link>Cv_ScriptManager.cs</Link>

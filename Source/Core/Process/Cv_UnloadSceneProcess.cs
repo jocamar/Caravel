@@ -13,7 +13,7 @@ namespace Caravel.Core.Process
 
         protected internal override void VThreadFunction()
         {
-            CaravelApp.Instance.Logic.UnloadScene(m_sScene, m_sBundle);
+            CaravelApp.Instance.Logic.UnloadScene(m_sScene);
             
             Succeed();
         }

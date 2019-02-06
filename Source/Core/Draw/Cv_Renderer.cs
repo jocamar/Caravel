@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -137,6 +139,28 @@ namespace Caravel.Core.Draw
 			}
 		}
 
+        private enum Cv_DrawType
+        {
+            Sprite,
+            Text
+        }
+
+        private struct Cv_DrawCommand
+        {
+            public Cv_DrawType Type;
+            public Texture2D Texture;
+            public SpriteFont Font;
+            public string Text;
+            public Rectangle Dest;
+            public Rectangle? Source;
+            public Color Color;
+            public float Rotation;
+            public float TextScale;
+            public float Layer;
+            public Vector2 Origin;
+            public SpriteEffects Effects;
+        }
+
         public Viewport Viewport;
 
         public bool RenderingToScreenIsFinished;
@@ -209,6 +233,7 @@ namespace Caravel.Core.Draw
         private bool m_bDirtyTransform;
 		private BlendState m_BlendState;
 		private SamplerState m_SamplerState;
+        private List<Cv_DrawCommand> m_DrawList;
 
         public Cv_Renderer(SpriteBatch spriteBatch)
         {
@@ -223,6 +248,7 @@ namespace Caravel.Core.Draw
 
 			m_BlendState = BlendState.NonPremultiplied;
 			m_SamplerState = SamplerState.PointClamp;
+            m_DrawList = new List<Cv_DrawCommand>();
         }
         
         public void Initialize()
@@ -234,7 +260,19 @@ namespace Caravel.Core.Draw
 
         public void DrawText(SpriteFont font, string text, Vector2 position, Color color)
         {
-            m_SpriteBatch.DrawString(font, text, position, color);
+            var newCommand = new Cv_DrawCommand();
+            newCommand.Type = Cv_DrawType.Text;
+            newCommand.Text = text;
+            newCommand.Font = font;
+            newCommand.Dest = new Rectangle((int)position.X, (int)position.Y, 1, 1);
+            newCommand.Color = color;
+            newCommand.Rotation = 0;
+            newCommand.Origin = Vector2.Zero;
+            newCommand.Effects = SpriteEffects.None;
+            newCommand.Layer = 255;
+            newCommand.TextScale = 1;
+
+            m_DrawList.Add(newCommand);
         }
 
         public void DrawText(SpriteFont font, string[] text, Rectangle bounds, Cv_TextAlign horizontalAlign,
@@ -279,56 +317,108 @@ namespace Caravel.Core.Draw
                 origin.Y -= currY;
                 currY += size.Y;
 
-                m_SpriteBatch.DrawString(font, line, pos, color, rotation, origin, scale, SpriteEffects.None, layerDepth + currSubLayer);
-            }
+                var newCommand = new Cv_DrawCommand();
+                newCommand.Type = Cv_DrawType.Text;
+                newCommand.Text = line;
+                newCommand.Font = font;
+                newCommand.Dest = new Rectangle((int) pos.X, (int) pos.Y, 1, 1);
+                newCommand.Color = color;
+                newCommand.Rotation = rotation;
+                newCommand.Origin = origin;
+                newCommand.Effects = effects;
+                newCommand.Layer = layerDepth;
+                newCommand.TextScale = scale;
 
-            m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
+                m_DrawList.Add(newCommand);
+            }
         }
 
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Color color)
         {
-            m_SpriteBatch.Draw(texture, destinationRectangle, color);
+            var newCommand = new Cv_DrawCommand();
+            newCommand.Type = Cv_DrawType.Sprite;
+            newCommand.Texture = texture;
+            newCommand.Dest = destinationRectangle;
+            newCommand.Source = new Rectangle(0, 0, texture.Width, texture.Height);
+            newCommand.Color = color;
+            newCommand.Rotation = 0;
+            newCommand.Origin = Vector2.Zero;
+            newCommand.Effects = SpriteEffects.None;
+            newCommand.Layer = 255;
+
+            m_DrawList.Add(newCommand);
         }
 
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle sourceRectangle, Color color)
         {
-            m_SpriteBatch.Draw(texture, destinationRectangle, sourceRectangle, color);
+            var newCommand = new Cv_DrawCommand();
+            newCommand.Type = Cv_DrawType.Sprite;
+            newCommand.Texture = texture;
+            newCommand.Dest = destinationRectangle;
+            newCommand.Source = sourceRectangle;
+            newCommand.Color = color;
+            newCommand.Rotation = 0;
+            newCommand.Origin = Vector2.Zero;
+            newCommand.Effects = SpriteEffects.None;
+            newCommand.Layer = 255;
+
+            m_DrawList.Add(newCommand);
         }
 
         public void Draw(RenderTarget2D renderTarget2D, Vector2 position, Color color)
         {
-            m_SpriteBatch.Draw(renderTarget2D, position, color);
+            var newCommand = new Cv_DrawCommand();
+            newCommand.Type = Cv_DrawType.Sprite;
+            newCommand.Texture = renderTarget2D;
+            newCommand.Dest = new Rectangle((int) position.X, (int) position.Y, renderTarget2D.Width, renderTarget2D.Height);
+            newCommand.Source = new Rectangle(0, 0, renderTarget2D.Width, renderTarget2D.Height);
+            newCommand.Color = color;
+            newCommand.Rotation = 0;
+            newCommand.Origin = Vector2.Zero;
+            newCommand.Effects = SpriteEffects.None;
+            newCommand.Layer = 255;
+
+            m_DrawList.Add(newCommand);
         }
 
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle,
                             Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth)
         {
-            var currSubLayer = m_iCurrSubLayer / (MaxLayers * NUM_SUBLAYERS);
-            m_SpriteBatch.Draw(texture, destinationRectangle,
-                                        sourceRectangle,
-                                        color,
-                                        rotation,
-                                        origin,
-                                        effects,
-                                        layerDepth + currSubLayer);
+            var newCommand = new Cv_DrawCommand();
+            newCommand.Type = Cv_DrawType.Sprite;
+            newCommand.Texture = texture;
+            newCommand.Dest = destinationRectangle;
+            newCommand.Source = sourceRectangle;
+            newCommand.Color = color;
+            newCommand.Rotation = rotation;
+            newCommand.Origin = origin;
+            newCommand.Effects = effects;
+            newCommand.Layer = layerDepth;
 
-            m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
+            m_DrawList.Add(newCommand);
         }
 
         public void Draw(Texture2D texture, Vector3 position, Rectangle? sourceRectangle, Color color,
                                             float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects)
         {
-            var currSubLayer = m_iCurrSubLayer / (MaxLayers * NUM_SUBLAYERS);
-            m_SpriteBatch.Draw(texture, new Vector2(position.X, position.Y),
-                                        sourceRectangle,
-                                        color,
-                                        rotation,
-                                        origin,
-                                        scale,
-                                        effects,
-                                        (position.Z / MaxLayers) + currSubLayer);
-            
-            m_iCurrSubLayer = ++m_iCurrSubLayer % NUM_SUBLAYERS;
+            float width = sourceRectangle != null ? sourceRectangle.Value.Width : texture.Width;
+            float height = sourceRectangle != null ? sourceRectangle.Value.Height : texture.Height;
+
+            width *= scale.X;
+            height *= scale.Y;
+
+            var newCommand = new Cv_DrawCommand();
+            newCommand.Type = Cv_DrawType.Sprite;
+            newCommand.Texture = texture;
+            newCommand.Dest = new Rectangle((int) position.X, (int) position.Y, (int) width, (int) height);
+            newCommand.Source = sourceRectangle;
+            newCommand.Color = color;
+            newCommand.Rotation = rotation;
+            newCommand.Origin = origin;
+            newCommand.Effects = effects;
+            newCommand.Layer = 255;
+
+            m_DrawList.Add(newCommand);
         }
 
         public Vector2 ScaleMouseToScreenCoordinates(Vector2 screenPosition)
@@ -344,12 +434,11 @@ namespace Caravel.Core.Draw
 
         internal void BeginDraw(Cv_CameraNode camera = null)
         {
-            if (camera == null)
-            {
-                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, m_BlendState, m_SamplerState,
-                                        DepthStencilState.None, RasterizerState.CullNone, null, Transform.TransformMatrix);
-            }
-            else
+            m_DrawList.Clear();
+
+            var transform = Transform.TransformMatrix;
+
+            if (camera != null)
             {
                 var cameraTransform = camera.GetViewTransform(VirtualWidth, VirtualHeight, Transform);
                 if (camera.IsViewTransformDirty)
@@ -358,15 +447,45 @@ namespace Caravel.Core.Draw
                                                 * Matrix.CreateScale(cameraTransform.Scale.X, cameraTransform.Scale.Y, 1);
                 }
 
-                m_SpriteBatch.Begin(SpriteSortMode.FrontToBack, m_BlendState, m_SamplerState,
-                                        DepthStencilState.None, RasterizerState.CullNone, null, CamMatrix);
+                transform = CamMatrix;
             }
+
+            m_SpriteBatch.Begin(SpriteSortMode.Deferred, m_BlendState, m_SamplerState,
+                                        DepthStencilState.None, RasterizerState.CullNone, null, transform);
 
             m_iCurrSubLayer = 0;
         }
 
         internal void EndDraw()
         {
+            var sortedDrawList = m_DrawList.OrderBy(command => command.Layer).ThenBy(command => command.Dest.Y).ToArray();
+
+            foreach (var command in sortedDrawList)
+            {
+                if (command.Type == Cv_DrawType.Sprite)
+                {
+                    m_SpriteBatch.Draw(command.Texture, command.Dest,
+                                            command.Source,
+                                            command.Color,
+                                            command.Rotation,
+                                            command.Origin,
+                                            command.Effects,
+                                            0);
+                }
+                else
+                {
+                    m_SpriteBatch.DrawString(command.Font,
+                                                command.Text,
+                                                new Vector2(command.Dest.X, command.Dest.Y),
+                                                command.Color,
+                                                command.Rotation,
+                                                command.Origin,
+                                                command.TextScale,
+                                                command.Effects,
+                                                0);
+                }
+            }
+
             m_SpriteBatch.End();
         }
 
