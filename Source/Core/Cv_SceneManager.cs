@@ -163,7 +163,7 @@ namespace Caravel.Core
                 unloadScript = scriptElement.Attributes["unLoad"].Value;
             }
 
-            if (unloadScript != null)
+            if (unloadScript != null && unloadScript != "")
             {
                 Cv_ScriptResource unLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(unloadScript, sceneInfo.ResourceBundle);
                 unLoadRes.RunScript();
