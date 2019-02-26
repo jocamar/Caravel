@@ -454,6 +454,8 @@ namespace Caravel
                     return false;
                 }
 
+                m_TextResource.Clear();
+
                 foreach (XmlElement elem in root.ChildNodes)
                 {
                     string key = elem.Attributes["id"].Value;

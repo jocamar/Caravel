@@ -85,9 +85,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Source\AssemblyLoader.cs">
-      <Link>AssemblyLoader.cs</Link>
-    </Compile>
     <Compile Include="..\Source\CaravelApp.cs">
       <Link>CaravelApp.cs</Link>
     </Compile>
@@ -402,9 +399,6 @@
     </Compile>
     <Compile Include="..\Source\Editor\Cv_ResizeWindowEvt.cs">
       <Link>Cv_ResizeWindowEvt.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\Program.cs">
-      <Link>Program.cs</Link>
     </Compile>
     <Compile Include="..\Source\TestSamples\SimpleGame.cs">
       <Link>SimpleGame.cs</Link>

@@ -70,7 +70,7 @@ namespace Caravel.Core
                 return false;
             }
 
-            if (!Caravel.Logic.OnPreLoadScene(root))
+            if (!Caravel.Logic.OnPreLoadScene(root, sceneID))
             {
                 return false;
             }
@@ -148,7 +148,7 @@ namespace Caravel.Core
                 return false;
             }
 
-            if (!Caravel.Logic.OnPreUnloadScene(root))
+            if (!Caravel.Logic.OnPreUnloadScene(root, sceneID))
             {
                 Cv_Debug.Error("Failed to unload scene resource file: " + sceneInfo.SceneResource);
                 return false;

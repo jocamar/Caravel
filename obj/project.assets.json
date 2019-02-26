@@ -302,10 +302,12 @@
   },
   "libraries": {
     "Microsoft.NETCore.App/2.0.0": {
-      "sha512": "/mzXF+UtZef+VpzzN88EpvFq5U6z4rj54ZMq/J968H6pcvyLOmcupmTRpJ3CJm8ILoCGh9WI7qpDdiKtuzswrQ==",
+      "sha512": "aEj44yEbsK+XlDwPNSM7CeaYDg33NMk492y2kFRIOMPOVmXvXNO0LTDm8lUhS4Jlm2uNFsIDDH4ggt9lnSDejQ==",
       "type": "package",
       "path": "microsoft.netcore.app/2.0.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "LICENSE.TXT",
         "Microsoft.NETCore.App.versions.txt",
         "THIRD-PARTY-NOTICES.TXT",
@@ -580,10 +582,12 @@
       ]
     },
     "Microsoft.NETCore.DotNetAppHost/2.0.0": {
-      "sha512": "L4GGkcI/Mxl8PKLRpFdGmLb5oI8sGIR05bDTGkzCoamAjdUl1Zhkov2swjEsZvKYT8kkdiz39LtwyGYuCJxm1A==",
+      "sha512": "dYQNVWNBsO9LldqAyJTt/wYUq2BScXq3ENBaNUjELS3sT53mwrgyPpmoLHsE7H10RzYOHEl5G0sg/jpZGlIAzA==",
       "type": "package",
       "path": "microsoft.netcore.dotnetapphost/2.0.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "microsoft.netcore.dotnetapphost.2.0.0.nupkg.sha512",
@@ -592,10 +596,12 @@
       ]
     },
     "Microsoft.NETCore.DotNetHostPolicy/2.0.0": {
-      "sha512": "rm7mMn0A93fwyAwVhbyOCcPuu2hZNL0A0dAur9sNG9pEkONPfCEQeF7m2mC8KpqZO0Ol6tpV5J0AF3HTXT3GXA==",
+      "sha512": "RAMrQqBFMiF4dbpHJEvcwwXG+ISoKRck8zXlfr49waPc7xllEpv/ANHi4c3pCTkVIdNNSdDYf71YjbkaRSHJgg==",
       "type": "package",
       "path": "microsoft.netcore.dotnethostpolicy/2.0.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "microsoft.netcore.dotnethostpolicy.2.0.0.nupkg.sha512",
@@ -604,10 +610,12 @@
       ]
     },
     "Microsoft.NETCore.DotNetHostResolver/2.0.0": {
-      "sha512": "uBbjpeSrwsaTCADZCzRk+3aBzNnMqkC4zftJWBsL+Zk+8u+W+/lMb2thM5Y4hiVrv1YQg9t6dKldXzOKkY+pQw==",
+      "sha512": "LrZ1AcFJF7+da03Is+5RKdqjnDVNnoi1MBRAi4LRif3uO9rRntfNUezeNcG/OO/yGYzyEwGJkioyw8ZWGJiKWg==",
       "type": "package",
       "path": "microsoft.netcore.dotnethostresolver/2.0.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "microsoft.netcore.dotnethostresolver.2.0.0.nupkg.sha512",
@@ -616,10 +624,12 @@
       ]
     },
     "Microsoft.NETCore.Platforms/2.0.0": {
-      "sha512": "VdLJOCXhZaEMY7Hm2GKiULmn7IEPFE4XC5LPSfBVCUIA8YLZVh846gtfBJalsPQF2PlzdD7ecX7DZEulJ402ZQ==",
+      "sha512": "5BdAWDgMNwf90L0J+C/eh6kfHDa37ViL1cBL1nv5zPA4TB2cGV51YiQyvzCEy9DBE0LwwMI4+PkUpIekKyocSA==",
       "type": "package",
       "path": "microsoft.netcore.platforms/2.0.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "lib/netstandard1.0/_._",
@@ -631,44 +641,12 @@
       ]
     },
     "MonoGame.Content.Builder/3.7.0.4": {
-      "sha512": "EfPrCHTWQ4O5G/XIfGqWx1J9vvI4QrUI8SjBCIT8Aeepl0y2oi1+YjvmBbxjFvJb2uGkYnLq4GCwXuquMi3TYw==",
+      "sha512": "YUCjzVm/ROTqxw9zHsYM3P/2UBAPMYxa7xMGiyKkmlV/OtSbFM2z4nIJ5we2ZMRXej+5EbY8CLEKiRvWaf4s4g==",
       "type": "package",
       "path": "monogame.content.builder/3.7.0.4",
       "files": [
-        "build/MGCB.zip",
-        "build/MGCB/MonoGame.Content.Builder.Windows.nuspec",
-        "build/MGCB/[Content_Types].xml",
-        "build/MGCB/_rels/.rels",
-        "build/MGCB/build/ATI.TextureConverter.dll",
-        "build/MGCB/build/Assimp64.dll",
-        "build/MGCB/build/AssimpNet.dll",
-        "build/MGCB/build/CppNet.dll",
-        "build/MGCB/build/FreeImage.dll",
-        "build/MGCB/build/FreeImageNET.dll",
-        "build/MGCB/build/MGCB.exe",
-        "build/MGCB/build/MGCB.exe.config",
-        "build/MGCB/build/MGCB.xml",
-        "build/MGCB/build/MonoGame.Framework.Content.Pipeline.dll",
-        "build/MGCB/build/MonoGame.Framework.Content.Pipeline.xml",
-        "build/MGCB/build/MonoGame.Framework.dll",
-        "build/MGCB/build/MonoGame.Framework.xml",
-        "build/MGCB/build/Nvidia.TextureTools.dll",
-        "build/MGCB/build/PVRTexLibNET.dll",
-        "build/MGCB/build/PVRTexLibWrapper.dll",
-        "build/MGCB/build/SharpDX.D3DCompiler.dll",
-        "build/MGCB/build/SharpDX.DXGI.dll",
-        "build/MGCB/build/SharpDX.Direct2D1.dll",
-        "build/MGCB/build/SharpDX.Direct3D11.dll",
-        "build/MGCB/build/SharpDX.MediaFoundation.dll",
-        "build/MGCB/build/SharpDX.XAudio2.dll",
-        "build/MGCB/build/SharpDX.XInput.dll",
-        "build/MGCB/build/SharpDX.dll",
-        "build/MGCB/build/SharpFont.dll",
-        "build/MGCB/build/ffmpeg.exe",
-        "build/MGCB/build/ffprobe.exe",
-        "build/MGCB/build/freetype6.dll",
-        "build/MGCB/build/libmojoshader_64.dll",
-        "build/MGCB/build/nvtt.dll",
+        ".nupkg.metadata",
+        ".signature.p7s",
         "build/MonoGame.Content.Builder.targets",
         "monogame.content.builder.3.7.0.4.nupkg.sha512",
         "monogame.content.builder.nuspec",
@@ -683,10 +661,12 @@
       ]
     },
     "MonoGame.Framework.DesktopGL.Core/3.7.0.7": {
-      "sha512": "DDQdsO3OreMfpKCPCjBP0hiClhvwo71bK68F8fCP0utkOKbL3dvkVfqrYinlM+QSt30dDt21yO9pMJJStikpHA==",
+      "sha512": "juPb6yv+N362liHMbYQavmlhLzufpGGvNQqcpDGEs4BzRiycBXXjhZjCwpUekx0ozLfQ+kjirnuA3/M2lc4tMQ==",
       "type": "package",
       "path": "monogame.framework.desktopgl.core/3.7.0.7",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "build/MonoGame.Framework.DesktopGL.Core.targets",
         "lib/netstandard2.0/MonoGame.Framework.dll",
         "lib/netstandard2.0/MonoGame.Framework.xml",
@@ -705,10 +685,12 @@
       ]
     },
     "NETStandard.Library/2.0.0": {
-      "sha512": "7jnbRU+L08FXKMxqUflxEXtVymWvNOrS8yHgu9s6EM8Anr6T/wIX4nZ08j/u3Asz+tCufp3YVwFSEvFTPYmBPA==",
+      "sha512": "49ZAcrnNn56GIJwGoiaI7NpwcEJ8mjUyfSqVYIJMDhOBzPe8HSHS74swF2H0v8fzj7pxLfcYjS9P5PdIqsTQxw==",
       "type": "package",
       "path": "netstandard.library/2.0.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "build/NETStandard.Library.targets",
@@ -837,6 +819,7 @@
       "type": "package",
       "path": "nlua_safe/1.3.2.1",
       "files": [
+        ".nupkg.metadata",
         "lib/net35/KopiLua.dll",
         "lib/net35/NLua.dll",
         "lib/net40/KopiLua.dll",
@@ -848,10 +831,12 @@
       ]
     },
     "SharpZipLib.NETStandard/1.0.7": {
-      "sha512": "mYKPizF2CY32RQB8FITYy0e30gVgItFA63SFquruaxq+votwL1T+yOfssK10v4enBcxklr8ks48hS1emw5TTXg==",
+      "sha512": "dyrHZlE09W2qPVSq1CuIS8t/5TdsTalKaW+wK1dr2eNf32kEaGaTOdRwe0WngBAHBOsDghRHk+BPlmEsBUV1nw==",
       "type": "package",
       "path": "sharpziplib.netstandard/1.0.7",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "lib/net45/ICSharpCode.SharpZipLib.dll",
         "lib/net45/ICSharpCode.SharpZipLib.pdb",
         "lib/net45/ICSharpCode.SharpZipLib.xml",
@@ -864,10 +849,12 @@
       ]
     },
     "System.Text.Encoding.CodePages/4.4.0": {
-      "sha512": "6JX7ZdaceBiLKLkYt8zJcp4xTJd1uYyXXEkPw6mnlUIjh1gZPIVKPtRXPmY5kLf6DwZmf5YLwR3QUrRonl7l0A==",
+      "sha512": "FpAgMC+BX6OOCiRebYqHP3r3aYU7o0lopPOo4zKyGc5LWXFEYRUaKtoXXvAJ3sP+IDOK/KBxZaiVAdi+QdZ0TA==",
       "type": "package",
       "path": "system.text.encoding.codepages/4.4.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "lib/MonoAndroid10/_._",
@@ -921,28 +908,30 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\jocamar\\.nuget\\packages\\": {},
+    "C:\\Users\\jocam\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jocamar\\Caravel\\Caravel.csproj",
+      "projectUniqueName": "c:\\Users\\jocam\\Projects\\Caravel\\Caravel.csproj",
       "projectName": "Caravel",
-      "projectPath": "C:\\Users\\jocamar\\Caravel\\Caravel.csproj",
-      "packagesPath": "C:\\Users\\jocamar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jocamar\\Caravel\\obj\\",
+      "projectPath": "c:\\Users\\jocam\\Projects\\Caravel\\Caravel.csproj",
+      "packagesPath": "C:\\Users\\jocam\\.nuget\\packages\\",
+      "outputPath": "c:\\Users\\jocam\\Projects\\Caravel\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\jocamar\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\jocam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

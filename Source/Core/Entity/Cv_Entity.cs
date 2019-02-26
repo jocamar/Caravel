@@ -269,6 +269,13 @@ namespace Caravel.Core.Entity
                     component.Owner = null;
                 }
             }
+
+            var parent = CaravelApp.Instance.Logic.GetEntity(Parent);
+
+            if (parent != null)
+            {
+                parent.RemoveChild(this);
+            }
         }
 
         internal void OnRemove()
@@ -344,8 +351,20 @@ namespace Caravel.Core.Entity
 
         internal void AddChild(Cv_Entity entity)
         {
-            m_Children.Add(entity);
-            entity.Parent = ID;
+            lock (m_Children)
+            {
+                m_Children.Add(entity);
+                entity.Parent = ID;
+            }
+        }
+
+        internal void RemoveChild(Cv_Entity entity)
+        {
+            lock (m_Children)
+            {
+                m_Children.Remove(entity);
+                entity.Parent = Cv_EntityID.INVALID_ENTITY;
+            }
         }
 
         private Cv_EntityComponent GetComponent(Type componentType)

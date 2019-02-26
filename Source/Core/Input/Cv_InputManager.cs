@@ -94,22 +94,23 @@ namespace Caravel.Core.Input
         public void BindCommand(PlayerIndex player, string command, Keys key)
 		{
 			m_BindedKeys[(int) player][command] = key;
-            m_BindedButtons[(int)player].Remove(command);
-            m_BindedMouseActions[(int)player].Remove(command);
 		}
 
 		public void BindCommand(PlayerIndex player, string command, Buttons button)
 		{
 			m_BindedButtons[(int) player][command] = button;
-            m_BindedKeys[(int)player].Remove(command);
-            m_BindedMouseActions[(int)player].Remove(command);
         }
 
 		public void BindCommand(PlayerIndex player, string command, Cv_MouseAction button)
 		{
 			m_BindedMouseActions[(int) player][command] = button;
-            m_BindedButtons[(int)player].Remove(command);
+        }
+
+        public void UnbindCommand(PlayerIndex player, string command)
+        {
             m_BindedKeys[(int)player].Remove(command);
+            m_BindedButtons[(int)player].Remove(command);
+            m_BindedMouseActions[(int)player].Remove(command);
         }
 
         public bool IsCommandBound(PlayerIndex player, string command)

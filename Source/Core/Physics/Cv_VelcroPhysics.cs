@@ -927,25 +927,37 @@ namespace Caravel.Core.Physics
         {
             GetChildEntitiesToUpdate(eventData.EntityID);
 
+            
+            Cv_PhysicsEntity movedEntity = null;
             if (eventData.Sender == this && m_PhysicsEntitiesToUpdate.Count == 0)
             {
+                if (m_PhysicsEntities.TryGetValue(eventData.EntityID, out movedEntity))
+                {
+                    var transformComp = movedEntity.Entity.GetComponent<Cv_TransformComponent>();
+                    
+                    if (transformComp != null)
+                    {
+                        movedEntity.PrevWorldTransform = transformComp.WorldTransform;
+                    }
+                }
+
                 return;
             }
 
-            if (eventData.Sender != this && m_PhysicsEntities.ContainsKey(eventData.EntityID))
+            if (eventData.Sender != this && m_PhysicsEntities.TryGetValue(eventData.EntityID, out movedEntity))
             {
-                var pe = m_PhysicsEntities[eventData.EntityID];
-                m_PhysicsEntitiesToUpdate.Add(pe);
+                m_PhysicsEntitiesToUpdate.Add(movedEntity);
             }
 
             foreach (var pe in m_PhysicsEntitiesToUpdate)
             {
-                if (pe.Entity.GetComponent<Cv_TransformComponent>() == null)
+                var transformComp = pe.Entity.GetComponent<Cv_TransformComponent>();
+                if (transformComp == null)
                 {
                     continue;
                 }
 
-                var worldTransform = pe.Entity.GetComponent<Cv_TransformComponent>().WorldTransform;
+                var worldTransform = transformComp.WorldTransform;
                 if (pe.PrevWorldTransform.Scale != worldTransform.Scale)
                 {
                     var oldScale = pe.PrevWorldTransform.Scale;
@@ -986,18 +998,11 @@ namespace Caravel.Core.Physics
                     }
                 }
 
-                if (Math.Floor(worldTransform.Position.X) != Math.Floor(pe.PrevWorldTransform.Position.X)
-                    || Math.Floor(worldTransform.Position.Y) != Math.Floor(pe.PrevWorldTransform.Position.Y))
-                {
-                    pe.Body.Position = ToPhysicsVector(worldTransform.Position);
-                }
+                pe.Body.Position = ToPhysicsVector(worldTransform.Position);
 
-                if (worldTransform.Rotation != pe.PrevWorldTransform.Rotation)
+                if(pe.Entity.GetComponent<Cv_RigidBodyComponent>().UseEntityRotation)
                 {
-                    if(pe.Entity.GetComponent<Cv_RigidBodyComponent>().UseEntityRotation)
-                    {
-                        pe.Body.Rotation = worldTransform.Rotation;
-                    }
+                    pe.Body.Rotation = worldTransform.Rotation;
                 }
 
                 pe.PrevWorldTransform = worldTransform;

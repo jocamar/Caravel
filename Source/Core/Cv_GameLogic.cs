@@ -394,7 +394,7 @@ namespace Caravel.Core
             lock(m_EntityList)
             lock(Entities)
             {
-                Cv_Entity entity;
+                Cv_Entity entity = null;
                 var entityExists = false;
                 
                 entityExists = Entities.TryGetValue(entityId, out entity);
@@ -642,10 +642,13 @@ namespace Caravel.Core
                 return false;
             }
 
-			foreach (var e in Entities)
-			{
-				e.Value.PostLoad();
-			}
+            lock(Entities)
+            {
+                foreach (var e in Entities)
+                {
+                    e.Value.PostLoad();
+                }
+            }
 
             if (IsProxy)
             {
@@ -774,11 +777,11 @@ namespace Caravel.Core
         {
         }
 
-        protected virtual void VGameOnPreUnloadScene(XmlElement sceneData)
+        protected virtual void VGameOnPreUnloadScene(XmlElement sceneData, string sceneID)
         {
         }
 
-        protected virtual bool VGameOnPreLoadScene(XmlElement sceneData)
+        protected virtual bool VGameOnPreLoadScene(XmlElement sceneData, string sceneID)
         {
             return true;
         }
@@ -874,7 +877,9 @@ namespace Caravel.Core
 
             foreach (var e in m_EntityList)
             {
-                e.OnUpdate(elapsedTime);
+                if (!e.DestroyRequested) {
+                    e.OnUpdate(elapsedTime);
+                }
             }
 
             Cv_Entity toRemove = null;
@@ -899,9 +904,9 @@ namespace Caravel.Core
             VGameOnUpdate(time, elapsedTime);
         }
 
-        internal bool OnPreLoadScene(XmlElement sceneData)
+        internal bool OnPreLoadScene(XmlElement sceneData, string sceneID)
         {
-            return VGameOnPreLoadScene(sceneData);
+            return VGameOnPreLoadScene(sceneData, sceneID);
         }
 
         internal bool OnLoadScene(XmlElement sceneData, string sceneID)
@@ -926,9 +931,9 @@ namespace Caravel.Core
             return true;
         }
 
-        internal bool OnPreUnloadScene(XmlElement sceneData)
+        internal bool OnPreUnloadScene(XmlElement sceneData, string sceneID)
         {
-            VGameOnPreUnloadScene(sceneData);
+            VGameOnPreUnloadScene(sceneData, sceneID);
             return true;
         }
 

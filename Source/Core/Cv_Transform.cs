@@ -14,9 +14,17 @@ namespace Caravel.Core
         {
             get
             {
-                return  Matrix.CreateScale(Scale.X, Scale.Y, 1) * Matrix.CreateRotationZ(Rotation) * Matrix.CreateTranslation(Position.X, Position.Y, Position.Z);
+                if (!m_bMatrixCalculated) {
+                    m_bMatrixCalculated = true;
+                    m_TransformMatrix = Matrix.CreateScale(Scale.X, Scale.Y, 1) * Matrix.CreateRotationZ(Rotation) * Matrix.CreateTranslation(Position.X, Position.Y, Position.Z);
+                }
+                
+                return m_TransformMatrix;
             }
         }
+
+        private Matrix m_TransformMatrix;
+        private bool m_bMatrixCalculated;
 
 		public static Cv_Transform Multiply(Cv_Transform t1, Cv_Transform t2)
 		{
@@ -40,6 +48,8 @@ namespace Caravel.Core
             Scale = scale;
             Rotation = rotation;
             Origin = new Vector2(0.5f, 0.5f);
+            m_bMatrixCalculated = false;
+            m_TransformMatrix = Matrix.Identity;
 
             if (origin != null)
             {
