@@ -652,12 +652,12 @@ namespace Caravel.Core
 
             if (IsProxy)
             {
-                var remoteSceneLoadedEvent = new Cv_Event_RemoteSceneLoaded(sceneResource, resourceBundle, this);
+                var remoteSceneLoadedEvent = new Cv_Event_RemoteSceneLoaded(sceneResource, sceneID, resourceBundle, this);
                 Cv_EventManager.Instance.TriggerEvent(remoteSceneLoadedEvent);
             }
             else
             {
-                var sceneLoadedEvent = new Cv_Event_SceneLoaded(sceneResource, resourceBundle, this);
+                var sceneLoadedEvent = new Cv_Event_SceneLoaded(sceneResource, sceneID, resourceBundle, this);
                 Cv_EventManager.Instance.TriggerEvent(sceneLoadedEvent);
             }
 
@@ -943,12 +943,12 @@ namespace Caravel.Core
 
             if (IsProxy)
             {
-                var remoteSceneUnloadedEvent = new Cv_Event_RemoteSceneUnloaded(sceneResource, resourceBundle, this);
+                var remoteSceneUnloadedEvent = new Cv_Event_RemoteSceneUnloaded(sceneResource, sceneID, resourceBundle, this);
                 Cv_EventManager.Instance.TriggerEvent(remoteSceneUnloadedEvent);
             }
             else
             {
-                var sceneUnloadedEvent = new Cv_Event_SceneUnloaded(sceneResource, resourceBundle, this);
+                var sceneUnloadedEvent = new Cv_Event_SceneUnloaded(sceneResource, sceneID, resourceBundle, this);
                 Cv_EventManager.Instance.TriggerEvent(sceneUnloadedEvent);
             }
 

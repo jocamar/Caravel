@@ -814,12 +814,12 @@ namespace Caravel.Core.Physics
 
             var velcroContact = GenerateContact(contact, collidingShape, collidedShape);
 
-            if (collidedShape.IsSensor)
+            if (collidedShape.IsSensor || collidingShape.IsSensor)
             {
                 var newEvent = new Cv_Event_EnterTrigger(velcroContact, this);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
-            else if (!collidingShape.IsSensor)
+            else
             {
                 if (!m_CollisionPairs.Exists(cp => cp.Item1 == collidingShape && cp.Item2 == collidedShape))
                 {
@@ -841,12 +841,12 @@ namespace Caravel.Core.Physics
 
             var velcroContact = GenerateContact(contact, collisionShapeA, collisionShapeB);
 
-            if (collisionShapeA.IsSensor)
+            if (collisionShapeA.IsSensor || collisionShapeB.IsSensor)
             {
                 var newEvent = new Cv_Event_LeaveTrigger(velcroContact, this);
                 Cv_EventManager.Instance.QueueEvent(newEvent);
             }
-            else if (!collisionShapeB.IsSensor)
+            else
             {
                 if (!m_SeparationPairs.Exists(sp => sp.Item1 == collisionShapeB && sp.Item2 == collisionShapeA))
                 {
@@ -1270,6 +1270,16 @@ namespace Caravel.Core.Physics
             velcroContact.CollidingShape = collidingShape;
             velcroContact.NormalForce = normalForce;
             velcroContact.CollisionPoints = collisionPoints.ToArray();
+
+            if (m_PhysicsEntities.ContainsKey(collidedShape.Owner.ID))
+            {
+                velcroContact.CollidedShapeVelocity = ToOutsideVector(m_PhysicsEntities[collidedShape.Owner.ID].Body.LinearVelocity);
+            }
+
+            if (m_PhysicsEntities.ContainsKey(collidingShape.Owner.ID))
+            {
+                velcroContact.CollidingShapeVelocity = ToOutsideVector(m_PhysicsEntities[collidingShape.Owner.ID].Body.LinearVelocity);
+            }
 
             return velcroContact;
         }

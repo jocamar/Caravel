@@ -51,7 +51,10 @@ namespace Caravel.Core.Process
                     m_OnEnd();
                 }
                 
-                Succeed();
+                if (IsAlive)
+                {
+                    Succeed();
+                }
             }
         }
     }

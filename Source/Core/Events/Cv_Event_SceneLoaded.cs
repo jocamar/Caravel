@@ -11,14 +11,20 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public string SceneID
+        {
+            get; private set;
+        }
+
         public string ResourceBundle
         {
             get; private set;
         }
 
-        public Cv_Event_SceneLoaded(string sceneResource, string resourceBundle, object sender, float timeStamp = 0) : base(Cv_EntityID.INVALID_ENTITY, sender, timeStamp)
+        public Cv_Event_SceneLoaded(string sceneResource, string sceneID, string resourceBundle, object sender, float timeStamp = 0) : base(Cv_EntityID.INVALID_ENTITY, sender, timeStamp)
         {
             SceneResource = sceneResource;
+            SceneID = sceneID;
             ResourceBundle = resourceBundle;
         }
 

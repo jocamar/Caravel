@@ -33,6 +33,16 @@ namespace Caravel.Core.Physics
             get; internal set;
         }
 
+        public Vector2 CollidedShapeVelocity
+        {
+            get; internal set;
+        }
+
+        public Vector2 CollidingShapeVelocity
+        {
+            get; internal set;
+        }
+
         public Vector2[] CollisionPoints
         {
             get; internal set;
