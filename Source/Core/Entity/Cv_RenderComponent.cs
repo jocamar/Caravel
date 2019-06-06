@@ -79,6 +79,11 @@ namespace Caravel.Core.Entity
                 }
             }
         }
+        
+        public float Parallax
+        {
+            get; set;
+        }
 
         private Cv_SceneNode m_SceneNode;
 
@@ -108,6 +113,10 @@ namespace Caravel.Core.Entity
             sizeElement.SetAttribute("width", Width.ToString(CultureInfo.InvariantCulture));
             sizeElement.SetAttribute("height", Height.ToString(CultureInfo.InvariantCulture));
             baseElement.AppendChild(sizeElement);
+            
+            var paralaxElement = baseElement.OwnerDocument.CreateElement("Parallax");
+            paralaxElement.SetAttribute("value", Parallax.ToString(CultureInfo.InvariantCulture));
+            baseElement.AppendChild(paralaxElement);
 
             // create XML for inherited classes
             VCreateInheritedElement(baseElement);
@@ -133,6 +142,16 @@ namespace Caravel.Core.Entity
             //Draws the yellow contour when an entity is selected in the editor
             if (scene.Caravel.EditorRunning && scene.EditorSelectedEntity == Owner.ID)
             {
+                var camTransf = scene.Camera.GetViewTransform(renderer.VirtualWidth, renderer.VirtualHeight, Cv_Transform.Identity);
+                
+                if (Parallax != 1)
+                {
+                    var zoomFactor = ((1 + ((scene.Camera.Zoom - 1) * Parallax)) / scene.Camera.Zoom);
+                    scale = scale * zoomFactor; //Magic formula
+                    pos += ((Parallax - 1) * new Vector3(camTransf.Position.X, camTransf.Position.Y, 0));
+                    pos += ((new Vector3(scene.Transform.Position.X, scene.Transform.Position.Y, 0)) * (1 - zoomFactor) * (Parallax - 1));
+                }
+
                 var rotMatrixZ = Matrix.CreateRotationZ(rot);
 
                 Vector2 point1;
@@ -184,6 +203,21 @@ namespace Caravel.Core.Entity
             var pos = new Vector2(worldTransform.Position.X, worldTransform.Position.Y);
             var rot = worldTransform.Rotation;
             var scale = worldTransform.Scale;
+
+            Vector3 tmpScale;
+            Quaternion tmpQuat; //We don't care about these but we need them for compatibility with older .NET versions
+            Vector3 camPos;
+            camMatrix.Decompose(out tmpScale, out tmpQuat, out camPos);
+
+            pos = pos + ((Parallax - 1) * new Vector2(camPos.X, camPos.Y));
+
+            if (Parallax != 1)
+            {
+                var zoomFactor = ((1 + ((tmpScale.X - 1) * Parallax)) / tmpScale.X);
+                scale = scale * zoomFactor; //Magic formula
+                pos += ((Parallax - 1) * new Vector2(camPos.X, camPos.Y));
+                pos += ((new Vector2(worldTransform.Position.X, worldTransform.Position.Y)) * (1 - zoomFactor) * (Parallax - 1));
+            }
             
             var transformedVertices = new List<Vector2>();
             var point1 = new Vector2(-(worldTransform.Origin.X * Width * scale.X),
@@ -264,6 +298,15 @@ namespace Caravel.Core.Entity
             {
                 Width = int.Parse(sizeNode.Attributes["width"].Value);
                 Height = int.Parse(sizeNode.Attributes["height"].Value);
+            }
+
+            Parallax = 1f;
+
+            var paralaxNode = componentData.SelectNodes("Parallax").Item(0);
+
+            if (paralaxNode != null)
+            {
+                Parallax = float.Parse(paralaxNode.Attributes["value"].Value, CultureInfo.InvariantCulture);
             }
 
             return VInheritedInit(componentData);

@@ -278,6 +278,8 @@ namespace Caravel.Core
 
             var scene = sceneID == null ? m_SceneManager.MainScene : sceneID;
 
+            Cv_Debug.Assert(!EntitiesByName.ContainsKey(scene + "_" + name), "All entities must have a unique ID. Trying to add repeated entity [" + scene + "_" + name + "]");
+
             var entity = m_EntityFactory.CreateEntity(entityTypeResource, parentId, overrides, transform, serverEntityId, resourceBundle, scene);
 
             if (entity != null)
@@ -636,9 +638,10 @@ namespace Caravel.Core
             }
         }
 
-        public bool LoadScene(string sceneResource, string resourceBundle, string sceneID, Cv_Transform? sceneTransform = null)
+        public bool LoadScene(string sceneResource, string resourceBundle, string sceneID,
+                                Cv_Transform? sceneTransform = null, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
         {
-            if (!m_SceneManager.LoadScene(sceneResource, resourceBundle, sceneID, sceneTransform)) {
+            if (!m_SceneManager.LoadScene(sceneResource, resourceBundle, sceneID, sceneTransform, parent)) {
                 return false;
             }
 
@@ -701,14 +704,14 @@ namespace Caravel.Core
             GamePhysics = physics;
         }
 
-		public Cv_Entity[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type)
+		public Cv_RayCastIntersection[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type)
 		{
 			if (GamePhysics != null)
 			{
 				return GamePhysics.RayCast(startingPoint, endingPoint, type);
 			}
 
-			return new Cv_Entity[0];
+			return new Cv_RayCastIntersection[0];
 		}
 
         public Cv_PhysicsMaterial GetMaterial(string materialId)

@@ -37,6 +37,16 @@ namespace Caravel.Core.Draw
             var pos = scene.Transform.Position;
             var rot = scene.Transform.Rotation;
             var scale = scene.Transform.Scale;
+            
+            var camTransf = scene.Camera.GetViewTransform(renderer.VirtualWidth, renderer.VirtualHeight, Cv_Transform.Identity);
+
+            if (textComponent.Parallax != 1)
+            {
+                var zoomFactor = ((1 + ((scene.Camera.Zoom - 1) * textComponent.Parallax)) / scene.Camera.Zoom);
+                scale = scale * zoomFactor; //Magic formula
+                pos += ((textComponent.Parallax - 1) * new Vector3(camTransf.Position.X, camTransf.Position.Y, 0));
+                pos += ((new Vector3(scene.Transform.Position.X, scene.Transform.Position.Y, 0)) * (1 - zoomFactor) * (textComponent.Parallax - 1));
+            }
 
             textComponent.DrawSelectionHighlight(renderer);
             

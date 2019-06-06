@@ -55,6 +55,14 @@ namespace Caravel.Core.Physics
             }
         }
 
+        
+        public struct Cv_RayCastIntersection
+        {
+            public Cv_Entity Entity;
+            public Vector2 Point;
+            public Vector2 Normal;
+        }
+
         public enum Cv_CollisionDirection
         {
             Right,
@@ -98,7 +106,7 @@ namespace Caravel.Core.Physics
         public abstract void VSetAngularVelocity(Cv_EntityID entityId, float vel);
         public abstract void VApplyForce(Vector2 dir, float newtons, Cv_EntityID entityId);
         public abstract void VApplyTorque(float newtons, Cv_EntityID entityId);
-		public abstract Cv_Entity[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type);
+		public abstract Cv_RayCastIntersection[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type);
 		public abstract Cv_PhysicsMaterial GetMaterial(string material);
 
         public static Cv_GamePhysics CreateNullPhysics(CaravelApp app)

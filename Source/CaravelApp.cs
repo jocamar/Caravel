@@ -315,13 +315,13 @@ namespace Caravel
         
         protected sealed override void Update(GameTime gameTime)
         {
-			EventManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
-            SoundManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
-            InputManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
-            ScriptManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
-            ProcessManager.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+			EventManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
+            SoundManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
+            InputManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
+            ScriptManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
+            ProcessManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
 
-            Logic.OnUpdate(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+            Logic.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
 
             base.Update(gameTime);
         }
@@ -335,7 +335,7 @@ namespace Caravel
 
             foreach (var gv in Logic.GameViews)
             {
-                gv.VOnRender(gameTime.TotalGameTime.Milliseconds, gameTime.ElapsedGameTime.Milliseconds);
+                gv.VOnRender((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
             }
 
             foreach (var gv in Logic.GameViews)

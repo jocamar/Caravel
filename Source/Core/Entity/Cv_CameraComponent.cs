@@ -80,7 +80,7 @@ namespace Caravel.Core.Entity
             IsDefaultCamera = false;
             Zoom = 1f;
 
-            var propertiesNode = componentData.SelectSingleNode("//Properties");
+            var propertiesNode = componentData.SelectSingleNode("Properties");
 
             if (propertiesNode != null && propertiesNode.Attributes != null)
             {

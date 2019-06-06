@@ -175,42 +175,49 @@ namespace Caravel.Core.Events
 
             var processed = false;
 
-            List<NewEventDelegate> listeners;
+            List<NewEventDelegate> listenersCopy = null;
+            lock (m_EventListeners)
+            {
+                List<NewEventDelegate> listeners;
+                if (m_EventListeners.TryGetValue(newEvent.Type, out listeners))
+                {
+                    listenersCopy = new List<NewEventDelegate>(listeners);
+                }
+            }
 
-			lock (m_EventListeners)
-			{
-				if (m_EventListeners.TryGetValue(newEvent.Type, out listeners))
+            if (listenersCopy != null) {
+				foreach (var l in listenersCopy)
 				{
-                    var listenersCopy = new List<NewEventDelegate>(listeners);
-					foreach (var l in listenersCopy)
+					if (newEvent.WriteToLog)
 					{
-						if (newEvent.WriteToLog)
-						{
-							Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
-						}
-
-						l(newEvent);
-						processed = true;
+						Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
 					}
+
+					l(newEvent);
+					processed = true;
 				}
 			}
 
-            List<string> scriptListeners;
-
+            List<string> scriptListenersCopy = null;
             lock (m_ScriptEventListeners)
-			{
-				if (m_ScriptEventListeners.TryGetValue(newEvent.Type, out scriptListeners))
-				{
-					foreach (var l in scriptListeners)
-					{
-						if (newEvent.WriteToLog)
-						{
-							Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
-						}
+            {
+                List<string> scriptListeners;
+                if (m_ScriptEventListeners.TryGetValue(newEvent.Type, out scriptListeners))
+                {
+                    scriptListenersCopy = new List<string>(scriptListeners);
+                }
+            }
 
-						Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l, newEvent);
-						processed = true;
+            if (scriptListenersCopy != null) {
+				foreach (var l in scriptListenersCopy)
+				{
+					if (newEvent.WriteToLog)
+					{
+						Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
 					}
+
+					Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l, newEvent);
+					processed = true;
 				}
 			}
         

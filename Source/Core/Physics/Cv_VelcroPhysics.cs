@@ -57,7 +57,7 @@ namespace Caravel.Core.Physics
         private List<Cv_PhysicsEntity> m_PhysicsEntitiesList;
         private List<Cv_PhysicsEntity> m_PhysicsEntitiesToUpdate;
         private Dictionary<string, Cv_PhysicsMaterial> m_MaterialsTable;
-		private List<Cv_Entity> m_RaycastEntities;
+		private List<Cv_RayCastIntersection> m_RaycastEntities;
 		private Cv_RayCastType m_RaycastType;
         private List<Tuple<Cv_CollisionShape, Cv_CollisionShape>> m_CollisionPairs;
         private List<Tuple<Cv_CollisionShape, Cv_CollisionShape>> m_SeparationPairs;
@@ -74,7 +74,7 @@ namespace Caravel.Core.Physics
             m_PhysicsEntitiesList = new List<Cv_PhysicsEntity>();
             m_PhysicsEntitiesToUpdate = new List<Cv_PhysicsEntity>();
             m_MaterialsTable = new Dictionary<string, Cv_PhysicsMaterial>();
-			m_RaycastEntities = new List<Cv_Entity>();
+			m_RaycastEntities = new List<Cv_RayCastIntersection>();
             m_CollisionPairs = new List<Tuple<Cv_CollisionShape, Cv_CollisionShape>>();
             m_SeparationPairs = new List<Tuple<Cv_CollisionShape, Cv_CollisionShape>>();
 
@@ -469,14 +469,22 @@ namespace Caravel.Core.Physics
 
                     if (transformComponent != null)
                     {
-                        var worldTransform = transformComponent.WorldTransform;
-                        var newWorldPosition = ToOutsideVector(e.Body.Position, true);
+                        var parent = CaravelApp.Instance.Logic.GetEntity(entity.Parent);
+
+                        var parenttrans = Cv_Transform.Identity;
+                        if (parent != null && parent.GetComponent<Cv_TransformComponent>() != null)
+                        {
+                            parenttrans = parent.GetComponent<Cv_TransformComponent>().WorldTransform;
+                        }
+
+                        var worldTransform = Cv_Transform.Multiply(parenttrans, transformComponent.Transform);
+                        var newWorldPosition = ToOutsideVector(e.Body.Position, false);
                         var oldWorldPosition = new Vector2(worldTransform.Position.X, worldTransform.Position.Y);
                         var posDifference = newWorldPosition - oldWorldPosition;
 
-                        if (posDifference != Vector2.Zero)
+                        if (posDifference.Length() > 0.00001f)
                         {
-                            var newPosition = new Vector3 (transformComponent.Position.X + posDifference.X, transformComponent.Position.Y + posDifference.Y, transformComponent.Position.Z);
+                            var newPosition = new Vector3 (transformComponent.Position.X + (posDifference.X / parenttrans.Scale.X), transformComponent.Position.Y + (posDifference.Y / parenttrans.Scale.Y), transformComponent.Position.Z);
                             transformComponent.SetPosition(newPosition, this);
                         }
 
@@ -505,12 +513,14 @@ namespace Caravel.Core.Physics
             return m_MaterialsTable[material];
         }
 
-		public override Cv_Entity[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type)
+		public override Cv_RayCastIntersection[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type)
 		{
 			m_RaycastEntities.Clear();
 			m_RaycastType = type;
 
 			m_World.RayCast(OnRayCastIntersection,  ToWorldCoord(startingPoint), ToWorldCoord(endingPoint));
+
+            m_RaycastEntities.Sort((i1, i2) => { return (int)((i1.Point - startingPoint).Length() - (i2.Point - startingPoint).Length()); } );
 
 			return m_RaycastEntities.ToArray();
 		}
@@ -814,14 +824,15 @@ namespace Caravel.Core.Physics
 
             var velcroContact = GenerateContact(contact, collidingShape, collidedShape);
 
-            if (collidedShape.IsSensor || collidingShape.IsSensor)
+            if (!m_CollisionPairs.Exists(cp => cp.Item1 == collidingShape && cp.Item2 == collidedShape))
             {
-                var newEvent = new Cv_Event_EnterTrigger(velcroContact, this);
-                Cv_EventManager.Instance.QueueEvent(newEvent);
-            }
-            else
-            {
-                if (!m_CollisionPairs.Exists(cp => cp.Item1 == collidingShape && cp.Item2 == collidedShape))
+                if (collidedShape.IsSensor || collidingShape.IsSensor)
+                {
+                    var newEvent = new Cv_Event_EnterTrigger(velcroContact, this);
+                    Cv_EventManager.Instance.QueueEvent(newEvent);
+                    m_CollisionPairs.Add(new Tuple<Cv_CollisionShape, Cv_CollisionShape>(collidingShape, collidedShape));
+                }
+                else
                 {
                     var newEvent = new Cv_Event_NewCollision(velcroContact);
                     Cv_EventManager.Instance.QueueEvent(newEvent);
@@ -836,19 +847,20 @@ namespace Caravel.Core.Physics
 
         private void OnSeparation(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
-            var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
+            var collisionShapeA = (Cv_CollisionShape)fixtureA.UserData;
+            var collisionShapeB = (Cv_CollisionShape)fixtureB.UserData;
 
             var velcroContact = GenerateContact(contact, collisionShapeA, collisionShapeB);
 
-            if (collisionShapeA.IsSensor || collisionShapeB.IsSensor)
+            if (!m_SeparationPairs.Exists(sp => sp.Item1 == collisionShapeB && sp.Item2 == collisionShapeA))
             {
-                var newEvent = new Cv_Event_LeaveTrigger(velcroContact, this);
-                Cv_EventManager.Instance.QueueEvent(newEvent);
-            }
-            else
-            {
-                if (!m_SeparationPairs.Exists(sp => sp.Item1 == collisionShapeB && sp.Item2 == collisionShapeA))
+                if (collisionShapeA.IsSensor || collisionShapeB.IsSensor)
+                {
+                    var newEvent = new Cv_Event_LeaveTrigger(velcroContact, this);
+                    Cv_EventManager.Instance.QueueEvent(newEvent);
+                    m_SeparationPairs.Add(new Tuple<Cv_CollisionShape, Cv_CollisionShape>(collisionShapeA, collisionShapeB));
+                }
+                else
                 {
                     var newEvent = new Cv_Event_NewSeparation(velcroContact);
                     Cv_EventManager.Instance.QueueEvent(newEvent);
@@ -864,7 +876,12 @@ namespace Caravel.Core.Physics
 				return -1;
 			}
 
-			m_RaycastEntities.Add(((Cv_CollisionShape) fixture.UserData).Owner);
+            var intersection = new Cv_RayCastIntersection();
+            intersection.Entity = ((Cv_CollisionShape) fixture.UserData).Owner;
+            intersection.Point = ToScreenCoord(point);
+            intersection.Normal = normal;
+
+			m_RaycastEntities.Add(intersection);
 
 			if (m_RaycastType == Cv_RayCastType.Closest || m_RaycastType == Cv_RayCastType.ClosestSolid)
 			{
@@ -927,7 +944,6 @@ namespace Caravel.Core.Physics
         {
             GetChildEntitiesToUpdate(eventData.EntityID);
 
-            
             Cv_PhysicsEntity movedEntity = null;
             if (eventData.Sender == this && m_PhysicsEntitiesToUpdate.Count == 0)
             {

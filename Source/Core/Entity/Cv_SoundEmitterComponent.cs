@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Xml;
 using Caravel.Core.Events;
+using Caravel.Core.Sound;
 using Microsoft.Xna.Framework;
 
 namespace Caravel.Core.Entity
@@ -65,6 +66,13 @@ namespace Caravel.Core.Entity
         public bool AutoPlay
         {
             get; set;
+        }
+
+        public bool IsPlaying
+        {
+            get {
+                return Cv_SoundManager.Instance.SoundIsPlaying(SoundResource, Owner);
+            }
         }
 
         private float m_fVolume;

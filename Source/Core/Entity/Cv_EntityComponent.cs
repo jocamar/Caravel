@@ -11,7 +11,7 @@ namespace Caravel.Core.Entity
             INVALID_COMPONENT = 0
         }
 
-        public Cv_ComponentID ID
+        public virtual Cv_ComponentID ID
         {
             get
             {

@@ -10,6 +10,14 @@ namespace Caravel.Core.Events
         {
             get; private set;
         }
+
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
     
         public Cv_Event_EnterTrigger(Cv_Contact contact, object sender, float timeStamp = 0) : base(contact.CollidedShape.Owner.ID, sender, timeStamp)
         {

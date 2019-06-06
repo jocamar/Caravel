@@ -23,6 +23,17 @@ namespace Caravel.Core.Draw
             var rot = scene.Transform.Rotation;
             var scale = scene.Transform.Scale;
 
+            
+            var camTransf = scene.Camera.GetViewTransform(renderer.VirtualWidth, renderer.VirtualHeight, Cv_Transform.Identity);
+
+            if (spriteComponent.Parallax != 1)
+            {
+                var zoomFactor = ((1 + ((scene.Camera.Zoom - 1) * spriteComponent.Parallax)) / scene.Camera.Zoom);
+                scale = scale * zoomFactor; //Magic formula
+                pos += ((spriteComponent.Parallax - 1) * new Vector3(camTransf.Position.X, camTransf.Position.Y, 0));
+                pos += ((new Vector3(scene.Transform.Position.X, scene.Transform.Position.Y, 0)) * (1 - zoomFactor) * (spriteComponent.Parallax - 1));
+            }
+
             spriteComponent.DrawSelectionHighlight(renderer);
 
             if (!spriteComponent.Visible || spriteComponent.Texture == null || spriteComponent.Texture == "")

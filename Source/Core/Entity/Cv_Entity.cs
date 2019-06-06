@@ -291,7 +291,7 @@ namespace Caravel.Core.Entity
 
         internal void AddComponent(Cv_EntityComponent component)
         {
-            RemoveComponent(component.GetType());
+            RemoveComponent(component.ID);
 
             lock(m_ComponentMap)
             {
@@ -327,6 +327,22 @@ namespace Caravel.Core.Entity
                 {
                     m_ComponentsToRemove.Add(component);
                     m_ComponentMap.Remove(Cv_EntityComponent.GetID<Component>());
+                    component.VOnDestroy();
+                    component.Owner = null;
+                }
+            }
+        }
+
+        internal void RemoveComponent(Cv_ComponentID componentID)
+        {
+            var component = GetComponent(componentID);
+
+            if (component != null)
+            {
+                lock(m_ComponentMap)
+                {
+                    m_ComponentsToRemove.Add(component);
+                    m_ComponentMap.Remove(componentID);
                     component.VOnDestroy();
                     component.Owner = null;
                 }

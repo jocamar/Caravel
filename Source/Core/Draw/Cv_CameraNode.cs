@@ -124,7 +124,7 @@ namespace Caravel.Core.Draw
         internal override void VRender(Cv_Renderer renderer)
         {
             var scene = CaravelApp.Instance.Scene;
-            if (scene.Caravel.EditorRunning && renderer.DebugDrawCameras)
+            if (renderer.DebugDrawCameras)
             {
                 var zoom = ((Cv_CameraComponent) Component).Zoom;
                 var rot = scene.Transform.Rotation;

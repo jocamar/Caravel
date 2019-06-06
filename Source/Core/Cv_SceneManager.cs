@@ -55,7 +55,7 @@ namespace Caravel.Core
             return true;
         }
 
-        internal bool LoadScene(string sceneResource, string resourceBundle, string sceneID, Cv_Transform? sceneTransform)
+        internal bool LoadScene(string sceneResource, string resourceBundle, string sceneID, Cv_Transform? sceneTransform, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
         {
             Cv_Debug.Assert(!m_Scenes.ContainsKey(sceneID), "Trying to load a scene with an already existing ID.");
 
@@ -98,7 +98,7 @@ namespace Caravel.Core
 
             var entitiesNodes = root.SelectNodes("StaticEntities/Entity");
 
-            CreateNestedEntities(entitiesNodes, Cv_EntityID.INVALID_ENTITY, resourceBundle, sceneID, sceneTransform);
+            CreateNestedEntities(entitiesNodes, parent, resourceBundle, sceneID, sceneTransform);
 
             if (!Caravel.Logic.OnLoadScene(root, sceneID))
             {

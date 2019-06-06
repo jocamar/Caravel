@@ -113,10 +113,23 @@ namespace Caravel.Core.Draw
                                                 particleComponent.ColorChangePoint);
                 var newColor = new Color((int) newColorVec.X, (int) newColorVec.Y, (int) newColorVec.Z, (int) newColorVec.W);
 
-                renderer.Draw(tex, new Rectangle((int) (particle.Transform.Position.X),
-                                                    (int) (particle.Transform.Position.Y),
-                                                    (int) (tex.Width * particle.Transform.Scale.X),
-                                                    (int) (tex.Height * particle.Transform.Scale.Y)),
+                var pos = particle.Transform.Position;
+                var scale = particle.Transform.Scale;
+
+                var camTransf = scene.Camera.GetViewTransform(renderer.VirtualWidth, renderer.VirtualHeight, Cv_Transform.Identity);
+
+                if (particleComponent.Parallax != 1)
+                {
+                    var zoomFactor = ((1 + ((scene.Camera.Zoom - 1) * particleComponent.Parallax)) / scene.Camera.Zoom);
+                    scale = scale * zoomFactor; //Magic formula
+                    pos += ((particleComponent.Parallax - 1) * new Vector3(camTransf.Position.X, camTransf.Position.Y, 0));
+                    pos += ((new Vector3(scene.Transform.Position.X, scene.Transform.Position.Y, 0)) * (1 - zoomFactor) * (particleComponent.Parallax - 1));
+                }
+
+                renderer.Draw(tex, new Rectangle((int) (pos.X),
+                                                    (int) (pos.Y),
+                                                    (int) (tex.Width * scale.X),
+                                                    (int) (tex.Height * scale.Y)),
                                         null,
                                         newColor,
                                         particle.Transform.Rotation,
