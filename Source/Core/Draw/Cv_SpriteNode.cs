@@ -26,13 +26,15 @@ namespace Caravel.Core.Draw
             
             var camTransf = scene.Camera.GetViewTransform(renderer.VirtualWidth, renderer.VirtualHeight, Cv_Transform.Identity);
 
-            if (spriteComponent.Parallax != 1)
+            if (spriteComponent.Parallax != 1 && spriteComponent.Parallax != 0)
             {
                 var zoomFactor = ((1 + ((scene.Camera.Zoom - 1) * spriteComponent.Parallax)) / scene.Camera.Zoom);
                 scale = scale * zoomFactor; //Magic formula
                 pos += ((spriteComponent.Parallax - 1) * new Vector3(camTransf.Position.X, camTransf.Position.Y, 0));
                 pos += ((new Vector3(scene.Transform.Position.X, scene.Transform.Position.Y, 0)) * (1 - zoomFactor) * (spriteComponent.Parallax - 1));
             }
+
+            var noCamera = spriteComponent.Parallax == 0;
 
             spriteComponent.DrawSelectionHighlight(renderer);
 
@@ -69,7 +71,7 @@ namespace Caravel.Core.Draw
                                     rot,
                                     new Vector2(frameW * scene.Transform.Origin.X, frameH * scene.Transform.Origin.Y),
                                     spriteEffect,
-                                    layerDepth / (float) Cv_Renderer.MaxLayers);
+                                    layerDepth / (float) Cv_Renderer.MaxLayers, noCamera);
         }
 
         internal override float GetRadius(Cv_Renderer renderer)

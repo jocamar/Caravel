@@ -314,6 +314,10 @@ namespace Caravel.Core
                 }
 
                 LastEntityID = entity.ID;
+
+                var newEntityEvent = new Cv_Event_NewEntity(entity.ID, this);
+                Cv_EventManager.Instance.TriggerEvent(newEntityEvent);
+
                 return entity;
             }
 
@@ -384,6 +388,10 @@ namespace Caravel.Core
                 }
 
                 LastEntityID = entity.ID;
+                
+                var newEntityEvent = new Cv_Event_NewEntity(entity.ID, this);
+                Cv_EventManager.Instance.TriggerEvent(newEntityEvent);
+
                 return entity;
             }
 
@@ -973,17 +981,11 @@ namespace Caravel.Core
             var bundle = data.EntityResourceBundle;
             if (data.EntityResource != null)
             {
-                entity = CreateEntity(data.EntityResource, data.EntityName, bundle, data.Visible, data.Parent, null, data.InitialTransform, data.SceneID, data.ServerEntityID);
+                CreateEntity(data.EntityResource, data.EntityName, bundle, data.Visible, data.Parent, null, data.InitialTransform, data.SceneID, data.ServerEntityID);
             }
             else
             {
-                entity = CreateEmptyEntity(data.EntityName, bundle, data.Visible, data.Parent, null, data.InitialTransform, data.SceneID, data.ServerEntityID);
-            }
-
-            if (entity != null)
-            {
-                var newEvent = new Cv_Event_NewEntity(entity.ID, data.GameViewID);
-                Cv_EventManager.Instance.QueueEvent(newEvent);
+                CreateEmptyEntity(data.EntityName, bundle, data.Visible, data.Parent, null, data.InitialTransform, data.SceneID, data.ServerEntityID);
             }
         }
 

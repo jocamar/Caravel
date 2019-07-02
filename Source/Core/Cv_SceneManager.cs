@@ -185,6 +185,10 @@ namespace Caravel.Core
                 m_Scenes.Remove(sceneID);
             }
 
+            if (MainScene == sceneID && m_Scenes.Count > 0) {
+                MainScene = m_Scenes.Keys.First();
+            }
+
             return true;
         }
 
@@ -271,12 +275,6 @@ namespace Caravel.Core
                     else
                     {
                         entity = Caravel.Logic.CreateEmptyEntity(name, resourceBundle, visible, parentId, (XmlElement) e, sceneTransform, sceneID);
-                    }
-
-                    if (entity != null)
-                    {
-                        var newEntityEvent = new Cv_Event_NewEntity(entity.ID, this);
-                        Cv_EventManager.Instance.QueueEvent(newEntityEvent);
                     }
 
                     var childEntities = e.SelectNodes("./Entity");

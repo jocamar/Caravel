@@ -347,7 +347,7 @@ namespace Caravel.Core
                 Caravel.Graphics.ApplyChanges();
             }
 
-            Renderer.SetupViewport();
+            Renderer.SetupViewport(); //TODO(JM): Fix multithread access here
             foreach (var se in ScreenElements)
             {
                 if (se.IsVisible)

@@ -144,7 +144,7 @@ namespace Caravel.Core.Entity
             {
                 var camTransf = scene.Camera.GetViewTransform(renderer.VirtualWidth, renderer.VirtualHeight, Cv_Transform.Identity);
                 
-                if (Parallax != 1)
+                if (Parallax != 1 && Parallax > 0)
                 {
                     var zoomFactor = ((1 + ((scene.Camera.Zoom - 1) * Parallax)) / scene.Camera.Zoom);
                     scale = scale * zoomFactor; //Magic formula
@@ -152,6 +152,7 @@ namespace Caravel.Core.Entity
                     pos += ((new Vector3(scene.Transform.Position.X, scene.Transform.Position.Y, 0)) * (1 - zoomFactor) * (Parallax - 1));
                 }
 
+                var noCamera = Parallax == 0;
                 var rotMatrixZ = Matrix.CreateRotationZ(rot);
 
                 Vector2 point1;
@@ -191,7 +192,7 @@ namespace Caravel.Core.Entity
                                             point2,
                                             thickness,
                                             Cv_Renderer.MaxLayers-1,
-                                            Color.Yellow);
+                                            Color.Yellow, noCamera);
                 }
             }
         }
@@ -209,11 +210,9 @@ namespace Caravel.Core.Entity
             Vector3 camPos;
             camMatrix.Decompose(out tmpScale, out tmpQuat, out camPos);
 
-            pos = pos + ((Parallax - 1) * new Vector2(camPos.X, camPos.Y));
-
             if (Parallax != 1)
             {
-                var zoomFactor = ((1 + ((tmpScale.X - 1) * Parallax)) / tmpScale.X);
+                var zoomFactor = ((1 + (((tmpScale.X / renderer.Transform.Scale.X) - 1) * Parallax)) / (tmpScale.X / renderer.Transform.Scale.X));
                 scale = scale * zoomFactor; //Magic formula
                 pos += ((Parallax - 1) * new Vector2(camPos.X, camPos.Y));
                 pos += ((new Vector2(worldTransform.Position.X, worldTransform.Position.Y)) * (1 - zoomFactor) * (Parallax - 1));

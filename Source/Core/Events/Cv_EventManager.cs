@@ -352,22 +352,27 @@ namespace Caravel.Core.Events
 
                 List<NewEventDelegate> listeners;
 
+                List<NewEventDelegate> listenersCopy = null;
 				lock (m_EventListeners)
 				{
 					if (m_EventListeners.TryGetValue(e.Type, out listeners))
 					{
-                        var listenersCopy = new List<NewEventDelegate>(listeners);
-                        foreach (var l in listenersCopy)
-						{
-							if (e.WriteToLog)
-							{
-								Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
-							}
-							
-							l(e);
-						}
+                        listenersCopy = new List<NewEventDelegate>(listeners);
 					}
 				}
+
+                if (m_EventListeners != null)
+                {
+                    foreach (var l in listenersCopy)
+                    {
+                        if (e.WriteToLog)
+                        {
+                            Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
+                        }
+
+                        l(e);
+                    }
+                }
 
                 List<string> scriptListeners;
 

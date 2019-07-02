@@ -159,6 +159,7 @@ namespace Caravel.Core.Draw
             public float Layer;
             public Vector2 Origin;
             public SpriteEffects Effects;
+            public bool NoCamera;
         }
 
         public Viewport Viewport;
@@ -258,7 +259,7 @@ namespace Caravel.Core.Draw
             m_bDirtyTransform = true;
         }
 
-        public void DrawText(SpriteFont font, string text, Vector2 position, Color color)
+        public void DrawText(SpriteFont font, string text, Vector2 position, Color color, bool noCamera = false)
         {
             var newCommand = new Cv_DrawCommand();
             newCommand.Type = Cv_DrawType.Text;
@@ -271,12 +272,13 @@ namespace Caravel.Core.Draw
             newCommand.Effects = SpriteEffects.None;
             newCommand.Layer = 255;
             newCommand.TextScale = 1;
+            newCommand.NoCamera = noCamera;
 
             m_DrawList.Add(newCommand);
         }
 
         public void DrawText(SpriteFont font, string[] text, Rectangle bounds, Cv_TextAlign horizontalAlign,
-                                Cv_TextAlign verticalAlign, Color color, float rotation, float scale, SpriteEffects effects, float layerDepth)
+                                Cv_TextAlign verticalAlign, Color color, float rotation, float scale, SpriteEffects effects, float layerDepth, bool noCamera = false)
         {
             float totalY = 0f;
 
@@ -328,6 +330,7 @@ namespace Caravel.Core.Draw
                 newCommand.Effects = effects;
                 newCommand.Layer = layerDepth;
                 newCommand.TextScale = scale;
+                newCommand.NoCamera = noCamera;
 
                 m_DrawList.Add(newCommand);
             }
@@ -345,6 +348,7 @@ namespace Caravel.Core.Draw
             newCommand.Origin = Vector2.Zero;
             newCommand.Effects = SpriteEffects.None;
             newCommand.Layer = 255;
+            newCommand.NoCamera = false;
 
             m_DrawList.Add(newCommand);
         }
@@ -361,6 +365,7 @@ namespace Caravel.Core.Draw
             newCommand.Origin = Vector2.Zero;
             newCommand.Effects = SpriteEffects.None;
             newCommand.Layer = 255;
+            newCommand.NoCamera = false;
 
             m_DrawList.Add(newCommand);
         }
@@ -377,12 +382,13 @@ namespace Caravel.Core.Draw
             newCommand.Origin = Vector2.Zero;
             newCommand.Effects = SpriteEffects.None;
             newCommand.Layer = 255;
+            newCommand.NoCamera = false;
 
             m_DrawList.Add(newCommand);
         }
 
         public void Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle,
-                            Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth)
+                            Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth, bool noCamera = false)
         {
             var newCommand = new Cv_DrawCommand();
             newCommand.Type = Cv_DrawType.Sprite;
@@ -394,12 +400,13 @@ namespace Caravel.Core.Draw
             newCommand.Origin = origin;
             newCommand.Effects = effects;
             newCommand.Layer = layerDepth;
+            newCommand.NoCamera = noCamera;
 
             m_DrawList.Add(newCommand);
         }
 
         public void Draw(Texture2D texture, Vector3 position, Rectangle? sourceRectangle, Color color,
-                                            float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects)
+                                            float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, bool noCamera = false)
         {
             float width = sourceRectangle != null ? sourceRectangle.Value.Width : texture.Width;
             float height = sourceRectangle != null ? sourceRectangle.Value.Height : texture.Height;
@@ -417,6 +424,7 @@ namespace Caravel.Core.Draw
             newCommand.Origin = origin;
             newCommand.Effects = effects;
             newCommand.Layer = 255;
+            newCommand.NoCamera = noCamera;
 
             m_DrawList.Add(newCommand);
         }
@@ -460,8 +468,25 @@ namespace Caravel.Core.Draw
         {
             var sortedDrawList = m_DrawList.OrderBy(command => command.Layer).ThenBy(command => command.Dest.Y).ToArray();
 
+            var drawWithCameraMatrix = true;
             foreach (var command in sortedDrawList)
             {
+                if (command.NoCamera == drawWithCameraMatrix) {
+                    m_SpriteBatch.End();
+
+                    if (command.NoCamera)
+                    {
+                        m_SpriteBatch.Begin(SpriteSortMode.Deferred, m_BlendState, m_SamplerState,
+                                        DepthStencilState.None, RasterizerState.CullNone, null, Transform.TransformMatrix);
+                    }
+                    else {
+                        m_SpriteBatch.Begin(SpriteSortMode.Deferred, m_BlendState, m_SamplerState,
+                                        DepthStencilState.None, RasterizerState.CullNone, null, CamMatrix);
+                    }
+
+                    drawWithCameraMatrix = !command.NoCamera;
+                }
+
                 if (command.Type == Cv_DrawType.Sprite)
                 {
                     m_SpriteBatch.Draw(command.Texture, command.Dest,

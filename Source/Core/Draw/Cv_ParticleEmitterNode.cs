@@ -118,13 +118,15 @@ namespace Caravel.Core.Draw
 
                 var camTransf = scene.Camera.GetViewTransform(renderer.VirtualWidth, renderer.VirtualHeight, Cv_Transform.Identity);
 
-                if (particleComponent.Parallax != 1)
+                if (particleComponent.Parallax != 1 && particleComponent.Parallax != 0)
                 {
                     var zoomFactor = ((1 + ((scene.Camera.Zoom - 1) * particleComponent.Parallax)) / scene.Camera.Zoom);
                     scale = scale * zoomFactor; //Magic formula
                     pos += ((particleComponent.Parallax - 1) * new Vector3(camTransf.Position.X, camTransf.Position.Y, 0));
                     pos += ((new Vector3(scene.Transform.Position.X, scene.Transform.Position.Y, 0)) * (1 - zoomFactor) * (particleComponent.Parallax - 1));
                 }
+
+                var noCamera = particleComponent.Parallax == 0;
 
                 renderer.Draw(tex, new Rectangle((int) (pos.X),
                                                     (int) (pos.Y),
@@ -135,7 +137,7 @@ namespace Caravel.Core.Draw
                                         particle.Transform.Rotation,
                                         new Vector2(tex.Width * 0.5f, tex.Height * 0.5f),
                                         SpriteEffects.None,
-                                        layer);
+                                        layer, noCamera);
             }
         }
 
