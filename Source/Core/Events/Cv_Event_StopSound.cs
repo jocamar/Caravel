@@ -10,6 +10,14 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public Cv_Event_StopSound(Cv_Entity.Cv_EntityID entityId, string soundResource, object sender, float timeStamp = 0) : base(entityId, sender, timeStamp)
         {
             SoundResource = soundResource;

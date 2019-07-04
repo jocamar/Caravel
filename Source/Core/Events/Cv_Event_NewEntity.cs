@@ -11,6 +11,14 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public Cv_Event_NewEntity(Cv_EntityID entityID, object sender, Cv_GameViewID gameViewId = 0) : base(entityID, sender)
         {
             GameViewID = gameViewId;

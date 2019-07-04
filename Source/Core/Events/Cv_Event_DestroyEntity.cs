@@ -5,6 +5,14 @@ namespace Caravel.Core.Events
 {
     public class Cv_Event_DestroyEntity : Cv_Event
     {
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+        
         public Cv_Event_DestroyEntity(Cv_EntityID entityID, object sender) : base(entityID, sender)
         {
         }

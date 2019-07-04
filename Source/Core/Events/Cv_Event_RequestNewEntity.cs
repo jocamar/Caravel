@@ -51,6 +51,14 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public override bool WriteToLog
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public Cv_Event_RequestNewEntity(string entityResource, string sceneID, string entityName, string resourceBundle, bool visible,
                                             Cv_EntityID parentId, Cv_Transform? initialTransform, object sender,
                                             Cv_EntityID serverEntityID = Cv_EntityID.INVALID_ENTITY,
