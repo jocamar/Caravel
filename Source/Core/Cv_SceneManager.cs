@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -11,28 +13,37 @@ using static Caravel.Core.Resource.Cv_XmlResource;
 
 namespace Caravel.Core
 {
-    class Cv_SceneManager
+    public class Cv_SceneManager
     {
+        public enum Cv_SceneID
+        {
+            INVALID_SCENE = -1
+        }
+
         protected CaravelApp Caravel;
 
         internal struct Cv_SceneInfo {
+            public Cv_SceneID ID;
+            public string SceneName;
+            public string ScenePath;
             public string SceneResource;
             public string ResourceBundle;
+            public Cv_EntityID parentID;
             public Cv_Transform? InitTransform;
         };
 
-        internal string[] Scenes
+        internal Cv_SceneInfo[] Scenes
         {
             get {
                 lock (m_Scenes)
                 {
-                    return m_Scenes.Keys.ToArray();
+                    return m_Scenes.Values.ToArray();
                 }
             }
         }
 
         //NOTE(JM): Switching this while unloading scenes in a separate thread may cause unintended behavior
-        internal string MainScene
+        internal Cv_SceneID MainScene
         {
             get { return m_sCurrentScene; }
             set {
@@ -40,13 +51,16 @@ namespace Caravel.Core
             }
         }
 
-        private Dictionary<string, Cv_SceneInfo> m_Scenes;
-        private string m_sCurrentScene;
+        private Dictionary<Cv_SceneID, Cv_SceneInfo> m_Scenes;
+        private Dictionary<string, Cv_SceneInfo> m_ScenePaths;
+        private Cv_SceneID m_sCurrentScene = Cv_SceneID.INVALID_SCENE;
         private Cv_GameLogic m_Logic;
+        private static int m_iLastSceneID = 0;
 
         internal Cv_SceneManager(CaravelApp caravel)
         {
-            m_Scenes = new Dictionary<string, Cv_SceneInfo>();
+            m_Scenes = new Dictionary<Cv_SceneID, Cv_SceneInfo>();
+            m_ScenePaths = new Dictionary<string, Cv_SceneInfo>();
             Caravel = caravel;
         }
 
@@ -55,10 +69,52 @@ namespace Caravel.Core
             return true;
         }
 
-        internal bool LoadScene(string sceneResource, string resourceBundle, string sceneID, Cv_Transform? sceneTransform, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
+        internal string GetSceneName(Cv_SceneID sceneID)
         {
-            Cv_Debug.Assert(!m_Scenes.ContainsKey(sceneID), "Trying to load a scene with an already existing ID.");
+            lock(m_Scenes)
+            {
+                if (m_Scenes.ContainsKey(sceneID)) {
+                    return m_Scenes[sceneID].SceneName;
+                }
+            }
 
+            return null;
+        }
+
+        internal string GetScenePath(Cv_SceneID sceneID)
+        {
+            lock(m_Scenes)
+            {
+                if (m_Scenes.ContainsKey(sceneID)) {
+                    return m_Scenes[sceneID].ScenePath;
+                }
+            }
+
+            return null;
+        }
+
+        internal string GetSceneResource(Cv_SceneID sceneID)
+        {
+            lock(m_Scenes)
+            {
+                if (m_Scenes.ContainsKey(sceneID)) {
+                    return m_Scenes[sceneID].SceneResource;
+                }
+            }
+
+            return null;
+        }
+
+        internal bool IsSceneLoaded(string scenePath)
+        {
+            lock (m_Scenes)
+            {
+                return m_ScenePaths.ContainsKey(scenePath);
+            }
+        }
+
+        internal Cv_Entity[] LoadScene(string sceneResource, string resourceBundle, string sceneName, Cv_Transform? sceneTransform, Cv_EntityID parentID = Cv_EntityID.INVALID_ENTITY)
+        {
             Cv_XmlResource resource;
 			resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource, resourceBundle, Caravel.EditorRunning);
 			
@@ -67,16 +123,41 @@ namespace Caravel.Core
             if (root == null)
             {
                 Cv_Debug.Error("Failed to load scene resource file: " + sceneResource);
-                return false;
+                return null;
             }
 
-            if (!Caravel.Logic.OnPreLoadScene(root, sceneID))
+            if (!Caravel.Logic.OnPreLoadScene(root, sceneName))
             {
-                return false;
+                return null;
             }
 
-            if (MainScene == null) {
-                MainScene = sceneID;
+            Cv_SceneID newID = (Cv_SceneID) m_iLastSceneID;
+            m_iLastSceneID++;
+
+            if (MainScene == Cv_SceneID.INVALID_SCENE) {
+                MainScene = newID;
+            }
+
+            var scenePath = "/" + sceneName;
+            var parent = CaravelApp.Instance.Logic.GetEntity(parentID);
+            if (parent != null)
+            {
+                scenePath = parent.EntityPath + scenePath;
+            }
+
+            Cv_SceneInfo info;
+            info.SceneResource = sceneResource;
+            info.ResourceBundle = resourceBundle;
+            info.InitTransform = sceneTransform;
+            info.SceneName = sceneName;
+            info.ID = newID;
+            info.ScenePath = scenePath;
+            info.parentID = parentID;
+
+            lock (m_Scenes)
+            {
+                m_Scenes.Add(newID, info);
+                m_ScenePaths.Add(scenePath, info);
             }
 
             string preLoadScript = null;
@@ -95,44 +176,64 @@ namespace Caravel.Core
                 Cv_ScriptResource preLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(preLoadScript, resourceBundle);
                 preLoadRes.RunScript();
             }
-
-            var entitiesNodes = root.SelectNodes("StaticEntities/Entity");
-
-            CreateNestedEntities(entitiesNodes, parent, resourceBundle, sceneID, sceneTransform);
-
-            if (!Caravel.Logic.OnLoadScene(root, sceneID))
+        
+            var sceneRoot = CaravelApp.Instance.Logic.CreateSceneRootEntity(sceneName, resourceBundle, true, parentID, sceneTransform, newID);
+            
+            if (sceneRoot != null)
             {
-                if (MainScene == sceneID) {
-                    MainScene = null;
+                var entitiesCreated = new List<Cv_Entity>();
+                entitiesCreated.Add(sceneRoot);
+
+                var entitiesNodes = root.SelectNodes("StaticEntities/Entity|StaticEntities/Scene");
+                CreateNestedEntities(entitiesCreated, entitiesNodes, sceneRoot.ID, resourceBundle, newID, null);
+
+                if (!Caravel.Logic.OnLoadScene(root, newID, sceneName))
+                {
+                    if (MainScene == newID) {
+                        MainScene = Cv_SceneID.INVALID_SCENE;
+                    }
+
+                    var entitiesToRemove = Caravel.Logic.GetSceneEntities(newID);
+                    foreach (var e in entitiesToRemove)
+                    {
+                        if (e != null)
+                        {
+                            Caravel.Logic.DestroyEntity(e.ID);
+                        }
+                    }
+
+                    lock(m_Scenes)
+                    {
+                        m_Scenes.Remove(newID);
+                        m_ScenePaths.Remove(scenePath);
+                    }
+
+                    return null;
                 }
 
-                return false;
+                if (postLoadScript != null && postLoadScript != "")
+                {
+                    Cv_ScriptResource postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript, resourceBundle);
+                    postLoadRes.RunScript();
+                }
+
+                return entitiesCreated.ToArray();
             }
 
-            if (postLoadScript != null && postLoadScript != "")
+            lock(m_Scenes)
             {
-				Cv_ScriptResource postLoadRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(postLoadScript, resourceBundle);
-				postLoadRes.RunScript();
+                m_Scenes.Remove(newID);
+                m_ScenePaths.Remove(scenePath);
             }
-
-            Cv_SceneInfo info;
-            info.SceneResource = sceneResource;
-            info.ResourceBundle = resourceBundle;
-            info.InitTransform = sceneTransform;
-
-            lock (m_Scenes)
-            {
-                m_Scenes.Add(sceneID, info);
-            }
-
-            return true;
+            
+            return null;
         }
 
-        internal bool UnloadScene(string sceneID)
+        internal bool UnloadScene(string scenePath)
         {
             Cv_SceneInfo sceneInfo;
             
-            if (!m_Scenes.TryGetValue(sceneID, out sceneInfo))
+            if (!m_ScenePaths.TryGetValue(scenePath, out sceneInfo))
             {
                 return true;
             }
@@ -148,7 +249,7 @@ namespace Caravel.Core
                 return false;
             }
 
-            if (!Caravel.Logic.OnPreUnloadScene(root, sceneID))
+            if (!Caravel.Logic.OnPreUnloadScene(root, sceneInfo.ID, sceneInfo.SceneName))
             {
                 Cv_Debug.Error("Failed to unload scene resource file: " + sceneInfo.SceneResource);
                 return false;
@@ -169,7 +270,7 @@ namespace Caravel.Core
                 unLoadRes.RunScript();
             }
 
-            var entitiesToRemove = Caravel.Logic.GetSceneEntities(sceneID);
+            var entitiesToRemove = Caravel.Logic.GetSceneEntities(sceneInfo.ID);
             foreach (var e in entitiesToRemove)
             {
                 if (e != null)
@@ -178,14 +279,15 @@ namespace Caravel.Core
                 }
             }
 
-            Caravel.Logic.OnUnloadScene(root, sceneID, sceneInfo.SceneResource, sceneInfo.ResourceBundle);
+            Caravel.Logic.OnUnloadScene(root, sceneInfo.ID, sceneInfo.SceneName, sceneInfo.SceneResource, sceneInfo.ResourceBundle);
 
             lock (m_Scenes)
             {
-                m_Scenes.Remove(sceneID);
+                m_Scenes.Remove(sceneInfo.ID);
+                m_ScenePaths.Remove(scenePath);
             }
 
-            if (MainScene == sceneID && m_Scenes.Count > 0) {
+            if (MainScene == sceneInfo.ID && m_Scenes.Count > 0) {
                 MainScene = m_Scenes.Keys.First();
             }
 
@@ -197,7 +299,7 @@ namespace Caravel.Core
             string[] keyList;
             lock (m_Scenes)
             {
-                keyList = m_Scenes.Keys.ToArray();
+                keyList = m_ScenePaths.Keys.ToArray();
             }
 
             var success = true;
@@ -212,15 +314,15 @@ namespace Caravel.Core
             return success;
         }
 
-        internal bool UnloadScenes(string[] sceneIDs)
+        internal bool UnloadScenes(string[] scenePaths)
         {
             var success = true;
-            foreach (var scene in sceneIDs)
+            foreach (var scenePath in scenePaths)
             {
-                if (!UnloadScene(scene))
+                if (!UnloadScene(scenePath))
                 {
                     success = false;
-                }                
+                }
             }
 
             return success;
@@ -232,17 +334,17 @@ namespace Caravel.Core
             
             lock (m_Scenes)
             {
-                keyList = m_Scenes.Keys.ToArray();
+                keyList = m_ScenePaths.Keys.ToArray();
             }
 
             Regex mask = new Regex(sceneExpression.Replace(".", "[.]").Replace("*", ".*").Replace("?", "."));
 
             var success = true;
-            foreach (var scene in keyList)
+            foreach (var scenePath in keyList)
             {
-                if (mask.IsMatch(scene))
+                if (mask.IsMatch(scenePath))
                 {
-                    if (!UnloadScene(scene))
+                    if (!UnloadScene(scenePath))
                     {
                         success = false;
                     }
@@ -252,14 +354,14 @@ namespace Caravel.Core
             return success;
         }
 
-        private void CreateNestedEntities(XmlNodeList entities, Cv_EntityID parentId, string resourceBundle = null, string sceneID = null, Cv_Transform? sceneTransform = null)
+        private void CreateNestedEntities(List<Cv_Entity> entitiesCreated, XmlNodeList entities, Cv_EntityID parentId,
+                                            string resourceBundle = null, Cv_SceneID sceneID = Cv_SceneID.INVALID_SCENE,
+                                            Cv_Transform? sceneTransform = null)
         {
             if (entities != null)
             {
                 foreach(XmlNode e in entities)
                 {
-                    var entityTypeResource = e.Attributes["type"].Value;
-					var name = e.Attributes?["name"].Value;
                     var visible = true;
 
                     if (e.Attributes["visible"] != null)
@@ -267,24 +369,111 @@ namespace Caravel.Core
                         visible = bool.Parse(e.Attributes["visible"].Value);
                     }
 
-                    Cv_Entity entity;
-                    if (entityTypeResource != "")
+                    
+                    Cv_Entity entity = null;
+                    var name = e.Attributes?["name"].Value;
+
+                    if (e.Name == "Entity")
                     {
-                        entity = Caravel.Logic.CreateEntity(entityTypeResource, name, resourceBundle, visible, parentId, (XmlElement) e, sceneTransform, sceneID);
+                        var entityTypeResource = e.Attributes["type"].Value;
+
+                        if (entityTypeResource != "")
+                        {
+                            entity = Caravel.Logic.InstantiateNewEntity(entityTypeResource, name, resourceBundle,
+                                                                        visible, parentId, (XmlElement) e,
+                                                                        sceneTransform, sceneID, Cv_EntityID.INVALID_ENTITY);
+                        }
+                        else
+                        {
+                            entity = Caravel.Logic.InstantiateNewEntity(null, name, resourceBundle,
+                                                                            visible, parentId, (XmlElement) e,
+                                                                            sceneTransform, sceneID, Cv_EntityID.INVALID_ENTITY);
+                        }
+
+                        entitiesCreated.Add(entity);
                     }
                     else
                     {
-                        entity = Caravel.Logic.CreateEmptyEntity(name, resourceBundle, visible, parentId, (XmlElement) e, sceneTransform, sceneID);
+                        var sceneResource = e.Attributes["resource"].Value;
+
+                        if (sceneResource == null || sceneResource == "")
+                        {
+                            continue;
+                        }
+
+                        var transform = ParseSceneTransform((XmlElement) e);
+                        
+                        var createdEntities = LoadScene(sceneResource, resourceBundle, name, transform, parentId);
+
+                        if (createdEntities == null || createdEntities.Length <= 0)
+                        {
+                            Cv_Debug.Warning("Unable to load a sub scene that as part of another scene [" + name + "]");
+                            continue;
+                        }
+
+                        entitiesCreated.AddRange(createdEntities);
                     }
 
-                    var childEntities = e.SelectNodes("./Entity");
+                    var childEntities = e.SelectNodes("./Entity|./Scene");
 
                     if (childEntities.Count > 0)
                     {
-                        CreateNestedEntities(childEntities, entity.ID, resourceBundle, sceneID);
+                        CreateNestedEntities(entitiesCreated, childEntities, entity.ID, resourceBundle, sceneID);
                     }
                 }
             }
+        }
+
+        private Cv_Transform ParseSceneTransform(XmlElement sceneElement)
+        {
+            Cv_Debug.Assert(sceneElement != null, "Must have valid scene element.");
+
+            float x, y, z;
+            float rad;
+            float scaleX, scaleY;
+            float originX, originY;
+
+            x = y = z = 0;
+            var positionNode = sceneElement.SelectNodes("Position").Item(0);
+            if (positionNode != null)
+            {
+                x = int.Parse(positionNode.Attributes["x"].Value);
+                y = int.Parse(positionNode.Attributes["y"].Value);
+                z = int.Parse(positionNode.Attributes["z"].Value);
+            }
+
+            rad = 0;
+            var rotationNode = sceneElement.SelectNodes("Rotation").Item(0);
+            if (rotationNode != null)
+            {
+                rad = float.Parse(rotationNode.Attributes["radians"].Value, CultureInfo.InvariantCulture);
+            }
+
+            scaleX = scaleY = 1;
+            var scaleNode = sceneElement.SelectNodes("Scale").Item(0);
+            if (scaleNode != null)
+            {
+                scaleX = float.Parse(scaleNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
+                scaleY = float.Parse(scaleNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
+
+                scaleX = Math.Max(0, scaleX);
+                scaleY = Math.Max(0, scaleY);
+            }
+
+            originX = originY = 0.5f;
+            var originNode = sceneElement.SelectNodes("Origin").Item(0);
+            if (originNode != null)
+            {
+                originX = (float) double.Parse(originNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
+                originY = (float) double.Parse(originNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
+
+                originX = Math.Max(0, Math.Min(1, originX));
+                originY = Math.Max(0, Math.Min(1, originY));
+            }
+
+            return new Cv_Transform(new Microsoft.Xna.Framework.Vector3(x,y,z),
+                                        new Microsoft.Xna.Framework.Vector2(scaleX, scaleY),
+                                        rad, new Microsoft.Xna.Framework.Vector2(originX, originY));
         }
     }
 }

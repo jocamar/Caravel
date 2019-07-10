@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 using Caravel.Debugging;
+using static Caravel.Core.Cv_SceneManager;
 using static Caravel.Core.Entity.Cv_EntityComponent;
 
 namespace Caravel.Core.Entity
@@ -13,14 +14,28 @@ namespace Caravel.Core.Entity
             INVALID_ENTITY = 0
         }
 
-        public string Scene {
+        public string SceneName {
             get; private set;
+        }
+
+        public Cv_SceneID SceneID {
+            get; private set;
+        }
+
+        public bool SceneRoot
+        {
+            get; internal set;
         }
 
 		public string EntityName
 		{
 			get; internal set;
 		}
+
+        public string EntityPath
+        {
+            get; internal set;
+        }
 
         public Cv_EntityID ID
         {
@@ -97,6 +112,51 @@ namespace Caravel.Core.Entity
             return entityElement;
         }
 
+        public Cv_Entity GetEntity(string entityPath)
+        {
+            var paths = entityPath.Split('/');
+
+            Cv_Entity currEntity = this;
+            foreach (var subPath in paths)
+            {
+                if (subPath == "..")
+                {
+                    var parent = CaravelApp.Instance.Logic.GetEntity(currEntity.Parent);
+                    if (parent != null && parent.SceneID == SceneID)
+                    {
+                        currEntity = parent;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else if (subPath == "." || subPath == "")
+                {
+                    continue;
+                }
+                else {
+                    bool found = false;
+                    foreach (var child in currEntity.Children)
+                    {
+                        if (child.EntityName == subPath)
+                        {
+                            currEntity = child;
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            return currEntity;
+        }
+
         public Component GetComponent<Component>() where Component : Cv_EntityComponent
         {
             Cv_EntityComponent component;
@@ -144,13 +204,30 @@ namespace Caravel.Core.Entity
             return null;
         }
 
-        internal Cv_Entity(string resourceBundle, string sceneID)
+        //Note(JM): Used for editor
+        #if EDITOR
+        public void AddComponent(string componentTypeName, Cv_EntityComponent component)
         {
-            Scene = sceneID;
+            RemoveComponent(componentTypeName);
+
+            lock(m_ComponentMap)
+            {
+                m_ComponentMap.Add(Cv_EntityComponent.GetID(componentTypeName), component);
+                m_ComponentsToAdd.Add(component);
+                component.Owner = this;
+            }
+        }
+        #endif
+
+        internal Cv_Entity(string resourceBundle, string sceneName, Cv_SceneID sceneID)
+        {
+            SceneName = sceneName;
+            SceneID = sceneID;
             ID = Cv_EntityID.INVALID_ENTITY;
             EntityType = "Unknown";
             EntityTypeResource = "";
 			EntityName = "Unknown_" + ID;
+            EntityPath = "/" + EntityName;
             m_ComponentMap = new Dictionary<Cv_ComponentID, Cv_EntityComponent>();
             m_ComponentList = new List<Cv_EntityComponent>();
             m_ComponentsToAdd = new List<Cv_EntityComponent>();
@@ -158,15 +235,18 @@ namespace Caravel.Core.Entity
 			ResourceBundle = resourceBundle;
             DestroyRequested = false;
             Visible = true;
+            m_Children = new List<Cv_Entity>();
         }
 
-        internal Cv_Entity(Cv_EntityID entityId, string resourceBundle, string sceneID)
+        internal Cv_Entity(Cv_EntityID entityId, string resourceBundle, string sceneName, Cv_SceneID sceneID)
         {
-            Scene = sceneID;
+            SceneName = sceneName;
+            SceneID = sceneID;
             ID = entityId;
             EntityType = "Unknown";
             EntityTypeResource = "";
 			EntityName = "Unknown_" + ID;
+            EntityPath = "/" + EntityName;
             m_ComponentMap = new Dictionary<Cv_ComponentID, Cv_EntityComponent>();
             m_ComponentList = new List<Cv_EntityComponent>();
             m_ComponentsToAdd = new List<Cv_EntityComponent>();
@@ -300,21 +380,6 @@ namespace Caravel.Core.Entity
                 component.Owner = this;
             }
         }
-
-        //Note(JM): Used for editor
-        #if EDITOR
-        public void AddComponent(string componentTypeName, Cv_EntityComponent component)
-        {
-            RemoveComponent(componentTypeName);
-
-            lock(m_ComponentMap)
-            {
-                m_ComponentMap.Add(Cv_EntityComponent.GetID(componentTypeName), component);
-                m_ComponentsToAdd.Add(component);
-                component.Owner = this;
-            }
-        }
-        #endif
 
         internal void RemoveComponent<Component>() where Component : Cv_EntityComponent
         {

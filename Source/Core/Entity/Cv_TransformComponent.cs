@@ -215,6 +215,7 @@ namespace Caravel.Core.Entity
                 Rotation = rotation;
             }
 
+            Scale = Vector2.One;
             var scaleNode = componentData.SelectNodes("Scale").Item(0);
             if (scaleNode != null)
             {
@@ -230,6 +231,7 @@ namespace Caravel.Core.Entity
                 Scale = scale;
             }
 
+            Origin = new Vector2(0.5f, 0.5f);
             var originNode = componentData.SelectNodes("Origin").Item(0);
             if (originNode != null)
             {

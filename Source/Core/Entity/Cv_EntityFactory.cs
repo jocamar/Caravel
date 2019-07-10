@@ -1,6 +1,7 @@
 using System.Xml;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
+using static Caravel.Core.Cv_SceneManager;
 using static Caravel.Core.Entity.Cv_Entity;
 using static Caravel.Core.Entity.Cv_EntityComponent;
 
@@ -31,9 +32,7 @@ namespace Caravel.Core.Entity
             ComponentFactory.Register<Cv_ParticleEmitterComponent>(Cv_EntityComponent.GetID<Cv_ParticleEmitterComponent>());
         }
 
-        virtual protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent,
-                                                    XmlElement overrides, Cv_Transform? initialTransform,
-                                                    Cv_EntityID serverEntityID, string resourceBundle, string sceneID)
+        virtual protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, Cv_EntityID serverEntityID, string resourceBundle, Cv_SceneID sceneID, string sceneName)
         {
             Cv_XmlResource resource;
 			resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(entityTypeResource, resourceBundle, CaravelApp.Instance.EditorRunning);
@@ -55,7 +54,7 @@ namespace Caravel.Core.Entity
                 }
             }
 
-            var entity = new Cv_Entity(entityId, resourceBundle, sceneID);
+            var entity = new Cv_Entity(entityId, resourceBundle, sceneName, sceneID);
 
             if (!entity.Initialize(entityTypeResource, root, parent))
             {
@@ -84,8 +83,7 @@ namespace Caravel.Core.Entity
             return entity;
         }
 
-        protected internal Cv_Entity CreateEmptyEntity(string resourceBundle, string sceneID, Cv_EntityID parent, XmlElement overrides,
-                                                                Cv_Transform? initialTransform, Cv_EntityID serverEntityID)
+        protected internal Cv_Entity CreateEmptyEntity(Cv_EntityID parent, Cv_EntityID serverEntityID, string resourceBundle, Cv_SceneID sceneID, string sceneName)
         {
             Cv_EntityID entityId = serverEntityID;
             if (entityId == Cv_EntityID.INVALID_ENTITY)
@@ -96,7 +94,7 @@ namespace Caravel.Core.Entity
                 }
             }
 
-            var entity = new Cv_Entity(entityId, resourceBundle, sceneID);
+            var entity = new Cv_Entity(entityId, resourceBundle, sceneName, sceneID);
 
             if (!entity.Initialize(null, null, parent))
             {

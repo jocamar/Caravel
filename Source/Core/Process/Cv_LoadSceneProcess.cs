@@ -7,22 +7,24 @@ namespace Caravel.Core.Process
     {
         private string m_sScene;
         private string m_sBundle;
-        private string m_sSceneID;
+        private string m_sSceneName;
         private Cv_EntityID m_ParentID;
         private Cv_Transform? m_SceneTransform;
 
-        public Cv_LoadSceneProcess(string scene, string bundle, string sceneID, Cv_Transform? sceneTransform = null, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
+        public Cv_LoadSceneProcess(string scene, string bundle, string sceneName, Cv_Transform? sceneTransform = null, Cv_EntityID parent = Cv_EntityID.INVALID_ENTITY)
         {
             m_sBundle = bundle;
             m_sScene = scene;
-            m_sSceneID = sceneID;
+            m_sSceneName = sceneName;
             m_ParentID = parent;
             m_SceneTransform = sceneTransform;
         }
 
         protected internal override void VThreadFunction()
         {
-            if (CaravelApp.Instance.Logic.LoadScene(m_sScene, m_sBundle, m_sSceneID, m_SceneTransform, m_ParentID))
+            var sceneID = CaravelApp.Instance.Logic.LoadScene(m_sScene, m_sBundle, m_sSceneName, m_SceneTransform, m_ParentID);
+            
+            if (sceneID != Cv_SceneManager.Cv_SceneID.INVALID_SCENE)
             {
                 Succeed();
             }

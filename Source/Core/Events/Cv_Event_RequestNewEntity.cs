@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using static Caravel.Core.Cv_GameView;
+using static Caravel.Core.Cv_SceneManager;
 using static Caravel.Core.Entity.Cv_Entity;
 
 namespace Caravel.Core.Events
@@ -16,7 +17,12 @@ namespace Caravel.Core.Events
 			get; private set;
 		}
 
-        public string SceneID
+        public Cv_SceneID SceneID
+        {
+            get; private set;
+        }
+
+        public string SceneName
         {
             get; private set;
         }
@@ -59,12 +65,13 @@ namespace Caravel.Core.Events
             }
         }
 
-        public Cv_Event_RequestNewEntity(string entityResource, string sceneID, string entityName, string resourceBundle, bool visible,
+        public Cv_Event_RequestNewEntity(string entityResource, Cv_SceneID sceneID, string sceneName, string entityName, string resourceBundle, bool visible,
                                             Cv_EntityID parentId, Cv_Transform? initialTransform, object sender,
                                             Cv_EntityID serverEntityID = Cv_EntityID.INVALID_ENTITY,
                                             Cv_GameViewID gameViewId = Cv_GameViewID.INVALID_GAMEVIEW) : base(Cv_EntityID.INVALID_ENTITY, sender)
         {
             SceneID = sceneID;
+            SceneName = sceneName;
 			EntityName = entityName;
             EntityResource = entityResource;
             InitialTransform = (initialTransform != null ? initialTransform.Value : Cv_Transform.Identity);
