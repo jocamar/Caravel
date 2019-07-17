@@ -99,6 +99,11 @@ namespace Caravel
             get; private set;
         }
 
+        public string ComponentDescriptionLocation
+        {
+            get; private set;
+        }
+
         public string ControlBindingsLocation
         {
             get; private set;
@@ -577,6 +582,14 @@ namespace Caravel
             if (controlsNode != null)
             {
                 ControlBindingsLocation = controlsNode.Attributes["bindingsFile"].Value;
+            }
+
+            var componentsNode = root.SelectSingleNode("Components");
+
+            ComponentDescriptionLocation = "";
+            if (componentsNode != null)
+            {
+                ComponentDescriptionLocation = componentsNode.Attributes["descriptionFile"].Value;
             }
 
             var scriptsNode = root.SelectSingleNode("Scripts");

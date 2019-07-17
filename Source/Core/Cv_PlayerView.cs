@@ -551,7 +551,7 @@ namespace Caravel.Core
             {
                 if (entity == null)
                 {
-                    Cv_Debug.Error("Attempting to play sound without an entity associated.");
+                    Cv_Debug.Warning("Attempting to play sound without an entity associated.");
                     return;
                 }
 

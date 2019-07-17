@@ -7,14 +7,13 @@ using Caravel.Core.Draw;
 using Caravel.Core.Entity;
 using Caravel.Core.Events;
 using Caravel.Core.Physics;
-using Caravel.Core.Resource;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 using static Caravel.Core.Cv_GameView;
 using static Caravel.Core.Cv_SceneManager;
 using static Caravel.Core.Entity.Cv_Entity;
+using static Caravel.Core.Entity.Cv_EntityComponent;
 using static Caravel.Core.Physics.Cv_GamePhysics;
-using static Caravel.Core.Resource.Cv_XmlResource;
 
 namespace Caravel.Core
 {
@@ -305,6 +304,21 @@ namespace Caravel.Core
                         }
                     }
 
+                    foreach (var e in m_EntitiesToAdd) //TODO(JM): this might get really slow with tons of entities. Optimize if it becomes a problem
+                    {
+                        if (e.ID != entityID && e.Parent == entityID)
+                        {
+                            if (e.SceneRoot)
+                            {
+                                UnloadScene(e.SceneID);
+                            }
+                            else
+                            {
+                                DestroyEntity(e.ID);
+                            }
+                        }
+                    }
+
                     m_EntitiesToDestroy.Enqueue(entity);
 
                     var destroyEntityEvent = new Cv_Event_DestroyEntity(entityID, this);
@@ -486,6 +500,11 @@ namespace Caravel.Core
                     }
                 }
             }
+        }
+
+        internal XmlElement GetComponentInfo(Cv_ComponentID componentID)
+        {
+            return m_EntityFactory.GetComponentInfo(componentID);
         }
         
 #endregion
@@ -832,6 +851,15 @@ namespace Caravel.Core
                 }
             }
 
+            Cv_Entity toAdd = null;
+            while (m_EntitiesToAdd.TryDequeue(out toAdd))
+            {
+                lock (m_EntityList)
+                {
+                    m_EntityList.Add(toAdd);
+                }
+            }
+
             Cv_Entity toRemove = null;
             while (m_EntitiesToDestroy.TryDequeue(out toRemove))
             {
@@ -840,15 +868,6 @@ namespace Caravel.Core
                     m_EntityList.Remove(toRemove);
                 }
                 toRemove.OnRemove();
-            }
-
-            Cv_Entity toAdd = null;
-            while (m_EntitiesToAdd.TryDequeue(out toAdd))
-            {
-                lock(m_EntityList)
-                {
-                    m_EntityList.Add(toAdd);
-                }
             }
 
             VGameOnUpdate(time, elapsedTime);

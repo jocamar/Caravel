@@ -167,10 +167,13 @@ namespace Caravel.Core.Draw
 				}
 				else if (!m_HolderNodes.ContainsKey(parentEntity))
 				{
-					Cv_Debug.Warning("Parent does not exist on the scene graph. Adding holder node.");
-
 					var currEntity = Caravel.Logic.GetEntity(parentEntity);
 					var entityStack = new Stack<Cv_Entity>();
+
+                    if (currEntity == null)
+                    {
+                        return false;
+                    }
 
 					//Rebuild path to root
 					entityStack.Push(currEntity);

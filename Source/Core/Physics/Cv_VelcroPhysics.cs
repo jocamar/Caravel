@@ -965,6 +965,7 @@ namespace Caravel.Core.Physics
                 m_PhysicsEntitiesToUpdate.Add(movedEntity);
             }
 
+            //TODO(JM) Fix concurrent access here 
             foreach (var pe in m_PhysicsEntitiesToUpdate)
             {
                 var transformComp = pe.Entity.GetComponent<Cv_TransformComponent>();
@@ -1239,6 +1240,7 @@ namespace Caravel.Core.Physics
                 return;
             }
             
+            //TODO(JM) Fix concurrent access here
             foreach (var pe in m_PhysicsEntitiesList)
             {
                 if (EntityIsDescendantOf(pe.Entity, entityId))

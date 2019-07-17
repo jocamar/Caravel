@@ -91,6 +91,11 @@ namespace Caravel.Core.Entity
         private float m_fRemainingFadeTime;
         private int m_iWidth, m_iHeight;
 
+        public Cv_RenderComponent()
+        {
+            Parallax = 1f;
+        }
+
         public override XmlElement VToXML()
         {
             XmlDocument doc = new XmlDocument();
@@ -298,8 +303,6 @@ namespace Caravel.Core.Entity
                 Width = int.Parse(sizeNode.Attributes["width"].Value);
                 Height = int.Parse(sizeNode.Attributes["height"].Value);
             }
-
-            Parallax = 1f;
 
             var paralaxNode = componentData.SelectNodes("Parallax").Item(0);
 

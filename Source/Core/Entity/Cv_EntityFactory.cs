@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Xml;
 using Caravel.Core.Resource;
 using Caravel.Debugging;
@@ -13,10 +17,24 @@ namespace Caravel.Core.Entity
 
         private Cv_EntityID m_lastEntityID = Cv_EntityID.INVALID_ENTITY;
         private object m_Mutex;
+        private Dictionary<Cv_ComponentID, XmlElement> m_GameComponentInfo;
+
+        internal XmlElement GetComponentInfo(Cv_ComponentID componentID)
+        {
+            XmlElement info;
+
+            if (m_GameComponentInfo.TryGetValue(componentID, out info))
+            {
+                return info;
+            }
+
+            return null;
+        }
 
         protected internal Cv_EntityFactory()
         {
             m_Mutex = new object();
+            m_GameComponentInfo = new Dictionary<Cv_ComponentID, XmlElement>();
             ComponentFactory = new GenericObjectFactory<Cv_EntityComponent, Cv_ComponentID>();
 
             ComponentFactory.Register<Cv_TransformComponent>(Cv_EntityComponent.GetID<Cv_TransformComponent>());
@@ -30,6 +48,8 @@ namespace Caravel.Core.Entity
             ComponentFactory.Register<Cv_TextComponent>(Cv_EntityComponent.GetID<Cv_TextComponent>());
             ComponentFactory.Register<Cv_TransformAnimationComponent>(Cv_EntityComponent.GetID<Cv_TransformAnimationComponent>());
             ComponentFactory.Register<Cv_ParticleEmitterComponent>(Cv_EntityComponent.GetID<Cv_ParticleEmitterComponent>());
+
+            RegisterGameComponents();
         }
 
         virtual protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, Cv_EntityID serverEntityID, string resourceBundle, Cv_SceneID sceneID, string sceneName)
@@ -177,6 +197,34 @@ namespace Caravel.Core.Entity
             m_lastEntityID++;
 
             return m_lastEntityID;
+        }
+
+        private void RegisterGameComponents()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(Path.Combine(CaravelApp.Instance.GetGameWorkingDirectory(), CaravelApp.Instance.ComponentDescriptionLocation));
+            var root = doc.DocumentElement;
+
+            if (root != null)
+            {
+                foreach (XmlElement elem in root.ChildNodes)
+                {
+                    string name = elem.Attributes["name"].Value;
+                    string nameSpace = elem.Attributes["namespace"].Value;
+
+                    if (name != null && name != "" && nameSpace != null) 
+                    {
+                        var assembly = Assembly.GetEntryAssembly();
+                        var componentType = assembly.GetType(nameSpace + "." + name);
+                        var method = ComponentFactory.GetType().GetMethods().Single(m => m.Name == "Register" && m.IsGenericMethodDefinition);
+                        method = method.MakeGenericMethod(componentType);
+                        object[] arguments = { Cv_EntityComponent.GetID(name) };
+                        method.Invoke(ComponentFactory, arguments);
+
+                        m_GameComponentInfo[Cv_EntityComponent.GetID(name)] = elem;
+                    }
+                }
+            }
         }
     }
 }

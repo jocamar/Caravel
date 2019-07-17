@@ -62,6 +62,12 @@ namespace Caravel.Core.Entity
         private Cv_CameraNode m_CameraNode;
         private float m_Zoom;
 
+        public Cv_CameraComponent()
+        {
+            IsDefaultCamera = false;
+            Zoom = 1f;
+        }
+
         public override XmlElement VToXML()
         {
             var doc = new XmlDocument();
@@ -77,9 +83,6 @@ namespace Caravel.Core.Entity
 
         public override bool VInitialize(XmlElement componentData)
         {
-            IsDefaultCamera = false;
-            Zoom = 1f;
-
             var propertiesNode = componentData.SelectSingleNode("Properties");
 
             if (propertiesNode != null && propertiesNode.Attributes != null)
