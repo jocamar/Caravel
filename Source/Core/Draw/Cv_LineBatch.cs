@@ -80,51 +80,6 @@ namespace Caravel.Core.Draw
             m_bHasBegun = true;
         }
 
-        /*public void DrawLineShape(Shape shape)
-        {
-            DrawLineShape(shape, Color.Black);
-        }
-
-        public void DrawLineShape(Shape shape, Color color)
-        {
-            if (!hasBegun)
-            {
-                throw new InvalidOperationException("Begin must be called before DrawLineShape can be called.");
-            }
-            if (shape.ShapeType != ShapeType.Edge &&
-                shape.ShapeType != ShapeType.Chain)
-            {
-                throw new NotSupportedException("The specified shapeType is not supported by LineBatch.");
-            }
-            if (shape.ShapeType == ShapeType.Edge)
-            {
-                if (lineVertsCount >= lineVertices.Length)
-                {
-                    Flush();
-                }
-                EdgeShape edge = (EdgeShape)shape;
-                lineVertices[lineVertsCount].Position = new Vector3(edge.Vertex1, 0f);
-                lineVertices[lineVertsCount + 1].Position = new Vector3(edge.Vertex2, 0f);
-                lineVertices[lineVertsCount].Color = lineVertices[lineVertsCount + 1].Color = color;
-                lineVertsCount += 2;
-            }
-            else if (shape.ShapeType == ShapeType.Chain)
-            {
-                ChainShape loop = (ChainShape)shape;
-                for (int i = 0; i < loop.Vertices.Count; ++i)
-                {
-                    if (lineVertsCount >= lineVertices.Length)
-                    {
-                        Flush();
-                    }
-                    lineVertices[lineVertsCount].Position = new Vector3(loop.Vertices[i], 0f);
-                    lineVertices[lineVertsCount + 1].Position = new Vector3(loop.Vertices.NextVertex(i), 0f);
-                    lineVertices[lineVertsCount].Color = lineVertices[lineVertsCount + 1].Color = color;
-                    lineVertsCount += 2;
-                }
-            }
-        }*/
-
         public void DrawPoints(Vector2[] verts)
         {
             DrawPoints(verts, Color.Black);

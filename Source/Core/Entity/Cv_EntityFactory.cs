@@ -49,7 +49,10 @@ namespace Caravel.Core.Entity
             ComponentFactory.Register<Cv_TransformAnimationComponent>(Cv_EntityComponent.GetID<Cv_TransformAnimationComponent>());
             ComponentFactory.Register<Cv_ParticleEmitterComponent>(Cv_EntityComponent.GetID<Cv_ParticleEmitterComponent>());
 
-            RegisterGameComponents();
+            if (!CaravelApp.Instance.EditorRunning)
+            {
+                RegisterGameComponents();
+            }
         }
 
         virtual protected internal Cv_Entity CreateEntity(string entityTypeResource, Cv_EntityID parent, Cv_EntityID serverEntityID, string resourceBundle, Cv_SceneID sceneID, string sceneName)

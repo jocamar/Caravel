@@ -994,7 +994,7 @@ namespace Caravel.Core
 
                 if (overrides != null)
                 {
-                    m_EntityFactory.ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity)]"));
+                    m_EntityFactory.ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity|self::Scene)]"));
                 }
 
                 var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
