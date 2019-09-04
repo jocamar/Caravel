@@ -28,9 +28,10 @@ namespace Caravel.Core
 
 		public static Cv_Transform Multiply(Cv_Transform t1, Cv_Transform t2)
 		{
-            var newMatrix = t2.TransformMatrix * t1.TransformMatrix;
-            var newTransform = Cv_Transform.FromMatrix(newMatrix, t2.Origin);
-			return newTransform;
+            Vector3 transformedPosition = t1.Transform(t2.Position);
+            float transformedRotation = t1.Rotation + t2.Rotation;
+            Vector2 transformedScale = t1.Scale * t2.Scale;
+			return new Cv_Transform(transformedPosition, transformedScale, transformedRotation, t2.Origin);
 		}
 
         public static Cv_Transform Inverse(Cv_Transform tf)
@@ -38,23 +39,6 @@ namespace Caravel.Core
             var inverse = Matrix.Invert(tf.TransformMatrix);
             var newTransform = Cv_Transform.FromMatrix(inverse, tf.Origin);
             return newTransform;
-        }
-
-        public static Cv_Transform Identity = new Cv_Transform(Vector3.Zero, Vector2.One, 0);
-
-        public Cv_Transform(Vector3 position, Vector2 scale, float rotation, Vector2? origin = null)
-        {
-            Position = position;
-            Scale = scale;
-            Rotation = rotation;
-            Origin = new Vector2(0.5f, 0.5f);
-            m_bMatrixCalculated = false;
-            m_TransformMatrix = Matrix.Identity;
-
-            if (origin != null)
-            {
-                Origin = origin.Value;
-            }
         }
 
         public static Cv_Transform FromMatrix(Matrix value, Vector2 origin)
@@ -79,6 +63,41 @@ namespace Caravel.Core
             var rotation = ang;
 
             return new Cv_Transform(position, scale2D, rotation, origin);
+        }
+
+        public static Cv_Transform Lerp(Cv_Transform t1, Cv_Transform t2, float amount)
+        {
+            Vector3 transformedPos = Vector3.Lerp(t1.Position, t2.Position, amount);
+            Vector2 transformedScale = Vector2.Lerp(t1.Scale, t1.Scale, amount);
+            float transformedRotation = MathHelper.Lerp(t1.Rotation, t2.Rotation, amount);
+            Vector2 transformedOrigin = Vector2.Lerp(t1.Origin, t1.Origin, amount);
+
+            return new Cv_Transform(transformedPos, transformedScale, transformedRotation, transformedOrigin);
+        }
+
+        public static Cv_Transform Identity = new Cv_Transform(Vector3.Zero, Vector2.One, 0);
+
+        public Cv_Transform(Vector3 position, Vector2 scale, float rotation, Vector2? origin = null)
+        {
+            Position = position;
+            Scale = scale;
+            Rotation = rotation;
+            Origin = new Vector2(0.5f, 0.5f);
+            m_bMatrixCalculated = false;
+            m_TransformMatrix = Matrix.Identity;
+
+            if (origin != null)
+            {
+                Origin = origin.Value;
+            }
+        }
+
+        public Vector3 Transform(Vector3 vector)
+        {
+            Vector3 result = Vector3.Transform(vector, Matrix.CreateRotationZ(Rotation));
+            result = new Vector3(result.X * Scale.X, result.Y * Scale.Y, result.Z);
+            result = new Vector3(result.X + Position.X, result.Y + Position.Y, result.Z);
+            return result;
         }
     }
 }

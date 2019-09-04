@@ -64,11 +64,12 @@ namespace Caravel.Core.Draw
 
             renderer.Draw(tex, new Rectangle((int) pos.X,
                                                 (int)pos.Y,
-                                                (int)(spriteComponent.Width * scale.X),
-                                                (int)(spriteComponent.Height * scale.Y)),
+                                                (int)(spriteComponent.Width),
+                                                (int)(spriteComponent.Height)),
                                     new Rectangle(x,y, frameW, frameH),
                                     spriteComponent.Color,
                                     rot,
+                                    scale,
                                     new Vector2(frameW * scene.Transform.Origin.X, frameH * scene.Transform.Origin.Y),
                                     spriteEffect,
                                     layerDepth / (float) Cv_Renderer.MaxLayers, noCamera);

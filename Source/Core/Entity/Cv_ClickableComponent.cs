@@ -23,22 +23,22 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
-		public Action OnMouseUp
+		public Action OnUnclick
 		{
 			get; set;
 		}
 
-        public string OnMouseUpScript
+        public string OnUnclickScript
         {
             get; set;
         }
 
-		public Action OnMouseDown
+		public Action OnClick
 		{
 			get; set;
 		}
 
-        public string OnMouseDownScript
+        public string OnClickScript
         {
             get; set;
         }
@@ -80,22 +80,22 @@ namespace Caravel.Core.Entity
         {
             var componentDoc = new XmlDocument();
             var componentData = componentDoc.CreateElement(GetComponentName<Cv_ClickableComponent>());
-            var mouseUpScript = componentDoc.CreateElement("OnMouseUp");
-            var mouseDownScript = componentDoc.CreateElement("OnMouseDown");
+            var unclickScript = componentDoc.CreateElement("OnUnclick");
+            var clickScript = componentDoc.CreateElement("OnClick");
             var size = componentDoc.CreateElement("Size");
             var anchor = componentDoc.CreateElement("Anchor");
             var active = componentDoc.CreateElement("Active");
 
-            mouseUpScript.SetAttribute("resource", OnMouseUpScript);
-            mouseDownScript.SetAttribute("resource", OnMouseDownScript);
+            unclickScript.SetAttribute("resource", OnUnclickScript);
+            clickScript.SetAttribute("resource", OnClickScript);
             size.SetAttribute("width", Width.ToString(CultureInfo.InvariantCulture));
             size.SetAttribute("height", Height.ToString(CultureInfo.InvariantCulture));
             anchor.SetAttribute("x", ((int) AnchorPoint.X).ToString(CultureInfo.InvariantCulture));
             anchor.SetAttribute("y", ((int) AnchorPoint.Y).ToString(CultureInfo.InvariantCulture));
             active.SetAttribute("status", Active.ToString(CultureInfo.InvariantCulture));
 
-            componentData.AppendChild(mouseUpScript);
-            componentData.AppendChild(mouseDownScript);
+            componentData.AppendChild(unclickScript);
+            componentData.AppendChild(clickScript);
             componentData.AppendChild(size);
             componentData.AppendChild(anchor);
             componentData.AppendChild(active);
@@ -105,16 +105,16 @@ namespace Caravel.Core.Entity
 
         public override bool VInitialize(XmlElement componentData)
         {
-            var onMouseUpNode = componentData.SelectNodes("OnMouseUp").Item(0);
+            var onMouseUpNode = componentData.SelectNodes("OnUnclick").Item(0);
             if (onMouseUpNode != null)
             {
-                OnMouseUpScript = onMouseUpNode.Attributes["resource"].Value;
+                OnUnclickScript = onMouseUpNode.Attributes["resource"].Value;
             }
 
-            var mouseDownScript = componentData.SelectNodes("OnMouseDown").Item(0);
+            var mouseDownScript = componentData.SelectNodes("OnClick").Item(0);
             if (mouseDownScript != null)
             {
-                OnMouseDownScript = mouseDownScript.Attributes["resource"].Value;
+                OnClickScript = mouseDownScript.Attributes["resource"].Value;
             }
 
             var sizeNode = componentData.SelectNodes("Size").Item(0);
@@ -165,6 +165,60 @@ namespace Caravel.Core.Entity
         {
         }
 
+        public void Click(Vector2 pointer)
+        {
+            var playerViews = CaravelApp.Instance.Logic.GameViews.Where(gv => gv.Type == Cv_GameView.Cv_GameViewType.Player);
+
+            if (!m_bWasClicking)
+            {
+                foreach (var view in playerViews)
+                {
+                    Cv_EntityID[] entities;
+                    var playerView = view as Cv_PlayerView;
+                    if (playerView.Pick<Cv_ClickAreaNode>(pointer, out entities) && entities.Contains(Owner.ID))
+                    {
+                        if (OnClickScript != null && OnClickScript != "")
+                        {
+                            var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnClickScript, Owner.ResourceBundle);
+                            scriptRes.RunScript();
+                        }
+
+                        if (OnClick != null)
+                        {
+                            OnClick();
+                        }
+
+                        m_bWasInArea = true;
+                    }
+
+                    m_bWasClicking = true;
+                }
+            }
+        }
+
+        public void Unclick(Vector2 pointer)
+        {
+            if (m_bWasClicking)
+            {
+                if (m_bWasInArea)
+                {
+					if (OnUnclickScript != null && OnUnclickScript != "")
+					{
+						var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnUnclickScript, Owner.ResourceBundle);
+						scriptRes.RunScript();
+					}
+
+					if (OnUnclick != null)
+					{
+						OnUnclick();
+					}
+                }
+
+                m_bWasInArea = false;
+                m_bWasClicking = false;
+            }
+        }
+
         protected internal override void VOnUpdate(float elapsedTime)
         {
             if (!Active)
@@ -173,44 +227,48 @@ namespace Caravel.Core.Entity
             }
 
             var mouseState = Mouse.GetState();
-            var playerView = CaravelApp.Instance.GetPlayerView(PlayerIndex.One);
+            var playerViews = CaravelApp.Instance.Logic.GameViews.Where(gv => gv.Type == Cv_GameView.Cv_GameViewType.Player);
             var mousePos = new Vector2(mouseState.Position.X, mouseState.Position.Y);
 
             Cv_EntityID[] entities;
 
             if (mouseState.LeftButton == ButtonState.Pressed && !m_bWasClicking)
             {
-                if (playerView.Pick<Cv_ClickAreaNode>(mousePos, out entities) && entities.Contains(Owner.ID))
+                foreach (var view in playerViews)
                 {
-                    if (OnMouseDownScript != null && OnMouseDownScript != "")
+                    var playerView = view as Cv_PlayerView;
+                    if (playerView.Pick<Cv_ClickAreaNode>(mousePos, out entities) && entities.Contains(Owner.ID))
                     {
-                        var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnMouseDownScript, Owner.ResourceBundle);
-                        scriptRes.RunScript();
+                        if (OnClickScript != null && OnClickScript != "")
+                        {
+                            var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnClickScript, Owner.ResourceBundle);
+                            scriptRes.RunScript();
+                        }
+
+                        if (OnClick != null)
+                        {
+                            OnClick();
+                        }
+
+                        m_bWasInArea = true;
                     }
 
-					if (OnMouseDown != null)
-					{
-						OnMouseDown();
-					}
-
-                    m_bWasInArea = true;
+                    m_bWasClicking = true;
                 }
-
-                m_bWasClicking = true;
             }
             else if (mouseState.LeftButton == ButtonState.Released && m_bWasClicking)
             {
                 if (m_bWasInArea)
                 {
-					if (OnMouseUpScript != null && OnMouseUpScript != "")
+					if (OnUnclickScript != null && OnUnclickScript != "")
 					{
-						var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnMouseUpScript, Owner.ResourceBundle);
+						var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnUnclickScript, Owner.ResourceBundle);
 						scriptRes.RunScript();
 					}
 
-					if (OnMouseUp != null)
+					if (OnUnclick != null)
 					{
-						OnMouseUp();
+						OnUnclick();
 					}
                 }
 

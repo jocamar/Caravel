@@ -130,11 +130,12 @@ namespace Caravel.Core.Draw
 
                 renderer.Draw(tex, new Rectangle((int) (pos.X),
                                                     (int) (pos.Y),
-                                                    (int) (tex.Width * scale.X),
-                                                    (int) (tex.Height * scale.Y)),
+                                                    (int) tex.Width,
+                                                    (int) tex.Height),
                                         null,
                                         newColor,
                                         particle.Transform.Rotation,
+                                        scale,
                                         new Vector2(tex.Width * 0.5f, tex.Height * 0.5f),
                                         SpriteEffects.None,
                                         layer, noCamera);

@@ -31,6 +31,7 @@ namespace Caravel.Core.Draw
 				null,
 				color, //colour of line
 				angle,     //angle of line (calulated above)
+                Vector2.One,
 				new Vector2(0, 0), // point in line about which to rotate
 				SpriteEffects.None,
                 layer, noCamera);

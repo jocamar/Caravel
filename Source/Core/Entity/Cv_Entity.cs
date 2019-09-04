@@ -299,8 +299,6 @@ namespace Caravel.Core.Entity
                     component.Value.VPostInitialize();
                 }
             }
-
-            m_bInitialized = true;
         }
 
 		internal void PostLoad()
@@ -309,6 +307,8 @@ namespace Caravel.Core.Entity
             {
                 component.Value.VPostLoad();
             }
+
+            m_bInitialized = true;
         }
 
         internal void OnUpdate(float elapsedTime)

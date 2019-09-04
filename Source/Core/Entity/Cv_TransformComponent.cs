@@ -225,9 +225,6 @@ namespace Caravel.Core.Entity
                 x = float.Parse(scaleNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
                 y = float.Parse(scaleNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
 
-                x = Math.Max(0, x);
-                y = Math.Max(0, y);
-
                 var scale = new Vector2(x,y);
                 Scale = scale;
             }
