@@ -6,6 +6,7 @@ using NLua;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Caravel.Core.Events;
+using NLua.Exceptions;
 
 namespace Caravel.Core.Scripting
 {
@@ -101,9 +102,9 @@ namespace Caravel.Core.Scripting
 
 									-- run code under environment [Lua 5.1]
                                     function run(untrusted_code)
-                                        if untrusted_code:byte(1) == 27 then return nil, ""binary bytecode prohibited"" end
+                                        if untrusted_code:byte(1) == 27 then error(""binary bytecode prohibited""); return nil, ""binary bytecode prohibited"" end
                                         local untrusted_function, message = loadstring(untrusted_code)
-                                        if not untrusted_function then return nil, message end
+                                        if not untrusted_function then error(message); return nil, message end
                                         setfenv(untrusted_function, env)
                                         return pcall(untrusted_function)
                                     end");
@@ -139,6 +140,10 @@ namespace Caravel.Core.Scripting
                             m_ScriptState["env.currentEvent"] = script.Event;
                             m_ScriptState.DoString("run [[" + script.Code + "]]", script.Resource);
                         }
+                        catch (LuaException e)
+                        {
+                            Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
+                        }
                         catch (Exception e)
                         {
                             Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
@@ -172,9 +177,13 @@ namespace Caravel.Core.Scripting
             {
                 throw new NotImplementedException();
             }
-			catch (Exception e)
+            catch (LuaException e)
             {
-				Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
+                Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
+            }
+            catch (Exception e)
+            {
+                Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
             }
         }
 
@@ -184,9 +193,13 @@ namespace Caravel.Core.Scripting
             {
                 throw new NotImplementedException();
             }
-			catch (Exception e)
+            catch (LuaException e)
             {
-				Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
+                Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
+            }
+            catch (Exception e)
+            {
+                Cv_Debug.Error("Error executing Lua script:\n" + e.ToString());
             }
         }
 
@@ -214,7 +227,7 @@ namespace Caravel.Core.Scripting
             Cv_Debug.Log("LuaScript", "Queued script " + resource + " for entity " + (runningEntity != null ? runningEntity.EntityName : "[null]"));
         }
 
-        internal override void VExecuteString(string resource, string str, Cv_Event runningEvent)
+        internal override void VExecuteString(string resource, string str, Cv_Event runningEvent, Cv_Entity runningEntity)
         {
             Cv_Debug.Assert( (m_iActiveQueue >= 0 && m_iActiveQueue < NUM_QUEUES), "ScriptManager must have an active script queue.");
 
@@ -224,12 +237,10 @@ namespace Caravel.Core.Scripting
                 return;
             }
 
-            var entity = CaravelApp.Instance.Logic.GetEntity(runningEvent.EntityID);
-
             Cv_ScriptExecutionRequest request = new Cv_ScriptExecutionRequest();
             request.Code = str;
             request.Resource = resource;
-            request.Entity = entity;
+            request.Entity = runningEntity;
             request.Event = runningEvent;
 
             lock (m_QueuedScriptLists[m_iActiveQueue])
@@ -237,7 +248,7 @@ namespace Caravel.Core.Scripting
                 m_QueuedScriptLists[m_iActiveQueue].AddLast(request);
             }
 
-            Cv_Debug.Log("LuaScript", "Queued script " + resource + " for entity " + (entity != null ? entity.EntityName : "[null]"));
+            Cv_Debug.Log("LuaScript", "Queued script " + resource + " for entity " + (runningEntity != null ? runningEntity.EntityName : "[null]"));
         }
 
         internal override void VExecuteStream(string resource, Stream stream, Cv_Entity runningEntity = null)

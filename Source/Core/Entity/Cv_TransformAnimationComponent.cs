@@ -128,11 +128,12 @@ namespace Caravel.Core.Entity
 
         public void Restart()
         {
+            Finished = false;
+            Paused = false;
+
             if (m_Animation != null)
             {
                 m_Animation.CurrPointIndex = 0;
-                Finished = false;
-                Paused = false;
                 GetInitialTransformAndAlpha();
             }
         }
@@ -325,7 +326,7 @@ namespace Caravel.Core.Entity
             if (OnEndScript != null && OnEndScript != "")
             {
                 Cv_ScriptResource scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnEndScript, Owner.ResourceBundle);
-                scriptRes.RunScript();
+                scriptRes.RunScript(Owner);
             }
 
             if (Looping)

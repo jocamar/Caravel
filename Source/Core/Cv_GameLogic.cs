@@ -351,7 +351,13 @@ namespace Caravel.Core
 
             if (ent != null)
             {
-                m_EntityFactory.ModifyEntity(ent, overrides);
+                var components = m_EntityFactory.ModifyEntity(ent, overrides);
+
+                foreach (var component in components)
+                {
+                    component.VPostInitialize();
+                    component.VPostLoad();
+                }
             }
         }
 
@@ -421,6 +427,7 @@ namespace Caravel.Core
             {
                 entity.AddComponent(component);
                 component.VPostInitialize();
+                component.VPostLoad();
             }
         }
 
@@ -437,6 +444,7 @@ namespace Caravel.Core
             {
                 entity.AddComponent(component);
                 component.VPostInitialize();
+                component.VPostLoad();
             }
         }
 
@@ -455,6 +463,7 @@ namespace Caravel.Core
             {
                 entity.AddComponent(componentTypeName, component);
                 component.VPostInitialize();
+                component.VPostLoad();
             }
         }
         #endif
@@ -990,8 +999,6 @@ namespace Caravel.Core
                     EntitiesByPath.Add(entity.EntityPath, entity);
                 }
 
-                entity.PostInitialize();
-
                 if (overrides != null)
                 {
                     m_EntityFactory.ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity|self::Scene)]"));
@@ -1003,13 +1010,15 @@ namespace Caravel.Core
                     tranformComponent.Transform = transform.Value;
                 }
 
+                LastEntityID = entity.ID;
+
+                entity.PostInitialize();
+
                 if (!IsProxy && State == Cv_GameState.Running)
                 {
                     var requestNewEntityEvent = new Cv_Event_RequestNewEntity(null, entityScene, sceneName, entity.EntityName, resourceBundle, visible, parentID, transform, entity.ID);
                     Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
                 }
-
-                LastEntityID = entity.ID;
                 
                 var newEntityEvent = new Cv_Event_NewEntity(entity.ID, this);
                 Cv_EventManager.Instance.TriggerEvent(newEntityEvent);
@@ -1063,8 +1072,6 @@ namespace Caravel.Core
                     EntitiesByPath.Add(entity.EntityPath, entity);
                 }
 
-                entity.PostInitialize();
-
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml("<Entity><Cv_TransformComponent/></Entity>");
                 var overrides = doc.DocumentElement;
@@ -1076,13 +1083,15 @@ namespace Caravel.Core
                     tranformComponent.Transform = transform.Value;
                 }
 
+                LastEntityID = entity.ID;
+
+                entity.PostInitialize();
+
                 if (!IsProxy && State == Cv_GameState.Running)
                 {
                     var requestNewEntityEvent = new Cv_Event_RequestNewEntity(null, scene, sceneName, entity.EntityName, resourceBundle, visible, parentID, transform, entity.ID);
                     Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
                 }
-
-                LastEntityID = entity.ID;
                 
                 var newEntityEvent = new Cv_Event_NewEntity(entity.ID, this);
                 Cv_EventManager.Instance.TriggerEvent(newEntityEvent);

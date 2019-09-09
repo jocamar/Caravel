@@ -128,8 +128,9 @@ namespace Caravel.Core.Entity
             return entity;
         }
 
-        virtual protected internal void ModifyEntity(Cv_Entity entity, XmlNodeList overrides)
+        virtual protected internal Cv_EntityComponent[] ModifyEntity(Cv_Entity entity, XmlNodeList overrides)
         {
+            var modifiedComponents = new List<Cv_EntityComponent>();
             foreach (XmlElement componentNode in overrides)
             {
                 var componentID = Cv_EntityComponent.GetID(componentNode.Name);
@@ -139,6 +140,7 @@ namespace Caravel.Core.Entity
                 {
                     component.VInitialize(componentNode);
                     component.VOnChanged();
+                    modifiedComponents.Add(component);
                 }
                 else
                 {
@@ -146,10 +148,12 @@ namespace Caravel.Core.Entity
                     if (component != null)
                     {
                         entity.AddComponent(component);
-                        component.VPostInitialize();
+                        modifiedComponents.Add(component);
                     }
                 }
             }
+
+            return modifiedComponents.ToArray();
         }
 
         virtual protected internal Cv_EntityComponent CreateComponent(string componentName)

@@ -1,4 +1,5 @@
 using System.IO;
+using Caravel.Core.Entity;
 using Caravel.Core.Scripting;
 
 namespace Caravel.Core.Resource
@@ -43,9 +44,9 @@ namespace Caravel.Core.Resource
             return true;
         }
 
-        public void RunScript()
+        public void RunScript(Cv_Entity scriptEntity = null)
         {
-            Cv_ScriptManager.Instance.VExecuteString(File, ((Cv_ScriptData)ResourceData).Code);
+            Cv_ScriptManager.Instance.VExecuteString(File, ((Cv_ScriptData)ResourceData).Code, scriptEntity);
         }
     }
 }

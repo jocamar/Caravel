@@ -118,7 +118,7 @@ namespace Caravel.Core.Entity
             if (InitScriptResource != null && InitScriptResource != "")
             {
                 Cv_ScriptResource scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(InitScriptResource, Owner.ResourceBundle);
-                scriptRes.RunScript();
+                scriptRes.RunScript(Owner);
             }
 
             return true;
@@ -146,7 +146,7 @@ namespace Caravel.Core.Entity
             if (ScriptResource != null && ScriptResource != "")
             {
                 Cv_ScriptResource scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(ScriptResource, Owner.ResourceBundle);
-                scriptRes.RunScript();
+                scriptRes.RunScript(Owner);
             }
 
             m_bRanOnce = true;

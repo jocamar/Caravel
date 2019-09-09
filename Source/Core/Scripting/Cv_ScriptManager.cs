@@ -26,7 +26,7 @@ namespace Caravel.Core.Scripting
         internal abstract void VExecuteFile(string resource, Cv_Entity runningEntity = null);
         internal abstract void VExecuteFile(string resource, Cv_Event runningEvent);
         internal abstract void VExecuteString(string resource, string str, Cv_Entity runningEntity = null);
-        internal abstract void VExecuteString(string resource, string str, Cv_Event runningEvent);
+        internal abstract void VExecuteString(string resource, string str, Cv_Event runningEvent, Cv_Entity runningEntity);
         internal abstract void VExecuteStream(string resource, Stream stream, Cv_Entity runningEntity = null);
         internal abstract void VExecuteStream(string resource, Stream stream, Cv_Event runningEvent);
         internal abstract bool VInitialize();

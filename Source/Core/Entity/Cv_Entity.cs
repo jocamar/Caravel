@@ -72,6 +72,14 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
+        public bool Initialized
+        {
+            get
+            {
+                return m_bInitialized;
+            }
+        }
+
         public Cv_Entity[] Children
         {
             get

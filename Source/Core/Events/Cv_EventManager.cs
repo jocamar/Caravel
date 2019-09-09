@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Caravel.Core.Entity;
 using Caravel.Core.Scripting;
 using Caravel.Debugging;
 using static Caravel.Core.Events.Cv_Event;
@@ -23,8 +24,20 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        private struct Cv_ScriptListener
+        {
+            public readonly Cv_Entity Entity;
+            public readonly string Delegate;
+
+            public Cv_ScriptListener(Cv_Entity entity, string script)
+            {
+                Entity = entity;
+                Delegate = script;
+            }
+        }
+
         private Dictionary<Cv_EventType, List<NewEventDelegate>> m_EventListeners;
-        private Dictionary<Cv_EventType, List<string>> m_ScriptEventListeners;
+        private Dictionary<Cv_EventType, List<Cv_ScriptListener>> m_ScriptEventListeners;
         private LinkedList<Cv_Event>[] m_EventQueues;
         private ConcurrentQueue<Cv_Event> m_RealTimeEventQueue;
         private int m_iActiveQueue = 0;
@@ -45,7 +58,7 @@ namespace Caravel.Core.Events
 
 			m_RealTimeEventQueue = new ConcurrentQueue<Cv_Event>();
             m_EventListeners = new Dictionary<Cv_EventType, List<NewEventDelegate>>();
-            m_ScriptEventListeners = new Dictionary<Cv_EventType, List<string>>();
+            m_ScriptEventListeners = new Dictionary<Cv_EventType, List<Cv_ScriptListener>>();
             
             m_EventQueues = new LinkedList<Cv_Event>[NUM_QUEUES];
             for (int i = 0; i < NUM_QUEUES; i++)
@@ -86,7 +99,7 @@ namespace Caravel.Core.Events
             return true;
         }
 
-        public bool AddListener(string eventName, string onEvent)
+        public bool AddListener(string eventName, string onEvent, Cv_Entity entity)
         {
             Cv_Debug.Log("Events", "Attempting to add listener for event type " + eventName);
 
@@ -96,21 +109,21 @@ namespace Caravel.Core.Events
 			{
 				if (!m_ScriptEventListeners.ContainsKey(eType))
 				{
-					m_ScriptEventListeners[eType] = new List<string>();
+					m_ScriptEventListeners[eType] = new List<Cv_ScriptListener>();
 				}
 
 				var listeners = m_ScriptEventListeners[eType];
 
 				foreach (var l in listeners)
 				{
-					if (l == onEvent)
+					if (l.Delegate == onEvent && l.Entity == entity)
 					{
 						Cv_Debug.Warning("Attempting to double register a listener.");
 						return false;
 					}
 				}
 
-				listeners.Add(onEvent);
+				listeners.Add(new Cv_ScriptListener(entity, onEvent));
 			}
 
             Cv_Debug.Log("Events", "Successfully added listener for event type " + eventName);
@@ -142,7 +155,7 @@ namespace Caravel.Core.Events
             return success;
         }
 
-        public bool RemoveListener(string eventName, string onEvent)
+        public bool RemoveListener(string eventName, string onEvent, Cv_Entity entity)
         {
             Cv_Debug.Log("Events", "Attempting to remove listener from event type " + eventName);
             var success = false;
@@ -154,7 +167,7 @@ namespace Caravel.Core.Events
 				{
 					var listeners = m_ScriptEventListeners[eType];
 
-					success = listeners.Remove(onEvent);
+					success = listeners.RemoveAll(l => l.Delegate == onEvent && l.Entity == entity) > 0;
 				}
 			}
 
@@ -198,13 +211,13 @@ namespace Caravel.Core.Events
 				}
 			}
 
-            List<string> scriptListenersCopy = null;
+            List<Cv_ScriptListener> scriptListenersCopy = null;
             lock (m_ScriptEventListeners)
             {
-                List<string> scriptListeners;
+                List<Cv_ScriptListener> scriptListeners;
                 if (m_ScriptEventListeners.TryGetValue(newEvent.Type, out scriptListeners))
                 {
-                    scriptListenersCopy = new List<string>(scriptListeners);
+                    scriptListenersCopy = new List<Cv_ScriptListener>(scriptListeners);
                 }
             }
 
@@ -216,7 +229,7 @@ namespace Caravel.Core.Events
 						Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
 					}
 
-					Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l, newEvent);
+					Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l.Delegate, newEvent, l.Entity);
 					processed = true;
 				}
 			}
@@ -374,7 +387,7 @@ namespace Caravel.Core.Events
                     }
                 }
 
-                List<string> scriptListeners;
+                List<Cv_ScriptListener> scriptListeners;
 
                 lock (m_ScriptEventListeners)
 				{
@@ -387,7 +400,7 @@ namespace Caravel.Core.Events
 								Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
 							}
 							
-							Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l, e);
+							Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l.Delegate, e, l.Entity);
 						}
 					}
 				}

@@ -235,7 +235,9 @@ namespace Caravel.Core.Draw
 						Cv_Debug.Error("Cannot have two nodes belonging to the same entity with different parents.");
 						return false;
 					}
-				}
+
+                    nodes = m_EntitiesMap[entityID];
+                }
 				else
 				{
 					holderNode = new Cv_HolderNode(entityID);
@@ -247,7 +249,7 @@ namespace Caravel.Core.Draw
 					m_EntitiesMap.Add(entityID, nodes);
 					m_HolderNodes.Add(entityID, holderNode);
 				}
-
+                
 				nodes.Add(node);
 				return holderNode.AddChild(node);
 			}

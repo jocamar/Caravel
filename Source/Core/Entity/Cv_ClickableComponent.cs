@@ -167,6 +167,11 @@ namespace Caravel.Core.Entity
 
         public void Click(Vector2 pointer)
         {
+            if (!Active)
+            {
+                return;
+            }
+            
             var playerViews = CaravelApp.Instance.Logic.GameViews.Where(gv => gv.Type == Cv_GameView.Cv_GameViewType.Player);
 
             if (!m_bWasClicking)
@@ -180,7 +185,7 @@ namespace Caravel.Core.Entity
                         if (OnClickScript != null && OnClickScript != "")
                         {
                             var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnClickScript, Owner.ResourceBundle);
-                            scriptRes.RunScript();
+                            scriptRes.RunScript(Owner);
                         }
 
                         if (OnClick != null)
@@ -198,6 +203,11 @@ namespace Caravel.Core.Entity
 
         public void Unclick(Vector2 pointer)
         {
+            if (!Active)
+            {
+                return;
+            }
+
             if (m_bWasClicking)
             {
                 if (m_bWasInArea)
@@ -205,7 +215,7 @@ namespace Caravel.Core.Entity
 					if (OnUnclickScript != null && OnUnclickScript != "")
 					{
 						var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnUnclickScript, Owner.ResourceBundle);
-						scriptRes.RunScript();
+						scriptRes.RunScript(Owner);
 					}
 
 					if (OnUnclick != null)
@@ -242,7 +252,7 @@ namespace Caravel.Core.Entity
                         if (OnClickScript != null && OnClickScript != "")
                         {
                             var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnClickScript, Owner.ResourceBundle);
-                            scriptRes.RunScript();
+                            scriptRes.RunScript(Owner);
                         }
 
                         if (OnClick != null)
@@ -263,7 +273,7 @@ namespace Caravel.Core.Entity
 					if (OnUnclickScript != null && OnUnclickScript != "")
 					{
 						var scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(OnUnclickScript, Owner.ResourceBundle);
-						scriptRes.RunScript();
+						scriptRes.RunScript(Owner);
 					}
 
 					if (OnUnclick != null)
