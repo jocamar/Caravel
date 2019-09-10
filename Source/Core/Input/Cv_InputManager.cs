@@ -80,10 +80,10 @@ namespace Caravel.Core.Input
 			return mouseVals;
 		}
 
-		public Cv_GamepadValues GetGamepadValues(PlayerIndex player)
+		public Cv_GamepadValues GetGamepadValues(Cv_Player player)
         {
             var gamepadVals = new Cv_GamepadValues();
-            var gamepadState = m_GamePadStates[(int) player];
+            var gamepadState = m_GamePadStates[player-1];
             gamepadVals.LeftThumbstick = gamepadState.ThumbSticks.Left;
             gamepadVals.RightThumbstick = gamepadState.ThumbSticks.Right;
             gamepadVals.LeftTrigger = gamepadState.Triggers.Left;
@@ -91,57 +91,57 @@ namespace Caravel.Core.Input
             return gamepadVals;
         }
 
-        public void BindCommand(PlayerIndex player, string command, Keys key)
+        public void BindCommand(Cv_Player player, string command, Keys key)
 		{
-			m_BindedKeys[(int) player][command] = key;
+			m_BindedKeys[player-1][command] = key;
 		}
 
-		public void BindCommand(PlayerIndex player, string command, Buttons button)
+		public void BindCommand(Cv_Player player, string command, Buttons button)
 		{
-			m_BindedButtons[(int) player][command] = button;
+			m_BindedButtons[player-1][command] = button;
         }
 
-		public void BindCommand(PlayerIndex player, string command, Cv_MouseAction button)
+		public void BindCommand(Cv_Player player, string command, Cv_MouseAction button)
 		{
-			m_BindedMouseActions[(int) player][command] = button;
+			m_BindedMouseActions[player-1][command] = button;
         }
 
-        public void UnbindCommand(PlayerIndex player, string command)
+        public void UnbindCommand(Cv_Player player, string command)
         {
-            m_BindedKeys[(int)player].Remove(command);
-            m_BindedButtons[(int)player].Remove(command);
-            m_BindedMouseActions[(int)player].Remove(command);
+            m_BindedKeys[player-1].Remove(command);
+            m_BindedButtons[player-1].Remove(command);
+            m_BindedMouseActions[player-1].Remove(command);
         }
 
-        public bool IsCommandBound(PlayerIndex player, string command)
+        public bool IsCommandBound(Cv_Player player, string command)
         {
-            if (m_BindedKeys[(int)player].ContainsKey(command)
-                || m_BindedMouseActions[(int)player].ContainsKey(command)
-                || m_BindedButtons[(int)player].ContainsKey(command))
+            if (m_BindedKeys[player-1].ContainsKey(command)
+                || m_BindedMouseActions[player-1].ContainsKey(command)
+                || m_BindedButtons[player-1].ContainsKey(command))
                 return true;
 
             return false;
         }
 
-		public bool CommandDeactivated(string command, PlayerIndex player)
+		public bool CommandDeactivated(string command, Cv_Player player)
 		{
 			//Determine if the Keyboard Input was released
-			if (m_BindedKeys[(int) player].ContainsKey(command)
-				&& KeyReleased(m_BindedKeys[(int) player][command]))
+			if (m_BindedKeys[player-1].ContainsKey(command)
+				&& KeyReleased(m_BindedKeys[player-1][command]))
 			{
 				//return true (no need to check game pad)
 				return true;
 			}
 
-			if (m_BindedMouseActions[(int) player].ContainsKey(command)
-				&& MouseButtonReleased(m_BindedMouseActions[(int) player][command]))
+			if (m_BindedMouseActions[player-1].ContainsKey(command)
+				&& MouseButtonReleased(m_BindedMouseActions[player-1][command]))
 			{
 				return true;
 			}
 
 			//Determine if the passed player's game pad input was released
-			if (m_BindedButtons[(int) player].ContainsKey(command)
-				&& ButtonReleased(m_BindedButtons[(int) player][command], player))
+			if (m_BindedButtons[player-1].ContainsKey(command)
+				&& ButtonReleased(m_BindedButtons[player-1][command], player))
 			{
 				return true;
 			}
@@ -150,25 +150,25 @@ namespace Caravel.Core.Input
 			return false;
 		}
 
-		public bool CommandActivated(string command, PlayerIndex player)
+		public bool CommandActivated(string command, Cv_Player player)
 		{
 			//Determine if the Keyboard input was pressed
-			if (m_BindedKeys[(int) player].ContainsKey(command)
-				&& KeyPressed(m_BindedKeys[(int) player][command]))
+			if (m_BindedKeys[player-1].ContainsKey(command)
+				&& KeyPressed(m_BindedKeys[player-1][command]))
 			{
 				//Return true (no need to check game pad)
 				return true;
 			}
 
-			if (m_BindedMouseActions[(int) player].ContainsKey(command)
-				&& MouseButtonPressed(m_BindedMouseActions[(int) player][command]))
+			if (m_BindedMouseActions[player-1].ContainsKey(command)
+				&& MouseButtonPressed(m_BindedMouseActions[player-1][command]))
 			{
 				return true;
 			}
 
 			//Determine if the passed player's game pad input was pressed
-			if (m_BindedButtons[(int) player].ContainsKey(command)
-				&& ButtonPressed(m_BindedButtons[(int) player][command], player))
+			if (m_BindedButtons[player-1].ContainsKey(command)
+				&& ButtonPressed(m_BindedButtons[player-1][command], player))
 			{
 				return true;
 			}
@@ -177,43 +177,43 @@ namespace Caravel.Core.Input
 			return false;
 		}
 
-		public bool CommandActive(string command, PlayerIndex player)
+		public bool CommandActive(string command, Cv_Player player)
 		{
 			//Determine if the Keyboard input is held down
-			if (m_BindedKeys[(int) player].ContainsKey(command)
-				&& KeyDown(m_BindedKeys[(int) player][command]))
+			if (m_BindedKeys[player-1].ContainsKey(command)
+				&& KeyDown(m_BindedKeys[player-1][command]))
 			{
 				//return true (no need to check game pad)
 				return true;
 			}
 
-			if (m_BindedMouseActions[(int) player].ContainsKey(command)
-				&& m_BindedMouseActions[(int) player][command] == Cv_MouseAction.MouseWheelDown && MouseWheelDown())
+			if (m_BindedMouseActions[player-1].ContainsKey(command)
+				&& m_BindedMouseActions[player-1][command] == Cv_MouseAction.MouseWheelDown && MouseWheelDown())
 			{
 				return true;
 			}
 
-			if (m_BindedMouseActions[(int) player].ContainsKey(command)
-				&& m_BindedMouseActions[(int) player][command] == Cv_MouseAction.MouseWheelUp && MouseWheelUp())
+			if (m_BindedMouseActions[player-1].ContainsKey(command)
+				&& m_BindedMouseActions[player-1][command] == Cv_MouseAction.MouseWheelUp && MouseWheelUp())
 			{
 				return true;
 			}
 
-			if (m_BindedMouseActions[(int) player].ContainsKey(command)
-				&& m_BindedMouseActions[(int) player][command] == Cv_MouseAction.MouseMove && MouseMoved())
+			if (m_BindedMouseActions[player-1].ContainsKey(command)
+				&& m_BindedMouseActions[player-1][command] == Cv_MouseAction.MouseMove && MouseMoved())
 			{
 				return true;
 			}
 				
-			if (m_BindedMouseActions[(int) player].ContainsKey(command)
-				&& MouseButtonDown(m_BindedMouseActions[(int) player][command]))
+			if (m_BindedMouseActions[player-1].ContainsKey(command)
+				&& MouseButtonDown(m_BindedMouseActions[player-1][command]))
 			{
 				return true;
 			}
 
 			//Determine if the active player's game pad input is held down
-			if (m_BindedButtons[(int) player].ContainsKey(command)
-				&& ButtonDown(m_BindedButtons[(int) player][command], player))
+			if (m_BindedButtons[player-1].ContainsKey(command)
+				&& ButtonDown(m_BindedButtons[player-1][command], player))
 			{
 				return true;
 			}
@@ -325,22 +325,22 @@ namespace Caravel.Core.Input
 			return (m_MouseState.X != m_LastMouseState.X || m_MouseState.Y != m_LastMouseState.Y);
 		}
 
-		private bool ButtonReleased(Buttons button, PlayerIndex index)
+		private bool ButtonReleased(Buttons button, Cv_Player index)
 		{
 			//Determine whether the button has been released
-			return m_GamePadStates[(int)index].IsButtonUp(button) && m_LastGamePadStates[(int)index].IsButtonDown(button);
+			return m_GamePadStates[index-1].IsButtonUp(button) && m_LastGamePadStates[index-1].IsButtonDown(button);
 		}
 
-		private bool ButtonPressed(Buttons button, PlayerIndex index)
+		private bool ButtonPressed(Buttons button, Cv_Player index)
 		{
 			//Determine whether the button has been pressed
-			return m_GamePadStates[(int)index].IsButtonDown(button) && m_LastGamePadStates[(int)index].IsButtonUp(button);
+			return m_GamePadStates[index-1].IsButtonDown(button) && m_LastGamePadStates[index-1].IsButtonUp(button);
 		}
 
-		private bool ButtonDown(Buttons button, PlayerIndex index)
+		private bool ButtonDown(Buttons button, Cv_Player index)
 		{
 			//Determine whether the button is down
-			return m_GamePadStates[(int)index].IsButtonDown(button);
+			return m_GamePadStates[index-1].IsButtonDown(button);
 		}
 
 		private static ButtonState Action2Button(MouseState state, Cv_MouseAction action)
@@ -395,24 +395,24 @@ namespace Caravel.Core.Input
             foreach (XmlElement playerBindings in bindings)
             {
                 var player = int.Parse(playerBindings.Attributes["player"].Value);
-                PlayerIndex pIndex;
+                Cv_Player pIndex;
 
                 switch(player)
                 {
                     case 1:
-                        pIndex = PlayerIndex.One;
+                        pIndex = Cv_Player.One;
                         break;
                     case 2:
-                        pIndex = PlayerIndex.Two;
+                        pIndex = Cv_Player.Two;
                         break;
                     case 3:
-                        pIndex = PlayerIndex.Three;
+                        pIndex = Cv_Player.Three;
                         break;
                     case 4:
-                        pIndex = PlayerIndex.Four;
+                        pIndex = Cv_Player.Four;
                         break;
                     default:
-                        pIndex = PlayerIndex.One;
+                        pIndex = Cv_Player.One;
                         break;
                 }
 

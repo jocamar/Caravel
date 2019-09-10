@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Caravel.Core
 {
-    public struct Cv_Transform
+    public struct Cv_Transform : IEquatable<Cv_Transform>
     {
         public readonly Vector3 Position;
         public readonly Vector2 Scale;
@@ -98,6 +98,50 @@ namespace Caravel.Core
             result = new Vector3(result.X * Scale.X, result.Y * Scale.Y, result.Z);
             result = new Vector3(result.X + Position.X, result.Y + Position.Y, result.Z);
             return result;
+        }
+
+        public bool Equals(Cv_Transform other)
+        {
+            if (Position == other.Position
+                && Scale == other.Scale
+                && Origin == other.Origin
+                && Rotation == other.Rotation)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Cv_Transform) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+                hash = hash * 23 + Position.GetHashCode();
+                hash = hash * 23 + Scale.GetHashCode();
+                hash = hash * 23 + Origin.GetHashCode();
+                hash = hash * 23 + Rotation.GetHashCode();
+                return hash;
+            }
+        }
+
+        public static bool operator ==(Cv_Transform first, Cv_Transform second) 
+        {
+            return first.Equals(second);
+        }
+
+        public static bool operator !=(Cv_Transform first, Cv_Transform second) 
+        {
+            return !(first == second);
         }
     }
 }

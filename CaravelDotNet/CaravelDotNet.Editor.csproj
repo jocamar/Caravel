@@ -145,6 +145,9 @@
     <Compile Include="..\Source\Core\Cv_Transform.cs">
       <Link>Cv_Transform.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Cv_Player.cs">
+      <Link>Cv_Player.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Draw\Cv_CameraNode.cs">
       <Link>Cv_CameraNode.cs</Link>
     </Compile>

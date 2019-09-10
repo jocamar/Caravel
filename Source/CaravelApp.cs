@@ -167,10 +167,10 @@ namespace Caravel
             get; private set;
         }
 
-        public readonly PlayerIndex PlayerOne = PlayerIndex.One;
-        public readonly PlayerIndex PlayerTwo = PlayerIndex.Two;
-        public readonly PlayerIndex PlayerThree = PlayerIndex.Three;
-        public readonly PlayerIndex PlayerFour = PlayerIndex.Four;
+        public readonly Cv_Player PlayerOne = Cv_Player.One;
+        public readonly Cv_Player PlayerTwo = Cv_Player.Two;
+        public readonly Cv_Player PlayerThree = Cv_Player.Three;
+        public readonly Cv_Player PlayerFour = Cv_Player.Four;
 
         private Dictionary<string, string> m_TextResource;
         private Dictionary<string, string> m_TextResourceLocations;
@@ -495,7 +495,7 @@ namespace Caravel
             }
         }
 
-        public Cv_PlayerView GetPlayerView(PlayerIndex player)
+        public Cv_PlayerView GetPlayerView(Cv_Player player)
         {
             foreach (var gv in Logic.GameViews)
             {

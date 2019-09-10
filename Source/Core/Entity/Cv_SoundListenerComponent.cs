@@ -28,7 +28,7 @@ namespace Caravel.Core.Entity
 
         public override bool VPostInitialize()
         {
-            var playerView = CaravelApp.Instance.GetPlayerView(PlayerIndex.One);
+            var playerView = CaravelApp.Instance.GetPlayerView(Cv_Player.One);
 
             playerView.ListenerEntity = Owner;
             return true;

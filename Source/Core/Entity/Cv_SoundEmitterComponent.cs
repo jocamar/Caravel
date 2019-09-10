@@ -125,7 +125,7 @@ namespace Caravel.Core.Entity
                     emitter = new Vector2(tranform.Position.X, tranform.Position.Y);
                 }
 
-                var playerView = CaravelApp.Instance.GetPlayerView(PlayerIndex.One);
+                var playerView = CaravelApp.Instance.GetPlayerView(Cv_Player.One);
 
                 if (playerView != null && playerView.ListenerEntity != null)
                 {
@@ -157,7 +157,7 @@ namespace Caravel.Core.Entity
                     emitter = new Vector2(tranform.Position.X, tranform.Position.Y);
                 }
 
-                var playerView = CaravelApp.Instance.GetPlayerView(PlayerIndex.One);
+                var playerView = CaravelApp.Instance.GetPlayerView(Cv_Player.One);
 
                 if (playerView != null && playerView.ListenerEntity != null)
                 {
@@ -190,7 +190,7 @@ namespace Caravel.Core.Entity
                     emitter = new Vector2(tranform.Position.X, tranform.Position.Y);
                 }
 
-                var playerView = CaravelApp.Instance.GetPlayerView(PlayerIndex.One);
+                var playerView = CaravelApp.Instance.GetPlayerView(Cv_Player.One);
 
                 if (playerView != null && playerView.ListenerEntity != null)
                 {
@@ -241,7 +241,7 @@ namespace Caravel.Core.Entity
                     emitter = new Vector2(tranform.Position.X, tranform.Position.Y);
                 }
 
-                var playerView = CaravelApp.Instance.GetPlayerView(PlayerIndex.One);
+                var playerView = CaravelApp.Instance.GetPlayerView(Cv_Player.One);
 
                 if (playerView != null && playerView.ListenerEntity != null)
                 {

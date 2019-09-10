@@ -48,7 +48,7 @@ namespace Caravel.Core
 			get; set;
 		}
 
-        public PlayerIndex PlayerIdx
+        public Cv_Player PlayerIdx
         {
             get; private set;
         }
@@ -213,7 +213,7 @@ namespace Caravel.Core
         private Cv_GameViewID m_ID;
         private bool m_bAreSoundsPaused;
 
-        public Cv_PlayerView(PlayerIndex player, Vector2? size, Vector2 startPos, SpriteBatch spriteBatch = null)
+        public Cv_PlayerView(Cv_Player player, Vector2? size, Vector2 startPos, SpriteBatch spriteBatch = null)
         {
             m_ID = Cv_GameViewID.INVALID_GAMEVIEW;
             GameState = Cv_GameState.Initializing;
