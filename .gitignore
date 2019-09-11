@@ -7,7 +7,7 @@ Libs/**/obj/**
 CaravelDotNet/Libs/**/bin/**
 CaravelDotNet/Libs/**/obj/**
 /.vs
-/CaravelDotNet/.vs/CaravelDotNet/v15
+/CaravelDotNet/.vs/
 /CaravelDotNet/CaravelDotNet.csproj.user
 /Log
 /CaravelDotNet/packages/FarseerPhysics.MonoGame.Unofficial.3.5.0/lib

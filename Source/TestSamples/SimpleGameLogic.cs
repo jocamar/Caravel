@@ -69,7 +69,7 @@ namespace Caravel.TestSamples
                     //profileTransf.Position += new Vector3(5,0,0);
                 }
 
-                if (Caravel.InputManager.CommandActivated("fire", PlayerIndex.One))
+                if (Caravel.InputManager.CommandActivated("fire", Cv_Player.One))
                 {
                     if (profileSprite.Color.A <= 0)
                     {
@@ -92,22 +92,22 @@ namespace Caravel.TestSamples
                 }
            }
 
-            if (Caravel.InputManager.CommandActive("moveLeft", PlayerIndex.One))
+            if (Caravel.InputManager.CommandActive("moveLeft", Cv_Player.One))
             {
                 camTransf.ApplyVelocity(new Vector2(-5,0));
             }
             
-            if (Caravel.InputManager.CommandActive("moveRight", PlayerIndex.One))
+            if (Caravel.InputManager.CommandActive("moveRight", Cv_Player.One))
             {
                 camTransf.ApplyVelocity(new Vector2(5, 0));
             }
 
-            if (Caravel.InputManager.CommandActive("jump", PlayerIndex.One))
+            if (Caravel.InputManager.CommandActive("jump", Cv_Player.One))
             {
                 camTransf.ApplyVelocity(new Vector2(0,-5));
             }
 
-            if (Caravel.InputManager.CommandActive("duck", PlayerIndex.One))
+            if (Caravel.InputManager.CommandActive("duck", Cv_Player.One))
             {
                 camTransf.ApplyVelocity(new Vector2(0, 5));
             }

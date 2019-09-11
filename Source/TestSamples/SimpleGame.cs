@@ -41,7 +41,7 @@ namespace Caravel.TestSamples
         {
             var gvs = new Cv_GameView[1];
 
-            gvs[0] = new Cv_PlayerView(PlayerIndex.One, new Vector2(1f, 1), Vector2.Zero);
+            gvs[0] = new Cv_PlayerView(Cv_Player.One, new Vector2(1f, 1), Vector2.Zero);
             //gvs[1] = new Cv_PlayerView(PlayerIndex.Two, new Vector2(0.5f, 1), new Vector2(0.5f, 0));
             pv = (Cv_PlayerView) gvs[0];
             pv.DebugDrawRadius = false;
