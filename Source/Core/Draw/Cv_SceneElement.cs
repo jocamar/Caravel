@@ -411,17 +411,17 @@ namespace Caravel.Core.Draw
 			m_Root.PrintTree(0);
 		}
 
-		internal bool Pick(Vector2 mousePosition, out Cv_EntityID[] entities, Cv_Renderer renderer)
+		internal bool Pick(Vector2 screenPosition, out Cv_EntityID[] entities, Cv_Renderer renderer)
 		{
 			var entityList = new List<Cv_EntityID>();
-			var screenPosition = renderer.ScaleMouseToScreenCoordinates(mousePosition);
+			var scaledPosition = renderer.ScaleScreenToViewCoordinates(screenPosition);
 			var result = false;
 			
-			if (screenPosition.X >= 0 && screenPosition.X <= renderer.Viewport.Width
-					&& screenPosition.Y >= 0 && screenPosition.Y <= renderer.Viewport.Height)
+			if (scaledPosition.X >= 0 && scaledPosition.X <= renderer.Viewport.Width
+					&& scaledPosition.Y >= 0 && scaledPosition.Y <= renderer.Viewport.Height)
 			{
 				m_TransformStack.Clear();
-				result = m_Root.VPick(renderer, screenPosition, entityList);
+				result = m_Root.VPick(renderer, scaledPosition, entityList);
 			}
 			entities = entityList.ToArray();
 			entities = entities.OrderBy(e => Caravel.Logic.GetEntity(e).GetComponent<Cv_TransformComponent>() != null ? 1 : 2)
@@ -430,17 +430,17 @@ namespace Caravel.Core.Draw
             return result;
         }
 
-		internal bool Pick<NodeType>(Vector2 mousePosition, out Cv_EntityID[] entities, Cv_Renderer renderer) where NodeType : Cv_SceneNode
+		internal bool Pick<NodeType>(Vector2 screenPosition, out Cv_EntityID[] entities, Cv_Renderer renderer) where NodeType : Cv_SceneNode
 		{
 			var entityList = new List<Cv_EntityID>();
-			var screenPosition = renderer.ScaleMouseToScreenCoordinates(mousePosition);
+			var scaledPosition = renderer.ScaleScreenToViewCoordinates(screenPosition);
 			var result = false;
 			
-			if (screenPosition.X >= 0 && screenPosition.X <= renderer.Viewport.Width
-					&& screenPosition.Y >= 0 && screenPosition.Y <= renderer.Viewport.Height)
+			if (scaledPosition.X >= 0 && scaledPosition.X <= renderer.Viewport.Width
+					&& scaledPosition.Y >= 0 && scaledPosition.Y <= renderer.Viewport.Height)
 			{
 				m_TransformStack.Clear();
-				result = m_Root.Pick<NodeType>(renderer, screenPosition, entityList);
+				result = m_Root.Pick<NodeType>(renderer, scaledPosition, entityList);
 			}
 			entities = entityList.ToArray();
 			entities = entities.OrderBy(e => Caravel.Logic.GetEntity(e).GetComponent<Cv_TransformComponent>() != null ? 1 : 2)

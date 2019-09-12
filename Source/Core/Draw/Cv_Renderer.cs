@@ -230,7 +230,6 @@ namespace Caravel.Core.Draw
         private float m_iCurrSubLayer = 0;
 
         private SpriteBatch m_SpriteBatch;
-        private Vector2 m_VirtualMousePosition = new Vector2();
         private static Cv_Transform m_ScaleTransform;
         private bool m_bDirtyTransform;
 		private BlendState m_BlendState;
@@ -467,15 +466,12 @@ namespace Caravel.Core.Draw
             m_DrawList.Add(newCommand);
         }
 
-        public Vector2 ScaleMouseToScreenCoordinates(Vector2 screenPosition)
+        public Vector2 ScaleScreenToViewCoordinates(Vector2 screenPosition)
         {
             var realX = screenPosition.X - Viewport.X;
             var realY = screenPosition.Y - Viewport.Y;
 
-            m_VirtualMousePosition.X = realX;
-            m_VirtualMousePosition.Y = realY;
-
-            return m_VirtualMousePosition;
+            return new Vector2(realX, realY);
         }
 
         internal void BeginDraw(Cv_CameraNode camera = null)

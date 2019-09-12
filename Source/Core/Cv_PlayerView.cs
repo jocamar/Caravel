@@ -290,29 +290,45 @@ namespace Caravel.Core
             Scene.PrintTree();
         }
 
-        public bool Pick(Vector2 mousePos, out Cv_EntityID[] entities)
+        public bool Pick(Vector2 screenPoint, out Cv_EntityID[] entities)
         {
-            return Scene.Pick(mousePos, out entities, Renderer);
+            return Scene.Pick(screenPoint, out entities, Renderer);
         }
 
-        public bool Pick<NodeType>(Vector2 mousePos, out Cv_EntityID[] entities) where NodeType : Cv_SceneNode
+        public bool Pick<NodeType>(Vector2 screenPoint, out Cv_EntityID[] entities) where NodeType : Cv_SceneNode
         {
-            return Scene.Pick<NodeType>(mousePos, out entities, Renderer);
+            return Scene.Pick<NodeType>(screenPoint, out entities, Renderer);
         }
 
         public Vector2? GetWorldCoords(Vector2 screenPoint)
         {
-            var screenPosition = Renderer.ScaleMouseToScreenCoordinates(screenPoint);
+            var scaledPosition = Renderer.ScaleScreenToViewCoordinates(screenPoint);
 			
-			if (screenPosition.X >= 0 && screenPosition.X <= Renderer.Viewport.Width
-					&& screenPosition.Y >= 0 && screenPosition.Y <= Renderer.Viewport.Height)
+			if (scaledPosition.X >= 0 && scaledPosition.X <= Renderer.Viewport.Width
+					&& scaledPosition.Y >= 0 && scaledPosition.Y <= Renderer.Viewport.Height)
 			{
 				var camMatrix = Renderer.CamMatrix;
 
                 var invertedTransform = Matrix.Invert(camMatrix);
-                var worldPoint = Vector2.Transform(screenPosition, invertedTransform);
+                var worldPoint = Vector2.Transform(scaledPosition, invertedTransform);
 
                 return worldPoint;
+			}
+
+            return null;
+        }
+
+        public Vector2? GetScreenCoords(Vector2 worldPoint)
+        {
+            var camMatrix = Renderer.CamMatrix;
+            var screenPoint = Vector2.Transform(worldPoint, camMatrix);
+
+            var scaledPosition = Renderer.ScaleScreenToViewCoordinates(screenPoint);
+			
+			if (scaledPosition.X >= 0 && scaledPosition.X <= Renderer.Viewport.Width
+					&& scaledPosition.Y >= 0 && scaledPosition.Y <= Renderer.Viewport.Height)
+			{
+                return scaledPosition;
 			}
 
             return null;
