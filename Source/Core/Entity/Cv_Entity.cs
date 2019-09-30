@@ -125,6 +125,7 @@ namespace Caravel.Core.Entity
             var paths = entityPath.Split('/');
 
             Cv_Entity currEntity = this;
+            var consumedSceneName = false;
             foreach (var subPath in paths)
             {
                 if (subPath == "..")
@@ -149,8 +150,16 @@ namespace Caravel.Core.Entity
                     {
                         if (child.EntityName == subPath)
                         {
+                            consumedSceneName = false;
                             currEntity = child;
                             found = true;
+                            break;
+                        }
+
+                        if (child.SceneRoot && child.SceneName == subPath && !consumedSceneName)
+                        {
+                            found = true;
+                            consumedSceneName = true;
                             break;
                         }
                     }

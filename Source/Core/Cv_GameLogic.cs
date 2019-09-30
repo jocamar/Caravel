@@ -240,6 +240,7 @@ namespace Caravel.Core
                 if (entityPath.Length > 0 && entityPath[0] != '/') {
                     path = "/" + entityPath;
                 }
+                
                 EntitiesByPath.TryGetValue(path, out ent);
             }
 
@@ -256,7 +257,7 @@ namespace Caravel.Core
                                         Cv_SceneID sceneID = Cv_SceneID.INVALID_SCENE,
                                         Cv_EntityID serverEntityID = Cv_EntityID.INVALID_ENTITY)
         {
-            var entity = InstantiateNewEntity(entityTypeResource, name, resourceBundle, visible, parentID,
+            var entity = InstantiateNewEntity(false, entityTypeResource, name, resourceBundle, visible, parentID,
                                             overrides, transform, sceneID, serverEntityID);
             entity.PostLoad();
             return entity;
@@ -271,7 +272,7 @@ namespace Caravel.Core
                                             Cv_SceneID sceneID = Cv_SceneID.INVALID_SCENE,
                                             Cv_EntityID serverEntityID = Cv_EntityID.INVALID_ENTITY)
         {
-            var entity = InstantiateNewEntity(null, name, resourceBundle, visible, parentID,
+            var entity = InstantiateNewEntity(false, null, name, resourceBundle, visible, parentID,
                                             overrides, transform, sceneID, serverEntityID);
             entity.PostLoad();
             return entity;
@@ -933,63 +934,72 @@ namespace Caravel.Core
             return true;
         }
 
-        internal Cv_Entity InstantiateNewEntity(string entityTypeResource, string name, string resourceBundle,
+        internal Cv_Entity InstantiateNewEntity(bool isSceneRoot, string entityTypeResource, string name, string resourceBundle,
                                                 bool visible, Cv_EntityID parentID, XmlElement overrides,
                                                 Cv_Transform? transform, Cv_SceneID sceneID, Cv_EntityID serverEntityID)
         {
-            string sceneName, entityPath;
-            Cv_SceneID entityScene;
-
             if (!CanCreateEntity(name, serverEntityID))
             {
-                entityScene = Cv_SceneID.INVALID_SCENE;
-                sceneName = null;
-                entityPath = null;
                 return null;
             }
 
-            entityScene = sceneID == Cv_SceneID.INVALID_SCENE ? m_SceneManager.MainScene : sceneID;
-            sceneName = m_SceneManager.GetSceneName(entityScene);
-            Cv_Debug.Assert(sceneName != null, "Trying to add an entity to an invalid scene [" + entityScene + ", " + name + "]");
+            var scene = sceneID == Cv_SceneID.INVALID_SCENE ? m_SceneManager.MainScene : sceneID;
+            var sceneName = m_SceneManager.GetSceneName(scene);
+            Cv_Debug.Assert(sceneName != null, "Trying to add an entity to an invalid scene [" + scene + ", " + name + "]");
 
-            entityPath = "/" + name;
-            var parent = GetEntity(parentID);
-            if (parent == null)
+            var path = "/" + name;
+
+            if (isSceneRoot) //Insert fake node in path
             {
-                var scenePath = m_SceneManager.GetScenePath(entityScene);
-                entityPath = scenePath + entityPath;
-                var sceneRoot = GetEntity(scenePath);
-                Cv_Debug.Assert(sceneRoot != null, "Trying to add an entity to an invalid scene [" + entityScene + ", " + name + "]");
-                parentID = sceneRoot.ID;
+                path = "/" + sceneName + path;
+            }
+
+            if (parentID == Cv_EntityID.INVALID_ENTITY)
+            {
+                if (!isSceneRoot)
+                {
+                    var sceneRoot = m_SceneManager.GetSceneRoot(scene);
+                    path = sceneRoot.EntityPath + path;
+                    Cv_Debug.Assert(sceneRoot != null, "Trying to add an entity to an invalid scene [" + scene + ", " + name + "]");
+                    parentID = sceneRoot.ID;
+                }
             }
             else
             {
-                if (parent.SceneID != entityScene && sceneID != Cv_SceneID.INVALID_SCENE)
+                var parent = GetEntity(parentID);
+                if (parent == null)
                 {
-                    Cv_Debug.Warning("Attempting to add an entity of a scene to a parent that is not of the same scene [" + entityScene + ", " + name + "]. Adding to parent scene instead.");
+                    Cv_Debug.Warning("Attempting to add an entity to a parent that doesn't exist.");
+                    return null;
                 }
 
-                entityScene = parent.SceneID;
-                sceneName = parent.SceneName;
-                entityPath = parent.EntityPath + entityPath;
+                if (parent.SceneID != scene && !isSceneRoot)
+                {
+                    scene = parent.SceneID;
+                    sceneName = parent.SceneName;
+
+                    Cv_Debug.Warning("Attempting to add an entity of a scene to a parent that is not of the same scene [" + scene + ", " + name + "]. Adding to parent scene instead.");
+                }
+
+                path = parent.EntityPath + path;
             }
 
-            Cv_Debug.Assert(!EntitiesByPath.ContainsKey(entityPath), "All entities with the same parent must have a unique ID. Trying to add repeated entity [" + entityScene + ", " + name + "]");
+            Cv_Debug.Assert(!EntitiesByPath.ContainsKey(path), "All entities with the same parent must have a unique ID. Trying to add repeated entity [" + scene + ", " + name + "]");
 
             Cv_Entity entity = null;
             if (entityTypeResource != null)
             {
-                entity = m_EntityFactory.CreateEntity(entityTypeResource, parentID, serverEntityID, resourceBundle, entityScene, sceneName);
+                entity = m_EntityFactory.CreateEntity(entityTypeResource, parentID, serverEntityID, resourceBundle, scene, sceneName);
             }
             else
             {
-                entity = m_EntityFactory.CreateEmptyEntity(parentID, serverEntityID, resourceBundle, entityScene, sceneName);
+                entity = m_EntityFactory.CreateEmptyEntity(parentID, serverEntityID, resourceBundle, scene, sceneName);
             }
 
             if (entity != null)
             {
 				entity.EntityName = name;
-                entity.EntityPath = entityPath;
+                entity.EntityPath = path;
                 entity.Visible = visible;
                 m_EntitiesToAdd.Enqueue(entity);
                 
@@ -1016,79 +1026,6 @@ namespace Caravel.Core
 
                 if (!IsProxy && State == Cv_GameState.Running)
                 {
-                    var requestNewEntityEvent = new Cv_Event_RequestNewEntity(null, entityScene, sceneName, entity.EntityName, resourceBundle, visible, parentID, transform, entity.ID);
-                    Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
-                }
-                
-                var newEntityEvent = new Cv_Event_NewEntity(entity.ID, this);
-                Cv_EventManager.Instance.TriggerEvent(newEntityEvent);
-
-                return entity;
-            }
-
-            Cv_Debug.Error("Could not create entity with resource [" + resourceBundle + "].");
-            return null;
-        }
-
-        internal Cv_Entity CreateSceneRootEntity(string name,
-                                                string resourceBundle,
-                                                bool visible = true,
-                                                Cv_EntityID parentID = Cv_EntityID.INVALID_ENTITY,
-                                                Cv_Transform? transform = null,
-                                                Cv_SceneID sceneID = Cv_SceneID.INVALID_SCENE,
-                                                Cv_EntityID serverEntityID = Cv_EntityID.INVALID_ENTITY)
-        {
-            if (!CanCreateEntity(name, serverEntityID))
-            {
-                return null;
-            }
-
-            var scene = sceneID != Cv_SceneID.INVALID_SCENE ? sceneID : m_SceneManager.MainScene;
-            var sceneName = m_SceneManager.GetSceneName(scene);
-            Cv_Debug.Assert(sceneName != null, "Trying to add an entity to an invalid scene [" + scene + ", " + name + "]");
-
-            var path = "/" + name;
-            var parent = GetEntity(parentID);
-            if (parent != null)
-            {
-                path = parent.EntityPath + path;
-            }
-
-            Cv_Debug.Assert(!EntitiesByPath.ContainsKey(path), "Trying to add a scene root with the same path as a preexisting entity [" + scene + ", " + name + "]");
-
-            var entity = m_EntityFactory.CreateEmptyEntity(parentID, serverEntityID, resourceBundle, scene, sceneName);
-
-            if (entity != null)
-            {
-                entity.SceneRoot = true;
-				entity.EntityName = name;
-                entity.EntityPath = path;
-                entity.Visible = visible;
-                m_EntitiesToAdd.Enqueue(entity);
-                
-                lock(Entities)
-                {
-                    Entities.Add(entity.ID, entity);
-                    EntitiesByPath.Add(entity.EntityPath, entity);
-                }
-
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml("<Entity><Cv_TransformComponent/></Entity>");
-                var overrides = doc.DocumentElement;
-                m_EntityFactory.ModifyEntity(entity, overrides.SelectNodes("./*[not(self::Entity)]"));
-
-                var tranformComponent = entity.GetComponent<Cv_TransformComponent>();
-                if (tranformComponent != null && transform != null)
-                {
-                    tranformComponent.Transform = transform.Value;
-                }
-
-                LastEntityID = entity.ID;
-
-                entity.PostInitialize();
-
-                if (!IsProxy && State == Cv_GameState.Running)
-                {
                     var requestNewEntityEvent = new Cv_Event_RequestNewEntity(null, scene, sceneName, entity.EntityName, resourceBundle, visible, parentID, transform, entity.ID);
                     Cv_EventManager.Instance.TriggerEvent(requestNewEntityEvent);
                 }
@@ -1099,7 +1036,7 @@ namespace Caravel.Core
                 return entity;
             }
 
-            Cv_Debug.Error("Could not create empty entity.");
+            Cv_Debug.Error("Could not create entity with resource [" + resourceBundle + "].");
             return null;
         }
 
