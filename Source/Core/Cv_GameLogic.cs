@@ -502,7 +502,7 @@ namespace Caravel.Core
                     var newPath = parentPath + "/" + newName;
                     if (!EntitiesByPath.ContainsKey(newPath))
                     {
-                        EntitiesByPath.Remove(newPath);
+                        EntitiesByPath.Remove(entity.EntityPath);
                         entity.EntityName = newName;
                         entity.EntityPath = newPath;
                         EntitiesByPath.Add(newPath, entity);
@@ -593,10 +593,10 @@ namespace Caravel.Core
             }
         }
 
-        public Cv_SceneID LoadScene(string sceneResource, string resourceBundle, string sceneName,
+        public Cv_SceneID LoadScene(string sceneResource, string resourceBundle, string sceneName, XmlElement overrides = null,
                                 Cv_Transform? sceneTransform = null, Cv_EntityID parentID = Cv_EntityID.INVALID_ENTITY)
         {
-            var sceneEntities = m_SceneManager.LoadScene(sceneResource, resourceBundle, sceneName, sceneTransform, parentID);
+            var sceneEntities = m_SceneManager.LoadScene(sceneResource, resourceBundle, sceneName, overrides, sceneTransform, parentID);
 
             if (sceneEntities == null || sceneEntities.Length <= 0)
             {  

@@ -113,7 +113,8 @@ namespace Caravel.Core
             }
         }
 
-        internal Cv_Entity[] LoadScene(string sceneResource, string resourceBundle, string sceneName, Cv_Transform? sceneTransform, Cv_EntityID parentID = Cv_EntityID.INVALID_ENTITY)
+        internal Cv_Entity[] LoadScene(string sceneResource, string resourceBundle, string sceneName, XmlElement overrides,
+                                            Cv_Transform? sceneTransform, Cv_EntityID parentID = Cv_EntityID.INVALID_ENTITY)
         {
             Cv_XmlResource resource;
 			resource = Cv_ResourceManager.Instance.GetResource<Cv_XmlResource>(sceneResource, resourceBundle, Caravel.EditorRunning);
@@ -185,7 +186,7 @@ namespace Caravel.Core
                 entitiesCreated.Add(sceneRoot);
 
                 var entitiesNodes = root.SelectNodes("StaticEntities/Entity|StaticEntities/Scene");
-                CreateNestedEntities(entitiesCreated, entitiesNodes, sceneRoot.ID, resourceBundle, newID, null);
+                CreateNestedEntities(entitiesCreated, entitiesNodes, sceneRoot.ID, resourceBundle, newID, overrides, null);
 
                 if (!Caravel.Logic.OnLoadScene(root, newID, sceneName))
                 {
@@ -356,10 +357,11 @@ namespace Caravel.Core
 
         private void CreateNestedEntities(List<Cv_Entity> entitiesCreated, XmlNodeList entities, Cv_EntityID parentId,
                                             string resourceBundle = null, Cv_SceneID sceneID = Cv_SceneID.INVALID_SCENE,
-                                            Cv_Transform? sceneTransform = null)
+                                            XmlElement overrides = null, Cv_Transform? sceneTransform = null)
         {
             if (entities != null)
             {
+                var firstEntity = true;
                 foreach(XmlNode e in entities)
                 {
                     var visible = true;
@@ -368,7 +370,6 @@ namespace Caravel.Core
                     {
                         visible = bool.Parse(e.Attributes["visible"].Value);
                     }
-
                     
                     Cv_Entity entity = null;
                     var name = e.Attributes?["name"].Value;
@@ -390,6 +391,11 @@ namespace Caravel.Core
                                                                             sceneTransform, sceneID, Cv_EntityID.INVALID_ENTITY);
                         }
 
+                        if (firstEntity)
+                        {
+                            Caravel.Logic.ModifyEntity(entity.ID, overrides.ChildNodes);
+                        }
+
                         entitiesCreated.Add(entity);
                     }
                     else
@@ -402,8 +408,9 @@ namespace Caravel.Core
                         }
 
                         var transform = ParseSceneTransform((XmlElement) e);
+                        var sceneOverrides = GetSceneOverrides((XmlElement) e);
                         
-                        var createdEntities = LoadScene(sceneResource, resourceBundle, name, transform, parentId);
+                        var createdEntities = LoadScene(sceneResource, resourceBundle, name, sceneOverrides, transform, parentId);
 
                         if (createdEntities == null || createdEntities.Length <= 0)
                         {
@@ -420,8 +427,16 @@ namespace Caravel.Core
                     {
                         CreateNestedEntities(entitiesCreated, childEntities, entity.ID, resourceBundle, sceneID);
                     }
+
+                    firstEntity = false;
                 }
             }
+        }
+
+        private XmlElement GetSceneOverrides(XmlElement sceneElement)
+        {
+            Cv_Debug.Assert(sceneElement != null, "Must have valid scene element.");
+            return (XmlElement) sceneElement.SelectSingleNode("Overrides");
         }
 
         private Cv_Transform ParseSceneTransform(XmlElement sceneElement)
