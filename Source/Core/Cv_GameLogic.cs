@@ -500,13 +500,46 @@ namespace Caravel.Core
                         parentPath = parent.EntityPath;
                     }
 
-                    var newPath = parentPath + "/" + newName;
+                    var path = "/" + newName;
+
+                    if (entity.SceneRoot)
+                    {
+                        path = "/" + entity.SceneName + path;
+                    }
+
+                    var newPath = parentPath + path;
                     if (!EntitiesByPath.ContainsKey(newPath))
                     {
                         EntitiesByPath.Remove(entity.EntityPath);
                         entity.EntityName = newName;
                         entity.EntityPath = newPath;
                         EntitiesByPath.Add(newPath, entity);
+
+                        //Make sure to propagate path change to all descendants
+                        List<Cv_Entity> childrenToProcess = new List<Cv_Entity>();
+                        childrenToProcess.AddRange(entity.Children);
+                        while(childrenToProcess.Count > 0)
+                        {
+                            var child = childrenToProcess[childrenToProcess.Count-1];
+
+                            var childParent = GetEntity(child.Parent);
+
+                            var childPath = "/" + child.EntityName;
+
+                            if (child.SceneRoot)
+                            {
+                                path = "/" + child.SceneName + path;
+                            }
+
+                            var newChildPath = childParent.EntityPath + path;
+
+                            EntitiesByPath.Remove(child.EntityPath);
+                            child.EntityPath = newChildPath;
+                            EntitiesByPath.Add(newChildPath, entity);
+
+                            childrenToProcess.RemoveAt(childrenToProcess.Count-1);
+                            childrenToProcess.AddRange(child.Children);
+                        }
                     }
                 }
             }
@@ -649,6 +682,10 @@ namespace Caravel.Core
             if (scenePath != null)
             {
                 scene = scenePath;
+
+                if (scene.Length > 0 && scene[0] != '/') {
+                    scene = "/" + scene;
+                }
             }
             else if (scene == null)
             {
@@ -1001,6 +1038,7 @@ namespace Caravel.Core
 				entity.EntityName = name;
                 entity.EntityPath = path;
                 entity.Visible = visible;
+                entity.SceneRoot = isSceneRoot;
                 m_EntitiesToAdd.Enqueue(entity);
                 
                 lock(Entities)

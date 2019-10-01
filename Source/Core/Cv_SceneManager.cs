@@ -199,9 +199,22 @@ namespace Caravel.Core
                 Cv_Debug.Error("Invalid scene root node for scene " + sceneName + "(" + sceneResource + ").\n Either the scene has multiple roots, no root or its root is not an entity.");
                 return null;
             }
+
+            XmlElement overridesNode = overrides;
+            if (sceneTransform != null)
+            {
+                if (overridesNode == null)
+                {
+                    XmlDocument doc = new XmlDocument();
+                    overridesNode = doc.CreateElement("Overrides");
+                }
+
+                var transformNode = GenerateTransformXml(sceneTransform.Value, overridesNode.OwnerDocument);
+                overridesNode.AppendChild(transformNode);
+            }
         
             var sceneRootNode = sceneRootNodes.Item(0);
-            var sceneRoot = InstantiateSceneEntity(true, sceneRootNode, resourceBundle, parentID, newID, overrides);
+            var sceneRoot = InstantiateSceneEntity(true, sceneRootNode, resourceBundle, parentID, newID, overridesNode);
             
             if (sceneRoot != null)
             {
@@ -520,7 +533,7 @@ namespace Caravel.Core
                 foreach(XmlNode o in sceneOverrides.ChildNodes)
                 {
                     var newNode = o.CloneNode(true);
-                    overrides.AppendChild(newNode);
+                    overrides.AppendChild(overrides.OwnerDocument.ImportNode(newNode, true));
                 }
             }
 
@@ -538,6 +551,34 @@ namespace Caravel.Core
             }
 
             return entity;
+        }
+
+        private XmlElement GenerateTransformXml(Cv_Transform t, XmlDocument doc)
+        {
+            var transform = doc.CreateElement(Cv_EntityComponent.GetComponentName<Cv_TransformComponent>());
+
+            var positionNode = doc.CreateElement("Position");
+            positionNode.SetAttribute("x", t.Position.X.ToString(CultureInfo.InvariantCulture));
+            positionNode.SetAttribute("y", t.Position.Y.ToString(CultureInfo.InvariantCulture));
+            positionNode.SetAttribute("z", t.Position.Z.ToString(CultureInfo.InvariantCulture));
+
+            var rotationNode = doc.CreateElement("Rotation");
+            rotationNode.SetAttribute("radians", t.Rotation.ToString(CultureInfo.InvariantCulture));
+
+            var scaleNode = doc.CreateElement("Scale");
+            scaleNode.SetAttribute("x", t.Scale.X.ToString(CultureInfo.InvariantCulture));
+            scaleNode.SetAttribute("y", t.Scale.Y.ToString(CultureInfo.InvariantCulture));
+
+            var originNode = doc.CreateElement("Origin");
+            originNode.SetAttribute("x", t.Origin.X.ToString(CultureInfo.InvariantCulture));
+            originNode.SetAttribute("y", t.Origin.Y.ToString(CultureInfo.InvariantCulture));
+
+            transform.AppendChild(positionNode);
+            transform.AppendChild(rotationNode);
+            transform.AppendChild(scaleNode);
+            transform.AppendChild(originNode);
+
+            return transform;
         }
     }
 }
