@@ -431,10 +431,9 @@ namespace Caravel.Core
                             continue;
                         }
 
-                        var transform = ParseSceneTransform((XmlElement) e);
                         var sceneOverrides = GetSceneOverrides((XmlElement) e);
                         
-                        var createdEntities = LoadScene(sceneResource, resourceBundle, name, sceneOverrides, transform, parentId);
+                        var createdEntities = LoadScene(sceneResource, resourceBundle, name, sceneOverrides, null, parentId);
 
                         if (createdEntities == null || createdEntities.Length <= 0)
                         {
@@ -454,58 +453,6 @@ namespace Caravel.Core
         {
             Cv_Debug.Assert(sceneElement != null, "Must have valid scene element.");
             return (XmlElement) sceneElement.SelectSingleNode("Overrides");
-        }
-
-        private Cv_Transform ParseSceneTransform(XmlElement sceneElement)
-        {
-            Cv_Debug.Assert(sceneElement != null, "Must have valid scene element.");
-
-            float x, y, z;
-            float rad;
-            float scaleX, scaleY;
-            float originX, originY;
-
-            x = y = z = 0;
-            var positionNode = sceneElement.SelectNodes("Position").Item(0);
-            if (positionNode != null)
-            {
-                x = int.Parse(positionNode.Attributes["x"].Value);
-                y = int.Parse(positionNode.Attributes["y"].Value);
-                z = int.Parse(positionNode.Attributes["z"].Value);
-            }
-
-            rad = 0;
-            var rotationNode = sceneElement.SelectNodes("Rotation").Item(0);
-            if (rotationNode != null)
-            {
-                rad = float.Parse(rotationNode.Attributes["radians"].Value, CultureInfo.InvariantCulture);
-            }
-
-            scaleX = scaleY = 1;
-            var scaleNode = sceneElement.SelectNodes("Scale").Item(0);
-            if (scaleNode != null)
-            {
-                scaleX = float.Parse(scaleNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
-                scaleY = float.Parse(scaleNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
-
-                scaleX = Math.Max(0, scaleX);
-                scaleY = Math.Max(0, scaleY);
-            }
-
-            originX = originY = 0.5f;
-            var originNode = sceneElement.SelectNodes("Origin").Item(0);
-            if (originNode != null)
-            {
-                originX = (float) double.Parse(originNode.Attributes["x"].Value, CultureInfo.InvariantCulture);
-                originY = (float) double.Parse(originNode.Attributes["y"].Value, CultureInfo.InvariantCulture);
-
-                originX = Math.Max(0, Math.Min(1, originX));
-                originY = Math.Max(0, Math.Min(1, originY));
-            }
-
-            return new Cv_Transform(new Microsoft.Xna.Framework.Vector3(x,y,z),
-                                        new Microsoft.Xna.Framework.Vector2(scaleX, scaleY),
-                                        rad, new Microsoft.Xna.Framework.Vector2(originX, originY));
         }
 
         private Cv_Entity InstantiateSceneEntity(bool sceneRoot, XmlNode e, string resourceBundle, Cv_EntityID parentId,
