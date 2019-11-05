@@ -30,6 +30,7 @@ namespace Caravel.Core.Scripting
             public Cv_Entity Entity;
             public Cv_Event Event;
             public string Resource;
+            public bool RunInEditor;
         }
 
         private readonly int NUM_QUEUES = 2;
@@ -132,7 +133,7 @@ namespace Caravel.Core.Scripting
                     var script = m_QueuedScriptLists[queueToProcess].First.Value;
                     m_QueuedScriptLists[queueToProcess].RemoveFirst();
 
-                    if (!CaravelApp.Instance.EditorRunning)
+                    if (!CaravelApp.Instance.EditorRunning || script.RunInEditor)
                     {
                         try
                         {
@@ -203,7 +204,7 @@ namespace Caravel.Core.Scripting
             }
         }
 
-        internal override void VExecuteString(string resource, string str, Cv_Entity runningEntity = null)
+        internal override void VExecuteString(string resource, string str, bool runInEditor, Cv_Entity runningEntity = null)
         {
             Cv_Debug.Assert( (m_iActiveQueue >= 0 && m_iActiveQueue < NUM_QUEUES), "ScriptManager must have an active script queue.");
 
@@ -217,6 +218,7 @@ namespace Caravel.Core.Scripting
             request.Code = str;
             request.Resource = resource;
             request.Entity = runningEntity;
+            request.RunInEditor = runInEditor;
             request.Event = null;
 
             lock (m_QueuedScriptLists[m_iActiveQueue])
@@ -227,7 +229,7 @@ namespace Caravel.Core.Scripting
             Cv_Debug.Log("LuaScript", "Queued script " + resource + " for entity " + (runningEntity != null ? runningEntity.EntityName : "[null]"));
         }
 
-        internal override void VExecuteString(string resource, string str, Cv_Event runningEvent, Cv_Entity runningEntity)
+        internal override void VExecuteString(string resource, string str, bool runInEditor, Cv_Event runningEvent, Cv_Entity runningEntity)
         {
             Cv_Debug.Assert( (m_iActiveQueue >= 0 && m_iActiveQueue < NUM_QUEUES), "ScriptManager must have an active script queue.");
 
@@ -242,6 +244,7 @@ namespace Caravel.Core.Scripting
             request.Resource = resource;
             request.Entity = runningEntity;
             request.Event = runningEvent;
+            request.RunInEditor = runInEditor;
 
             lock (m_QueuedScriptLists[m_iActiveQueue])
             {
@@ -251,7 +254,7 @@ namespace Caravel.Core.Scripting
             Cv_Debug.Log("LuaScript", "Queued script " + resource + " for entity " + (runningEntity != null ? runningEntity.EntityName : "[null]"));
         }
 
-        internal override void VExecuteStream(string resource, Stream stream, Cv_Entity runningEntity = null)
+        internal override void VExecuteStream(string resource, Stream stream, bool runInEditor, Cv_Entity runningEntity = null)
         {
             Cv_Debug.Assert( (m_iActiveQueue >= 0 && m_iActiveQueue < NUM_QUEUES), "ScriptManager must have an active script queue.");
 
@@ -273,6 +276,7 @@ namespace Caravel.Core.Scripting
             request.Code = code;
             request.Resource = resource;
             request.Entity = runningEntity;
+            request.RunInEditor = runInEditor;
             request.Event = null;
 
             lock (m_QueuedScriptLists[m_iActiveQueue])
@@ -283,7 +287,7 @@ namespace Caravel.Core.Scripting
             Cv_Debug.Log("LuaScript", "Queued script " + resource + " for entity " + (runningEntity != null ? runningEntity.EntityName : "[null]"));
         }
 
-        internal override void VExecuteStream(string resource, Stream stream, Cv_Event runningEvent)
+        internal override void VExecuteStream(string resource, Stream stream, bool runInEditor, Cv_Event runningEvent)
         {
             Cv_Debug.Assert( (m_iActiveQueue >= 0 && m_iActiveQueue < NUM_QUEUES), "ScriptManager must have an active script queue.");
 
@@ -308,6 +312,7 @@ namespace Caravel.Core.Scripting
             request.Resource = resource;
             request.Entity = entity;
             request.Event = runningEvent;
+            request.RunInEditor = runInEditor;
 
             lock (m_QueuedScriptLists[m_iActiveQueue])
             {

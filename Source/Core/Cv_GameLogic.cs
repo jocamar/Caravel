@@ -288,48 +288,15 @@ namespace Caravel.Core
                 
                 entityExists = Entities.TryGetValue(entityID, out entity);
 
-                if (entityExists)
+                if (entityExists && !entity.DestroyRequested)
                 {
-                    foreach (var e in m_EntityList) //TODO(JM): this might get really slow with tons of entities. Optimize if it becomes a problem
+                    if (entity.SceneRoot)
                     {
-                        if (e.ID != entityID && e.Parent == entityID)
-                        {
-                            if (e.SceneRoot)
-                            {
-                                UnloadScene(e.SceneID);
-                            }
-                            else
-                            {
-                                DestroyEntity(e.ID);
-                            }
-                        }
+                        UnloadScene(entity.SceneID);
+                        return;
                     }
 
-                    foreach (var e in m_EntitiesToAdd) //TODO(JM): this might get really slow with tons of entities. Optimize if it becomes a problem
-                    {
-                        if (e.ID != entityID && e.Parent == entityID)
-                        {
-                            if (e.SceneRoot)
-                            {
-                                UnloadScene(e.SceneID);
-                            }
-                            else
-                            {
-                                DestroyEntity(e.ID);
-                            }
-                        }
-                    }
-
-                    m_EntitiesToDestroy.Enqueue(entity);
-
-                    var destroyEntityEvent = new Cv_Event_DestroyEntity(entityID, this);
-                    Cv_EventManager.Instance.TriggerEvent(destroyEntityEvent);
-
-                    Entities.Remove(entityID);
-                    EntitiesByPath.Remove(entity.EntityPath);
-
-                    entity.OnDestroy();
-                    entity.DestroyRequested = true;
+                    DestroyEntity(entity);
                 }
             }
         }
@@ -594,9 +561,19 @@ namespace Caravel.Core
             return scenePaths.ToArray();
         }
 
+        public Cv_SceneID GetSceneID(string scenePath)
+        {
+            return m_SceneManager.GetSceneID(scenePath);
+        }
+
         public string GetScenePath(Cv_SceneID sceneID)
         {
             return m_SceneManager.GetScenePath(sceneID);
+        }
+
+        public Cv_Entity GetSceneRoot(Cv_SceneID sceneID)
+        {
+            return m_SceneManager.GetSceneRoot(sceneID);
         }
 
         public string GetSceneResource(Cv_SceneID sceneID)
@@ -1076,6 +1053,56 @@ namespace Caravel.Core
 
             Cv_Debug.Error("Could not create entity with resource [" + resourceBundle + "].");
             return null;
+        }
+
+        internal void DestroyEntity(Cv_Entity entity)
+        {
+            if (entity == null)
+            {
+                return;
+            }
+
+            foreach (var e in m_EntityList) //TODO(JM): this might get really slow with tons of entities. Optimize if it becomes a problem
+            {
+                if (e.ID != entity.ID && e.Parent == entity.ID && !e.DestroyRequested)
+                {
+                    if (e.SceneRoot)
+                    {
+                        UnloadScene(e.SceneID);
+                    }
+                    else
+                    {
+                        DestroyEntity(e);
+                    }
+                }
+            }
+
+            foreach (var e in m_EntitiesToAdd) //TODO(JM): this might get really slow with tons of entities. Optimize if it becomes a problem
+            {
+                if (e.ID != entity.ID && e.Parent == entity.ID && !e.DestroyRequested)
+                {
+                    if (e.SceneRoot)
+                    {
+                        UnloadScene(e.SceneID);
+                    }
+                    else
+                    {
+                        DestroyEntity(e);
+                    }
+                }
+            }
+
+            m_EntitiesToDestroy.Enqueue(entity);
+
+            var destroyEntityEvent = new Cv_Event_DestroyEntity(entity.ID, this);
+            Cv_EventManager.Instance.TriggerEvent(destroyEntityEvent);
+            
+            entity.OnDestroy();
+
+            Entities.Remove(entity.ID);
+            EntitiesByPath.Remove(entity.EntityPath);
+
+            entity.DestroyRequested = true;
         }
 
 #region Event callbacks

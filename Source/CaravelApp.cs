@@ -323,7 +323,12 @@ namespace Caravel
 			EventManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
             SoundManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
             InputManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
-            ScriptManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
+
+            if (Logic.CanRunScripts)
+            {
+                ScriptManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
+            }
+            
             ProcessManager.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);
 
             Logic.OnUpdate((float) gameTime.TotalGameTime.TotalMilliseconds, (float) gameTime.ElapsedGameTime.TotalMilliseconds);

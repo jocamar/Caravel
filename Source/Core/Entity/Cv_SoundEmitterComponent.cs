@@ -112,7 +112,7 @@ namespace Caravel.Core.Entity
             return componentData;
         }
 
-        public void PlaySound()
+        public void PlaySound(bool immediate = false)
         {
             var emitter = Vector2.Zero;
             var listener = Vector2.Zero;
@@ -141,10 +141,17 @@ namespace Caravel.Core.Entity
             Cv_Event_PlaySound playEvt = new Cv_Event_PlaySound(Owner.ID, this, SoundResource, Looping, Volume, Pan,
                                                                         Pitch, false, 0, IsPositional, emitter, listener);
 
-            Cv_EventManager.Instance.QueueEvent(playEvt);
+            if (immediate)
+            {
+                Cv_EventManager.Instance.TriggerEvent(playEvt);
+            }
+            else
+            {
+                Cv_EventManager.Instance.QueueEvent(playEvt);
+            }
         }
 
-        public void PlayOneShotSound(string soundResource, float volume, float pan, float pitch)
+        public void PlayOneShotSound(string soundResource, float volume, float pan, float pitch, bool immediate = false)
         {
             var emitter = Vector2.Zero;
             var listener = Vector2.Zero;
@@ -173,7 +180,14 @@ namespace Caravel.Core.Entity
             Cv_Event_PlaySound playEvt = new Cv_Event_PlaySound(Owner.ID, this, soundResource, false, volume, pan,
                                                                     pitch, false, 0, IsPositional, emitter, listener);
 
-            Cv_EventManager.Instance.QueueEvent(playEvt);
+            if (immediate)
+            {
+                Cv_EventManager.Instance.TriggerEvent(playEvt);
+            }
+            else
+            {
+                Cv_EventManager.Instance.QueueEvent(playEvt);
+            }
         }
 
         public void FadeInSound(float interval)
@@ -209,22 +223,46 @@ namespace Caravel.Core.Entity
             Cv_EventManager.Instance.QueueEvent(playEvt);
         }
 
-        public void StopSound()
+        public void StopSound(bool immediate = false)
         {
             Cv_Event_StopSound stopEvent = new Cv_Event_StopSound(Owner.ID, SoundResource, this);
-            Cv_EventManager.Instance.QueueEvent(stopEvent);
+            
+            if (immediate)
+            {
+                Cv_EventManager.Instance.TriggerEvent(stopEvent);
+            }
+            else
+            {
+                Cv_EventManager.Instance.QueueEvent(stopEvent);
+            }
         }
 
-        public void PauseSound()
+        public void PauseSound(bool immediate = false)
         {
             Cv_Event_PauseSound pauseEvent = new Cv_Event_PauseSound(Owner.ID, SoundResource, this);
-            Cv_EventManager.Instance.QueueEvent(pauseEvent);
+            
+            if (immediate)
+            {
+                Cv_EventManager.Instance.TriggerEvent(pauseEvent);
+            }
+            else
+            {
+                Cv_EventManager.Instance.QueueEvent(pauseEvent);
+            }
         }
 
-        public void ResumeSound()
+        public void ResumeSound(bool immediate = false)
         {
             Cv_Event_ResumeSound resumeEvent = new Cv_Event_ResumeSound(Owner.ID, SoundResource, this);
-            Cv_EventManager.Instance.QueueEvent(resumeEvent);
+            
+            if (immediate)
+            {
+                Cv_EventManager.Instance.TriggerEvent(resumeEvent);
+            }
+            else
+            {
+                Cv_EventManager.Instance.QueueEvent(resumeEvent);
+            }
         }
 
         public void FadeOutSound(float interval)
@@ -312,6 +350,10 @@ namespace Caravel.Core.Entity
 
         public override void VOnDestroy()
         {
+            if (IsPlaying)
+            {
+                StopSound(true);
+            }
         }
 
         public override bool VPostInitialize()

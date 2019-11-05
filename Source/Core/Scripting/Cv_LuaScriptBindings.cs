@@ -17,7 +17,7 @@ namespace Caravel.Core.Scripting
 
 		public Color lua_Color(float r, float g, float b, float a)
 		{
-			return new Color(r, g, b, a);
+			return new Color((int)r, (int)g, (int)b, (int)a);
 		}
 
 		public Cv_Transform lua_Transform(Vector3 pos, Vector2 scale, Vector2 origin, float rot)

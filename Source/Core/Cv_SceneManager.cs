@@ -70,6 +70,19 @@ namespace Caravel.Core
             return true;
         }
 
+        internal Cv_SceneID GetSceneID(string scenePath)
+        {
+            lock (m_Scenes)
+            {
+                if (m_ScenePaths.ContainsKey(scenePath))
+                {
+                    return m_ScenePaths[scenePath].ID;
+                }
+            }
+
+            return Cv_SceneID.INVALID_SCENE;
+        }
+
         internal string GetSceneName(Cv_SceneID sceneID)
         {
             lock(m_Scenes)
@@ -194,7 +207,7 @@ namespace Caravel.Core
 
             var sceneRootNodes = root.SelectNodes("StaticEntities/Entity|StaticEntities/Scene");
 
-            if (sceneRootNodes.Count > 1 || sceneRootNodes.Count < 0 || sceneRootNodes.Item(0).Name == "Scene")
+            if (sceneRootNodes.Count > 1 || sceneRootNodes.Count <= 0 || sceneRootNodes.Item(0).Name == "Scene")
             {
                 Cv_Debug.Error("Invalid scene root node for scene " + sceneName + "(" + sceneResource + ").\n Either the scene has multiple roots, no root or its root is not an entity.");
                 return null;
@@ -235,9 +248,9 @@ namespace Caravel.Core
                     var entitiesToRemove = Caravel.Logic.GetSceneEntities(newID);
                     foreach (var e in entitiesToRemove)
                     {
-                        if (e != null)
+                        if (e != null && !e.DestroyRequested)
                         {
-                            Caravel.Logic.DestroyEntity(e.ID);
+                            Caravel.Logic.DestroyEntity(e);
                         }
                     }
 
@@ -312,9 +325,9 @@ namespace Caravel.Core
             var entitiesToRemove = Caravel.Logic.GetSceneEntities(sceneInfo.ID);
             foreach (var e in entitiesToRemove)
             {
-                if (e != null)
+                if (e != null && !e.DestroyRequested)
                 {
-                    Caravel.Logic.DestroyEntity(e.ID);
+                    Caravel.Logic.DestroyEntity(e);
                 }
             }
 

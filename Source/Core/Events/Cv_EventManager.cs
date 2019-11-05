@@ -229,7 +229,7 @@ namespace Caravel.Core.Events
 						Cv_Debug.Log("Events", "Sending event " + newEvent.VGetName() + " to listener.");
 					}
 
-					Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l.Delegate, newEvent, l.Entity);
+					Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l.Delegate, false, newEvent, l.Entity);
 					processed = true;
 				}
 			}
@@ -400,7 +400,7 @@ namespace Caravel.Core.Events
 								Cv_Debug.Log("Events", "Sending event " + e.VGetName() + " to listener.");
 							}
 							
-							Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l.Delegate, e, l.Entity);
+							Cv_ScriptManager.Instance.VExecuteString("Cv_EventManager", l.Delegate, false, e, l.Entity);
 						}
 					}
 				}

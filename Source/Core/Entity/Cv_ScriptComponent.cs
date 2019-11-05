@@ -32,6 +32,11 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
+        public bool RunInEditor
+        {
+            get; set;
+        }
+
         private bool m_bRanOnce = false;
         private Cv_TimerProcess m_Timer;
 
@@ -44,19 +49,22 @@ namespace Caravel.Core.Entity
             var interval = componentDoc.CreateElement("Interval");
             var executeOnce = componentDoc.CreateElement("ExecuteOnce");
             var paused = componentDoc.CreateElement("Paused");
+            var runInEditor = componentDoc.CreateElement("RunInEditor");
 
             initScript.SetAttribute("resource", InitScriptResource);
             script.SetAttribute("resource", ScriptResource);
             interval.SetAttribute("value", Interval.ToString(CultureInfo.InvariantCulture));
             executeOnce.SetAttribute("status", ExecuteOnce.ToString(CultureInfo.InvariantCulture));
             paused.SetAttribute("status", PauseExecution.ToString(CultureInfo.InvariantCulture));
+            runInEditor.SetAttribute("value", RunInEditor.ToString(CultureInfo.InvariantCulture));
 
             componentData.AppendChild(initScript);
             componentData.AppendChild(script);
             componentData.AppendChild(interval);
             componentData.AppendChild(executeOnce);
             componentData.AppendChild(paused);
-            
+            componentData.AppendChild(runInEditor);
+
             return componentData;
         }
 
@@ -64,6 +72,7 @@ namespace Caravel.Core.Entity
         {
             ExecuteOnce = true;
             PauseExecution = true;
+            RunInEditor = false;
         }
 
         public override bool VInitialize(XmlElement componentData)
@@ -98,6 +107,12 @@ namespace Caravel.Core.Entity
                 PauseExecution = bool.Parse(pausedNode.Attributes["status"].Value);
             }
 
+            var runInEditorNode = componentData.SelectNodes("RunInEditor").Item(0);
+            if (runInEditorNode != null)
+            {
+                RunInEditor = bool.Parse(runInEditorNode.Attributes["value"].Value);
+            }
+
             return true;
         }
 
@@ -118,7 +133,7 @@ namespace Caravel.Core.Entity
             if (InitScriptResource != null && InitScriptResource != "")
             {
                 Cv_ScriptResource scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(InitScriptResource, Owner.ResourceBundle);
-                scriptRes.RunScript(Owner);
+                scriptRes.RunScript(Owner, RunInEditor);
             }
 
             return true;
@@ -132,7 +147,15 @@ namespace Caravel.Core.Entity
         {
             if (PauseExecution)
             {
+                if (m_Timer != null && m_Timer.IsAlive && !m_Timer.IsPaused) {
+                    m_Timer.Pause();
+                }
+                
                 return;
+            }
+            else if (m_Timer != null && m_Timer.IsAlive && m_Timer.IsPaused)
+            {
+                m_Timer.Resume();
             }
 
             if (!m_bRanOnce)
@@ -143,10 +166,15 @@ namespace Caravel.Core.Entity
 
         private void OnExecuteScriptTimeout()
         {
+            if (Owner == null)
+            {
+                return;
+            }
+
             if (ScriptResource != null && ScriptResource != "")
             {
                 Cv_ScriptResource scriptRes = Cv_ResourceManager.Instance.GetResource<Cv_ScriptResource>(ScriptResource, Owner.ResourceBundle);
-                scriptRes.RunScript(Owner);
+                scriptRes.RunScript(Owner, RunInEditor);
             }
 
             m_bRanOnce = true;

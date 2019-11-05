@@ -44,9 +44,9 @@ namespace Caravel.Core.Resource
             return true;
         }
 
-        public void RunScript(Cv_Entity scriptEntity = null)
+        public void RunScript(Cv_Entity scriptEntity = null, bool runInEditor = false)
         {
-            Cv_ScriptManager.Instance.VExecuteString(File, ((Cv_ScriptData)ResourceData).Code, scriptEntity);
+            Cv_ScriptManager.Instance.VExecuteString(File, ((Cv_ScriptData)ResourceData).Code, runInEditor, scriptEntity);
         }
     }
 }

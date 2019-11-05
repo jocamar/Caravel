@@ -13,7 +13,16 @@ namespace Caravel.Core.Entity
     {
         public Color Color
         {
-            get; set;
+            get
+            {
+                return m_Color;
+            }
+
+            set
+            {
+                m_Color = value;
+                m_fCurrAlpha = m_Color.A;
+            }
         }
 
         public bool Visible
@@ -89,7 +98,9 @@ namespace Caravel.Core.Entity
 
         private int m_iFinalFadeAlpha;
         private float m_fRemainingFadeTime;
+        private float m_fCurrAlpha;
         private int m_iWidth, m_iHeight;
+        private Color m_Color;
 
         public Cv_RenderComponent()
         {
@@ -134,6 +145,7 @@ namespace Caravel.Core.Entity
             IsFading = true;
             m_fRemainingFadeTime = interval;
             m_iFinalFadeAlpha = alpha;
+            m_fCurrAlpha = Color.A;
         }
 
         public void DrawSelectionHighlight(Cv_Renderer renderer)
@@ -342,7 +354,7 @@ namespace Caravel.Core.Entity
         {
             if (IsFading)
             {
-                 var alphaDiff = m_iFinalFadeAlpha - this.Color.A;
+                 var alphaDiff = m_iFinalFadeAlpha - m_fCurrAlpha;
 
                 if (alphaDiff == 0 || m_fRemainingFadeTime <= 0)
                 {
@@ -357,7 +369,7 @@ namespace Caravel.Core.Entity
                 {
                     var alphaIncrement = alphaDiff / m_fRemainingFadeTime;
                     alphaIncrement *= elapsedTime;
-                    var newAlpha = this.Color.A + alphaIncrement;
+                    var newAlpha = m_fCurrAlpha + alphaIncrement;
 
                     if (alphaIncrement <= 0 && newAlpha < m_iFinalFadeAlpha)
                     {
@@ -369,7 +381,8 @@ namespace Caravel.Core.Entity
                         newAlpha = m_iFinalFadeAlpha;
                     }
                     
-                    this.Color = new Color(this.Color, (int) newAlpha);
+                    m_Color = new Color(Color, (int) newAlpha);
+                    m_fCurrAlpha = newAlpha;
                     m_fRemainingFadeTime -= elapsedTime;
                 }
             }

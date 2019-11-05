@@ -103,9 +103,11 @@ namespace Caravel.Core.Entity
         private Cv_Transform m_InitialTransform;
         private int m_iInitialSpriteAlpha;
         private int m_iInitialTextAlpha;
+        private int m_iInitialParticleAlpha;
         private Cv_TransformComponent m_TransformComponent;
         private Cv_SpriteComponent m_SpriteComponent;
         private Cv_TextComponent m_TextComponent;
+        private Cv_ParticleEmitterComponent m_ParticleEmitterComponent;
         private bool m_bLooping;
 
         private static Cv_TransformAnimationKeyFrame m_initialKeyFrame = new Cv_TransformAnimationKeyFrame()
@@ -220,6 +222,7 @@ namespace Caravel.Core.Entity
             m_TransformComponent = Owner.GetComponent<Cv_TransformComponent>();
             m_SpriteComponent = Owner.GetComponent<Cv_SpriteComponent>();
             m_TextComponent = Owner.GetComponent<Cv_TextComponent>();
+            m_ParticleEmitterComponent = Owner.GetComponent<Cv_ParticleEmitterComponent>();
 
             if (Finished || Paused || m_TransformComponent == null || CaravelApp.Instance.EditorRunning)
             {
@@ -287,6 +290,11 @@ namespace Caravel.Core.Entity
                     {
                         m_TextComponent.Color = new Color(m_TextComponent.Color, (int)((prevKeyFrame.Alpha + (currFrame.Alpha - prevKeyFrame.Alpha)*keyFramePercent) * m_iInitialTextAlpha));
                     }
+
+                    if (m_ParticleEmitterComponent != null)
+                    {
+                        m_ParticleEmitterComponent.Color = new Color(m_ParticleEmitterComponent.Color, (int)((prevKeyFrame.Alpha + (currFrame.Alpha - prevKeyFrame.Alpha)*keyFramePercent) * m_iInitialParticleAlpha));
+                    }
                 }
             }
         }
@@ -352,6 +360,11 @@ namespace Caravel.Core.Entity
                 {
                     m_TextComponent.Color = new Color(m_TextComponent.Color, m_iInitialTextAlpha);
                 }
+
+                if (m_ParticleEmitterComponent != null)
+                {
+                    m_ParticleEmitterComponent.Color = new Color(m_ParticleEmitterComponent.Color, m_iInitialParticleAlpha);
+                }
             }
             else if (Finished)
             {
@@ -373,6 +386,11 @@ namespace Caravel.Core.Entity
                 {
                     m_TextComponent.Color = new Color(m_TextComponent.Color, (int)(prevKeyFrame.Alpha * m_iInitialTextAlpha));
                 }
+
+                if (m_ParticleEmitterComponent != null)
+                {
+                    m_ParticleEmitterComponent.Color = new Color(m_ParticleEmitterComponent.Color, (int)(prevKeyFrame.Alpha * m_iInitialParticleAlpha));
+                }
             }
 
             GetInitialTransformAndAlpha();
@@ -385,6 +403,7 @@ namespace Caravel.Core.Entity
             m_InitialTransform = m_TransformComponent.Transform;
             m_iInitialSpriteAlpha = 255;
             m_iInitialTextAlpha = 255;
+            m_iInitialParticleAlpha = 255;
 
             if (m_SpriteComponent != null)
             {
@@ -394,6 +413,11 @@ namespace Caravel.Core.Entity
             if (m_TextComponent != null)
             {
                 m_iInitialTextAlpha = m_TextComponent.Color.A;
+            }
+
+            if (m_ParticleEmitterComponent != null)
+            {
+                m_iInitialParticleAlpha = m_ParticleEmitterComponent.Color.A;
             }
         }
     }
