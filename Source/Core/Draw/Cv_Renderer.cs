@@ -352,8 +352,8 @@ namespace Caravel.Core.Draw
             newCommand.Layer = 255;
             newCommand.NoCamera = false;
 
-            var widthScale = destinationRectangle.Width / texture.Width;
-            var heightScale = destinationRectangle.Height / texture.Height;
+            var widthScale = (float) destinationRectangle.Width / texture.Width;
+            var heightScale = (float) destinationRectangle.Height / texture.Height;
             newCommand.Scale = Vector2.One * new Vector2(widthScale, heightScale);
 
             m_DrawList.Add(newCommand);
@@ -373,8 +373,8 @@ namespace Caravel.Core.Draw
             newCommand.Layer = 255;
             newCommand.NoCamera = false;
 
-            var widthScale = destinationRectangle.Width / sourceRectangle.Width;
-            var heightScale = destinationRectangle.Height / sourceRectangle.Height;
+            var widthScale = (float) destinationRectangle.Width / sourceRectangle.Width;
+            var heightScale = (float) destinationRectangle.Height / sourceRectangle.Height;
             newCommand.Scale = Vector2.One * new Vector2(widthScale, heightScale);
 
             newCommand.Scale = Vector2.One;
@@ -415,8 +415,8 @@ namespace Caravel.Core.Draw
             newCommand.Layer = layerDepth;
             newCommand.NoCamera = noCamera;
 
-            var widthScale = destinationRectangle.Width / (sourceRectangle.HasValue ? sourceRectangle.Value.Width : texture.Width);
-            var heightScale = destinationRectangle.Height / (sourceRectangle.HasValue ? sourceRectangle.Value.Height : texture.Height);
+            var widthScale = (float) destinationRectangle.Width / (sourceRectangle.HasValue ? sourceRectangle.Value.Width : texture.Width);
+            var heightScale = (float) destinationRectangle.Height / (sourceRectangle.HasValue ? sourceRectangle.Value.Height : texture.Height);
             newCommand.Scale = Vector2.One * new Vector2(widthScale, heightScale);
 
             m_DrawList.Add(newCommand);
@@ -437,8 +437,8 @@ namespace Caravel.Core.Draw
             newCommand.Layer = layerDepth;
             newCommand.NoCamera = noCamera;
 
-            var widthScale = destinationRectangle.Width / (sourceRectangle.HasValue ? sourceRectangle.Value.Width : texture.Width);
-            var heightScale = destinationRectangle.Height / (sourceRectangle.HasValue ? sourceRectangle.Value.Height : texture.Height);
+            var widthScale = (float) destinationRectangle.Width / (sourceRectangle.HasValue ? sourceRectangle.Value.Width : texture.Width);
+            var heightScale = (float) destinationRectangle.Height / (sourceRectangle.HasValue ? sourceRectangle.Value.Height : texture.Height);
             newCommand.Scale = scale * new Vector2(widthScale, heightScale);
 
             m_DrawList.Add(newCommand);
