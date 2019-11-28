@@ -3,6 +3,8 @@ Caravel is a simple 2D game engine built using MonoGame and C#. It was started a
 
 Conceptually think of Caravel as a mix between Unity and Godot. You have the Unity way of building entities with the several components in an entity dictating how it behaves, but you have a bit of Godot in how the "prefabs" work. Each scene in Caravel can be instantiated inside any other scene (be careful for circular references though if you're instantiating scenes from resources) and this is how you create reausable complex objects in your games.
 
+Additionally Caravel is built with code first in mind. While there is an editor and it is very useful in speeding up scene and object creation, it is strictly optional. You can do everything by code or by hand crafting the scene and entity type xml files.
+
 ## Features
 Currently the engine supports the following features:
 * Easy to use entity component system that allows users to create a large number of different behaviors by combining sets of components.
