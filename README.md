@@ -1,5 +1,5 @@
 # Caravel
-Caravel is a simple 2D game engine built using MonoGame and C#. It was started as my experiment in learning about how a game engine is structured, what main components does it have and how do these interact with eachother in a simple and flexible way. It is not meant to replace any more complex game engines like Unity, GameMaker, Godot or Unreal though you are free to use this if you like. I've created a [startup project](https://github.com/jocamar/CaravelStarterProject) as a basis for quickly getting up and running using Caravel.
+Caravel is a simple 2D game engine built using MonoGame and C#. It was started as my experiment to learn about how a game engine is structured (what main components does it have and how do these interact with each other) . It is not meant to replace any more complex game engines like Unity, GameMaker, Godot or Unreal, although you are free to use this if you like. I've created a [startup project](https://github.com/jocamar/CaravelStarterProject) as a basis for quickly getting up and running using Caravel.
 
 Conceptually think of Caravel as a mix between Unity and Godot. You have the Unity way of building entities with the several components in an entity dictating how it behaves, but you have a bit of Godot in how the "prefabs" work. Each scene in Caravel can be instantiated inside any other scene (be careful for circular references though if you're instantiating scenes from resources) and this is how you create reausable complex objects in your games.
 
@@ -51,7 +51,7 @@ myEnt.GetComponent<SomeComponent>().SomeProperty = "New Value";
 myEnt.GetComponent<Cv_TransformComponent>().SetPosition(new Vector3(100,100,0));
 
 //Create empty entity and a child
-var myEmptyEnt = CaravelApp.Instance.Logic.CreateEntity("myEntityID", "Default", true);
+var myEmptyEnt = CaravelApp.Instance.Logic.CreateEmptyEntity("myEntityID", "Default", true);
 var myChildEnt = CaravelApp.Instance.Logic.CreateEntity("entity_types/myEntityTypeResource.cve", "myEntityID", "Default", true, myEmptyEnt.ID);
 
 //Add and remove components
