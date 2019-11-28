@@ -1,1 +1,0 @@
-log:Info("hello from lua")

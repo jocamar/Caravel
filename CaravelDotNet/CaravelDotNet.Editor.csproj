@@ -409,299 +409,299 @@
     <Compile Include="..\Source\TestSamples\SimpleGameLogic.cs">
       <Link>SimpleGameLogic.cs</Link>
     </Compile>
-    <Compile Include="Libs\VelcroPhysics\BreakableBody.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\AABBHelper.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Broadphase\DynamicTree.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Broadphase\DynamicTreeBroadPhase.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Broadphase\IBroadPhase.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Broadphase\Pair.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Broadphase\TreeNode.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\ContactSystem\Contact.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\ContactSystem\ContactEdge.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\ContactSystem\ContactFeature.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\ContactSystem\ContactFeatureType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\ContactSystem\ContactFlags.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\ContactSystem\ContactID.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\ContactSystem\ContactManager.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\ContactSystem\ContactType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Distance\DistanceGJK.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Distance\DistanceInput.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Distance\DistanceOutput.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Distance\DistanceProxy.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Filtering\Category.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Filtering\Filter.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Handlers\AfterCollisionHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Handlers\BeforeCollisionHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Handlers\BeginContactHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Handlers\BroadphaseHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Handlers\CollisionFilterHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Handlers\EndContactHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Handlers\OnCollisionHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Handlers\OnSeparationHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\ClipVertex.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\CollideCircle.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\CollideEdge.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\CollidePolygon.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\Collision.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\EPAxis.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\EPAxisType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\EPCollider.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\Manifold.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\ManifoldPoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\ManifoldType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\PointState.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\ReferenceFace.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\Simplex.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\SimplexCache.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\SimplexVertex.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Narrowphase\WorldManifold.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\RayCastHelper.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\RayCast\RayCastInput.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\RayCast\RayCastOutput.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Shapes\ChainShape.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Shapes\CircleShape.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Shapes\EdgeShape.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Shapes\MassData.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Shapes\PolygonShape.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Shapes\Shape.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\Shapes\ShapeType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\TestPointHelper.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\TOI\SeparationFunction.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\TOI\SeparationFunctionType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\TOI\Sweep.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\TOI\TimeOfImpact.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\TOI\TOIInput.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\TOI\TOIOutput.cs" />
-    <Compile Include="Libs\VelcroPhysics\Collision\TOI\TOIOutputState.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Body.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\BodyFlags.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\BodyType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Fixture.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\FixtureProxy.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Handlers\BodyHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Handlers\ControllerHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Handlers\FixtureHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Handlers\JointHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Handlers\PostSolveHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Handlers\PreSolveHandler.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\AngleJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\DistanceJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\FixedMouseJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\FrictionJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\GearJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\Joint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\JointEdge.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\JointType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\LimitState.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\MotorJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\PrismaticJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\PulleyJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\RevoluteJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\RopeJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\WeldJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Joints\WheelJoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\ContactPositionConstraint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\ContactSolver.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\ContactVelocityConstraint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\Island.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\Position.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\PositionSolverManifold.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\SolverData.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\Velocity.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\Solver\VelocityConstraintPoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\TimeStep.cs" />
-    <Compile Include="Libs\VelcroPhysics\Dynamics\World.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\Buoyancy\BuoyancyController.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\ControllerBase\Controller.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\ControllerBase\ControllerFilter.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\ControllerBase\ControllerType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\Gravity\GravityController.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\Gravity\GravityType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\Velocity\VelocityLimitController.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\Wind\AbstractForceController.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\Controllers\Wind\SimpleWindForce.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\DebugView\DebugViewBase.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\DebugView\DebugViewFlags.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\PhysicsLogics\Explosion\RayDataComparer.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\PhysicsLogics\Explosion\RealExplosion.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\PhysicsLogics\Explosion\SimpleExplosion.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\FilterData.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\PhysicsLogic.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\PhysicsLogicFilter.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\PhysicsLogicType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\ShapeData.cs" />
-    <Compile Include="Libs\VelcroPhysics\Factories\BodyFactory.cs" />
-    <Compile Include="Libs\VelcroPhysics\Factories\FixtureFactory.cs" />
-    <Compile Include="Libs\VelcroPhysics\Factories\JointFactory.cs" />
-    <Compile Include="Libs\VelcroPhysics\Primitives\Curve.cs" />
-    <Compile Include="Libs\VelcroPhysics\Primitives\CurveKey.cs" />
-    <Compile Include="Libs\VelcroPhysics\Primitives\CurveKeyCollection.cs" />
-    <Compile Include="Libs\VelcroPhysics\Primitives\MathHelper.cs" />
-    <Compile Include="Libs\VelcroPhysics\Primitives\Matrix.cs" />
-    <Compile Include="Libs\VelcroPhysics\Primitives\Vector2.cs" />
-    <Compile Include="Libs\VelcroPhysics\Primitives\Vector3.cs" />
-    <Compile Include="Libs\VelcroPhysics\Properties\AssemblyInfo.cs" />
-    <Compile Include="Libs\VelcroPhysics\Settings.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\AABB.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Benchmark.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\BenchmarkRun.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Contracts\Contract.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Contracts\EnsuresException.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Contracts\RequiredException.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Graph.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\GraphNode.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Mat22.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Mat33.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Optimization\FixedArray2.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Optimization\FixedArray3.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Optimization\IPoolable.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\PolygonError.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Pool.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Rot.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Transform.cs" />
-    <Compile Include="Libs\VelcroPhysics\Shared\Vertices.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\BodyTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\FixtureTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\IDefaults.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\DistanceJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\FrictionJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\GearJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\JointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\MotorJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\MouseJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\PrismaticJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\PulleyJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\RevoluteJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\RopeJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\WeldJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Joints\WheelJointTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Shapes\ChainShapeTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Shapes\CircleShapeTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Shapes\EdgeShapeTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Shapes\PolygonShapeTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Templates\Shapes\ShapeTemplate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\ConvexHull\ChainHull\ChainHull.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\ConvexHull\GiftWrap\GiftWrap.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\ConvexHull\Melkman\Melkman.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Cutting\Simple\CuttingTools.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Cutting\Simple\PolyClipError.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Cutting\Simple\PolyClipType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Cutting\YuPengClipper.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\PathGenerator\LinkFactory.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\PathGenerator\Path.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\PathGenerator\PathManager.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\PolygonManipulation\SimpleCombiner.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\PolygonManipulation\SimplifyTools.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\TextureTools\MarchingSquares.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\TextureTools\Terrain.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\TextureTools\TextureConverter.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\TextureTools\VerticesDetectionType.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Bayazit\BayazitDecomposer.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\CDTDecomposer.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\DelaunayTriangle.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\AdvancingFront.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\AdvancingFrontNode.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\DTSweep.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\DTSweepConstraint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\DTSweepContext.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\DTSweepPointComparator.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\PointOnEdgeException.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Orientation.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Polygon\Polygon.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Polygon\PolygonPoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Polygon\PolygonSet.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Sets\ConstrainedPointSet.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Sets\PointSet.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Triangulatable.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationConstraint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationContext.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationMode.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationPoint.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationUtil.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Util\PointGenerator.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Util\PolygonGenerator.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Earclip\EarclipDecomposer.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Earclip\Triangle.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\FlipCode\FlipcodeDecomposer.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\Edge.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\MonotoneMountain.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\Node.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\Point.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\QueryGraph.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\SeidelDecomposer.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\Sink.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\Trapezoid.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\TrapezoidalMap.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\Triangulator.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\XNode.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\Seidel\YNode.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\TriangulationBase\Triangulate.cs" />
-    <Compile Include="Libs\VelcroPhysics\Tools\Triangulation\TriangulationBase\TriangulationAlgorithm.cs" />
-    <Compile Include="Libs\VelcroPhysics\Utilities\ConvertUnits.cs" />
-    <Compile Include="Libs\VelcroPhysics\Utilities\LineUtils.cs" />
-    <Compile Include="Libs\VelcroPhysics\Utilities\MathUtils.cs" />
-    <Compile Include="Libs\VelcroPhysics\Utilities\PolygonUtils.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\BreakableBody.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\AABBHelper.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Broadphase\DynamicTree.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Broadphase\DynamicTreeBroadPhase.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Broadphase\IBroadPhase.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Broadphase\Pair.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Broadphase\TreeNode.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\ContactSystem\Contact.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\ContactSystem\ContactEdge.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\ContactSystem\ContactFeature.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\ContactSystem\ContactFeatureType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\ContactSystem\ContactFlags.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\ContactSystem\ContactID.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\ContactSystem\ContactManager.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\ContactSystem\ContactType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Distance\DistanceGJK.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Distance\DistanceInput.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Distance\DistanceOutput.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Distance\DistanceProxy.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Filtering\Category.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Filtering\Filter.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Handlers\AfterCollisionHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Handlers\BeforeCollisionHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Handlers\BeginContactHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Handlers\BroadphaseHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Handlers\CollisionFilterHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Handlers\EndContactHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Handlers\OnCollisionHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Handlers\OnSeparationHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\ClipVertex.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\CollideCircle.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\CollideEdge.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\CollidePolygon.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\Collision.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\EPAxis.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\EPAxisType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\EPCollider.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\Manifold.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\ManifoldPoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\ManifoldType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\PointState.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\ReferenceFace.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\Simplex.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\SimplexCache.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\SimplexVertex.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Narrowphase\WorldManifold.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\RayCastHelper.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\RayCast\RayCastInput.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\RayCast\RayCastOutput.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Shapes\ChainShape.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Shapes\CircleShape.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Shapes\EdgeShape.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Shapes\MassData.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Shapes\PolygonShape.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Shapes\Shape.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\Shapes\ShapeType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\TestPointHelper.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\TOI\SeparationFunction.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\TOI\SeparationFunctionType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\TOI\Sweep.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\TOI\TimeOfImpact.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\TOI\TOIInput.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\TOI\TOIOutput.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Collision\TOI\TOIOutputState.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Body.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\BodyFlags.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\BodyType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Fixture.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\FixtureProxy.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Handlers\BodyHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Handlers\ControllerHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Handlers\FixtureHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Handlers\JointHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Handlers\PostSolveHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Handlers\PreSolveHandler.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\AngleJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\DistanceJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\FixedMouseJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\FrictionJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\GearJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\Joint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\JointEdge.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\JointType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\LimitState.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\MotorJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\PrismaticJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\PulleyJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\RevoluteJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\RopeJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\WeldJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Joints\WheelJoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\ContactPositionConstraint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\ContactSolver.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\ContactVelocityConstraint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\Island.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\Position.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\PositionSolverManifold.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\SolverData.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\Velocity.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\Solver\VelocityConstraintPoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\TimeStep.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Dynamics\World.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\Buoyancy\BuoyancyController.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\ControllerBase\Controller.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\ControllerBase\ControllerFilter.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\ControllerBase\ControllerType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\Gravity\GravityController.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\Gravity\GravityType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\Velocity\VelocityLimitController.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\Wind\AbstractForceController.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\Controllers\Wind\SimpleWindForce.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\DebugView\DebugViewBase.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\DebugView\DebugViewFlags.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\PhysicsLogics\Explosion\RayDataComparer.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\PhysicsLogics\Explosion\RealExplosion.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\PhysicsLogics\Explosion\SimpleExplosion.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\FilterData.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\PhysicsLogic.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\PhysicsLogicFilter.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\PhysicsLogicType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Extensions\PhysicsLogics\PhysicsLogicBase\ShapeData.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Factories\BodyFactory.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Factories\FixtureFactory.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Factories\JointFactory.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Primitives\Curve.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Primitives\CurveKey.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Primitives\CurveKeyCollection.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Primitives\MathHelper.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Primitives\Matrix.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Primitives\Vector2.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Primitives\Vector3.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Settings.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\AABB.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Benchmark.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\BenchmarkRun.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Contracts\Contract.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Contracts\EnsuresException.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Contracts\RequiredException.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Graph.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\GraphNode.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Mat22.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Mat33.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Optimization\FixedArray2.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Optimization\FixedArray3.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Optimization\IPoolable.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\PolygonError.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Pool.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Rot.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Transform.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Shared\Vertices.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\BodyTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\FixtureTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\IDefaults.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\DistanceJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\FrictionJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\GearJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\JointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\MotorJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\MouseJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\PrismaticJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\PulleyJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\RevoluteJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\RopeJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\WeldJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Joints\WheelJointTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Shapes\ChainShapeTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Shapes\CircleShapeTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Shapes\EdgeShapeTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Shapes\PolygonShapeTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Templates\Shapes\ShapeTemplate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\ConvexHull\ChainHull\ChainHull.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\ConvexHull\GiftWrap\GiftWrap.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\ConvexHull\Melkman\Melkman.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Cutting\Simple\CuttingTools.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Cutting\Simple\PolyClipError.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Cutting\Simple\PolyClipType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Cutting\YuPengClipper.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\PathGenerator\LinkFactory.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\PathGenerator\Path.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\PathGenerator\PathManager.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\PolygonManipulation\SimpleCombiner.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\PolygonManipulation\SimplifyTools.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\TextureTools\MarchingSquares.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\TextureTools\Terrain.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\TextureTools\TextureConverter.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\TextureTools\VerticesDetectionType.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Bayazit\BayazitDecomposer.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\CDTDecomposer.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\DelaunayTriangle.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\AdvancingFront.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\AdvancingFrontNode.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\DTSweep.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\DTSweepConstraint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\DTSweepContext.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\DTSweepPointComparator.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Delaunay\Sweep\PointOnEdgeException.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Orientation.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Polygon\Polygon.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Polygon\PolygonPoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Polygon\PolygonSet.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Sets\ConstrainedPointSet.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Sets\PointSet.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Triangulatable.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationConstraint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationContext.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationMode.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationPoint.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\TriangulationUtil.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Util\PointGenerator.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Delaunay\Util\PolygonGenerator.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Earclip\EarclipDecomposer.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Earclip\Triangle.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\FlipCode\FlipcodeDecomposer.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\Edge.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\MonotoneMountain.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\Node.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\Point.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\QueryGraph.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\SeidelDecomposer.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\Sink.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\Trapezoid.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\TrapezoidalMap.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\Triangulator.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\XNode.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\Seidel\YNode.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\TriangulationBase\Triangulate.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Tools\Triangulation\TriangulationBase\TriangulationAlgorithm.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Utilities\ConvertUnits.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Utilities\LineUtils.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Utilities\MathUtils.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Utilities\PolygonUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>Libs\ThirdParty\Dependencies\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\ICSharpCode.SharpZipLib.dll</HintPath>
       <EmbedAssembly>true</EmbedAssembly>
       <Private>False</Private>
     </Reference>
     <Reference Include="KopiLua">
-      <HintPath>Libs\ThirdParty\Dependencies\KopiLua.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\KopiLua.dll</HintPath>
       <EmbedAssembly>true</EmbedAssembly>
       <Private>False</Private>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.7.0.1708, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\ThirdParty\Dependencies\MonoGame.Framework.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="NLua">
-      <HintPath>Libs\ThirdParty\Dependencies\NLua.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\NLua.dll</HintPath>
       <EmbedAssembly>true</EmbedAssembly>
       <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.dll</HintPath>
       <Private>False</Private>
       <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="SharpDX.Direct2D1, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\ThirdParty\Dependencies\SharpDX\SharpDX.Direct2D1.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\SharpDX\SharpDX.Direct2D1.dll</HintPath>
       <Private>False</Private>
       <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="SharpDX.Direct3D11, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\ThirdParty\Dependencies\SharpDX\SharpDX.Direct3D11.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\SharpDX\SharpDX.Direct3D11.dll</HintPath>
       <Private>False</Private>
       <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="SharpDX.DXGI, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\ThirdParty\Dependencies\SharpDX\SharpDX.DXGI.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\SharpDX\SharpDX.DXGI.dll</HintPath>
       <Private>False</Private>
       <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="SharpDX.MediaFoundation, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.MediaFoundation.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.MediaFoundation.dll</HintPath>
       <Private>False</Private>
       <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="SharpDX.XAudio2, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.XAudio2.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.XAudio2.dll</HintPath>
       <Private>False</Private>
       <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="SharpDX.XInput, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.XInput.dll</HintPath>
+      <HintPath>..\Libs\ThirdParty\Dependencies\SharpDX\net40\SharpDX.XInput.dll</HintPath>
       <Private>False</Private>
       <EmbedAssembly>true</EmbedAssembly>
     </Reference>
