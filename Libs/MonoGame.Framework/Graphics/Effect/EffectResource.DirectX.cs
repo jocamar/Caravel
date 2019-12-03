@@ -6,11 +6,11 @@ namespace Microsoft.Xna.Framework.Graphics
 {
     internal partial class EffectResource
     {
-        const string AlphaTestEffectName = "CaravelDotNet.Libs.MonoGame.Framework.Graphics.Effect.Resources.AlphaTestEffect.dx11.mgfxo";
-        const string BasicEffectName = "CaravelDotNet.Libs.MonoGame.Framework.Graphics.Effect.Resources.BasicEffect.dx11.mgfxo";
-        const string DualTextureEffectName = "CaravelDotNet.Libs.MonoGame.Framework.Graphics.Effect.Resources.DualTextureEffect.dx11.mgfxo";
-        const string EnvironmentMapEffectName = "CaravelDotNet.Libs.MonoGame.Framework.Graphics.Effect.Resources.EnvironmentMapEffect.dx11.mgfxo";
-        const string SkinnedEffectName = "CaravelDotNet.Libs.MonoGame.Framework.Graphics.Effect.Resources.SkinnedEffect.dx11.mgfxo";
-        const string SpriteEffectName = "CaravelDotNet.Libs.MonoGame.Framework.Graphics.Effect.Resources.SpriteEffect.dx11.mgfxo";
+        const string AlphaTestEffectName = "CaravelDotNet.AlphaTestEffect.dx11.mgfxo";
+        const string BasicEffectName = "CaravelDotNet.BasicEffect.dx11.mgfxo";
+        const string DualTextureEffectName = "CaravelDotNet.DualTextureEffect.dx11.mgfxo";
+        const string EnvironmentMapEffectName = "CaravelDotNet.EnvironmentMapEffect.dx11.mgfxo";
+        const string SkinnedEffectName = "CaravelDotNet.SkinnedEffect.dx11.mgfxo";
+        const string SpriteEffectName = "CaravelDotNet.SpriteEffect.dx11.mgfxo";
     }
 }

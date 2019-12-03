@@ -216,8 +216,27 @@ namespace Caravel.Core.Draw
 
                 particle.IsAlive = true;
 
-                var pos_x = worldTransform.Position.X + m_Random.Next(0, (int)(particleComponent.Width*worldTransform.Scale.X));
-                var pos_y = worldTransform.Position.Y + m_Random.Next(0, (int)(particleComponent.Height*worldTransform.Scale.Y));
+                float pos_x;
+                if (worldTransform.Scale.X >= 0)
+                {
+                    pos_x = worldTransform.Position.X + m_Random.Next(0, (int)(particleComponent.Width*worldTransform.Scale.X));
+                } 
+                else
+                {
+                    pos_x = worldTransform.Position.X + m_Random.Next((int)(particleComponent.Width*worldTransform.Scale.X), 0);
+                }
+
+                float pos_y;
+                
+                if (worldTransform.Scale.Y >= 0)
+                {
+                    pos_y = worldTransform.Position.Y + m_Random.Next(0, (int)(particleComponent.Height*worldTransform.Scale.Y));
+                }
+                else
+                {
+                    pos_y = worldTransform.Position.Y + m_Random.Next((int)(particleComponent.Height*worldTransform.Scale.Y), 0);
+                }
+                
                 pos_x -= (int)(particleComponent.Width*worldTransform.Scale.X*worldTransform.Origin.X);
                 pos_y -= (int)(particleComponent.Height*worldTransform.Scale.Y*worldTransform.Origin.Y);
                 
