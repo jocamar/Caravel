@@ -39,6 +39,7 @@ namespace Caravel.Core.Draw
 		private List<Cv_Transform> m_TransformStack;
 		private Dictionary<Cv_EntityID, List<Cv_SceneNode>> m_EntitiesMap;
 		private Dictionary<Cv_EntityID, Cv_HolderNode> m_HolderNodes;
+        private Cv_ListenerList m_Listeners;
 
         public Cv_SceneElement(CaravelApp app)
         {
@@ -49,28 +50,20 @@ namespace Caravel.Core.Draw
             m_TransformStack = new List<Cv_Transform>();
 			m_Root = new Cv_HolderNode(Cv_EntityID.INVALID_ENTITY);
 
-			Cv_EventManager.Instance.AddListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
-			Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
-			Cv_EventManager.Instance.AddListener<Cv_Event_NewClickableComponent>(OnNewClickableComponent);
-			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
-			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyCameraComponent>(OnDestroyCameraComponent);
-			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyClickableComponent>(OnDestroyClickableComponent);
-			Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRenderComponent>(OnDestroyRenderComponent);
-			Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
-			Cv_EventManager.Instance.AddListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_NewClickableComponent>(OnNewClickableComponent);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_DestroyCameraComponent>(OnDestroyCameraComponent);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_DestroyClickableComponent>(OnDestroyClickableComponent);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRenderComponent>(OnDestroyRenderComponent);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
         }
 
         ~Cv_SceneElement()
 		{
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewRenderComponent>(OnNewRenderComponent);
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_NewClickableComponent>(OnNewClickableComponent);
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyCameraComponent>(OnDestroyCameraComponent);
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyClickableComponent>(OnDestroyClickableComponent);
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyRenderComponent>(OnDestroyRenderComponent);
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnMoveEntity);
-			Cv_EventManager.Instance.RemoveListener<Cv_Event_ModifiedRenderComponent>(OnModifiedRenderComponent);
+            m_Listeners.Dispose();
 		}
 
         public override void VOnRender(float time, float elapsedTime, Cv_Renderer renderer)

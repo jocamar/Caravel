@@ -362,7 +362,7 @@ namespace Caravel.Core.Entity
             {
                 foreach (var component in m_ComponentList)
                 {
-                    component.VOnDestroy();
+                    component.OnDestroy();
                     component.Owner = null;
                 }
             }
@@ -409,7 +409,7 @@ namespace Caravel.Core.Entity
                 {
                     m_ComponentsToRemove.Add(component);
                     m_ComponentMap.Remove(Cv_EntityComponent.GetID<Component>());
-                    component.VOnDestroy();
+                    component.OnDestroy();
                     component.Owner = null;
                 }
             }
@@ -425,7 +425,7 @@ namespace Caravel.Core.Entity
                 {
                     m_ComponentsToRemove.Add(component);
                     m_ComponentMap.Remove(componentID);
-                    component.VOnDestroy();
+                    component.OnDestroy();
                     component.Owner = null;
                 }
             }
@@ -441,7 +441,7 @@ namespace Caravel.Core.Entity
                 {
                     m_ComponentsToRemove.Add(component);
                     m_ComponentMap.Remove(Cv_EntityComponent.GetID(componentType));
-                    component.VOnDestroy();
+                    component.OnDestroy();
                     component.Owner = null;
                 }
             }
@@ -489,7 +489,7 @@ namespace Caravel.Core.Entity
                 {
                     m_ComponentsToRemove.Add(component);
                     m_ComponentMap.Remove(Cv_EntityComponent.GetID(componentType));
-                    component.VOnDestroy();
+                    component.OnDestroy();
                     component.Owner = null;
                 }
             }

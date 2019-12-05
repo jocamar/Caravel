@@ -241,6 +241,9 @@
     <Compile Include="..\Source\Core\Events\Cv_Event.cs">
       <Link>Cv_Event.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_ListenerList.cs">
+      <Link>Cv_ListenerList.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Events\Cv_EventManager.cs">
       <Link>Cv_EventManager.cs</Link>
     </Compile>

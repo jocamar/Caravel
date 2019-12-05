@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -24,6 +25,35 @@ namespace Caravel.Core.Events
             get; private set;
         }
 
+        public struct Cv_EventListenerHandle
+        {
+            internal NewEventDelegate Delegate;
+            internal string ScriptDelegate;
+            internal bool IsScriptListener;
+            internal int ListenerID;
+            internal Cv_EventType EventType;
+            internal Cv_Entity Entity;
+            internal string EventName;
+            internal Cv_EventManager Manager;
+
+            internal Cv_EventListenerHandle(int ID)
+            {
+                ListenerID = ID;
+                Delegate = null;
+                ScriptDelegate = "";
+                IsScriptListener = false;
+                EventType = Cv_EventType.INVALID_EVENT;
+                Entity = null;
+                EventName = "";
+                Manager = null;
+            }
+
+            public static bool operator true(Cv_EventListenerHandle l) => l.ListenerID >= 0;
+            public static bool operator false(Cv_EventListenerHandle l) => l.ListenerID < 0;
+
+            public static Cv_EventListenerHandle NullHandle = new Cv_EventListenerHandle(-1);
+        }
+
         private struct Cv_ScriptListener
         {
             public readonly Cv_Entity Entity;
@@ -41,6 +71,7 @@ namespace Caravel.Core.Events
         private LinkedList<Cv_Event>[] m_EventQueues;
         private ConcurrentQueue<Cv_Event> m_RealTimeEventQueue;
         private int m_iActiveQueue = 0;
+        private static int m_iEventHandleNum = 0;
 
         public Cv_EventManager(bool global)
         {
@@ -67,7 +98,7 @@ namespace Caravel.Core.Events
             }
         }
 
-        public bool AddListener<EventType>(NewEventDelegate callback) where EventType : Cv_Event
+        public Cv_EventListenerHandle AddListener<EventType>(NewEventDelegate callback) where EventType : Cv_Event
         {
             Cv_Debug.Log("Events", "Attempting to add listener for event type " + typeof(EventType).Name);
 
@@ -87,7 +118,7 @@ namespace Caravel.Core.Events
 					if (l == callback)
 					{
 						Cv_Debug.Warning("Attempting to double register a listener.");
-						return false;
+						return Cv_EventListenerHandle.NullHandle;
 					}
 				}
 
@@ -96,10 +127,17 @@ namespace Caravel.Core.Events
 
             Cv_Debug.Log("Events", "Successfully added listener for event type " + typeof(EventType).Name);
 
-            return true;
+            var handle = new Cv_EventListenerHandle(m_iEventHandleNum);
+            m_iEventHandleNum++;
+
+            handle.EventType = eType;
+            handle.EventName = typeof(EventType).Name;
+            handle.Delegate = callback;
+            handle.Manager = this;
+            return handle;
         }
 
-        public bool AddListener(string eventName, string onEvent, Cv_Entity entity)
+        public Cv_EventListenerHandle AddListener(string eventName, string onEvent, Cv_Entity entity)
         {
             Cv_Debug.Log("Events", "Attempting to add listener for event type " + eventName);
 
@@ -119,7 +157,8 @@ namespace Caravel.Core.Events
 					if (l.Delegate == onEvent && l.Entity == entity)
 					{
 						Cv_Debug.Warning("Attempting to double register a listener.");
-						return false;
+                        
+						return Cv_EventListenerHandle.NullHandle;
 					}
 				}
 
@@ -128,38 +167,55 @@ namespace Caravel.Core.Events
 
             Cv_Debug.Log("Events", "Successfully added listener for event type " + eventName);
 
-            return true;
+            var handle = new Cv_EventListenerHandle(m_iEventHandleNum);
+            m_iEventHandleNum++;
+
+            handle.EventName = eventName;
+            handle.EventType = eType;
+            handle.ScriptDelegate = onEvent;
+            handle.IsScriptListener = true;
+            handle.Entity = entity;
+            handle.Manager = this;
+
+            return handle;
         }
 
-        public bool RemoveListener<EventType>(NewEventDelegate callback) where EventType : Cv_Event
+        public bool RemoveListener(Cv_EventListenerHandle listenerHandle)
         {
-            Cv_Debug.Log("Events", "Attempting to remove listener from event type " + typeof(EventType).Name);
-            var success = false;
-            Cv_EventType eType = Cv_Event.GetType<EventType>();
-
-			lock (m_EventListeners)
-			{
-				if (m_EventListeners.ContainsKey(eType))
-				{
-					var listeners = m_EventListeners[eType];
-
-					success = listeners.Remove(callback);
-				}
-			}
-
-            if (success)
+            if (listenerHandle.IsScriptListener)
             {
-                Cv_Debug.Log("Events", "Successfully removed listener from event type " + typeof(EventType).Name);
+                return RemoveListener(listenerHandle.EventName, listenerHandle.ScriptDelegate, listenerHandle.Entity);
             }
+            else
+            {
+                Cv_Debug.Log("Events", "Attempting to remove listener from event type " + listenerHandle.EventName);
+                var success = false;
 
-            return success;
+                lock (m_EventListeners)
+                {
+                    if (m_EventListeners.ContainsKey(listenerHandle.EventType))
+                    {
+                        var listeners = m_EventListeners[listenerHandle.EventType];
+
+                        success = listeners.Remove(listenerHandle.Delegate);
+                    }
+                }
+
+                if (success)
+                {
+                    Cv_Debug.Log("Events", "Successfully removed listener from event type " + listenerHandle.EventName);
+                }
+
+                return success;
+            }
         }
 
-        public bool RemoveListener(string eventName, string onEvent, Cv_Entity entity)
+        private bool RemoveListener(string eventName, string onEvent, Cv_Entity entity)
         {
             Cv_Debug.Log("Events", "Attempting to remove listener from event type " + eventName);
             var success = false;
-            Cv_EventType eType = Cv_Event.GetType(eventName);
+
+            var eType = Cv_Event.GetType(eventName);
 
 			lock (m_ScriptEventListeners)
 			{
@@ -173,7 +229,7 @@ namespace Caravel.Core.Events
 
             if (success)
             {
-                Cv_Debug.Log("Events", "Successfully removed listener from event type " + eventName);
+                Cv_Debug.Log("Events", "Successfully removed listener from event type " + eType);
             }
 
             return success;

@@ -63,6 +63,7 @@ namespace Caravel.Core.Physics
         private List<Tuple<Cv_CollisionShape, Cv_CollisionShape>> m_SeparationPairs;
 
         private readonly World m_World;
+        private Cv_ListenerList m_Listeners;
 
         public Cv_VelcroPhysics(CaravelApp app)
         {
@@ -78,20 +79,16 @@ namespace Caravel.Core.Physics
             m_CollisionPairs = new List<Tuple<Cv_CollisionShape, Cv_CollisionShape>>();
             m_SeparationPairs = new List<Tuple<Cv_CollisionShape, Cv_CollisionShape>>();
 
-            Cv_EventManager.Instance.AddListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
-            Cv_EventManager.Instance.AddListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
-            Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
-            Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRigidBodyComponent>(OnDestroyEntity);
-            Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRigidBodyComponent>(OnDestroyEntity);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
         }
 
         ~Cv_VelcroPhysics()
         {
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_DestroyRigidBodyComponent>(OnDestroyEntity);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_TransformEntity>(OnMoveEntity);
+            m_Listeners.Dispose();
         }
 
         public override Cv_CollisionShape VAddBox(Cv_Entity gameEntity, Cv_ShapeData data)

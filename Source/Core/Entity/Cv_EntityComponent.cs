@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Xml;
+using Caravel.Core.Events;
 using Caravel.Debugging;
 using Microsoft.Xna.Framework;
 
@@ -32,6 +33,8 @@ namespace Caravel.Core.Entity
         {
             get; internal set;
         }
+
+        protected Cv_ListenerList Events;
 
         private static Dictionary<Type, Cv_ComponentID> m_ComponentIds = new Dictionary<Type, Cv_ComponentID>();
         private Cv_ComponentID m_ID = Cv_ComponentID.INVALID_COMPONENT;
@@ -346,6 +349,12 @@ namespace Caravel.Core.Entity
         public abstract void VOnDestroy();
 
         protected internal abstract void VOnUpdate(float elapsedTime);
+
+        internal void OnDestroy()
+        {
+            VOnDestroy();
+            Events.Dispose();
+        }
 
         internal static Cv_ComponentID GetID(Type componentType)
         {

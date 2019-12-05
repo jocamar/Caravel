@@ -212,6 +212,7 @@ namespace Caravel.Core
         private Cv_GameViewType m_Type = Cv_GameViewType.Player;
         private Cv_GameViewID m_ID;
         private bool m_bAreSoundsPaused;
+        private Cv_ListenerList m_Listeners;
 
         public Cv_PlayerView(Cv_Player player, Vector2? size, Vector2 startPos, SpriteBatch spriteBatch = null)
         {
@@ -466,28 +467,20 @@ namespace Caravel.Core
 
         private void RegisterEventListeners()
         {
-            Cv_EventManager.Instance.AddListener<Cv_Event_ChangeState>(OnGameState);
-            Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
-            Cv_EventManager.Instance.AddListener<Cv_Event_PlaySound>(OnPlaySound);
-            Cv_EventManager.Instance.AddListener<Cv_Event_StopSound>(OnStopSound);
-            Cv_EventManager.Instance.AddListener<Cv_Event_PauseSound>(OnPauseSound);
-            Cv_EventManager.Instance.AddListener<Cv_Event_ResumeSound>(OnResumeSound);
-            Cv_EventManager.Instance.AddListener<Cv_Event_StopAllSounds>(OnStopAllSounds);
-            Cv_EventManager.Instance.AddListener<Cv_Event_PauseAllSounds>(OnPauseAllSounds);
-            Cv_EventManager.Instance.AddListener<Cv_Event_ResumeAllSounds>(OnResumeAllSounds);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_ChangeState>(OnGameState);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_PlaySound>(OnPlaySound);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_StopSound>(OnStopSound);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_PauseSound>(OnPauseSound);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_ResumeSound>(OnResumeSound);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_StopAllSounds>(OnStopAllSounds);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_PauseAllSounds>(OnPauseAllSounds);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_ResumeAllSounds>(OnResumeAllSounds);
         }
 
         private void RemoveEventListeners()
         {
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_ChangeState>(OnGameState);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_NewCameraComponent>(OnNewCameraComponent);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_PlaySound>(OnPlaySound);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_StopSound>(OnStopSound);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_PauseSound>(OnPauseSound);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_ResumeSound>(OnResumeSound);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_StopAllSounds>(OnStopAllSounds);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_PauseAllSounds>(OnPauseAllSounds);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_ResumeAllSounds>(OnResumeAllSounds);
+            m_Listeners.Dispose();
         }
 
         private void OnResumeAllSounds(Cv_Event eventData)

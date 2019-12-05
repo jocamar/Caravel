@@ -55,7 +55,6 @@ namespace Caravel.Core
         private Dictionary<Cv_SceneID, Cv_SceneInfo> m_Scenes;
         private Dictionary<string, Cv_SceneInfo> m_ScenePaths;
         private Cv_SceneID m_sCurrentScene = Cv_SceneID.INVALID_SCENE;
-        private Cv_GameLogic m_Logic;
         private static int m_iLastSceneID = 0;
 
         internal Cv_SceneManager(CaravelApp caravel)

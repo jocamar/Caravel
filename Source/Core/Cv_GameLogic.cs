@@ -148,6 +148,7 @@ namespace Caravel.Core
         private ConcurrentQueue<Cv_Entity> m_EntitiesToDestroy;
         private ConcurrentQueue<Cv_Entity> m_EntitiesToAdd;
         private List<Cv_Entity> m_EntityList;
+        private Cv_ListenerList m_Listeners;
 
         public Cv_GameLogic(CaravelApp app)
         {
@@ -175,9 +176,7 @@ namespace Caravel.Core
 
         ~Cv_GameLogic()
         {
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntityRequest);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_SceneLoaded>(OnSceneLoaded);
-            Cv_EventManager.Instance.RemoveListener<Cv_Event_RemoteSceneLoaded>(OnSceneLoaded);
+            m_Listeners.Dispose();
         }
 
 #region Entity methods
@@ -822,9 +821,9 @@ namespace Caravel.Core
         {
             m_EntityFactory = VCreateEntityFactory();
             m_SceneManager.Initialize(/*Cv_ResourceManager.Instance.GetResourceList("scenes/*.xml")*/);
-            Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntityRequest);
-            Cv_EventManager.Instance.AddListener<Cv_Event_SceneLoaded>(OnSceneLoaded);
-            Cv_EventManager.Instance.AddListener<Cv_Event_RemoteSceneLoaded>(OnSceneLoaded);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_RequestDestroyEntity>(OnDestroyEntityRequest);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_SceneLoaded>(OnSceneLoaded);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_RemoteSceneLoaded>(OnSceneLoaded);
             GamePhysics.VInitialize();
         }
 

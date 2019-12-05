@@ -34,8 +34,6 @@ namespace Caravel.Core.Entity
             get; set;
         }
 
-        private int m_iWidth, m_iHeight;
-
         public override void VPostLoad()
         {
         }

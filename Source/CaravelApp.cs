@@ -23,7 +23,7 @@ namespace Caravel
     public abstract class CaravelApp : Game
     {
         #region Properties
-        public static CaravelApp Instance;
+        public new static CaravelApp Instance;
 
         public Color BackgroundColor
 		{

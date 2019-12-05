@@ -12,8 +12,6 @@ namespace Caravel.Core.Draw
     {
         private Texture2D m_DebugCircleTex;
         private Cv_Entity m_Entity;
-        private bool m_bPreviousVisibility;
-        private bool m_bCalculatingVisibilityFirstTime = true;
 
         public Cv_HolderNode(Cv_Entity.Cv_EntityID entityID) : base(entityID, null, Cv_Transform.Identity)
         {
