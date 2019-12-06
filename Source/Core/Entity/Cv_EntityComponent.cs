@@ -34,7 +34,7 @@ namespace Caravel.Core.Entity
             get; internal set;
         }
 
-        protected Cv_ListenerList Events;
+        protected Cv_ListenerList Events = new Cv_ListenerList();
 
         private static Dictionary<Type, Cv_ComponentID> m_ComponentIds = new Dictionary<Type, Cv_ComponentID>();
         private Cv_ComponentID m_ID = Cv_ComponentID.INVALID_COMPONENT;

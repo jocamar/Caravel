@@ -212,7 +212,7 @@ namespace Caravel.Core
         private Cv_GameViewType m_Type = Cv_GameViewType.Player;
         private Cv_GameViewID m_ID;
         private bool m_bAreSoundsPaused;
-        private Cv_ListenerList m_Listeners;
+        private Cv_ListenerList m_Listeners = new Cv_ListenerList();
 
         public Cv_PlayerView(Cv_Player player, Vector2? size, Vector2 startPos, SpriteBatch spriteBatch = null)
         {

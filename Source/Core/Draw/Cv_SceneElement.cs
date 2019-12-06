@@ -39,7 +39,7 @@ namespace Caravel.Core.Draw
 		private List<Cv_Transform> m_TransformStack;
 		private Dictionary<Cv_EntityID, List<Cv_SceneNode>> m_EntitiesMap;
 		private Dictionary<Cv_EntityID, Cv_HolderNode> m_HolderNodes;
-        private Cv_ListenerList m_Listeners;
+        private Cv_ListenerList m_Listeners = new Cv_ListenerList();
 
         public Cv_SceneElement(CaravelApp app)
         {

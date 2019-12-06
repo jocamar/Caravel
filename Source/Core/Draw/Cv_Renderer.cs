@@ -476,10 +476,6 @@ namespace Caravel.Core.Draw
 
         internal void BeginDraw(Cv_CameraNode camera = null)
         {
-            m_DrawList.Clear();
-
-            var transform = Transform.TransformMatrix;
-
             if (camera != null)
             {
                 var cameraTransform = camera.GetViewTransform(VirtualWidth, VirtualHeight, Transform);
@@ -488,12 +484,11 @@ namespace Caravel.Core.Draw
                     CamMatrix = Matrix.CreateRotationZ(cameraTransform.Rotation) * Matrix.CreateTranslation(cameraTransform.Position.X, cameraTransform.Position.Y, 0)
                                                 * Matrix.CreateScale(cameraTransform.Scale.X, cameraTransform.Scale.Y, 1);
                 }
-
-                transform = CamMatrix;
             }
-
-            m_SpriteBatch.Begin(SpriteSortMode.Deferred, m_BlendState, m_SamplerState,
-                                        DepthStencilState.None, RasterizerState.CullNone, null, transform);
+            else
+            {
+                CamMatrix = Transform.TransformMatrix;
+            }
 
             m_iCurrSubLayer = 0;
         }
@@ -501,6 +496,9 @@ namespace Caravel.Core.Draw
         internal void EndDraw()
         {
             var sortedDrawList = m_DrawList.OrderBy(command => command.Layer).ThenBy(command => command.Dest.Y).ToArray();
+
+            m_SpriteBatch.Begin(SpriteSortMode.Deferred, m_BlendState, m_SamplerState,
+                                        DepthStencilState.None, RasterizerState.CullNone, null, CamMatrix);
 
             var drawWithCameraMatrix = true;
             foreach (var command in sortedDrawList)
@@ -548,6 +546,7 @@ namespace Caravel.Core.Draw
             }
 
             m_SpriteBatch.End();
+            m_DrawList.Clear();
         }
 
         internal void SetupViewport()

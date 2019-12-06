@@ -63,7 +63,7 @@ namespace Caravel.Core.Physics
         private List<Tuple<Cv_CollisionShape, Cv_CollisionShape>> m_SeparationPairs;
 
         private readonly World m_World;
-        private Cv_ListenerList m_Listeners;
+        private Cv_ListenerList m_Listeners = new Cv_ListenerList();
 
         public Cv_VelcroPhysics(CaravelApp app)
         {

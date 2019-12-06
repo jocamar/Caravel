@@ -148,7 +148,7 @@ namespace Caravel.Core
         private ConcurrentQueue<Cv_Entity> m_EntitiesToDestroy;
         private ConcurrentQueue<Cv_Entity> m_EntitiesToAdd;
         private List<Cv_Entity> m_EntityList;
-        private Cv_ListenerList m_Listeners;
+        private Cv_ListenerList m_Listeners = new Cv_ListenerList();
 
         public Cv_GameLogic(CaravelApp app)
         {
