@@ -479,11 +479,8 @@ namespace Caravel.Core.Draw
             if (camera != null)
             {
                 var cameraTransform = camera.GetViewTransform(VirtualWidth, VirtualHeight, Transform);
-                if (camera.IsViewTransformDirty)
-                {
-                    CamMatrix = Matrix.CreateRotationZ(cameraTransform.Rotation) * Matrix.CreateTranslation(cameraTransform.Position.X, cameraTransform.Position.Y, 0)
-                                                * Matrix.CreateScale(cameraTransform.Scale.X, cameraTransform.Scale.Y, 1);
-                }
+                CamMatrix = Matrix.CreateRotationZ(cameraTransform.Rotation) * Matrix.CreateTranslation(cameraTransform.Position.X, cameraTransform.Position.Y, 0)
+                                            * Matrix.CreateScale(cameraTransform.Scale.X, cameraTransform.Scale.Y, 1);
             }
             else
             {
