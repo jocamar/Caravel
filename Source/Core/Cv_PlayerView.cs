@@ -364,17 +364,21 @@ namespace Caravel.Core
                 Caravel.Graphics.ApplyChanges();
             }
 
-            Renderer.SetupViewport(); //TODO(JM): Fix multithread access here
-            foreach (var se in ScreenElements)
-            {
-                if (se.IsVisible)
-                {
-                    if (se == Scene)
-                    {
-                        Scene.Camera = Camera;
-                    }
+            Renderer.SetupViewport();
 
-                    se.VOnRender(time, elapsedTime, Renderer);
+            lock (ScreenElements)
+            {
+                foreach (var se in ScreenElements)
+                {
+                    if (se.IsVisible)
+                    {
+                        if (se == Scene)
+                        {
+                            Scene.Camera = Camera;
+                        }
+
+                        se.VOnRender(time, elapsedTime, Renderer);
+                    }
                 }
             }
 
@@ -414,14 +418,17 @@ namespace Caravel.Core
 
         internal void LoadGame(XmlElement sceneData)
         {
-            if (!ScreenElements.Contains(Scene)) {
-                PushScreenElement(Scene);
-                
-                if (DebugDrawFPS)
-                {
-                    var framerateCounter = new Cv_FramerateCounterElement();
-                    framerateCounter.IsVisible = true;
-                    PushScreenElement(framerateCounter);
+            lock(ScreenElements)
+            {
+                if (!ScreenElements.Contains(Scene)) {
+                    PushScreenElement(Scene);
+                    
+                    if (DebugDrawFPS)
+                    {
+                        var framerateCounter = new Cv_FramerateCounterElement();
+                        framerateCounter.IsVisible = true;
+                        PushScreenElement(framerateCounter);
+                    }
                 }
             }
 

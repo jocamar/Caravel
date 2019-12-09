@@ -29,6 +29,13 @@ namespace Caravel.Core.Entity
             }
         }
 
+        public static bool operator true(Cv_EntityComponent c) => c.Owner != null;
+        public static bool operator false(Cv_EntityComponent c) => c.Owner == null;
+        public static implicit operator bool(Cv_EntityComponent c)
+        {
+            return c.Owner != null;
+        }
+
         protected internal Cv_Entity Owner
         {
             get; internal set;

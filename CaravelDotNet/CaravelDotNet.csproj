@@ -103,6 +103,9 @@
     <Compile Include="..\Source\Core\Cv_NetworkManager.cs">
       <Link>Cv_NetworkManager.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Cv_MathUtils.cs">
+      <Link>Cv_MathUtils.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Cv_PlayerView.cs">
       <Link>Cv_PlayerView.cs</Link>
     </Compile>

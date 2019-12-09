@@ -401,6 +401,13 @@ namespace Caravel.Core.Physics
             {
                 return;
             }
+
+            var pv = Caravel.GetPlayerView();
+
+            if (pv == null)
+            {
+                return;
+            }
             
             foreach (var e in m_PhysicsEntitiesList)
             {
@@ -416,6 +423,11 @@ namespace Caravel.Core.Physics
                     if (renderer.DebugDrawPhysicsShapes)
                     {
                         color = Color.Red;
+                        
+                        if (e.Entity.ID == pv.EditorSelectedEntity)
+                        {
+                            color = Color.Yellow;
+                        }
 
                         if (fixture.IsSensor)
                             color = Color.Green;

@@ -88,6 +88,13 @@ namespace Caravel.Core.Entity
             }
         }
 
+        public static bool operator true(Cv_Entity e) => !e.DestroyRequested;
+        public static bool operator false(Cv_Entity e) => e.DestroyRequested;
+        public static implicit operator bool(Cv_Entity e)
+        {
+            return !e.DestroyRequested;
+        }
+
         private Dictionary<Cv_ComponentID, Cv_EntityComponent> m_ComponentMap;
         private List<Cv_EntityComponent> m_ComponentList;
         private List<Cv_EntityComponent> m_ComponentsToAdd;

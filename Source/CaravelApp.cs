@@ -517,6 +517,19 @@ namespace Caravel
             return null;
         }
 
+        public Cv_PlayerView GetPlayerView()
+        {
+            foreach (var gv in Logic.GameViews)
+            {
+                if (gv.Type == Cv_GameViewType.Player)
+                {
+                    return gv as Cv_PlayerView;
+                }
+            }
+
+            return null;
+        }
+
         public bool AttachAsClient()
         {
             return true;
