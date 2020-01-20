@@ -154,10 +154,16 @@ namespace Caravel.Core.Draw
                     point1 += new Vector2(pos.X, pos.Y);
                     point2 += new Vector2(pos.X, pos.Y);
 
+                    var thickness = (int)Math.Ceiling(3 / scene.Camera.Zoom);
+                    if (thickness <= 0)
+                    {
+                        thickness = 1;
+                    }
+
                     Cv_DrawUtils.DrawLine(renderer,
 						                                point1,
                                                         point2,
-						                                2,
+						                                thickness,
                                                         Cv_Renderer.MaxLayers-2,
 						                                Color.Purple);
                 }
@@ -180,7 +186,7 @@ namespace Caravel.Core.Draw
                         point1 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
                         point2 -= new Vector2((renderer.VirtualWidth / zoom) * 0.5f, (renderer.VirtualHeight / zoom) * 0.5f);
 
-                        var thickness = (int) Math.Round(3 / scene.Camera.Zoom);
+                        var thickness = (int) Math.Ceiling(3 / scene.Camera.Zoom);
                         if (thickness <= 0)
                         {
                             thickness = 1;

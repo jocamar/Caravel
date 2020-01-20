@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Shared;
 using VelcroPhysics.Utilities;
 

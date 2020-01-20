@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Collision.Narrowphase;
 
 namespace VelcroPhysics.Dynamics.Solver

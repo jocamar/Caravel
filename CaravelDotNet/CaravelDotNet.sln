@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaravelDotNet", "CaravelDotNet.csproj", "{FDE7720A-299B-43E3-B42A-AC151EDFCB47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaravelDotNet.Editor", "CaravelDotNet.Editor.csproj", "{3DE1C2B3-F7AE-46FB-8A51-0DEAE390CB7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aether.Physics2D.WINDOWS.MG", "..\Libs\Aether.Physics2D\Physics2D\Aether.Physics2D.WINDOWS.MG.csproj", "{58A4F378-3FC5-4616-BC62-5FF5DF676627}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelcroPhysics", "..\Libs\VelcroPhysics\VelcroPhysics.csproj", "{179DC932-118E-4AAD-8177-3ACE58FD0C6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,8 +41,35 @@ Global
 		{3DE1C2B3-F7AE-46FB-8A51-0DEAE390CB7C}.Release|x64.Build.0 = Release|x64
 		{3DE1C2B3-F7AE-46FB-8A51-0DEAE390CB7C}.Release|x86.ActiveCfg = Release|x86
 		{3DE1C2B3-F7AE-46FB-8A51-0DEAE390CB7C}.Release|x86.Build.0 = Release|x86
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Debug|x64.Build.0 = Debug|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Debug|x86.Build.0 = Debug|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Release|x64.ActiveCfg = Release|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Release|x64.Build.0 = Release|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Release|x86.ActiveCfg = Release|Any CPU
+		{58A4F378-3FC5-4616-BC62-5FF5DF676627}.Release|x86.Build.0 = Release|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Debug|x64.Build.0 = Debug|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Debug|x86.Build.0 = Debug|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Release|x64.ActiveCfg = Release|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Release|x64.Build.0 = Release|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Release|x86.ActiveCfg = Release|Any CPU
+		{179DC932-118E-4AAD-8177-3ACE58FD0C6D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC0A6CB4-548D-4230-8399-7FF1CFF9508E}
 	EndGlobalSection
 EndGlobal

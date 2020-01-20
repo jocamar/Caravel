@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Collision.ContactSystem;
 
 namespace VelcroPhysics.Collision.Narrowphase

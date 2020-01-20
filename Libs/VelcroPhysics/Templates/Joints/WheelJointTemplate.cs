@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Dynamics.Joints;
 
 namespace VelcroPhysics.Templates.Joints

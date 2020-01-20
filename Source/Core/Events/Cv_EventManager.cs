@@ -180,6 +180,31 @@ namespace Caravel.Core.Events
             return handle;
         }
 
+        public bool RemoveListener<EventType>(NewEventDelegate listener) where EventType : Cv_Event
+        {
+            Cv_Debug.Log("Events", "Attempting to remove listener from event type " + typeof(EventType).Name);
+            var success = false;
+
+            Cv_EventType eType = Cv_Event.GetType<EventType>();
+
+            lock (m_EventListeners)
+            {
+                if (m_EventListeners.ContainsKey(eType))
+                {
+                    var listeners = m_EventListeners[eType];
+
+                    success = listeners.Remove(listener);
+                }
+            }
+
+            if (success)
+            {
+                Cv_Debug.Log("Events", "Successfully removed listener from event type " + typeof(EventType).Name);
+            }
+
+            return success;
+        }
+
         public bool RemoveListener(Cv_EventListenerHandle listenerHandle)
         {
             if (listenerHandle.IsScriptListener)

@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Shared;
 using VelcroPhysics.Shared.Optimization;
 using VelcroPhysics.Utilities;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Collision.ContactSystem;
 using VelcroPhysics.Collision.Shapes;
 using VelcroPhysics.Dynamics.Solver;

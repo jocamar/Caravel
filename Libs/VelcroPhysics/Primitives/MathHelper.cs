@@ -31,7 +31,7 @@ SOFTWARE.
 
 using System;
 
-namespace Microsoft.Xna.Framework
+namespace VelcroPhysics.Primitives
 {
     public static class MathHelper
     {

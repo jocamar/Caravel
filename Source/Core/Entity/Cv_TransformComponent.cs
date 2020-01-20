@@ -104,6 +104,11 @@ namespace Caravel.Core.Entity
 
         public void SetPosition(Vector3 value, object caller = null)
         {
+            if (!Owner)
+            {
+                return;
+            }
+
             m_OldTransform = Transform;
             Position = value;
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, value, Transform.Scale, Transform.Origin, Transform.Rotation, (caller != null ? caller : this));
@@ -112,6 +117,11 @@ namespace Caravel.Core.Entity
 
         public void ApplyVelocity(Vector2 velocity, object caller = null)
         {
+            if (!Owner)
+            {
+                return;
+            }
+
             m_OldTransform = Transform;
             Position = Position + new Vector3(velocity, 0);
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Position, Transform.Scale, Transform.Origin, Transform.Rotation, (caller != null ? caller : this));
@@ -120,6 +130,11 @@ namespace Caravel.Core.Entity
 
         public void SetScale(Vector2 value, object caller = null)
         {
+            if (!Owner)
+            {
+                return;
+            }
+
             m_OldTransform = Transform;
             Scale = value;
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, value, Transform.Origin, Transform.Rotation, (caller != null ? caller : this));
@@ -128,6 +143,11 @@ namespace Caravel.Core.Entity
 
         public void ApplyScale(Vector2 scale, object caller = null)
         {
+            if (!Owner)
+            {
+                return;
+            }
+
             m_OldTransform = Transform;
             Scale = Scale * scale;
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Scale, Transform.Origin, Transform.Rotation, (caller != null ? caller : this));
@@ -136,6 +156,11 @@ namespace Caravel.Core.Entity
 
         public void SetRotation(float value, object caller = null)
         {
+            if (!Owner)
+            {
+                return;
+            }
+
             m_OldTransform = Transform;
             Rotation = value;
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, value, (caller != null ? caller : this));
@@ -144,6 +169,11 @@ namespace Caravel.Core.Entity
 
         public void ApplyRotation(float rotation, object caller = null)
         {
+            if (!Owner)
+            {
+                return;
+            }
+
             m_OldTransform = Transform;
             Rotation += rotation;
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, Transform.Origin, Rotation, (caller != null ? caller : this));
@@ -152,6 +182,11 @@ namespace Caravel.Core.Entity
 
         public void SetOrigin(Vector2 value, object caller = null)
         {
+            if (!Owner)
+            {
+                return;
+            }
+
             m_OldTransform = Transform;
             Origin = value;
             var newEvent = new Cv_Event_TransformEntity(Owner.ID, m_OldTransform, Transform.Position, Transform.Scale, value, Transform.Rotation, (caller != null ? caller : this));

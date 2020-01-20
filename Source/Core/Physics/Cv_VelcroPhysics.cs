@@ -16,7 +16,7 @@ using VelcroPhysics.Collision.ContactSystem;
 using VelcroPhysics.Dynamics.Solver;
 using VelcroPhysics.Collision.Filtering;
 using VelcroPhysics.Shared.Optimization;
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 
 namespace Caravel.Core.Physics
 {
@@ -30,16 +30,16 @@ namespace Caravel.Core.Physics
             public Cv_Transform PrevWorldTransform;
         }
 
-        public Vector2 Gravity
+        public Microsoft.Xna.Framework.Vector2 Gravity
         {
             get
             {
-                return m_World.Gravity;
+                return new Microsoft.Xna.Framework.Vector2(m_World.Gravity.X, m_World.Gravity.Y);
             }
 
             set
             {
-                m_World.Gravity = value;
+                m_World.Gravity = new Vector2(value.X, value.Y);
             }
         }
 
@@ -129,7 +129,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(data.ShapeID, verts, data.Anchor, material.Density, false, data.IsBullet,
+            var shape = new Cv_CollisionShape(data.ShapeID, Verts2Points(verts), data.Anchor, material.Density, false, data.IsBullet,
 													data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
@@ -158,7 +158,7 @@ namespace Caravel.Core.Physics
             body = m_PhysicsEntities[gameEntity.ID].Body;
             body.IsBullet = false;
 
-            var vertices = new Vertices(data.Points);
+            var vertices = Points2Verts(data.Points);
 
             Cv_PhysicsMaterial material;
             
@@ -172,7 +172,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(data.ShapeID, vertices, data.Anchor, material.Density, false, data.IsBullet,
+            var shape = new Cv_CollisionShape(data.ShapeID, Verts2Points(vertices), data.Anchor, material.Density, false, data.IsBullet,
 													data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
@@ -209,7 +209,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(data.ShapeID, Vector2.Zero, data.Radius, data.Anchor, material.Density, false,
+            var shape = new Cv_CollisionShape(data.ShapeID, Microsoft.Xna.Framework.Vector2.Zero, data.Radius, data.Anchor, material.Density, false,
 												data.IsBullet, data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             shape.Friction = material.Friction;
@@ -249,7 +249,7 @@ namespace Caravel.Core.Physics
                 return null;
             }
 
-            var shape = new Cv_CollisionShape(data.ShapeID, verts, data.Anchor, 0, true, data.IsBullet,
+            var shape = new Cv_CollisionShape(data.ShapeID, Verts2Points(verts), data.Anchor, 0, true, data.IsBullet,
 												data.Categories, data.CollidesWith, data.CollisionDirections);
             shape.Owner = gameEntity;
             
@@ -265,7 +265,7 @@ namespace Caravel.Core.Physics
             pe.Shapes.Remove(toRemove);
         }
 
-        public override void VApplyForce(Vector2 dir, float newtons, Cv_EntityID entityId)
+        public override void VApplyForce(Microsoft.Xna.Framework.Vector2 dir, float newtons, Cv_EntityID entityId)
         {
             var entity = Caravel.Logic.GetEntity(entityId);
 
@@ -275,7 +275,7 @@ namespace Caravel.Core.Physics
 
                 if (rigidBodyComponent != null)
                 {
-                    Vector3 force = new Vector3(dir, 0);
+                    Microsoft.Xna.Framework.Vector3 force = new Microsoft.Xna.Framework.Vector3(dir, 0);
                     force.Normalize();
                     rigidBodyComponent.Impulse = force * newtons;
                 }
@@ -315,7 +315,7 @@ namespace Caravel.Core.Physics
             return 0;
         }
 
-        public override Vector2 VGetVelocity(Cv_EntityID entityId)
+        public override Microsoft.Xna.Framework.Vector2 VGetVelocity(Cv_EntityID entityId)
         {
             var entity = Caravel.Logic.GetEntity(entityId);
 
@@ -325,12 +325,12 @@ namespace Caravel.Core.Physics
 
                 if (rigidBodyComponent != null)
                 {
-                    return new Vector2(rigidBodyComponent.Velocity.X, rigidBodyComponent.Velocity.Y);
+                    return new Microsoft.Xna.Framework.Vector2(rigidBodyComponent.Velocity.X, rigidBodyComponent.Velocity.Y);
                 }
             }
 
             Cv_Debug.Error("Entity does not exist or does not have rigid body.");
-            return Vector2.Zero;
+            return Microsoft.Xna.Framework.Vector2.Zero;
         }
 
         public override void VSetAngularVelocity(Cv_EntityID entityId, float vel)
@@ -348,7 +348,7 @@ namespace Caravel.Core.Physics
             }
         }
 
-        public override void VSetVelocity(Cv_EntityID entityId, Vector2 vel)
+        public override void VSetVelocity(Cv_EntityID entityId, Microsoft.Xna.Framework.Vector2 vel)
         {
             var entity = Caravel.Logic.GetEntity(entityId);
 
@@ -358,7 +358,7 @@ namespace Caravel.Core.Physics
 
                 if (rigidBodyComponent != null)
                 {
-                    rigidBodyComponent.Velocity = new Vector3(vel, 0);
+                    rigidBodyComponent.Velocity = new Microsoft.Xna.Framework.Vector3(vel, 0);
                 }
             }
         }
@@ -413,24 +413,24 @@ namespace Caravel.Core.Physics
             {
                 var pos = e.Body.Position;
 
-                Rectangle r = new Rectangle((int)(ToScreenCoord(pos.X) - 1), (int)(ToScreenCoord(pos.Y) - 1), 2, 2);
-                Cv_DrawUtils.DrawRectangle(renderer, r, 4, Color.Blue);
+                Microsoft.Xna.Framework.Rectangle r = new Microsoft.Xna.Framework.Rectangle((int)(ToScreenCoord(pos.X) - 1), (int)(ToScreenCoord(pos.Y) - 1), 2, 2);
+                Cv_DrawUtils.DrawRectangle(renderer, r, 4, Microsoft.Xna.Framework.Color.Blue);
                 Vertices verts;
 
-                Color color;
+                Microsoft.Xna.Framework.Color color;
                 foreach (var fixture in e.Body.FixtureList)
                 {
                     if (renderer.DebugDrawPhysicsShapes)
                     {
-                        color = Color.Red;
+                        color = Microsoft.Xna.Framework.Color.Red;
                         
                         if (e.Entity.ID == pv.EditorSelectedEntity)
                         {
-                            color = Color.Yellow;
+                            color = Microsoft.Xna.Framework.Color.Yellow;
                         }
 
                         if (fixture.IsSensor)
-                            color = Color.Green;
+                            color = Microsoft.Xna.Framework.Color.Green;
 
                         if (fixture.Shape.GetType() != typeof(CircleShape))
                         {
@@ -445,7 +445,7 @@ namespace Caravel.Core.Physics
                             var point = circle.Position;
                             point = Vector2.Transform(point, rotMatrixZ);
 
-                            Rectangle r2 = new Rectangle((int)(ToScreenCoord(pos.X + point.X - circle.Radius)), 
+                            Microsoft.Xna.Framework.Rectangle r2 = new Microsoft.Xna.Framework.Rectangle((int)(ToScreenCoord(pos.X + point.X - circle.Radius)), 
                                                         (int)(ToScreenCoord(pos.Y + point.Y - circle.Radius)), 
                                                         (int)ToScreenCoord(circle.Radius)*2, 
                                                         (int)ToScreenCoord(circle.Radius)*2);
@@ -463,7 +463,7 @@ namespace Caravel.Core.Physics
 
         public override void VStopEntity(Cv_EntityID entityId)
         {
-            VSetVelocity(entityId, Vector2.Zero);
+            VSetVelocity(entityId, Microsoft.Xna.Framework.Vector2.Zero);
         }
 
         public override void VSyncVisibleScene()
@@ -488,12 +488,12 @@ namespace Caravel.Core.Physics
 
                         var worldTransform = Cv_Transform.Multiply(parenttrans, transformComponent.Transform);
                         var newWorldPosition = ToOutsideVector(e.Body.Position, false);
-                        var oldWorldPosition = new Vector2(worldTransform.Position.X, worldTransform.Position.Y);
+                        var oldWorldPosition = new Microsoft.Xna.Framework.Vector2(worldTransform.Position.X, worldTransform.Position.Y);
                         var posDifference = newWorldPosition - oldWorldPosition;
 
                         if (posDifference.Length() > 0.00001f)
                         {
-                            var newPosition = new Vector3 (transformComponent.Position.X + (posDifference.X / parenttrans.Scale.X), transformComponent.Position.Y + (posDifference.Y / parenttrans.Scale.Y), transformComponent.Position.Z);
+                            var newPosition = new Microsoft.Xna.Framework.Vector3(transformComponent.Position.X + (posDifference.X / parenttrans.Scale.X), transformComponent.Position.Y + (posDifference.Y / parenttrans.Scale.Y), transformComponent.Position.Z);
                             transformComponent.SetPosition(newPosition, this);
                         }
 
@@ -522,7 +522,7 @@ namespace Caravel.Core.Physics
             return m_MaterialsTable[material];
         }
 
-		public override Cv_RayCastIntersection[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type)
+		public override Cv_RayCastIntersection[] RayCast(Microsoft.Xna.Framework.Vector2 startingPoint, Microsoft.Xna.Framework.Vector2 endingPoint, Cv_RayCastType type)
 		{
 			m_RaycastEntities.Clear();
 			m_RaycastType = type;
@@ -559,7 +559,7 @@ namespace Caravel.Core.Physics
 
                         body.ApplyForce(ToPhysicsVector(rigidBodyComponent.Acceleration));
                         body.ApplyLinearImpulse(ToPhysicsVector(rigidBodyComponent.Impulse));
-                        rigidBodyComponent.Impulse = Vector3.Zero;
+                        rigidBodyComponent.Impulse = Microsoft.Xna.Framework.Vector3.Zero;
 
                         body.ApplyTorque(rigidBodyComponent.AngularAcceleration);
                         body.ApplyAngularImpulse(rigidBodyComponent.AngularImpulse);
@@ -569,7 +569,7 @@ namespace Caravel.Core.Physics
             }
         }
 
-        private void DrawBoundingBox(Cv_CollisionShape shape, Vector2 pos, Cv_Renderer renderer, float zoom)
+        private void DrawBoundingBox(Cv_CollisionShape shape, Microsoft.Xna.Framework.Vector2 pos, Cv_Renderer renderer, float zoom)
 		{
             var thickness = (int) Math.Round(2 / zoom);
             if (thickness <= 0)
@@ -578,11 +578,11 @@ namespace Caravel.Core.Physics
             }
 
             var boundingBox = shape.AABoundingBox;
-			Rectangle r = new Rectangle((int) (boundingBox.Start.X + pos.X),
+            Microsoft.Xna.Framework.Rectangle r = new Microsoft.Xna.Framework.Rectangle((int) (boundingBox.Start.X + pos.X),
 										(int) (boundingBox.Start.Y + pos.Y),
 										(int) boundingBox.Width,
 										(int) boundingBox.Height);
-			Cv_DrawUtils.DrawRectangle(renderer, r, thickness, Color.Green);
+			Cv_DrawUtils.DrawRectangle(renderer, r, thickness, Microsoft.Xna.Framework.Color.Green);
 		}
 
         private Cv_CollisionShape AddShape(Cv_Entity entity, Cv_CollisionShape shape, bool isTrigger)
@@ -601,7 +601,7 @@ namespace Caravel.Core.Physics
                 }
                 else
                 {
-                    var newPoints = new List<Vector2>();
+                    var newPoints = new List<Microsoft.Xna.Framework.Vector2>();
                     foreach (var p in shape.Points)
                     {
                         var newPoint = p * scale;
@@ -619,7 +619,7 @@ namespace Caravel.Core.Physics
 
             foreach (var vertice in shape.Points)
             {
-                collisionShape.Add(ToWorldCoord(new Vector2(vertice.X - offsetX, vertice.Y - offsetY)));
+                collisionShape.Add(ToWorldCoord(new Microsoft.Xna.Framework.Vector2(vertice.X - offsetX, vertice.Y - offsetY)));
             }
 
             Fixture fixture = null;
@@ -633,7 +633,7 @@ namespace Caravel.Core.Physics
 
             if (shape.IsCircle)
             {
-                fixture = FixtureFactory.AttachCircle(ToWorldCoord(shape.Radius), shape.Density, body, ToWorldCoord(new Vector2(offsetX, offsetY)), shape);
+                fixture = FixtureFactory.AttachCircle(ToWorldCoord(shape.Radius), shape.Density, body, ToWorldCoord(new Microsoft.Xna.Framework.Vector2(offsetX, offsetY)), shape);
             }
             else
             {
@@ -666,6 +666,7 @@ namespace Caravel.Core.Physics
         private Body CreateNewBody(Cv_Entity entity)
         {
             var body = BodyFactory.CreateBody(m_World);
+            body.UserData = entity.EntityName;
             var shapeMap = new Dictionary<Cv_CollisionShape, Fixture>();
             var physicsEntity = new Cv_PhysicsEntity();
             physicsEntity.Body = body;
@@ -701,7 +702,7 @@ namespace Caravel.Core.Physics
             return body;
         }
 
-        private void DrawCollisionShape(Vertices collisionShape, Vector2 position, float rotation, Cv_Renderer renderer, float zoom, Color c)
+        private void DrawCollisionShape(Vertices collisionShape, Vector2 position, float rotation, Cv_Renderer renderer, float zoom, Microsoft.Xna.Framework.Color c)
 		{
 			if(collisionShape.Count >= 2)
 			{
@@ -721,7 +722,7 @@ namespace Caravel.Core.Physics
                     point1 += position;
                     point2 += position;
 
-                    var thickness = (int) Math.Round(2 / zoom);
+                    var thickness = (int) Math.Ceiling(3 / zoom);
                     if (thickness <= 0)
                     {
                         thickness = 1;
@@ -785,6 +786,9 @@ namespace Caravel.Core.Physics
 
         private void OnNewCollisionPair(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+            contact.Enabled = false;
+            return;
+
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
 
@@ -888,7 +892,7 @@ namespace Caravel.Core.Physics
             var intersection = new Cv_RayCastIntersection();
             intersection.Entity = ((Cv_CollisionShape) fixture.UserData).Owner;
             intersection.Point = ToScreenCoord(point);
-            intersection.Normal = normal;
+            intersection.Normal = new Microsoft.Xna.Framework.Vector2(normal.X, normal.Y);
 
 			m_RaycastEntities.Add(intersection);
 
@@ -925,7 +929,6 @@ namespace Caravel.Core.Physics
                     VAddTrigger(entity, shapeData);
                     break;
                 default:
-                    var points = new List<Vector2>(shapeData.Points);
                     VAddPointShape(entity, shapeData);
                     break;
             }
@@ -1013,7 +1016,7 @@ namespace Caravel.Core.Physics
                         }
 
                         var colShape = f.Key;
-                        var newPoints = new List<Vector2>();
+                        var newPoints = new List<Microsoft.Xna.Framework.Vector2>();
                         foreach (var p in colShape.Points)
                         {
                             var newPoint = (p / oldScale) * worldTransform.Scale;
@@ -1095,7 +1098,7 @@ namespace Caravel.Core.Physics
                 body.LinearVelocity = linVelocity * ToWorldCoord(rigidBody.MaxVelocity);
             }
 
-            rigidBody.Velocity = new Vector3(ToOutsideVector(body.LinearVelocity), rigidBody.Velocity.Z);
+            rigidBody.Velocity = new Microsoft.Xna.Framework.Vector3(ToOutsideVector(body.LinearVelocity), rigidBody.Velocity.Z);
 
             if (body.AngularVelocity > rigidBody.MaxAngularVelocity)
             {
@@ -1104,7 +1107,7 @@ namespace Caravel.Core.Physics
             rigidBody.AngularVelocity = body.AngularVelocity;
         }
 
-        private Vector2 ToPhysicsVector(Vector3 vector3D)
+        private Vector2 ToPhysicsVector(Microsoft.Xna.Framework.Vector3 vector3D)
         {
             Vector2 vector2D;
             vector2D = new Vector2(ToWorldCoord(vector3D.X), ToWorldCoord(vector3D.Y));
@@ -1112,7 +1115,25 @@ namespace Caravel.Core.Physics
             return vector2D;
         }
 
-        private Vector2 ToOutsideVector(Vector2 vector2D, bool round = false)
+        private Microsoft.Xna.Framework.Vector2 ToOutsideVector(Vector2 vector2D, bool round = false)
+        {
+            Microsoft.Xna.Framework.Vector2 outsideV;
+            if (round)
+            {
+                outsideV = new Microsoft.Xna.Framework.Vector2((float)Math.Round(ToScreenCoord(vector2D.X)),
+                                        (float)Math.Round(ToScreenCoord(vector2D.Y)));
+            }
+            else
+            {
+                outsideV = new Microsoft.Xna.Framework.Vector2(ToScreenCoord(vector2D.X),
+                                        ToScreenCoord(vector2D.Y));
+            }
+            
+
+            return outsideV;
+        }
+
+        private Vector2 _ToOutsideVector(Vector2 vector2D, bool round = false)
         {
             Vector2 outsideV;
             if (round)
@@ -1125,7 +1146,7 @@ namespace Caravel.Core.Physics
                 outsideV = new Vector2(ToScreenCoord(vector2D.X),
                                         ToScreenCoord(vector2D.Y));
             }
-            
+
 
             return outsideV;
         }
@@ -1135,9 +1156,9 @@ namespace Caravel.Core.Physics
             return coord / Screen2WorldRatio;
         }
 
-        private Vector2 ToWorldCoord(Vector2 coord)
+        private Vector2 ToWorldCoord(Microsoft.Xna.Framework.Vector2 coord)
         {
-            return coord / Screen2WorldRatio;
+            return new Vector2(coord.X, coord.Y) / Screen2WorldRatio;
         }
 
         private float ToScreenCoord(float coord)
@@ -1145,9 +1166,33 @@ namespace Caravel.Core.Physics
             return coord * Screen2WorldRatio;
         }
 
-        private Vector2 ToScreenCoord(Vector2 coord)
+        private Microsoft.Xna.Framework.Vector2 ToScreenCoord(Vector2 coord)
         {
-            return coord * Screen2WorldRatio;
+            return new Microsoft.Xna.Framework.Vector2(coord.X, coord.Y) * Screen2WorldRatio;
+        }
+
+        private List<Microsoft.Xna.Framework.Vector2> Verts2Points(Vertices verts)
+        {
+            List<Microsoft.Xna.Framework.Vector2> rtnVal = new List<Microsoft.Xna.Framework.Vector2>();
+
+            foreach(var vert in verts)
+            {
+                rtnVal.Add(new Microsoft.Xna.Framework.Vector2(vert.X, vert.Y));
+            }
+
+            return rtnVal;
+        }
+
+        private Vertices Points2Verts(Microsoft.Xna.Framework.Vector2[] points)
+        {
+            Vertices rtnVal = new Vertices();
+
+            foreach (var point in points)
+            {
+                rtnVal.Add(new Vector2(point.X, point.Y));
+            }
+
+            return rtnVal;
         }
 
         private bool CheckPolygonValidity(Vertices points)
@@ -1277,7 +1322,7 @@ namespace Caravel.Core.Physics
 
         private Cv_VelcroContact GenerateContact(Contact contact, Cv_CollisionShape collidingShape, Cv_CollisionShape collidedShape)
         {
-            List<Vector2> collisionPoints = new List<Vector2>();
+            List<Microsoft.Xna.Framework.Vector2> collisionPoints = new List<Microsoft.Xna.Framework.Vector2>();
             Vector2 normalForce = Vector2.Zero;
 
             FixedArray2<Vector2> manifoldPoints;
@@ -1290,12 +1335,12 @@ namespace Caravel.Core.Physics
                 collisionPoints.Add(ToOutsideVector(point));
             }
 
-            normalForce += ToOutsideVector(normalForce);
+            normalForce += _ToOutsideVector(normalForce);
 
             var velcroContact = new Cv_VelcroContact(contact);
             velcroContact.CollidedShape = collidedShape;
             velcroContact.CollidingShape = collidingShape;
-            velcroContact.NormalForce = normalForce;
+            velcroContact.NormalForce = new Microsoft.Xna.Framework.Vector2(normalForce.X, normalForce.Y);
             velcroContact.CollisionPoints = collisionPoints.ToArray();
 
             if (m_PhysicsEntities.ContainsKey(collidedShape.Owner.ID))

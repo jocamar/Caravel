@@ -412,7 +412,7 @@
     <Compile Include="..\Source\TestSamples\SimpleGameLogic.cs">
       <Link>SimpleGameLogic.cs</Link>
     </Compile>
-    <Compile Include="..\Libs\VelcroPhysics\BreakableBody.cs" />
+    <!--<Compile Include="..\Libs\VelcroPhysics\BreakableBody.cs" />
     <Compile Include="..\Libs\VelcroPhysics\Collision\AABBHelper.cs" />
     <Compile Include="..\Libs\VelcroPhysics\Collision\Broadphase\DynamicTree.cs" />
     <Compile Include="..\Libs\VelcroPhysics\Collision\Broadphase\DynamicTreeBroadPhase.cs" />
@@ -643,7 +643,7 @@
     <Compile Include="..\Libs\VelcroPhysics\Utilities\ConvertUnits.cs" />
     <Compile Include="..\Libs\VelcroPhysics\Utilities\LineUtils.cs" />
     <Compile Include="..\Libs\VelcroPhysics\Utilities\MathUtils.cs" />
-    <Compile Include="..\Libs\VelcroPhysics\Utilities\PolygonUtils.cs" />
+    <Compile Include="..\Libs\VelcroPhysics\Utilities\PolygonUtils.cs" />-->
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -746,7 +746,22 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Libs\Aether.Physics2D\Physics2D\Aether.Physics2D.WINDOWS.MG.csproj">
+      <Project>{58a4f378-3fc5-4616-bc62-5ff5df676627}</Project>
+      <Name>Aether.Physics2D.WINDOWS.MG</Name>
+      <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
+      <EmbedAssemblyDependencies>true</EmbedAssemblyDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\Libs\VelcroPhysics\VelcroPhysics.csproj">
+      <Project>{179dc932-118e-4aad-8177-3ace58fd0c6d}</Project>
+      <Name>VelcroPhysics</Name>
+      <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
+      <EmbedAssemblyDependencies>true</EmbedAssemblyDependencies>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

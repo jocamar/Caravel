@@ -21,7 +21,7 @@
 */
 
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Dynamics.Solver;
 using VelcroPhysics.Shared;
 using VelcroPhysics.Utilities;

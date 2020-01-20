@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 
 namespace VelcroPhysics.Collision.Shapes
 {

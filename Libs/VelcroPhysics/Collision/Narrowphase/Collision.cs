@@ -20,7 +20,7 @@
 * 3. This notice may not be removed or altered from any source distribution. 
 */
 
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Collision.ContactSystem;
 using VelcroPhysics.Collision.Distance;
 using VelcroPhysics.Collision.Shapes;

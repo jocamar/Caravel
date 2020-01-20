@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 
 namespace VelcroPhysics.Collision.Distance
 {

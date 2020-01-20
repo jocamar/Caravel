@@ -198,7 +198,7 @@ namespace Caravel.Core.Entity
                     point1 += new Vector2(pos.X, pos.Y);
                     point2 += new Vector2(pos.X, pos.Y);
 
-                    var thickness = (int) Math.Round(3 / scene.Camera.Zoom);
+                    var thickness = (int) Math.Ceiling(3 / scene.Camera.Zoom);
                     if (thickness <= 0)
                     {
                         thickness = 1;

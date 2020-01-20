@@ -1,4 +1,4 @@
-namespace Microsoft.Xna.Framework
+namespace VelcroPhysics.Primitives
 {
     public enum CurveLoopType
     {

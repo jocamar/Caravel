@@ -3,7 +3,7 @@
 * Copyright (c) 2017 Ian Qvist
 */
 
-using Microsoft.Xna.Framework;
+using VelcroPhysics.Primitives;
 using VelcroPhysics.Dynamics;
 using VelcroPhysics.Shared;
 
