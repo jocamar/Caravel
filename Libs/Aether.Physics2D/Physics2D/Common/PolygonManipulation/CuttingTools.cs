@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using tainicom.Aether.Physics2D.Collision.Shapes;
 using tainicom.Aether.Physics2D.Dynamics;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Common.PolygonManipulation
 {

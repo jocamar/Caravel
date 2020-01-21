@@ -3,7 +3,7 @@
  * Microsoft Permissive License (Ms-PL) v1.1
  */
 
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Fluids
 {

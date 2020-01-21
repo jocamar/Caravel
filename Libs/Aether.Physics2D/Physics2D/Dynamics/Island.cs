@@ -29,7 +29,7 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 using tainicom.Aether.Physics2D.Common;
 using tainicom.Aether.Physics2D.Dynamics.Contacts;
 using tainicom.Aether.Physics2D.Dynamics.Joints;
@@ -134,7 +134,7 @@ namespace tainicom.Aether.Physics2D.Dynamics
                     if (b.IgnoreGravity)
                         v += h * (b._invMass * b._force);
                     else
-                        v += h * (gravity + b._invMass * b._force);
+                        v += h * (b.GravityScale * gravity + b._invMass * b._force);
 
                     w += h * b._invI * b._torque;
 

@@ -786,9 +786,6 @@ namespace Caravel.Core.Physics
 
         private void OnNewCollisionPair(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            contact.Enabled = false;
-            return;
-
             var collisionShapeA = (Cv_CollisionShape) fixtureA.UserData;
             var collisionShapeB = (Cv_CollisionShape) fixtureB.UserData;
 

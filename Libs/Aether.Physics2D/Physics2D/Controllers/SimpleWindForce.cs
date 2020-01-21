@@ -6,7 +6,7 @@
 using tainicom.Aether.Physics2D.Common;
 using tainicom.Aether.Physics2D.Common.Maths;
 using tainicom.Aether.Physics2D.Dynamics;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Controllers
 {

@@ -4,7 +4,7 @@
  */
 
 using System;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 using tainicom.Aether.Physics2D.Common.PhysicsLogic;
 using tainicom.Aether.Physics2D.Dynamics;
 

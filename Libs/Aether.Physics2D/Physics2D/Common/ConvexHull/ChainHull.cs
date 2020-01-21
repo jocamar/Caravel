@@ -4,7 +4,7 @@
  */
 
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Common.ConvexHull
 {

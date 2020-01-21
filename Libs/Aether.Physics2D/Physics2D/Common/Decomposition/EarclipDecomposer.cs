@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Common.Decomposition
 {

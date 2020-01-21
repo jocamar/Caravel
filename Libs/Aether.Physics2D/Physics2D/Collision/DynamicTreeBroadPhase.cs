@@ -27,7 +27,7 @@
 
 using System;
 using tainicom.Aether.Physics2D.Dynamics;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Collision
 {

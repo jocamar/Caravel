@@ -39,7 +39,7 @@ using tainicom.Aether.Physics2D.Common.PhysicsLogic;
 using tainicom.Aether.Physics2D.Controllers;
 using tainicom.Aether.Physics2D.Dynamics.Contacts;
 using tainicom.Aether.Physics2D.Dynamics.Joints;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Dynamics
 {
@@ -81,11 +81,18 @@ namespace tainicom.Aether.Physics2D.Dynamics
             _xf.q = Complex.One;
 
             BodyType = BodyType.Static;
+            GravityScale = 1.0f;
         }
 
         public World World { get {return _world; } }
         
         public int IslandIndex { get; set; }
+
+        /// <summary>
+        /// Scale the gravity applied to this body.
+        /// Defaults to 1. A value of 2 means double the gravity is applied to this body.
+        /// </summary>
+        public float GravityScale { get; set; }
 
         /// <summary>
         /// Set the user data. Use this to store your application specific data.
@@ -1288,6 +1295,7 @@ namespace tainicom.Aether.Physics2D.Dynamics
             body.IgnoreCCD = IgnoreCCD;
             body.IgnoreGravity = IgnoreGravity;
             body._torque = _torque;
+            body.GravityScale = GravityScale;
 
             return body;
         }

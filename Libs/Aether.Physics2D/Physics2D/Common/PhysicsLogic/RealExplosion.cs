@@ -10,7 +10,7 @@ using tainicom.Aether.Physics2D.Collision;
 using tainicom.Aether.Physics2D.Collision.Shapes;
 using tainicom.Aether.Physics2D.Common.Maths;
 using tainicom.Aether.Physics2D.Dynamics;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Common.PhysicsLogic
 {

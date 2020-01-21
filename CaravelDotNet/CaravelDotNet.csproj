@@ -358,6 +358,12 @@
     <Compile Include="..\Source\Core\Physics\Cv_VelcroPhysics.cs">
       <Link>Cv_VelcroPhysics.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Physics\Cv_AetherContact.cs">
+      <Link>Cv_AetherContact.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Physics\Cv_AetherPhysics.cs">
+      <Link>Cv_AetherPhysics.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Physics\Cv_GamePhysics.cs">
       <Link>Cv_GamePhysics.cs</Link>
     </Compile>

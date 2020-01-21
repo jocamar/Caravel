@@ -128,8 +128,6 @@
     <Compile Include="Common\Vertices.cs" />
     <Compile Include="Content\BodyContainer.cs" />
     <Compile Include="Content\PolygonContainer.cs" />
-    <Compile Include="ContentReaders\BodyContainerReader.cs" />
-    <Compile Include="ContentReaders\PolygonContainerReader.cs" />
     <Compile Include="Controllers\AbstractForceController.cs" />
     <Compile Include="Controllers\BuoyancyController.cs" />
     <Compile Include="Controllers\Controller.cs" />
@@ -174,20 +172,25 @@
     <Compile Include="Fluids\1\HashGrid.cs" />
     <Compile Include="Fluids\2\FluidSystem2.cs" />
     <Compile Include="Fluids\2\SpartialTable.cs" />
+    <Compile Include="Primitives\Curve.cs" />
+    <Compile Include="Primitives\CurveContinuity.cs" />
+    <Compile Include="Primitives\CurveKey.cs" />
+    <Compile Include="Primitives\CurveKeyCollection.cs" />
+    <Compile Include="Primitives\CurveLoopType.cs" />
+    <Compile Include="Primitives\CurveTangent.cs" />
+    <Compile Include="Primitives\MathHelper.cs" />
+    <Compile Include="Primitives\Matrix.cs" />
+    <Compile Include="Primitives\Vector2.cs" />
+    <Compile Include="Primitives\Vector3.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>..\packages\MonoGame.Framework.Portable.3.2.99.1-Beta\lib\portable-net40+sl40+win+wp80\MonoGame.Framework.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

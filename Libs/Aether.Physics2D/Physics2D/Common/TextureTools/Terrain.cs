@@ -8,7 +8,7 @@ using tainicom.Aether.Physics2D.Collision;
 using tainicom.Aether.Physics2D.Common.Decomposition;
 using tainicom.Aether.Physics2D.Common.PolygonManipulation;
 using tainicom.Aether.Physics2D.Dynamics;
-using Microsoft.Xna.Framework;
+using tainicom.Aether.Physics2D.Primitives;
 
 namespace tainicom.Aether.Physics2D.Common.TextureTools
 {
