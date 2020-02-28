@@ -27,6 +27,11 @@ namespace Caravel.Core.Draw
             get; private set;
         }
 
+        public bool Paused
+        {
+            get; internal set;
+        }
+
         //Updated on the OnMoveEntity callback in the scene element
         internal virtual Cv_Transform Transform
         {
@@ -214,6 +219,11 @@ namespace Caravel.Core.Draw
 
         internal virtual void VOnUpdate(float time, float elapsedTime)
         {
+            if (Paused)
+            {
+                return;
+            }
+            
             foreach (var child in Children)
             {
                 child.VOnUpdate(time, elapsedTime);

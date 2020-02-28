@@ -108,6 +108,8 @@ namespace Caravel.Core.Physics
         public abstract void VApplyTorque(float newtons, Cv_EntityID entityId);
 		public abstract Cv_RayCastIntersection[] RayCast(Vector2 startingPoint, Vector2 endingPoint, Cv_RayCastType type);
 		public abstract Cv_PhysicsMaterial GetMaterial(string material);
+        public abstract void SetCollidesWith(Cv_EntityID entityId1, Cv_EntityID entityId2, bool state, string shapeId1 = null, string shapeId2 = null);
+        public abstract void SetEntityPaused(Cv_EntityID entityId, bool state);
 
         public static Cv_GamePhysics CreateNullPhysics(CaravelApp app)
         {

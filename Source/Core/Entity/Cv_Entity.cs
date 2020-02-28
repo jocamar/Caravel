@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 using Caravel.Debugging;
+using Caravel.Core.Events;
 using static Caravel.Core.Cv_SceneManager;
 using static Caravel.Core.Entity.Cv_EntityComponent;
 
@@ -80,6 +81,40 @@ namespace Caravel.Core.Entity
             }
         }
 
+        public bool Paused
+        {
+            get
+            {
+                return m_bPaused;
+            }
+
+            set
+            {
+                if (m_bPaused && !value)
+                {
+                    m_bPaused = value;
+
+                    foreach (var component in m_ComponentMap)
+                    {
+                        component.Value.VOnResume();
+                    }
+
+                    CaravelApp.Instance.EventManager.TriggerEvent(new Cv_Event_ChangeEntityPauseState(ID, value, this));
+                }
+                else if (!m_bPaused && value)
+                {
+                    m_bPaused = value;
+
+                    foreach (var component in m_ComponentMap)
+                    {
+                        component.Value.VOnPause();
+                    }
+
+                    CaravelApp.Instance.EventManager.TriggerEvent(new Cv_Event_ChangeEntityPauseState(ID, value, this));
+                }
+            }
+        }
+
         public Cv_Entity[] Children
         {
             get
@@ -88,11 +123,11 @@ namespace Caravel.Core.Entity
             }
         }
 
-        public static bool operator true(Cv_Entity e) => !e.DestroyRequested;
-        public static bool operator false(Cv_Entity e) => e.DestroyRequested;
+        public static bool operator true(Cv_Entity e) => e != null && !e.DestroyRequested;
+        public static bool operator false(Cv_Entity e) => e == null || e.DestroyRequested;
         public static implicit operator bool(Cv_Entity e)
         {
-            return !e.DestroyRequested;
+            return e != null && !e.DestroyRequested;
         }
 
         private Dictionary<Cv_ComponentID, Cv_EntityComponent> m_ComponentMap;
@@ -101,6 +136,7 @@ namespace Caravel.Core.Entity
         private List<Cv_EntityComponent> m_ComponentsToRemove;
         private List<Cv_Entity> m_Children;
         private bool m_bInitialized = false;
+        private bool m_bPaused = false;
 
         public XmlElement ToXML()
         {
@@ -337,7 +373,7 @@ namespace Caravel.Core.Entity
 
         internal void OnUpdate(float elapsedTime)
         {
-            if (DestroyRequested || !m_bInitialized)
+            if (DestroyRequested || !m_bInitialized || m_bPaused)
             {
                 return;
             }

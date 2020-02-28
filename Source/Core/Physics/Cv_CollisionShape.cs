@@ -14,6 +14,16 @@ namespace Caravel.Core.Physics
         {
             private BitArray m_Categories = new BitArray(32);
 
+            public void AddAllCategories()
+            {
+                m_Categories.SetAll(true);
+            }
+
+            public void RemoveAllCategories()
+            {
+                m_Categories.SetAll(false);
+            }
+
             public void AddCategory(int category)
             {
                 if (category >= 32)
@@ -180,6 +190,11 @@ namespace Caravel.Core.Physics
             CircleOutlineTex = Cv_DrawUtils.CreateCircle((int) radius);
 
             Owner = null;
+        }
+
+        internal void SetCollisionDirection(int category, string direction)
+        {
+            m_CollisionDirections[category] = direction;
         }
 
         private ShapeBoundingBox CalculateAABoundingBox()

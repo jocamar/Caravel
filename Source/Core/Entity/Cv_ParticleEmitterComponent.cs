@@ -10,7 +10,7 @@ namespace Caravel.Core.Entity
 {
     public class Cv_ParticleEmitterComponent : Cv_RenderComponent
     {
-         public string Texture
+        public string Texture
         {
             get; set;
         }

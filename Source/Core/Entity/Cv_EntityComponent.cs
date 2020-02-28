@@ -29,11 +29,11 @@ namespace Caravel.Core.Entity
             }
         }
 
-        public static bool operator true(Cv_EntityComponent c) => c.Owner != null;
-        public static bool operator false(Cv_EntityComponent c) => c.Owner == null;
+        public static bool operator true(Cv_EntityComponent c) => c != null && c.Owner != null;
+        public static bool operator false(Cv_EntityComponent c) => c == null || c.Owner == null;
         public static implicit operator bool(Cv_EntityComponent c)
         {
-            return c.Owner != null;
+            return c != null && c.Owner != null;
         }
 
         protected internal Cv_Entity Owner
@@ -345,6 +345,16 @@ namespace Caravel.Core.Entity
             }
 
             return true;
+        }
+
+        public virtual void VOnPause()
+        {
+
+        }
+
+        public virtual void VOnResume()
+        {
+            
         }
 
         public abstract bool VPostInitialize();

@@ -250,6 +250,15 @@
     <Compile Include="..\Source\Core\Events\Cv_Event_ChangeState.cs">
       <Link>Cv_Event_ChangeState.cs</Link>
     </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_SetCollidesWith.cs">
+      <Link>Cv_Event_SetCollidesWith.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_SetCollisionCategory.cs">
+      <Link>Cv_Event_SetCollisionCategory.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Core\Events\Cv_Event_ChangeEntityPauseState.cs">
+      <Link>Cv_Event_ChangeEntityPauseState.cs</Link>
+    </Compile>
     <Compile Include="..\Source\Core\Events\Cv_Event_DestroyEntity.cs">
       <Link>Cv_Event_DestroyEntity.cs</Link>
     </Compile>

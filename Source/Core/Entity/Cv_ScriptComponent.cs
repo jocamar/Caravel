@@ -128,6 +128,16 @@ namespace Caravel.Core.Entity
             }
         }
 
+        public override void VOnPause()
+        {
+            m_Timer.Pause();
+        }
+
+        public override void VOnResume()
+        {
+            m_Timer.Resume();
+        }
+
         public override bool VPostInitialize()
         {
             if (InitScriptResource != null && InitScriptResource != "")

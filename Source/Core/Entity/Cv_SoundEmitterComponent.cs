@@ -356,6 +356,16 @@ namespace Caravel.Core.Entity
             }
         }
 
+        public override void VOnPause()
+        {
+            PauseSound();
+        }
+
+        public override void VOnResume()
+        {
+            ResumeSound();
+        }
+
         public override bool VPostInitialize()
         {
             return true;

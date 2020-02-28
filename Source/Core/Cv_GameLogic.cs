@@ -712,6 +712,11 @@ namespace Caravel.Core
         {
             return GamePhysics.GetMaterials();
         }
+
+        public void SetCollidesWith(Cv_EntityID entity1, Cv_EntityID entity2, bool state, string shape1 = null, string shape2 = null)
+        {
+            GamePhysics.SetCollidesWith(entity1, entity2, state, shape1, shape2);
+        }
 #endregion
 
         public bool ChangeState(Cv_GameState newState)

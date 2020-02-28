@@ -57,9 +57,19 @@ namespace Caravel.Core.Physics
 		private Cv_RayCastType m_RaycastType;
         private List<Tuple<Cv_CollisionShape, Cv_CollisionShape>> m_CollisionPairs;
         private List<Tuple<Cv_CollisionShape, Cv_CollisionShape>> m_SeparationPairs;
+        private List<CollisionExclusion> m_Exclusions;
+        private List<Tuple<Cv_EntityID, bool>> m_PauseStateChanges;
 
         private readonly World m_World;
         private Cv_ListenerList m_Listeners = new Cv_ListenerList();
+
+        private struct CollisionExclusion
+        {
+            public Cv_EntityID Entity1;
+            public Cv_EntityID Entity2;
+            public string ShapeId1;
+            public string ShapeId2;
+        }
 
         public Cv_AetherPhysics(CaravelApp app)
         {
@@ -74,12 +84,17 @@ namespace Caravel.Core.Physics
 			m_RaycastEntities = new List<Cv_RayCastIntersection>();
             m_CollisionPairs = new List<Tuple<Cv_CollisionShape, Cv_CollisionShape>>();
             m_SeparationPairs = new List<Tuple<Cv_CollisionShape, Cv_CollisionShape>>();
+            m_Exclusions = new List<CollisionExclusion>();
+            m_PauseStateChanges = new List<Tuple<Cv_EntityID, bool>>();
 
             m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_NewCollisionShape>(OnNewCollisionShape);
             m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_ClearCollisionShapes>(OnClearCollisionShapes);
             m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_DestroyEntity>(OnDestroyEntity);
             m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_DestroyRigidBodyComponent>(OnDestroyEntity);
             m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_TransformEntity>(OnMoveEntity);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_ChangeEntityPauseState>(OnChangeEntityPauseState);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_SetCollidesWith>(OnSetCollidesWith);
+            m_Listeners += Cv_EventManager.Instance.AddListener<Cv_Event_SetCollisionCategory>(OnSetCollisionCategory);
         }
 
         ~Cv_AetherPhysics()
@@ -359,6 +374,39 @@ namespace Caravel.Core.Physics
             }
         }
 
+        public override void SetCollidesWith(Cv_EntityID entityId1, Cv_EntityID entityId2, bool state, string shapeId1 = null, string shapeId2 = null)
+        {
+            if (!state)
+            {
+                CollisionExclusion exclusion = new CollisionExclusion();
+
+                exclusion.Entity1 = entityId1;
+                exclusion.Entity2 = entityId2;
+                exclusion.ShapeId1 = shapeId1;
+                exclusion.ShapeId2 = shapeId2;
+
+                if (!m_Exclusions.Any(exc => exc.Entity1 == exclusion.Entity1
+                                            && exc.Entity2 == exclusion.Entity2
+                                            && exc.ShapeId1 == exclusion.ShapeId1
+                                            && exc.ShapeId2 == exclusion.ShapeId2))
+                {
+                    m_Exclusions.Add(exclusion);
+                }
+            }
+            else
+            {
+                m_Exclusions.RemoveAll(exc => exc.Entity1 == entityId1
+                                                && exc.Entity2 == entityId2
+                                                && exc.ShapeId1 == shapeId1
+                                                && exc.ShapeId2 == shapeId2);
+            }
+        }
+
+        public override void SetEntityPaused(Cv_EntityID entityId, bool state)
+        {
+            m_PauseStateChanges.Add(new Tuple<Cv_EntityID, bool>(entityId, state));
+        }
+
         public override bool VInitialize()
         {
             LoadXML();
@@ -367,6 +415,17 @@ namespace Caravel.Core.Physics
 
         public override void VOnUpdate(float elapsedTime)
         {
+            foreach (var pausedChange in m_PauseStateChanges)
+            {
+                Cv_PhysicsEntity physicsEntity;
+                if (m_PhysicsEntities.TryGetValue(pausedChange.Item1, out physicsEntity))
+                {
+                    physicsEntity.Body.Enabled = !pausedChange.Item2;
+                }
+            }
+
+            m_PauseStateChanges.Clear();
+            
             SyncBodiesToEntities();
             m_World.Step(Math.Min(elapsedTime * 0.001f, (1f / 30f)));
             m_CollisionPairs.Clear();
@@ -829,6 +888,11 @@ namespace Caravel.Core.Physics
                 return false;
             }
 
+            if (CheckForExclusions(collidingShape.Owner.ID, collidedShape.Owner.ID, collidingShape.ShapeID, collidedShape.ShapeID))
+            {
+                return false;
+            }
+
             var aetherContact = GenerateContact(contact, collidingShape, collidedShape);
 
             if (!m_CollisionPairs.Exists(cp => cp.Item1 == collidingShape && cp.Item2 == collidedShape))
@@ -859,7 +923,15 @@ namespace Caravel.Core.Physics
             var collisionShapeA = (Cv_CollisionShape)fixtureA.Tag;
             var collisionShapeB = (Cv_CollisionShape)fixtureB.Tag;
 
-            var aetherContact = GenerateContact(contact, collisionShapeA, collisionShapeB);
+            var collidedShape = collisionShapeA;
+            var collidingShape = collisionShapeB;
+            if (fixtureA.Body.LinearVelocity.Length() > fixtureB.Body.LinearVelocity.Length())
+            {
+                collidedShape = collisionShapeB;
+                collidingShape = collisionShapeA;
+            }
+
+            var aetherContact = GenerateContact(contact, collidingShape, collidedShape);
 
             if (!m_SeparationPairs.Exists(sp => sp.Item1 == collisionShapeB && sp.Item2 == collisionShapeA))
             {
@@ -1031,6 +1103,63 @@ namespace Caravel.Core.Physics
                 }
 
                 pe.PrevWorldTransform = worldTransform;
+            }
+        }
+
+        private void OnChangeEntityPauseState(Cv_Event evt)
+        {
+            var pauseEvt = evt as Cv_Event_ChangeEntityPauseState;
+
+            SetEntityPaused(evt.EntityID, pauseEvt.PauseState);
+        }
+
+        private void OnSetCollidesWith(Cv_Event evt)
+        {
+            var setCollidesWith = evt as Cv_Event_SetCollidesWith;
+
+            var shapes = m_PhysicsEntities[setCollidesWith.EntityID].Shapes;
+
+            foreach(var s in shapes)
+            {
+                if (s.Key.ShapeID == setCollidesWith.ShapeID)
+                {
+                    if (setCollidesWith.State)
+                    {
+                        s.Key.CollidesWith.AddCategory(setCollidesWith.Category);
+                    }
+                    else
+                    {
+                        s.Key.CollidesWith.RemoveCategory(setCollidesWith.Category);
+                    }
+
+                    s.Key.SetCollisionDirection(setCollidesWith.Category, setCollidesWith.Direction);
+
+                    s.Value.CollidesWith = (Category) s.Key.CollidesWith.GetCategories();
+                }
+            }
+        }
+
+        private void OnSetCollisionCategory(Cv_Event evt)
+        {
+            var setCollisionCategory = evt as Cv_Event_SetCollisionCategory;
+
+            var shapes = m_PhysicsEntities[setCollisionCategory.EntityID].Shapes;
+
+            foreach(var s in shapes)
+            {
+                if (s.Key.ShapeID == setCollisionCategory.ShapeID)
+                {
+                    if (setCollisionCategory.State)
+                    {
+                        s.Key.CollisionCategories.AddCategory(setCollisionCategory.Category);
+                    }
+                    else
+                    {
+                        s.Key.CollisionCategories.RemoveCategory(setCollisionCategory.Category);
+                    }
+
+                    s.Value.CollisionCategories = (Category) s.Key.CollisionCategories.GetCategories();
+                }
             }
         }
 
@@ -1350,6 +1479,30 @@ namespace Caravel.Core.Physics
             }
 
             return aetherContact;
+        }
+
+        private bool CheckForExclusions(Cv_EntityID ent1, Cv_EntityID ent2, string shape1ID, string shape2ID)
+        {
+            foreach (var exc in m_Exclusions)
+            {
+                if (exc.Entity1 == ent1 && exc.Entity2 == ent2)
+                {
+                    if ((exc.ShapeId1 == null || shape1ID == exc.ShapeId1) && (exc.ShapeId2 == null || shape2ID == exc.ShapeId2))
+                    {
+                        return true;
+                    }
+                }
+
+                if (exc.Entity2 == ent1 && exc.Entity1 == ent2)
+                {
+                    if ((exc.ShapeId2 == null || shape1ID == exc.ShapeId2) && (exc.ShapeId1 == null || shape2ID == exc.ShapeId1))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

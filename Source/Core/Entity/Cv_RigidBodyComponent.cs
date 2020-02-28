@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Xml;
 using Caravel.Core.Events;
 using Caravel.Debugging;
@@ -91,6 +92,14 @@ namespace Caravel.Core.Entity
             {
                 m_sMaterial = value;
                 IsDirty = true;
+            }
+        }
+
+        public string[] Shapes
+        {
+            get
+            {
+                return m_Shapes.Select(s => s.ShapeID).ToArray();
             }
         }
 
@@ -447,6 +456,161 @@ namespace Caravel.Core.Entity
             }
         }
 
+        public void SetCollisionCategory(string shapeId, int category, bool state)
+        {
+            if (!Owner)
+            {
+                return;
+            }
+            
+            foreach (var s in m_Shapes)
+            {
+                if (s.ShapeID == shapeId)
+                {
+                    if (state)
+                    {
+                        s.Categories.AddCategory(category);
+                    }
+                    else
+                    {
+                        s.Categories.RemoveCategory(category);
+                    }
+                }
+            }
+
+            var evt = new Cv_Event_SetCollisionCategory(shapeId, category, state, Owner.ID, this);
+            Cv_EventManager.Instance.TriggerEvent(evt);
+        }
+
+        public void SetCollidesWith(Cv_Entity.Cv_EntityID otherID, bool state, string shapeID = null, string otherShapeID = null)
+        {
+            if (Owner)
+            {
+                CaravelApp.Instance.Logic.SetCollidesWith(Owner.ID, otherID, state, shapeID, otherShapeID);
+            }
+        }
+
+        public void SetCollidesWith(string shapeId, int category, bool state, string direction)
+        {
+            if (!Owner)
+            {
+                return;
+            }
+
+            foreach (var s in m_Shapes)
+            {
+                if (s.ShapeID == shapeId)
+                {
+                    if (state)
+                    {
+                        s.CollidesWith.AddCategory(category);
+                        s.CollisionDirections[category] = direction;
+                    }
+                    else
+                    {
+                        s.Categories.RemoveCategory(category);
+                        s.CollisionDirections.Remove(category);
+                    }
+                }
+            }
+
+            var evt = new Cv_Event_SetCollidesWith(shapeId, category, direction, state, Owner.ID, this);
+            Cv_EventManager.Instance.TriggerEvent(evt);
+        }
+
+        public bool HasCategory(string shapeId, int category)
+        {
+
+            if (m_Shapes.Any(s => s.ShapeID == shapeId))
+            {
+                return m_Shapes.Find(s => s.ShapeID == shapeId).Categories.HasCategory(category);
+            }
+
+            return false;
+        }
+
+        public bool CollidesWith(string shapeId, int category, out string direction)
+        {
+            if (m_Shapes.Any(s => s.ShapeID == shapeId))
+            {
+                var shape = m_Shapes.Find(s => s.ShapeID == shapeId);
+                if (shape.CollidesWith.HasCategory(category))
+                {
+                    direction = shape.CollisionDirections[category];
+                    return true;
+                }
+
+                direction = "";
+                return false;
+            }
+
+            direction = "";
+            return false;
+        }
+
+        public void RemoveShape(string shapeId)
+        {
+            m_Shapes.RemoveAll(s => s.ShapeID == shapeId);
+
+            VOnChanged();
+        }
+
+        public void AddBoxShape(string id, Vector2 dimensions, Vector2 anchor,
+                                string material, bool isBullet,
+                                Cv_CollisionCategories collisionCategories = null,
+                                Cv_CollisionCategories collidesWith = null,
+                                Dictionary<int, string> collisionDirections = null)
+        {
+            var shapeData = new Cv_ShapeData();
+            shapeData.Dimensions = dimensions;
+            shapeData.Type = ShapeType.Box;
+
+            AddShape(shapeData, id, anchor, material, isBullet,
+                        collisionCategories, collidesWith, collisionDirections);            
+        }
+
+        public void AddCircleShape(string id, float radius, Vector2 anchor,
+                                string material, bool isBullet,
+                                Cv_CollisionCategories collisionCategories = null,
+                                Cv_CollisionCategories collidesWith = null,
+                                Dictionary<int, string> collisionDirections = null)
+        {
+            var shapeData = new Cv_ShapeData();
+            shapeData.Radius = radius;
+            shapeData.Type = ShapeType.Circle;
+
+            AddShape(shapeData, id, anchor, material, isBullet,
+                        collisionCategories, collidesWith, collisionDirections);            
+        }
+
+        public void AddTriggerShape(string id, Vector2 dimensions, Vector2 anchor,
+                                string material, bool isBullet,
+                                Cv_CollisionCategories collisionCategories = null,
+                                Cv_CollisionCategories collidesWith = null,
+                                Dictionary<int, string> collisionDirections = null)
+        {
+            var shapeData = new Cv_ShapeData();
+            shapeData.Dimensions = dimensions;
+            shapeData.Type = ShapeType.Trigger;
+
+            AddShape(shapeData, id, anchor, material, isBullet,
+                        collisionCategories, collidesWith, collisionDirections);            
+        }
+
+        public void AddPolygonShape(string id, Vector2[] points, Vector2 anchor,
+                                string material, bool isBullet,
+                                Cv_CollisionCategories collisionCategories = null,
+                                Cv_CollisionCategories collidesWith = null,
+                                Dictionary<int, string> collisionDirections = null)
+        {
+            var shapeData = new Cv_ShapeData();
+            shapeData.Points = points;
+            shapeData.Type = ShapeType.Polygon;
+
+            AddShape(shapeData, id, anchor, material, isBullet,
+                        collisionCategories, collidesWith, collisionDirections);            
+        }
+
         public override bool VPostInitialize()
         {
             VOnChanged();
@@ -465,6 +629,61 @@ namespace Caravel.Core.Entity
 
         protected internal override void VOnUpdate(float elapsedTime)
         {
+        }
+
+        private void AddShape(Cv_ShapeData newShape, string id, Vector2 anchor,
+                                string material, bool isBullet,
+                                Cv_CollisionCategories collisionCategories = null,
+                                Cv_CollisionCategories collidesWith = null,
+                                Dictionary<int, string> collisionDirections = null)
+        {
+            newShape.IsBullet = isBullet;
+            newShape.Material = material;
+            newShape.ShapeID = id;
+            newShape.Anchor = anchor;
+
+            if (collisionCategories == null)
+            {
+                var categories = new Cv_CollisionCategories();
+                categories.AddAllCategories();
+                newShape.Categories = categories;
+            }
+            else
+            {
+                newShape.Categories = collisionCategories;
+            }
+
+            if (collidesWith == null)
+            {
+                var categories = new Cv_CollisionCategories();
+                categories.AddAllCategories();
+                newShape.CollidesWith = categories;
+            }
+            else
+            {
+                newShape.CollidesWith = collidesWith;
+            }
+
+            if (collisionDirections == null)
+            {
+                var directions = new Dictionary<int, string>();
+                
+                var _collidesWith = newShape.CollidesWith.GetCategoriesArray();
+                foreach (var c in _collidesWith)
+                {
+                    directions.Add(c, "All");
+                }
+                newShape.CollisionDirections = directions;
+            }
+            else
+            {
+                newShape.CollisionDirections = collisionDirections;
+            }
+
+            m_Shapes.Add(newShape);
+
+            var newEvt = new Cv_Event_NewCollisionShape(Owner.ID, newShape, this);
+            Cv_EventManager.Instance.QueueEvent(newEvt, true);
         }
     }
 }

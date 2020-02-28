@@ -357,7 +357,7 @@ namespace Caravel.Core
                 Caravel.Graphics.SynchronizeWithVerticalRetrace = false;
                 Caravel.Graphics.ApplyChanges();
             }
-            else if (!Caravel.IsFixedTimeStep)
+            else if (!RunFullSpeed && !Caravel.IsFixedTimeStep)
             {
                 Caravel.IsFixedTimeStep = true;
                 Caravel.Graphics.SynchronizeWithVerticalRetrace = true;
@@ -520,7 +520,7 @@ namespace Caravel.Core
 
             var entity = CaravelApp.Instance.Logic.GetEntity(pauseEvt.EntityID);
 
-            Caravel.SoundManager.ResumeSound(pauseEvt.SoundResource, entity);
+            Caravel.SoundManager.PauseSound(pauseEvt.SoundResource, entity);
         }
 
         private void OnStopSound(Cv_Event eventData)

@@ -350,6 +350,22 @@ namespace Caravel.Core.Entity
             Cv_EventManager.Instance.TriggerEvent(newEvent);
         }
 
+        public override void VOnPause()
+        {
+            if (m_SceneNode != null)
+            {
+                m_SceneNode.Paused = true;
+            }
+        }
+
+        public override void VOnResume()
+        {
+            if (m_SceneNode != null)
+            {
+                m_SceneNode.Paused = false;
+            }
+        }
+
         protected internal override void VOnUpdate(float elapsedTime)
         {
             if (IsFading)
