@@ -25,8 +25,8 @@ Currently the engine supports the following features:
 
 Here are some screenshots of a game made using Caravel.
 
-<img src="https://giant.gfycat.com/FreshVacantBlowfish.gif" width="400" height="225"/> <img src="https://giant.gfycat.com/LimpAdoredDore.gif" width="400" height="225"/>
-<img src="https://giant.gfycat.com/ImpishFrankEel.gif" width="700" height="450"/>
+<img src="https://gfycat.com/FreshVacantBlowfish.gif" width="400" height="225"/> <img src="https://gfycat.com/LimpAdoredDore.gif" width="400" height="225"/>
+<img src="https://gfycat.com/ImpishFrankEel.gif" width="700" height="450"/>
 
 ## How to Start
 
