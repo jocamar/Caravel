@@ -25,8 +25,8 @@ Currently the engine supports the following features:
 
 Here are some screenshots of a game made using Caravel.
 
-<img src="https://gfycat.com/FreshVacantBlowfish.gif" width="400" height="225"/> <img src="https://gfycat.com/LimpAdoredDore.gif" width="400" height="225"/>
-<img src="https://gfycat.com/ImpishFrankEel.gif" width="700" height="450"/>
+<img src="https://thumbs.gfycat.com/FreshVacantBlowfish-size_restricted.gif" width="400" height="225"/> <img src="https://thumbs.gfycat.com/LimpAdoredDore-size_restricted.gif" width="400" height="225"/>
+<img src="https://thumbs.gfycat.com/ImpishFrankEel-size_restricted.gif" width="700" height="450"/>
 
 ## How to Start
 
@@ -34,7 +34,7 @@ If you want to start a project using Caravel, the easiest way is to clone or dow
 
 If you want you can also build and edit the engine by cloning this repository and opening the project in Visual Studio. I run it in VS2017 since the project uses [Vitevic Assembly Embedder](https://marketplace.visualstudio.com/items?itemName=Vitevic.VitevicAssemblyEmbedder) to package all dependencies inside the engine dll. As far as I know this extension has not yet been updated to more recent versions of VS. After building the engine you can use it by linking to the generated dll.
 
-If you'd like you can also use the [Caravel Editor](https://github.com/jocamar/CaravelStartupProject) to help in creating scenes, projects, entity types and materials. However one of the advantages of Caravel is that this is purely optional as every asset file can be edited and created by hand. This is great for people like me that prefer to make games closer to the metal so to say, without relying so much on an editor such as in Unity or Unreal. Caravel gives you more control than these engines when creating your game logic though it also doesn't provide the wide array of features and ease of use that these engines provide.
+If you'd like you can also use the [Caravel Editor](https://github.com/jocamar/CaravelEditor) to help in creating scenes, projects, entity types and materials. However one of the advantages of Caravel is that this is purely optional as every asset file can be edited and created by hand. This is great for people like me that prefer to make games closer to the metal so to say, without relying so much on an editor such as in Unity or Unreal. Caravel gives you more control than these engines when creating your game logic though it also doesn't provide the wide array of features and ease of use that these engines provide.
 
 I wouldn't recommend using Caravel for any big projects though if you do use it I'd love to know about it.
 
