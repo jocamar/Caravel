@@ -150,6 +150,11 @@ namespace Caravel.Core.Draw
 
         internal override void VOnUpdate(float time, float elapsedTime)
         {
+            if (Paused)
+            {
+                return;
+            }
+            
             var worldTransform = WorldTransform;
             GenerateParticles(elapsedTime, worldTransform);
             

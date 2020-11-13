@@ -468,10 +468,10 @@ namespace Caravel.Core
 
                     var path = "/" + newName;
 
-                    if (entity.SceneRoot)
+                    /*if (entity.SceneRoot)
                     {
                         path = "/" + entity.SceneName + path;
-                    }
+                    }*/
 
                     var newPath = parentPath + path;
                     if (!EntitiesByPath.ContainsKey(newPath))
@@ -492,10 +492,10 @@ namespace Caravel.Core
 
                             var childPath = "/" + child.EntityName;
 
-                            if (child.SceneRoot)
+                            /*if (child.SceneRoot)
                             {
                                 path = "/" + child.SceneName + path;
-                            }
+                            }*/
 
                             var newChildPath = childParent.EntityPath + path;
 
@@ -967,9 +967,10 @@ namespace Caravel.Core
 
             var path = "/" + name;
 
-            if (isSceneRoot) //Insert fake node in path
+            if (isSceneRoot) //Scene roots are named after the scene id
             {
-                path = "/" + sceneName + path;
+                path = "/" + sceneName;
+                name = sceneName;
             }
 
             if (parentID == Cv_EntityID.INVALID_ENTITY)

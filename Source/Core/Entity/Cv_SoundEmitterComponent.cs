@@ -239,6 +239,11 @@ namespace Caravel.Core.Entity
 
         public void PauseSound(bool immediate = false)
         {
+            if (SoundResource == null || SoundResource == "")
+            {
+                return;
+            }
+
             Cv_Event_PauseSound pauseEvent = new Cv_Event_PauseSound(Owner.ID, SoundResource, this);
             
             if (immediate)
@@ -253,6 +258,11 @@ namespace Caravel.Core.Entity
 
         public void ResumeSound(bool immediate = false)
         {
+            if (SoundResource == null || SoundResource == "")
+            {
+                return;
+            }
+            
             Cv_Event_ResumeSound resumeEvent = new Cv_Event_ResumeSound(Owner.ID, SoundResource, this);
             
             if (immediate)

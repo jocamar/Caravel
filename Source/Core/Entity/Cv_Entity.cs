@@ -99,6 +99,11 @@ namespace Caravel.Core.Entity
                         component.Value.VOnResume();
                     }
 
+                    foreach (var child in m_Children)
+                    {
+                        child.Paused = false;
+                    }
+
                     CaravelApp.Instance.EventManager.TriggerEvent(new Cv_Event_ChangeEntityPauseState(ID, value, this));
                 }
                 else if (!m_bPaused && value)
@@ -108,6 +113,11 @@ namespace Caravel.Core.Entity
                     foreach (var component in m_ComponentMap)
                     {
                         component.Value.VOnPause();
+                    }
+
+                    foreach (var child in m_Children)
+                    {
+                        child.Paused = true;
                     }
 
                     CaravelApp.Instance.EventManager.TriggerEvent(new Cv_Event_ChangeEntityPauseState(ID, value, this));
