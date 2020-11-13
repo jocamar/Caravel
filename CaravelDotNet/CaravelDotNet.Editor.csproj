@@ -421,12 +421,6 @@
     <Compile Include="..\Source\Editor\Cv_ResizeWindowEvt.cs">
       <Link>Cv_ResizeWindowEvt.cs</Link>
     </Compile>
-    <Compile Include="..\Source\TestSamples\SimpleGame.cs">
-      <Link>SimpleGame.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\TestSamples\SimpleGameLogic.cs">
-      <Link>SimpleGameLogic.cs</Link>
-    </Compile>
     <!--<Compile Include="..\Libs\VelcroPhysics\BreakableBody.cs" />
     <Compile Include="..\Libs\VelcroPhysics\Collision\AABBHelper.cs" />
     <Compile Include="..\Libs\VelcroPhysics\Collision\Broadphase\DynamicTree.cs" />

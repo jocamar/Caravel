@@ -424,12 +424,6 @@
     <Compile Include="..\Source\Editor\Cv_ResizeWindowEvt.cs">
       <Link>Cv_ResizeWindowEvt.cs</Link>
     </Compile>
-    <Compile Include="..\Source\TestSamples\SimpleGame.cs">
-      <Link>SimpleGame.cs</Link>
-    </Compile>
-    <Compile Include="..\Source\TestSamples\SimpleGameLogic.cs">
-      <Link>SimpleGameLogic.cs</Link>
-    </Compile>
     <Compile Include="..\Libs\MonoGame.Framework\Audio\AudioChannels.cs" />
     <Compile Include="..\Libs\MonoGame.Framework\Audio\AudioEmitter.cs" />
     <Compile Include="..\Libs\MonoGame.Framework\Audio\AudioListener.cs" />
